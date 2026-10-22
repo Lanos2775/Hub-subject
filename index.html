@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hub môn học</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f8ff;--card:#fff;--ink:#1d2350;--mut:#58608a;--g:#c9cfe8;--tint:#eaf0ff;--accent:#2f5bea;--danger:#c23a4b;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10142e;--card:#1a2046;--ink:#e8ebff;--mut:#9aa3d1;--g:#323a6e;--tint:#222a5c;--accent:#7f9bff;--danger:#ff7a8a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10142e;--card:#1a2046;--ink:#e8ebff;--mut:#9aa3d1;--g:#323a6e;--tint:#222a5c;--accent:#7f9bff;--danger:#ff7a8a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.55}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:36px 20px 80px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 24px;margin-bottom:28px}
+header.top h1{margin:0;font-size:clamp(30px,5vw,44px);line-height:1.05;font-weight:800;letter-spacing:-.02em}
+header.top p{margin:6px 0 0;color:var(--mut);font-size:14px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto;align-items:center}
+.search{width:200px;padding:9px 12px;border:1px solid var(--g);border-radius:10px;background:var(--card)}
+.btn{border:1px solid var(--g);background:var(--card);padding:9px 14px;border-radius:10px;font-weight:600}
+.btn:hover{background:var(--tint)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.dng{color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.tile{position:relative;background:var(--card);border:1px solid var(--g);border-radius:14px;display:flex;flex-direction:column}
+.cover{all:unset;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;gap:28px;min-height:132px;padding:16px 18px;background:var(--c);color:#fff;border-radius:13px 13px 0 0;cursor:pointer}
+.cover:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+.cover .ic{font-size:30px;line-height:1}
+.cover .cd{font-size:24px;font-weight:800;line-height:1.1;letter-spacing:-.01em;overflow-wrap:anywhere}
+.tile .body{padding:14px 18px 6px;flex:1}
+.tile h3{margin:0 0 4px;font-size:17px;line-height:1.3}
+.tile p{margin:0;color:var(--mut);font-size:13.5px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:8px 18px 0;color:var(--mut);font-size:12.5px}
+.chip{background:var(--tint);color:var(--ink);padding:2px 10px;border-radius:99px;font-weight:600;font-size:12px}
+.acts{display:flex;gap:8px;padding:12px 18px 16px;align-items:center}
+.acts .btn.pri{flex:1}
+details.more{position:relative}
+details.more summary{list-style:none;border:1px solid var(--g);background:var(--card);border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer;line-height:1.5}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary:hover{background:var(--tint)}
+.menu{position:absolute;right:0;bottom:calc(100% + 6px);z-index:20;min-width:210px;background:var(--card);border:1px solid var(--g);border-radius:12px;padding:6px;display:flex;flex-direction:column}
+.menu button{all:unset;box-sizing:border-box;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:14px}
+.menu button:hover,.menu button:focus-visible{background:var(--tint)}
+.menu button.dng{color:var(--danger)}
+.menu hr{border:0;border-top:1px solid var(--g);margin:4px 2px;width:auto}
+.empty{border:1.5px dashed var(--g);border-radius:14px;padding:44px 20px;text-align:center;color:var(--mut)}
+.empty h2{margin:0 0 6px;color:var(--ink);font-size:20px}
+.dropnote{margin-top:26px;color:var(--mut);font-size:13px}
+.dropveil{position:fixed;inset:0;z-index:90;background:color-mix(in srgb,var(--accent) 22%,transparent);border:3px dashed var(--accent);display:none;align-items:center;justify-content:center;font-size:22px;font-weight:800;pointer-events:none}
+body.dragging .dropveil{display:flex}
+#viewer{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+body.viewing #viewer{display:flex}
+body.viewing .wrap{display:none}
+#hm{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;z-index:60;width:46px;height:46px;border:0;border-radius:14px;background:var(--accent);color:#fff;display:none;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(16,20,46,.3)}
+body.viewing #hm{display:flex}
+#hm svg{width:20px;height:20px;fill:currentColor}
+#hmenu{position:fixed;top:calc(env(safe-area-inset-top,0px) + 66px);right:14px;z-index:60;display:none;flex-direction:column;gap:6px;width:min(230px,calc(100vw - 28px))}
+#hmenu.on{display:flex}
+#hmenu .ttl{background:var(--ink);color:var(--bg);border-radius:12px;padding:8px 14px;font-weight:800;font-size:13.5px;line-height:1.35;overflow-wrap:anywhere}
+#hmenu button{background:var(--card);border:1px solid var(--g);border-radius:12px;padding:11px 14px;font-weight:600;text-align:left;box-shadow:0 2px 10px rgba(16,20,46,.18)}
+#hmenu button:hover,#hmenu button:focus-visible{background:var(--tint)}
+#frame{flex:1;width:100%;border:0;background:#fff}
+dialog{border:1px solid var(--g);border-radius:14px;background:var(--card);color:var(--ink);padding:0;width:min(560px,92vw);max-height:92vh}
+dialog::backdrop{background:rgba(10,14,40,.55)}
+dialog.wide{width:min(980px,96vw)}
+.dh{padding:18px 20px 0}
+.dh h2{margin:0;font-size:19px}
+.db{padding:14px 20px;display:flex;flex-direction:column;gap:12px}
+.df{padding:12px 20px 18px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:13.5px}
+label.f input,label.f select,label.f textarea{border:1px solid var(--g);border-radius:10px;padding:9px 11px;background:var(--bg);font-weight:400}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:90px 1fr;gap:12px}
+.sw{display:flex;gap:8px;flex-wrap:wrap}
+.sw label{cursor:pointer}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw span{display:block;width:30px;height:30px;border-radius:50%;background:var(--c);border:3px solid transparent;box-shadow:0 0 0 1px var(--g)}
+.sw input:checked+span{border-color:var(--card);box-shadow:0 0 0 2.5px var(--ink)}
+.sw input:focus-visible+span{outline:2px solid var(--accent);outline-offset:3px}
+.hint{color:var(--mut);font-size:12.5px;font-weight:400}
+#code{width:100%;height:min(62vh,640px);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;white-space:pre;overflow:auto;tab-size:2;border:1px solid var(--g);border-radius:10px;padding:12px;background:var(--bg);resize:none}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+@media (max-width:560px){.row,.row3{grid-template-columns:1fr}.search{width:100%}.tools{margin-left:0;width:100%}}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Môn học</h1>
+      <p id="count"></p>
+    </div>
+    <div class="tools">
+      <input class="search" id="q" type="search" placeholder="Tìm môn…" aria-label="Tìm môn">
+      <button class="btn" id="bBackup">Sao lưu</button>
+      <button class="btn" id="bRestore">Khôi phục</button>
+      <button class="btn pri" id="bAdd">Thêm môn</button>
+    </div>
+  </header>
+  <main id="list"></main>
+  <p class="dropnote">Kéo thả file .html vào trang để thêm môn nhanh. Môn thêm hoặc sửa tại đây chỉ lưu trong trình duyệt này (nhớ Sao lưu); môn có trong thư mục mon/ của repo thì cập nhật bằng git push.</p>
+</div>
+
+<section id="viewer" aria-label="Xem môn học">
+  <button id="hm" aria-label="Menu hub" aria-expanded="false" aria-controls="hmenu"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg></button>
+  <nav id="hmenu" aria-label="Thao tác môn học">
+    <div class="ttl" id="vTitle"></div>
+    <button id="vBack">‹ Về hub</button>
+    <button id="vCode">Sửa mã nguồn</button>
+    <button id="vTab">Mở tab mới</button>
+    <button id="vDl">Tải xuống</button>
+  </nav>
+  <iframe id="frame" title="Nội dung môn học" sandbox="allow-scripts allow-popups allow-downloads allow-modals"></iframe>
+</section>
+
+<dialog id="fmDlg">
+  <form method="dialog" id="fm">
+    <div class="dh"><h2 id="fmTitle">Thêm môn</h2></div>
+    <div class="db">
+      <label class="f">Tên môn<input id="fName" required maxlength="120"></label>
+      <div class="row3">
+        <label class="f">Biểu tượng<input id="fIcon" maxlength="4" value="📘"></label>
+        <label class="f">Mã môn<input id="fCode" maxlength="24" placeholder="vd. ENP2209"></label>
+      </div>
+      <label class="f">Mô tả ngắn<textarea id="fDesc" rows="2" maxlength="240"></textarea></label>
+      <div class="row">
+        <label class="f">Trạng thái
+          <select id="fStatus"><option>Đang học</option><option>Ôn thi</option><option>Hoàn thành</option><option>Tạm dừng</option></select>
+        </label>
+        <div class="f">Màu <div class="sw" id="fSw"></div></div>
+      </div>
+      <label class="f">File HTML <input id="fFile" type="file" accept=".html,.htm,text/html">
+        <span class="hint" id="fHint">Bỏ trống để tạo trang trống, rồi vào Sửa mã nguồn.</span></label>
+    </div>
+    <div class="df">
+      <button class="btn" value="cancel" formnovalidate>Hủy</button>
+      <button class="btn pri" id="fOk" value="ok">Lưu</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="codeDlg" class="wide">
+  <div class="dh"><h2 id="cTitle">Sửa mã nguồn</h2></div>
+  <div class="db">
+    <textarea id="code" spellcheck="false" wrap="off" aria-label="Mã HTML"></textarea>
+    <span class="hint" id="cInfo"></span>
+  </div>
+  <div class="df">
+    <button class="btn" id="cRepo" hidden>Về bản trong repo</button>
+    <button class="btn" id="cUndo">Khôi phục bản trước</button>
+    <button class="btn" id="cCancel">Đóng</button>
+    <button class="btn pri" id="cSave">Lưu</button>
+  </div>
+</dialog>
+
+<dialog id="cfDlg">
+  <div class="dh"><h2 id="cfTitle">Xác nhận</h2></div>
+  <div class="db"><p id="cfMsg" style="margin:0"></p></div>
+  <div class="df">
+    <button class="btn" id="cfNo">Hủy</button>
+    <button class="btn dng" id="cfYes">Đồng ý</button>
+  </div>
+</dialog>
+
+<input type="file" id="pickReplace" accept=".html,.htm,text/html" hidden>
+<input type="file" id="pickRestore" accept=".json,application/json" hidden>
+<div class="dropveil">Thả file .html để thêm môn</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="application/json" id="seed">[
+ {
+  "id": "ban-dan",
+  "title": "Vật lý bán dẫn và linh kiện",
+  "icon": "🔬",
+  "code": "ENP2209",
+  "desc": "Cấu trúc tinh thể, cơ học lượng tử, vùng năng lượng, bán dẫn ở trạng thái cân bằng (Buổi 1–5).",
+  "status": "Đang học",
+  "color": "#2f5bea",
+  "src": "mon/ban-dan.html"
+ },
+ {
+  "id": "toan-roi-rac",
+  "title": "Toán rời rạc",
+  "icon": "🧮",
+  "code": "",
+  "desc": "Logic, vị từ và lượng từ, phương pháp chứng minh, đại số Bool, Big-O, Euclid, RSA (Bài 1–6).",
+  "status": "Đang học",
+  "color": "#7a4fd6",
+  "src": "mon/toan-roi-rac.html"
+ }
+]</script>
+<script>
+const DB_NAME="hub-mon-hoc",STORE="subjects",REM="hub-mon-hoc-removed";
+const COLORS=["#2f5bea","#0b7f72","#c2336b","#b86a00","#7a4fd6","#4a5578"];
+const STARTER=t=>'<!DOCTYPE html>\n<html lang="vi">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>'+t+'</title>\n<style>\nbody{font-family:system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 20px;line-height:1.6}\n</style>\n</head>\n<body>\n<h1>'+t+'</h1>\n<p>Trang trống. Dán nội dung hoặc thay bằng file HTML của bạn.</p>\n</body>\n</html>\n';
+
+let db=null,mem=new Map(),subjects=[],viewing=null,curUrl=null,editingId=null,codeId=null,replaceId=null;
+const $=s=>document.querySelector(s);
+const frame=$("#frame");
+
+function openDB(){
+  return new Promise(res=>{
+    try{
+      const r=indexedDB.open(DB_NAME,1);
+      r.onupgradeneeded=()=>r.result.createObjectStore(STORE,{keyPath:"id"});
+      r.onsuccess=()=>res(r.result);
+      r.onerror=()=>res(null);
+      r.onblocked=()=>res(null);
+    }catch(e){res(null)}
+  });
+}
+const rp=r=>new Promise((ok,no)=>{r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+const store=m=>db.transaction(STORE,m).objectStore(STORE);
+const dbAll=async()=>db?rp(store("readonly").getAll()):[...mem.values()];
+const dbPut=async o=>{if(db)await rp(store("readwrite").put(o));else mem.set(o.id,o)};
+const dbDel=async id=>{if(db)await rp(store("readwrite").delete(id));else mem.delete(id)};
+
+const getRem=()=>{try{return JSON.parse(localStorage.getItem(REM)||"[]")}catch(e){return[]}};
+const addRem=id=>{try{const r=getRem();if(!r.includes(id))r.push(id);localStorage.setItem(REM,JSON.stringify(r))}catch(e){}};
+
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),2600)}
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const kb=s=>{const n=new Blob([s]).size;return n>=1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB"};
+const dmy=t=>{const d=new Date(t);return d.getDate()+"/"+(d.getMonth()+1)+"/"+d.getFullYear()};
+const slug=s=>(s||"mon-hoc").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"mon-hoc";
+const titleOf=h=>{const m=/<title>([^<]*)<\/title>/i.exec(h);return m?m[1].trim():""};
+const newId=()=>"s"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+const get=id=>subjects.find(s=>s.id===id);
+
+async function load(){
+  subjects=(await dbAll()).sort((a,b)=>a.order-b.order);
+}
+async function persist(s){s.updated=Date.now();await dbPut(s)}
+async function renumber(){for(let i=0;i<subjects.length;i++){if(subjects[i].order!==i){subjects[i].order=i;await dbPut(subjects[i])}}}
+
+function render(){
+  const q=$("#q").value.trim().toLowerCase();
+  const list=subjects.filter(s=>!q||(s.title+" "+s.code+" "+s.desc).toLowerCase().includes(q));
+  $("#count").textContent=subjects.length+" môn"+(q?" · hiển thị "+list.length:"");
+  const el=$("#list");
+  if(!subjects.length){
+    el.innerHTML='<div class="empty"><h2>Chưa có môn nào</h2><p>Thêm môn đầu tiên hoặc kéo thả file .html vào đây.</p><button class="btn pri" data-a="add">Thêm môn</button></div>';
+    return;
+  }
+  if(!list.length){el.innerHTML='<div class="empty"><h2>Không thấy môn khớp</h2><p>Thử từ khóa khác.</p></div>';return}
+  el.innerHTML='<div class="grid">'+list.map(s=>`
+  <article class="tile" style="--c:${esc(s.color)}" data-id="${s.id}">
+    <button class="cover" data-a="open" aria-label="Mở ${esc(s.title)}"><span class="ic" aria-hidden="true">${esc(s.icon||"📘")}</span><span class="cd">${esc(s.code||s.title)}</span></button>
+    <div class="body"><h3>${esc(s.title)}</h3><p>${esc(s.desc)}</p></div>
+    <div class="meta"><span class="chip">${esc(s.status)}</span><span>${s.html?kb(s.html)+" · sửa "+dmy(s.updated):"file trong repo"}</span></div>
+    <div class="acts">
+      <button class="btn pri" data-a="open">Mở</button>
+      <details class="more"><summary aria-label="Thao tác khác">⋯</summary>
+        <div class="menu">
+          <button data-a="edit">Sửa thông tin</button>
+          <button data-a="code">Sửa mã nguồn</button>
+          <button data-a="replace">Thay bằng file mới</button>
+          <button data-a="dl">Tải xuống</button>
+          <button data-a="tab">Mở tab mới</button>
+          <hr>
+          <button data-a="left">Dời lên trước</button>
+          <button data-a="right">Dời ra sau</button>
+          <hr>
+          <button class="dng" data-a="del">Xóa môn</button>
+        </div>
+      </details>
+    </div>
+  </article>`).join("")+"</div>";
+}
+
+const urlFor=s=>s.html?URL.createObjectURL(new Blob([s.html],{type:"text/html"})):(s.src||"about:blank");
+const freeUrl=u=>{if(u&&u.startsWith("blob:"))URL.revokeObjectURL(u)};
+function setMenu(on){$("#hmenu").classList.toggle("on",on);$("#hm").setAttribute("aria-expanded",on?"true":"false")}
+function openSubject(id){
+  const s=get(id);if(!s)return;
+  if(viewing===id&&document.body.classList.contains("viewing"))return;
+  viewing=id;
+  freeUrl(curUrl);
+  curUrl=urlFor(s);
+  frame.src=curUrl;
+  $("#vTitle").textContent=s.title;
+  setMenu(false);
+  document.body.classList.add("viewing");
+  if(location.hash.slice(1)!==id)history.pushState(null,"","#"+id);
+}
+function closeViewer(){
+  setMenu(false);
+  document.body.classList.remove("viewing");
+  frame.src="about:blank";
+  freeUrl(curUrl);curUrl=null;
+  viewing=null;
+  if(location.hash)history.replaceState(null,"",location.pathname+location.search);
+}
+function syncHash(){
+  const id=location.hash.slice(1);
+  if(id&&get(id))openSubject(id);
+  else if(document.body.classList.contains("viewing"))closeViewer();
+}
+function refreshViewer(id){if(viewing===id){viewing=null;openSubject(id)}}
+
+function download(s){
+  const u=urlFor(s);
+  const a=document.createElement("a");a.href=u;a.download=s.html?slug(s.title)+".html":(s.src||"mon").split("/").pop();document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>freeUrl(u),4000);
+}
+function openTab(s){
+  const u=urlFor(s);
+  if(!window.open(u,"_blank"))toast("Trình duyệt chặn tab mới. Hãy cho phép cửa sổ bật lên.");
+  setTimeout(()=>freeUrl(u),60000);
+}
+
+function confirmDlg(title,msg,yes){
+  return new Promise(res=>{
+    const d=$("#cfDlg");$("#cfTitle").textContent=title;$("#cfMsg").textContent=msg;$("#cfYes").textContent=yes||"Đồng ý";
+    const done=v=>{d.close();$("#cfYes").onclick=$("#cfNo").onclick=null;res(v)};
+    $("#cfYes").onclick=()=>done(true);$("#cfNo").onclick=()=>done(false);
+    d.oncancel=()=>res(false);
+    d.showModal();
+  });
+}
+
+function buildSwatches(sel){
+  $("#fSw").innerHTML=COLORS.map((c,i)=>`<label style="--c:${c}"><input type="radio" name="fc" value="${c}" ${c===sel||(!sel&&i===0)?"checked":""}><span></span></label>`).join("");
+}
+function showForm(id){
+  editingId=id||null;
+  const s=id?get(id):null;
+  $("#fmTitle").textContent=s?"Sửa thông tin":"Thêm môn";
+  $("#fName").value=s?s.title:"";
+  $("#fIcon").value=s?s.icon:"📘";
+  $("#fCode").value=s?s.code:"";
+  $("#fDesc").value=s?s.desc:"";
+  $("#fStatus").value=s?s.status:"Đang học";
+  $("#fFile").value="";
+  $("#fHint").textContent=s?"Chọn file mới nếu muốn thay nội dung. Bản cũ vẫn khôi phục được trong Sửa mã nguồn.":"Bỏ trống để tạo trang trống, rồi vào Sửa mã nguồn.";
+  buildSwatches(s?s.color:COLORS[subjects.length%COLORS.length]);
+  $("#fmDlg").showModal();
+  $("#fName").focus();
+}
+$("#fm").addEventListener("submit",async e=>{
+  const ok=e.submitter&&e.submitter.value==="ok";
+  if(!ok)return;
+  const f=$("#fFile").files[0];
+  let html=f?await f.text():null;
+  const title=$("#fName").value.trim()||(html&&titleOf(html))||"Môn mới";
+  const color=(document.querySelector('input[name="fc"]:checked')||{}).value||COLORS[0];
+  if(editingId){
+    const s=get(editingId);
+    Object.assign(s,{title,icon:$("#fIcon").value.trim()||"📘",code:$("#fCode").value.trim(),desc:$("#fDesc").value.trim(),status:$("#fStatus").value,color});
+    if(html!==null){s.prevHtml=s.html;s.html=html}
+    await persist(s);
+    toast("Đã cập nhật");
+    refreshViewer(s.id);
+  }else{
+    const s={id:newId(),title,icon:$("#fIcon").value.trim()||"📘",code:$("#fCode").value.trim(),desc:$("#fDesc").value.trim(),status:$("#fStatus").value,color,html:html!==null?html:STARTER(title),prevHtml:"",order:subjects.length,updated:Date.now()};
+    await persist(s);subjects.push(s);
+    toast("Đã thêm “"+title+"”");
+  }
+  render();
+});
+
+let codeBase="";
+async function showCode(id){
+  const s=get(id);if(!s)return;
+  let html=s.html;
+  if(!html&&s.src){
+    try{const r=await fetch(s.src);if(!r.ok)throw 0;html=await r.text()}
+    catch(e){toast("Không đọc được file trong repo. Hãy mở hub qua GitHub Pages hoặc server cục bộ để sửa mã.");return}
+  }
+  codeId=id;codeBase=html;
+  $("#cTitle").textContent="Sửa mã nguồn — "+s.title;
+  $("#code").value=html;
+  $("#cUndo").disabled=!s.prevHtml;
+  $("#cRepo").hidden=!(s.src&&s.html);
+  updInfo();
+  $("#codeDlg").showModal();
+}
+function updInfo(){$("#cInfo").textContent=kb($("#code").value)+" · Ctrl+S để lưu · Tab chèn thụt lề"}
+$("#code").addEventListener("input",updInfo);
+$("#code").addEventListener("keydown",e=>{
+  if(e.key==="Tab"){e.preventDefault();const t=e.target,a=t.selectionStart;t.setRangeText("  ",a,t.selectionEnd,"end")}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"){e.preventDefault();$("#cSave").click()}
+});
+$("#cSave").onclick=async()=>{
+  const s=get(codeId);if(!s)return;
+  const v=$("#code").value;
+  if(v!==codeBase){s.prevHtml=codeBase;s.html=v;codeBase=v;await persist(s);refreshViewer(s.id);render();$("#cUndo").disabled=false;$("#cRepo").hidden=!s.src}
+  toast("Đã lưu (bản sửa lưu trong trình duyệt này)");
+};
+$("#cUndo").onclick=async()=>{
+  const s=get(codeId);if(!s||!s.prevHtml)return;
+  if(!await confirmDlg("Khôi phục bản trước","Nội dung hiện tại sẽ được thay bằng bản lưu trước đó.","Khôi phục"))return;
+  const cur=s.html;s.html=s.prevHtml;s.prevHtml=cur;codeBase=s.html;await persist(s);
+  $("#code").value=s.html;updInfo();refreshViewer(s.id);render();toast("Đã khôi phục");
+};
+$("#cCancel").onclick=()=>$("#codeDlg").close();
+$("#cRepo").onclick=async()=>{
+  const s=get(codeId);if(!s||!s.src)return;
+  if(!await confirmDlg("Về bản trong repo","Bản sửa trong trình duyệt sẽ bị bỏ, hub dùng lại file trong repo.","Đồng ý"))return;
+  s.html="";s.prevHtml="";await persist(s);$("#codeDlg").close();refreshViewer(s.id);render();toast("Đã dùng lại bản trong repo");
+};
+
+async function addFromFiles(files){
+  const arr=[...files].filter(f=>/\.html?$/i.test(f.name)||f.type==="text/html");
+  if(!arr.length){toast("Chỉ nhận file .html");return}
+  for(const f of arr){
+    const html=await f.text();
+    const title=titleOf(html)||f.name.replace(/\.html?$/i,"");
+    const s={id:newId(),title,icon:"📘",code:"",desc:"",status:"Đang học",color:COLORS[subjects.length%COLORS.length],html,prevHtml:"",order:subjects.length,updated:Date.now()};
+    await persist(s);subjects.push(s);
+  }
+  render();toast("Đã thêm "+arr.length+" môn. Bấm ⋯ → Sửa thông tin để đặt tên, mã, màu.");
+}
+
+async function backup(){
+  const data=JSON.stringify({v:1,exported:Date.now(),subjects});
+  const u=URL.createObjectURL(new Blob([data],{type:"application/json"}));
+  const a=document.createElement("a");a.href=u;const d=new Date();
+  a.download="hub-sao-luu-"+d.getFullYear()+String(d.getMonth()+1).padStart(2,"0")+String(d.getDate()).padStart(2,"0")+".json";
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+  toast("Đã tải file sao lưu");
+}
+async function restore(file){
+  let data;
+  try{data=JSON.parse(await file.text())}catch(e){toast("File sao lưu không hợp lệ");return}
+  const list=Array.isArray(data.subjects)?data.subjects.filter(s=>s&&s.id&&(typeof s.html==="string"||s.src)):[];
+  if(!list.length){toast("Không tìm thấy môn nào trong file");return}
+  if(!await confirmDlg("Khôi phục từ sao lưu","Có "+list.length+" môn. Môn trùng mã nội bộ sẽ bị ghi đè, các môn khác được giữ nguyên.","Khôi phục"))return;
+  for(const s of list){
+    const o={id:String(s.id),title:s.title||"Môn",icon:s.icon||"📘",code:s.code||"",desc:s.desc||"",status:s.status||"Đang học",color:s.color||COLORS[0],html:typeof s.html==="string"?s.html:"",src:s.src||"",prevHtml:s.prevHtml||"",order:Number.isFinite(s.order)?s.order:subjects.length,updated:s.updated||Date.now()};
+    await dbPut(o);
+  }
+  await load();await renumber();render();toast("Đã khôi phục "+list.length+" môn");
+}
+
+$("#list").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-a]");if(!b)return;
+  const a=b.dataset.a,t=b.closest(".tile"),id=t&&t.dataset.id;
+  document.querySelectorAll("details.more[open]").forEach(d=>d.open=false);
+  if(a==="add")return showForm();
+  const s=id&&get(id);if(!s)return;
+  if(a==="open")openSubject(id);
+  else if(a==="edit")showForm(id);
+  else if(a==="code")showCode(id);
+  else if(a==="dl")download(s);
+  else if(a==="tab")openTab(s);
+  else if(a==="replace"){replaceId=id;$("#pickReplace").value="";$("#pickReplace").click()}
+  else if(a==="left"||a==="right"){
+    const i=subjects.indexOf(s),j=a==="left"?i-1:i+1;
+    if(j<0||j>=subjects.length)return;
+    [subjects[i],subjects[j]]=[subjects[j],subjects[i]];
+    await renumber();render();
+  }
+  else if(a==="del"){
+    if(!await confirmDlg("Xóa “"+s.title+"”","Môn và toàn bộ nội dung sẽ bị xóa khỏi hub. Nên bấm Sao lưu hoặc Tải xuống trước.","Xóa"))return;
+    if(s.src)addRem(id);await dbDel(id);subjects=subjects.filter(x=>x.id!==id);await renumber();render();toast("Đã xóa");
+  }
+});
+document.addEventListener("click",e=>{if(!e.target.closest("details.more"))document.querySelectorAll("details.more[open]").forEach(d=>d.open=false)});
+
+$("#pickReplace").addEventListener("change",async e=>{
+  const f=e.target.files[0],s=get(replaceId);if(!f||!s)return;
+  s.prevHtml=s.html;s.html=await f.text();await persist(s);render();refreshViewer(s.id);
+  toast("Đã thay file. Khôi phục bản cũ trong Sửa mã nguồn nếu cần.");
+});
+$("#pickRestore").addEventListener("change",e=>{if(e.target.files[0])restore(e.target.files[0])});
+$("#bAdd").onclick=()=>showForm();
+$("#bBackup").onclick=backup;
+$("#bRestore").onclick=()=>{$("#pickRestore").value="";$("#pickRestore").click()};
+$("#q").addEventListener("input",render);
+$("#vBack").onclick=()=>{setMenu(false);if(location.hash)history.back();else closeViewer()};
+$("#hm").onclick=e=>{e.stopPropagation();setMenu(!$("#hmenu").classList.contains("on"))};
+document.addEventListener("click",e=>{if(!e.target.closest("#hmenu,#hm"))setMenu(false)});
+$("#vCode").onclick=()=>{setMenu(false);showCode(viewing)};
+$("#vTab").onclick=()=>{setMenu(false);const s=get(viewing);if(s)openTab(s)};
+$("#vDl").onclick=()=>{setMenu(false);const s=get(viewing);if(s)download(s)};
+window.addEventListener("hashchange",syncHash);
+window.addEventListener("keydown",e=>{if(e.key!=="Escape"||document.querySelector("dialog[open]"))return;if($("#hmenu").classList.contains("on"))setMenu(false);else if(document.body.classList.contains("viewing"))$("#vBack").click()});
+
+let dragN=0;
+window.addEventListener("dragenter",e=>{if(e.dataTransfer&&[...e.dataTransfer.types].includes("Files")){dragN++;document.body.classList.add("dragging")}});
+window.addEventListener("dragleave",()=>{dragN=Math.max(0,dragN-1);if(!dragN)document.body.classList.remove("dragging")});
+window.addEventListener("dragover",e=>e.preventDefault());
+window.addEventListener("drop",e=>{e.preventDefault();dragN=0;document.body.classList.remove("dragging");if(e.dataTransfer.files.length)addFromFiles(e.dataTransfer.files)});
+
+(async function init(){
+  db=await openDB();
+  if(!db)toast("Trình duyệt không cho lưu lâu dài. Dữ liệu sẽ mất khi đóng trang — hãy Sao lưu.");
+  await load();
+  let seed=[];
+  try{seed=JSON.parse($("#seed").textContent||"[]")}catch(e){}
+  const rem=getRem();
+  for(const sd of seed){
+    const ex=get(sd.id);
+    if(ex){if(!ex.src&&sd.src){ex.src=sd.src;await dbPut(ex)}continue}
+    if(rem.includes(sd.id))continue;
+    const o=Object.assign({html:"",prevHtml:"",order:subjects.length,updated:Date.now()},sd);
+    await dbPut(o);subjects.push(o);
+  }
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+  render();
+  syncHash();
+})();
+</script>
+</body>
+</html>
