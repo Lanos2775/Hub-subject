@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Fourier từ con số 0 - Giáo Trình Chi Tiết & Giải Full Quiz (UET)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            chtml: {
+                scale: 0.96,
+                mtextInheritFont: true
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --bg: #f6f8ff;
+            --card: #ffffff;
+            --ink: #1d2350;
+            --mut: #58608a;
+            --c1: #2f6fed;
+            --c2: #12b886;
+            --c3: #f59f00;
+            --c4: #e64980;
+            --c5: #7048e8;
+            --g: #c9cfe8;
+            --tint: #eaf0ff;
+            --tint2: #f1f5ff;
+            box-sizing: border-box;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #10142e;
+                --card: #1a2046;
+                --ink: #eef0ff;
+                --mut: #a4abd6;
+                --c1: #6ea0ff;
+                --c2: #38d9a9;
+                --c3: #ffd43b;
+                --c4: #ff8fb8;
+                --c5: #a78bfa;
+                --g: #3b4380;
+                --tint: #222b5e;
+                --tint2: #161c3d;
+            }
+        }
+        :root[data-theme="dark"] {
+            --bg: #10142e;
+            --card: #1a2046;
+            --ink: #eef0ff;
+            --mut: #a4abd6;
+            --c1: #6ea0ff;
+            --c2: #38d9a9;
+            --c3: #ffd43b;
+            --c4: #ff8fb8;
+            --c5: #a78bfa;
+            --g: #3b4380;
+            --tint: #222b5e;
+            --tint2: #161c3d;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 16.5px/1.75 "Be Vietnam Pro", system-ui, -apple-system, sans-serif;
+        }
+        main {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 20px 18px 80px;
+        }
+        header {
+            padding: 28px 0 12px;
+        }
+        h1 {
+            font-size: clamp(32px, 6vw, 48px);
+            line-height: 1.15;
+            margin: 0 0 12px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            background: linear-gradient(90deg, var(--c1), var(--c5), var(--c4));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        h2 {
+            font-size: 24px;
+            line-height: 1.3;
+            margin: 0 0 12px;
+            font-weight: 800;
+            color: var(--ink);
+        }
+        h3 {
+            font-size: 18.5px;
+            line-height: 1.4;
+            margin: 22px 0 8px;
+            font-weight: 700;
+            color: var(--c5);
+        }
+        h4 {
+            font-size: 16.5px;
+            margin: 16px 0 6px;
+            font-weight: 700;
+            color: var(--c1);
+        }
+        section {
+            background: var(--card);
+            border-radius: 22px;
+            padding: 26px 24px;
+            margin: 24px 0;
+            border-left: 8px solid var(--c1);
+            box-shadow: 0 6px 24px -8px rgba(29, 35, 80, 0.08);
+        }
+        section:nth-of-type(5n+2) { border-left-color: var(--c2); }
+        section:nth-of-type(5n+3) { border-left-color: var(--c3); }
+        section:nth-of-type(5n+4) { border-left-color: var(--c4); }
+        section:nth-of-type(5n+5) { border-left-color: var(--c5); }
+        p {
+            margin: 10px 0;
+        }
+        ul, ol {
+            margin: 8px 0;
+            padding-left: 22px;
+        }
+        li {
+            margin: 6px 0;
+        }
+        .mut {
+            color: var(--mut);
+        }
+        section, .box, .step, .q-card, .grid2 > div, .grid3 > div {
+            min-width: 0;
+            max-width: 100%;
+            overflow-wrap: break-word;
+        }
+        mjx-container {
+            max-width: 100% !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            vertical-align: middle;
+        }
+        mjx-container[display="true"] {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+            padding: 8px 4px !important;
+            margin: 10px 0 !important;
+            box-sizing: border-box !important;
+            -webkit-overflow-scrolling: touch;
+        }
+        mjx-container::-webkit-scrollbar,
+        .f::-webkit-scrollbar {
+            height: 6px;
+        }
+        mjx-container::-webkit-scrollbar-thumb,
+        .f::-webkit-scrollbar-thumb {
+            background: var(--g);
+            border-radius: 99px;
+        }
+        .box {
+            background: var(--tint);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin: 14px 0;
+            overflow-x: auto;
+        }
+        .tip {
+            border-left: 5px solid var(--c3);
+        }
+        .warn {
+            border-left: 5px solid var(--c4);
+        }
+        .ok {
+            border-left: 5px solid var(--c2);
+            font-weight: 600;
+        }
+        .step {
+            border-left: 4px solid var(--c1);
+            background: var(--tint2);
+            border-radius: 0 12px 12px 0;
+            padding: 12px 16px;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+        .f {
+            background: var(--tint);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font: italic 17.5px/1.85 Georgia, "Times New Roman", serif;
+            overflow-x: auto;
+            overflow-y: hidden;
+            text-align: center;
+            max-width: 100%;
+        }
+        .f small {
+            font: 13.5px "Be Vietnam Pro", sans-serif;
+            font-style: normal;
+            color: var(--mut);
+            display: block;
+            margin-top: 4px;
+        }
+        .k {
+            display: inline-block;
+            padding: 1px 9px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            vertical-align: baseline;
+        }
+        .b1 { background: var(--c1); }
+        .b2 { background: var(--c2); }
+        .b3 { background: var(--c3); color: #1d2350; }
+        .b4 { background: var(--c4); }
+        .b5 { background: var(--c5); }
+        .grid2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 14px;
+            margin: 12px 0;
+        }
+        .grid3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 12px;
+            margin: 12px 0;
+        }
+        .toc-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 14px 0;
+        }
+        .toc-nav a {
+            text-decoration: none;
+            background: var(--card);
+            color: var(--ink);
+            border: 1.5px solid var(--g);
+            padding: 6px 12px;
+            border-radius: 99px;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+        .toc-nav a:hover {
+            border-color: var(--c5);
+            color: var(--c5);
+            transform: translateY(-1px);
+        }
+        .toc-nav a.quiz-link {
+            background: var(--tint);
+            border-color: var(--c1);
+            color: var(--c1);
+        }
+        .theme-btn {
+            cursor: pointer;
+            background: var(--tint);
+            color: var(--ink);
+            border: 1.5px solid var(--g);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font: 600 13.5px "Be Vietnam Pro", sans-serif;
+            float: right;
+        }
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--c5);
+            cursor: pointer;
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 14px;
+            background: #0d1127;
+            border: 1.5px solid var(--g);
+            margin: 10px 0;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+            background: var(--tint2);
+            border-radius: 12px;
+            padding: 8px;
+        }
+        .tw {
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 15px;
+            min-width: 500px;
+        }
+        td, th {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--g);
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            color: var(--c5);
+            font-weight: 700;
+            background: var(--tint);
+        }
+        .q-card {
+            border: 1.5px solid var(--g);
+            border-radius: 18px;
+            padding: 18px 20px;
+            margin: 20px 0;
+            background: var(--card);
+        }
+        .q-head {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--g);
+            margin-bottom: 12px;
+        }
+        .btn-sim {
+            cursor: pointer;
+            background: var(--c5);
+            color: #fff;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font: 600 13.5px "Be Vietnam Pro", sans-serif;
+        }
+        .fab-menu-btn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--card);
+            border: 2px solid var(--c5);
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(29, 35, 80, 0.18);
+            transition: all 0.2s ease;
+        }
+        .fab-menu-btn:hover {
+            transform: scale(1.05);
+            background: var(--tint);
+        }
+        .fab-menu-btn span {
+            display: block;
+            width: 22px;
+            height: 2.5px;
+            background: var(--c5);
+            border-radius: 2px;
+            transition: all 0.25s ease;
+        }
+        .fab-menu-btn.active span:nth-child(1) {
+            transform: translateY(7.5px) rotate(45deg);
+        }
+        .fab-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .fab-menu-btn.active span:nth-child(3) {
+            transform: translateY(-7.5px) rotate(-45deg);
+        }
+        .drawer-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(16, 20, 46, 0.45);
+            backdrop-filter: blur(2px);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .drawer-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .quick-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: min(360px, 88vw);
+            background: var(--card);
+            z-index: 1000;
+            box-shadow: 8px 0 32px rgba(16, 20, 46, 0.25);
+            transform: translateX(-105%);
+            transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid var(--g);
+        }
+        .quick-drawer.open {
+            transform: translateX(0);
+        }
+        .drawer-header {
+            padding: 18px 18px 14px 74px;
+            border-bottom: 1.5px solid var(--g);
+            background: var(--tint2);
+        }
+        .drawer-title {
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--c5);
+            margin: 0;
+        }
+        .drawer-sub {
+            font-size: 12.5px;
+            color: var(--mut);
+            margin: 2px 0 0;
+        }
+        .drawer-body {
+            padding: 14px 16px 32px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .drawer-group-title {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--mut);
+            margin: 14px 0 8px;
+        }
+        .drawer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .drawer-link {
+            text-decoration: none;
+            color: var(--ink);
+            background: var(--tint2);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            border-left: 4px solid var(--c1);
+            transition: all 0.15s ease;
+            display: block;
+        }
+        .drawer-link:hover {
+            background: var(--tint);
+            transform: translateX(3px);
+            color: var(--c1);
+        }
+        .drawer-link.quiz {
+            border-left-color: var(--c4);
+        }
+        .q-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+        }
+        .q-pill {
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 8px;
+            background: var(--tint);
+            color: var(--c1);
+            border: 1px solid var(--g);
+            transition: all 0.15s ease;
+        }
+        .q-pill:hover {
+            background: var(--c5);
+            color: #fff;
+            border-color: var(--c5);
+        }
+        section, .q-card {
+            scroll-margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<button id="menuToggleBtn" class="fab-menu-btn" type="button" aria-label="Mở bảng chọn nhanh bài học">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+<div id="drawerBackdrop" class="drawer-backdrop"></div>
+
+<aside id="quickDrawer" class="quick-drawer" aria-label="Bảng chọn nhanh bài học">
+    <div class="drawer-header">
+        <p class="drawer-title">Chọn Nhanh Bài & Câu Hỏi</p>
+        <p class="drawer-sub">Bấm vào mục bất kỳ để tua ngay tới đoạn đó</p>
+    </div>
+    <div class="drawer-body">
+        <div class="drawer-group-title" style="margin-top:2px">Phần Lý Thuyết (Slide 1 - 62)</div>
+        <div class="drawer-list">
+            <a href="#phan-0" class="drawer-link">0. Từ điển ký hiệu toán học</a>
+            <a href="#phan-1" class="drawer-link">1. Bản chất Fourier & Chẵn/Lẻ (Slide 1-9)</a>
+            <a href="#phan-2" class="drawer-link">2. 5 Lý do cần Fourier (Slide 10-15)</a>
+            <a href="#phan-3" class="drawer-link">3. Công thức Euler & Số phức (Slide 16)</a>
+            <a href="#phan-4" class="drawer-link">4. Lý thuyết Chuỗi FS (Slide 17-27)</a>
+            <a href="#phan-5" class="drawer-link">5. Giải 5 Ví dụ Chuỗi FS (Slide 28-38)</a>
+            <a href="#phan-6" class="drawer-link">6. Biến đổi FT & Tính chất (Slide 39-54)</a>
+            <a href="#phan-7" class="drawer-link">7. Đáp ứng tần số LTI & RC (Slide 55-60)</a>
+            <a href="#phan-8" class="drawer-link">8. Tổng kết 4 phép Fourier (Slide 61-62)</a>
+        </div>
+
+        <div class="drawer-group-title">Thực Chiến 37 Câu Trắc Nghiệm UET</div>
+        <div class="drawer-list">
+            <a href="#phan-9" class="drawer-link quiz">9. Quiz 8: Đáp ứng tần số (9 câu)</a>
+            <div class="q-pills">
+                <a href="#q8-1" class="q-pill">Câu 1</a>
+                <a href="#q8-2" class="q-pill">Câu 2</a>
+                <a href="#q8-3" class="q-pill">Câu 3</a>
+                <a href="#q8-4" class="q-pill">Câu 4</a>
+                <a href="#q8-5" class="q-pill">Câu 5</a>
+                <a href="#q8-6" class="q-pill">Câu 6</a>
+                <a href="#q8-7" class="q-pill">Câu 7</a>
+                <a href="#q8-8" class="q-pill">Câu 8</a>
+                <a href="#q8-9" class="q-pill">Câu 9</a>
+            </div>
+
+            <a href="#phan-10" class="drawer-link quiz">10. Quiz 6: Biến đổi FT & FS (12 câu)</a>
+            <div class="q-pills">
+                <a href="#q6-1" class="q-pill">Câu 1</a>
+                <a href="#q6-2" class="q-pill">Câu 2</a>
+                <a href="#q6-3" class="q-pill">Câu 3</a>
+                <a href="#q6-4" class="q-pill">Câu 4</a>
+                <a href="#q6-5" class="q-pill">Câu 5</a>
+                <a href="#q6-6" class="q-pill">Câu 6-8</a>
+                <a href="#q6-9" class="q-pill">Câu 9</a>
+                <a href="#q6-10" class="q-pill">Câu 10</a>
+                <a href="#q6-11" class="q-pill">Câu 11</a>
+                <a href="#q6-12" class="q-pill">Câu 12</a>
+            </div>
+
+            <a href="#phan-11" class="drawer-link quiz">11. Quiz 7: Fourier ngược (7 câu)</a>
+            <div class="q-pills">
+                <a href="#q7-1" class="q-pill">Câu 1</a>
+                <a href="#q7-2" class="q-pill">Câu 2</a>
+                <a href="#q7-3" class="q-pill">Câu 3</a>
+                <a href="#q7-4" class="q-pill">Câu 4</a>
+                <a href="#q7-5" class="q-pill">Câu 5</a>
+                <a href="#q7-6" class="q-pill">Câu 6</a>
+                <a href="#q7-7" class="q-pill">Câu 7</a>
+            </div>
+
+            <a href="#phan-12" class="drawer-link quiz">12. Quiz 9: Đồ thị phổ tín hiệu (9 câu)</a>
+            <div class="q-pills">
+                <a href="#q9-1" class="q-pill">Câu 1</a>
+                <a href="#q9-2" class="q-pill">Câu 2-4</a>
+                <a href="#q9-5" class="q-pill">Câu 5-7</a>
+                <a href="#q9-8" class="q-pill">Câu 8-9</a>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<main>
+
+    <header>
+        <button id="themeToggle" class="theme-btn" type="button">Đổi nền Sáng / Tối</button>
+        <span class="k b5">Đại học Công Nghệ - ĐHQGHN (UET)</span>
+        <h1 style="margin-top:10px">Fourier từ con số 0</h1>
+        <p class="mut">
+            Giáo trình diễn giải toàn diện <b>Chương 3: Biểu diễn hệ thống LTI trong miền tần số</b> (62 trang Slide của TS. Nguyễn Minh Trần) kết hợp <b>Phương pháp & Lời giải chi tiết từng dòng cho 37 câu trắc nghiệm Quiz 6, Quiz 7, Quiz 8, Quiz 9</b>. Mọi bước biến đổi bị làm tắt trong slide đều được viết tường minh từ gốc.
+        </p>
+
+        <nav class="toc-nav" aria-label="Mục lục nhanh">
+            <a href="#phan-0">0. Từ điển ký hiệu</a>
+            <a href="#phan-1">1. Bản chất & Chẵn/Lẻ (Slide 1-9)</a>
+            <a href="#phan-2">2. 5 Lý do cần Fourier (Slide 10-15)</a>
+            <a href="#phan-3">3. Công thức Euler & Số phức (Slide 16)</a>
+            <a href="#phan-4">4. Lý thuyết Chuỗi FS (Slide 17-27)</a>
+            <a href="#phan-5">5. Giải 5 Ví dụ FS (Slide 28-38)</a>
+            <a href="#phan-6">6. Biến đổi FT & Tính chất (Slide 39-54)</a>
+            <a href="#phan-7">7. Đáp ứng tần số LTI & RC (Slide 55-60)</a>
+            <a href="#phan-8">8. Tổng kết 4 phép Fourier (Slide 61-62)</a>
+            <a href="#phan-9" class="quiz-link">9. Giải Full Quiz 8 (9 câu)</a>
+            <a href="#phan-10" class="quiz-link">10. Giải Full Quiz 6 (12 câu)</a>
+            <a href="#phan-11" class="quiz-link">11. Giải Full Quiz 7 (7 câu)</a>
+            <a href="#phan-12" class="quiz-link">12. Giải Full Quiz 9 (9 câu)</a>
+        </nav>
+    </header>
+
+    <!-- ==================== MỤC 0: TỪ ĐIỂN KÝ HIỆU ==================== -->
+    <section id="phan-0">
+        <span class="k b1">Nền tảng bắt buộc trước khi đọc</span>
+        <h2 style="margin-top:8px">Mục 0. Giải nghĩa toàn bộ ký hiệu toán học trong Slide</h2>
+        <p class="mut">
+            Trước khi bước vào bài học, rất nhiều bạn bị "ngợp" vì không phân biệt được $T$, $f$, $\omega$, $k$, $n$ khác nhau chỗ nào. Hãy đọc kỹ bảng giải nghĩa từng đại lượng dưới đây:
+        </p>
+
+        <div class="grid2">
+            <div class="box tip">
+                <h4>1. Tín hiệu liên tục $x(t)$ vs Tín hiệu rời rạc $x[n]$</h4>
+                <p>
+                    • <b>$x(t)$ (dùng ngoặc tròn):</b> Là tín hiệu liên tục theo thời gian $t$ (giây). Tại mọi thời điểm $t$ bất kỳ (dù lẻ đến $t = 0.0012\text{ giây}$) đều có giá trị. Ví dụ: điện áp ngoài ổ cắm, âm thanh ngoài đời thực.<br>
+                    • <b>$x[n]$ (dùng ngoặc vuông):</b> Là tín hiệu rời rạc, chỉ tồn tại ở các mốc nguyên $n = 0, 1, 2, 3\dots$ (do máy tính lấy mẫu từng điểm một). Trong Chương 3 này, 95% thời lượng slide lý thuyết học về $x(t)$, còn trong bài tập Quiz có cả $x(t)$ lẫn $x[n]$.
+                </p>
+            </div>
+
+            <div class="box tip">
+                <h4>2. Chu kỳ ($T_0$), Tần số ($f_0$) và Tần số góc ($\omega_0$)</h4>
+                <p>
+                    • <b>Chu kỳ cơ sở $T_0$ (đơn vị: giây - s):</b> Khoảng thời gian ngắn nhất để một tín hiệu lặp lại hình dáng cũ của nó.<br>
+                    • <b>Tần số cơ sở $f_0 = \frac{1}{T_0}$ (đơn vị: Hertz - Hz):</b> Số lần tín hiệu lặp lại trong 1 giây. Ví dụ $T_0 = 0.5\text{ s}$ thì trong 1 giây nó lặp lại $f_0 = \frac{1}{0.5} = 2\text{ lần (2 Hz)}$.<br>
+                    • <b>Tần số góc $\omega_0 = 2\pi f_0 = \frac{2\pi}{T_0}$ (đơn vị: rad/s):</b> Vì 1 vòng tròn lượng giác dài $2\pi$ radian, nên nếu 1 giây quay được $f_0$ vòng thì tốc độ góc sẽ là $2\pi f_0$. Đưa vào hàm $\sin(\omega_0 t)$ hay $\cos(\omega_0 t)$ bắt buộc phải dùng $\omega_0$ (radian) chứ không dùng $f_0$ trực tiếp được!
+                </p>
+            </div>
+
+            <div class="box warn">
+                <h4>3. Biên độ ($A$), Pha ban đầu ($\phi$) và Bậc hài ($k$ hoặc $n$)</h4>
+                <p>
+                    Xét sóng $x(t) = A\cos(k\omega_0 t + \phi)$:<br>
+                    • <b>Biên độ $A$:</b> Độ cao của đỉnh sóng (sóng mạnh hay yếu).<br>
+                    • <b>Góc pha $\phi$:</b> Cho biết tại thời điểm ban đầu $t=0$, đỉnh sóng đang bị lệch sang trái hay sang phải bao nhiêu radian.<br>
+                    • <b>Chỉ số bậc hài $k$ (hoặc $n$):</b> Là một số nguyên ($k = 1, 2, 3\dots$). Khi $k=1$, ta có tần số gốc $\omega_0$. Khi $k=2, 3\dots$, ta có các sóng dao động nhanh gấp đôi ($2\omega_0$), gấp ba ($3\omega_0$) tần số gốc. Người ta gọi chúng là các <b>bậc hài (harmonics)</b>.
+                </p>
+            </div>
+
+            <div class="box warn">
+                <h4>4. Đơn vị ảo $j$, Hàm bước nhảy $u(t)$ và Xung Dirac $\delta(t)$</h4>
+                <p>
+                    • <b>Số ảo $j$:</b> Ở cấp 3 bạn ký hiệu số ảo là $i$ (với $i^2 = -1$). Nhưng trong ngành Điện - Điện tử, chữ $i(t)$ đã bị dùng để ký hiệu cho <i>dòng điện (intensity)</i>, nên các kỹ sư đổi sang dùng chữ $j$ (với $j^2 = -1$, và $\frac{1}{j} = -j$).<br>
+                    • <b>Hàm bậc thang đơn vị $u(t)$:</b> Bằng $0$ khi $t < 0$ và bằng $1$ khi $t \ge 0$. Khi nhân một hàm với $u(t)$, tức là ta "cắt bỏ" toàn bộ phần đồ thị bên trái trục tung ($t < 0$).<br>
+                    • <b>Xung đơn vị (Dirac delta) $\delta(t)$:</b> Là một mũi nhọn cao vô cùng tại đúng $t = 0$, bằng $0$ tại mọi nơi khác ($t \neq 0$), và có diện tích tích phân $\int_{-\infty}^{\infty}\delta(t)dt = 1$.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 1: BẢN CHẤT FOURIER (SLIDE 1 - 9) ==================== -->
+    <section id="phan-1">
+        <span class="k b2">Giải thích chi tiết Slide 1 đến Slide 9</span>
+        <h2 style="margin-top:8px">Mục 1. Tư tưởng cốt lõi của Joseph Fourier & Hàm Chẵn / Lẻ</h2>
+
+        <h3>1.1. Hai góc nhìn của cùng một tín hiệu: Miền Thời Gian vs Miền Tần Số (Slide 1 - 4)</h3>
+        <p>
+            Ở <b>Slide 2</b>, nhà toán học Pháp Joseph Fourier (1768–1830) trong khi nghiên cứu sự truyền nhiệt đã phát hiện ra một chân lý toán học đáng kinh ngạc: <b>Bất kỳ một tín hiệu phức tạp nào (dù gấp khúc, vuông vức hay nhấp nhô hỗn loạn) đều thực chất là tổng của các sóng hình Sin và Cosin đơn giản cộng lại với nhau!</b>
+        </p>
+        <div class="box tip">
+            <b>Ví dụ ly sinh tố:</b> Uống một ngụm sinh tố tổng hợp, lưỡi bạn chỉ cảm nhận được một vị chung lẫn lộn (đó là <b>Miền thời gian</b>). Biến đổi Fourier giống như một chiếc máy phân tích hóa học tách ly sinh tố đó ra thành công thức: "50% chuối + 30% xoài + 20% dâu" (đó là <b>Miền tần số</b>).
+        </div>
+        <p>Hãy nhìn vào hình minh họa ở <b>Slide 4</b>:</p>
+        <div class="grid2">
+            <div class="box">
+                <span class="k b1">Góc nhìn 1: Miền Thời Gian (Time Domain)</span>
+                <p>
+                    Trục ngang là thời gian $t$. Giả sử ta có <b>Sóng Sin số 1</b> (tần số chậm, đường nét đứt màu xanh lá) cộng với <b>Sóng Sin số 2</b> (tần số nhanh hơn, đường nét đứt màu xanh dương). Khi hai sóng này phát ra cùng lúc trong không gian, chúng cộng dồn độ cao tại từng thời điểm tạo thành đường <b>Tổng (Sum - màu xanh ngọc liền nét)</b>.<br><br>
+                    Vấn đề là: Ngoài đời thực, thiết bị thu (như micro, ăng-ten) chỉ nhận được cái đường <b>Tổng</b> méo mó kia thôi! Nhìn bằng mắt thường vào đường Tổng đó, bạn không thể biết bên trong nó gồm những sóng đơn lẻ nào.
+                </p>
+            </div>
+            <div class="box">
+                <span class="k b3">Góc nhìn 2: Miền Tần Số (Frequency Domain)</span>
+                <p>
+                    Thay vì vẽ đồ thị theo thời gian $t$, Fourier đề xuất vẽ một đồ thị mới mà <b>trục ngang là Tần số ($f$ hoặc $\omega$)</b>, còn <b>trục dọc là Biên độ (độ mạnh yếu)</b> của từng sóng Sin thành phần.<br><br>
+                    Lúc này, toàn bộ đường sóng dài ngoằng biến mất, chỉ còn lại <b>2 vạch thẳng đứng</b>: một vạch tại vị trí <code>Frequency #1</code> và một vạch tại <code>Frequency #2</code>. Đồ thị gồm các vạch này gọi là <b>Phổ tần số (Frequency Spectrum)</b>. Nhìn vào phổ tần số, ta biết ngay lập tức "công thức pha chế" của tín hiệu!
+                </p>
+            </div>
+        </div>
+
+        <h3>1.2. Tại sao các đường cong Sin uốn lượn lại ghép được thành Hình Vuông? (Slide 5, 6, 9)</h3>
+        <p>Ở <b>Slide 5</b>, thầy đưa ra công thức tổng quát để tạo ra một sóng vuông có chu kỳ $2L$:</p>
+        <div class="f">
+            $$f(x) = \sum_{n=1,3,5,7\dots}^{\infty} \left(\frac{4}{n\pi}\right) \sin\left(\frac{n\pi x}{L}\right) = \frac{4}{\pi}\sin\left(\frac{\pi x}{L}\right) + \frac{4}{3\pi}\sin\left(\frac{3\pi x}{L}\right) + \frac{4}{5\pi}\sin\left(\frac{5\pi x}{L}\right) + \dots$$
+        </div>
+        <p>
+            <b>Giải thích ý nghĩa công thức này:</b><br>
+            • Khi $n=1$ (Số hạng đầu tiên): Ta có 1 sóng $\sin$ cơ bản cao $\frac{4}{\pi} \approx 1.27$. Nó tạo ra cái khung lên-xuống chính của sóng vuông (giống đường màu đỏ bậc 1 xấp xỉ cho hàm xanh ở <b>Slide 6</b>).<br>
+            • Khi cộng thêm $n=3$: Sóng $\sin(3\pi x/L)$ dao động nhanh gấp 3 lần nhưng thấp hơn (cao $\frac{4}{3\pi}$). Tại đỉnh giữa của sóng $n=1$, sóng $n=3$ lại chúc xuống (mang dấu âm), giúp <b>ấn bẹp cái đỉnh nhọn của sóng $n=1$ xuống</b> cho phẳng! Đồng thời ở hai bên sườn, nó cộng thêm vào giúp vách sóng dựng đứng lên!<br>
+            • Cứ tiếp tục cộng thêm $n=5, 7, 9, \dots, \infty$, đỉnh sóng ngày càng phẳng lì thành hình chữ nhật tuyệt đối!<br>
+            • Ở <b>Slide 9</b> (hình 3D): Nếu bạn nhìn từ mặt trước (Time domain), bạn thấy sóng vuông màu xanh đậm. Nhưng nếu bạn đi vòng sang bên hông (Frequency domain), bạn sẽ thấy từng lát cắt sóng Sin xếp hàng dọc theo trục tần số tại các vị trí $\frac{1}{T}, \frac{3}{T}, \frac{5}{T}, \frac{7}{T}\dots$ với chiều cao giảm dần ($b_n = \frac{4}{n\pi}$).
+        </p>
+
+        <div class="box">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+                <b>Mô phỏng trực quan Slide 5 & Slide 9 — Kéo thanh trượt để cộng thêm sóng Sin:</b>
+                <span>Bậc hài tối đa $N = $ <b id="harmonicsValue" style="color:var(--c4);font-size:20px">1</b></span>
+            </div>
+            <input id="harmonicsSlider" type="range" min="1" max="29" step="2" value="1">
+            <div class="grid2">
+                <div>
+                    <small class="mut"><b>MIỀN THỜI GIAN:</b> Tổng các sóng Sin dần tạo thành sóng vuông</small>
+                    <canvas id="squareTimeCanvas" width="520" height="230"></canvas>
+                </div>
+                <div>
+                    <small class="mut"><b>MIỀN TẦN SỐ (Slide 9):</b> Phổ biên độ rời rạc $\frac{4}{n\pi}$</small>
+                    <canvas id="squareFreqCanvas" width="320" height="230"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <h3>1.3. Giải thích Slide 7 & Slide 8: Tại sao Hàm Bất Kỳ = Hàm Chẵn + Hàm Lẻ?</h3>
+        <p>
+            Rất nhiều bạn thắc mắc: <i>"Chỉ dùng mỗi hàm $\sin$ thôi có ghép được mọi tín hiệu không? Tại sao phải lôi thêm cả hàm $\cos$ vào?"</i>. Câu trả lời nằm ở tính đối xứng trong <b>Slide 7 và Slide 8</b>:
+        </p>
+        <div class="grid2">
+            <div class="box">
+                <h4>1. Hàm Chẵn (Even function) - Đại diện là $\cos(x)$</h4>
+                <p>
+                    • <b>Định nghĩa:</b> $E(-x) = E(x)$. Tức là giá trị tại bên trái trục tung ($-x$) bằng y hệt giá trị bên phải trục tung ($+x$). Đồ thị <b>đối xứng gương qua trục tung Oy</b>.<br>
+                    • Hàm $\cos(x)$ là hàm chẵn vì $\cos(-x) = \cos(x)$. Dù bạn cộng hàng tỷ hàm $\cos(nx)$ lại với nhau thì kết quả <b>luôn luôn bị đối xứng qua trục Oy</b>!
+                </p>
+            </div>
+            <div class="box">
+                <h4>2. Hàm Lẻ (Odd function) - Đại diện là $\sin(x)$</h4>
+                <p>
+                    • <b>Định nghĩa:</b> $O(-x) = -O(x)$. Tức là bên phải dương bao nhiêu thì bên trái âm bấy nhiêu. Đồ thị <b>đối xứng qua gốc tọa độ O</b> (và tại $x=0$ thì hàm lẻ bắt buộc đi qua $0$).<br>
+                    • Hàm $\sin(x)$ là hàm lẻ vì $\sin(-x) = -\sin(x)$. Nếu chỉ dùng mỗi $\sin$, bạn không bao giờ tạo ra được tín hiệu có giá trị khác $0$ tại gốc tọa độ!
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <b>Chứng minh công thức tách hàm bất kỳ $f(x)$ ở Slide 7:</b>
+            <p>Giả sử bạn có một hàm $f(x)$ hoàn toàn méo mó, không chẵn cũng chẳng lẻ (Arbitrary function). Làm sao tách nó thành phần Chẵn $E(x)$ và phần Lẻ $O(x)$? Ta định nghĩa:</p>
+            <div class="f">
+                $$E(x) = \frac{f(x) + f(-x)}{2} \quad \text{(Phần chẵn)} \qquad \text{và} \qquad O(x) = \frac{f(x) - f(-x)}{2} \quad \text{(Phần lẻ)}$$
+            </div>
+            <p>
+                • <b>Kiểm tra xem $E(x)$ có thực sự chẵn không:</b> Thay $x$ bằng $-x$, ta có $E(-x) = \frac{f(-x) + f(--x)}{2} = \frac{f(-x) + f(x)}{2} = E(x)$ (Đúng là hàm chẵn!).<br>
+                • <b>Kiểm tra xem $O(x)$ có thực sự lẻ không:</b> Thay $x$ bằng $-x$, ta có $O(-x) = \frac{f(-x) - f(--x)}{2} = -\frac{f(x) - f(-x)}{2} = -O(x)$ (Đúng là hàm lẻ!).<br>
+                • <b>Cộng hai phần lại:</b> $E(x) + O(x) = \frac{f(x) + f(-x)}{2} + \frac{f(x) - f(-x)}{2} = \frac{2f(x)}{2} = f(x)$.<br>
+                <b>Kết luận:</b> Mọi tín hiệu $f(x)$ bất kỳ trên đời đều cấu tạo từ Phần Chẵn + Phần Lẻ. Do các hàm $\cos$ tạo nên toàn bộ phần chẵn $E(x)$, và các hàm $\sin$ tạo nên toàn bộ phần lẻ $O(x)$, nên khi kết hợp <b>cả $\cos$ lẫn $\sin$</b>, ta biểu diễn được mọi tín hiệu bất kỳ!
+            </p>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 2: 5 LÝ DO CẦN FOURIER (SLIDE 10 - 15) ==================== -->
+    <section id="phan-2">
+        <span class="k b3">Giải thích chi tiết Slide 10 đến Slide 15</span>
+        <h2 style="margin-top:8px">Mục 2. 5 Lý do sống còn khiến kỹ sư bắt buộc phải dùng Biến đổi Fourier</h2>
+
+        <h3>Lý do 1 (Slide 10): Nhận diện tần số (Điện thoại bấm phím) & Lọc bỏ nhiễu (Kèn Vuvuzela)</h3>
+        <div class="grid2">
+            <div class="box">
+                <h4>1. Câu chuyện chiếc điện thoại Nokia (Hệ thống DTMF):</h4>
+                <p>
+                    Khi bạn nhấn các phím từ 0 đến 9 trên điện thoại bàn hoặc điện thoại di động, làm sao tổng đài cách đó hàng chục km biết bạn vừa nhấn phím nào?<br><br>
+                    Bàn phím điện thoại được chia thành lưới các hàng (tần số thấp: 697, 770, 852, 941 Hz) và các cột (tần số cao: 1209, 1336, 1477 Hz). Ví dụ khi bấm <b>phím số 5</b>, loa phát ra âm thanh là tổng của hai sóng $\sin(2\pi \cdot 770t) + \sin(2\pi \cdot 1336t)$. Tổng đài nhận âm thanh này, chạy thuật toán <b>Biến đổi Fourier</b>, thấy bật lên đúng 2 vạch tại $770\text{ Hz}$ và $1336\text{ Hz}$, lập tức suy ra bạn vừa ấn số 5!
+                </p>
+            </div>
+            <div class="box">
+                <h4>2. Câu chuyện chiếc kèn Vuvuzela ở World Cup 2010:</h4>
+                <p>
+                    Tại World Cup Nam Phi, cổ động viên thổi kèn nhựa Vuvuzela tạo ra tiếng ồn kinh khủng lên tới $127\text{ dB}$ (gần bằng tiếng động cơ phản lực cất cánh $130\text{ dB}$), át hết cả tiếng bình luận viên truyền hình.<br><br>
+                    Ở miền thời gian, tiếng kèn và tiếng người nói trộn lẫn vào nhau không thể tách rời. Nhưng khi các kỹ sư âm thanh dùng <b>Biến đổi Fourier</b> chuyển sang miền tần số, họ phát hiện âm thanh kèn Vuvuzela chỉ tập trung ở tần số cơ bản $235\text{ Hz}$ (và các bội số $470\text{ Hz}, 705\text{ Hz}$). Họ chỉ việc đặt một "cái kéo" (bộ lọc chắn dải - Notch Filter) cắt bỏ đúng vạch $235\text{ Hz}$ rồi biến đổi ngược lại miền thời gian. Kết quả: Tiếng kèn biến mất, còn giọng bình luận viên trong trẻo trở lại!
+                </p>
+            </div>
+        </div>
+
+        <h3>Lý do 2 (Slide 11): Bảo toàn năng lượng tuyệt đối (Định lý Parseval)</h3>
+        <p>
+            Ở <b>Slide 11</b> có hình chiếc Camera an ninh. Tại sao lại liên quan đến bảo toàn năng lượng?<br>
+            Khi bạn chụp ảnh hoặc quay video từ camera, dữ liệu gốc ở miền không gian/thời gian rất nặng. Để nén ảnh (chuẩn JPEG) hoặc nén video (MP4), máy tính thực hiện biến đổi Fourier (hoặc họ hàng của nó là DCT). Nhờ định lý bảo toàn năng lượng: <b>"Tổng năng lượng của tín hiệu trước và sau khi biến đổi Fourier là bằng nhau 100%"</b>, máy tính nhận thấy 95% năng lượng bức ảnh tập trung hết ở các tần số thấp (mảng màu lớn), còn các tần số rất cao (nhiễu hạt li ti) chỉ chiếm 5% năng lượng. Máy tính xóa bỏ các tần số cao ít năng lượng này đi mà mắt người hầu như không nhận ra sự khác biệt, giúp giảm dung lượng file đi 10 lần!
+        </p>
+
+        <h3>Lý do 3 (Slide 12): Biến phép Tích Chập (Convolution) phức tạp thành Phép Nhân đơn giản!</h3>
+        <p>
+            Ở Chương 2, để tính đầu ra của hệ thống, bạn phải tính tích phân tích chập: $(f * g)(t) = \int_{-\infty}^{\infty} f(\tau)g(t-\tau)d\tau$. Nếu làm trên máy tính cho 1 triệu điểm dữ liệu, máy phải thực hiện $10^{12}$ (một nghìn tỷ) phép tính!<br>
+            Nhưng định lý Tích chập của Fourier phát biểu rằng: <b>Phép tích chập $f(t) * g(t)$ ở miền thời gian biến thành PHÉP NHÂN THÔNG THƯỜNG $F(\omega) \cdot G(\omega)$ ở miền tần số!</b> Nhờ thuật toán Biến đổi Fourier Nhanh (FFT), máy tính chuyển sang miền tần số, nhân hai số với nhau rồi chuyển ngược về nhanh gấp hàng trăm nghìn lần!
+        </p>
+        <div class="grid2">
+            <div class="box tip">
+                <b>Giải thích biểu đồ Nhiệt độ (Slide 12 trên):</b> Đường màu xanh (Original) là nhiệt độ đo hàng ngày từ 1981-1991, dao động lên xuống rất rối do thời tiết từng ngày. Khi nhân với bộ lọc thông thấp (xóa bỏ các tần số dao động nhanh hàng ngày), ta thu được đường màu cam mượt mà (Smooth) cho thấy rõ chu kỳ mùa Đông - mùa Hè của từng năm.
+            </div>
+            <div class="box tip">
+                <b>Giải thích bức ảnh Con mắt (Slide 12 dưới):</b> Bức ảnh gốc bên trái bị mờ. Phép toán có dấu $*$ ở giữa chính là tích chập bức ảnh với một ma trận làm nét (Sharpening filter) giúp nhấn mạnh các tần số cao (các đường viền, cạnh sắc nét của lông mi và con ngươi), tạo ra bức ảnh sắc nét bên phải.
+            </div>
+        </div>
+
+        <div class="grid2">
+            <div class="box warn">
+                <h4>Lý do 4 (Slide 13): Đo độ trễ thời gian qua sự thay đổi Góc Pha</h4>
+                <p>
+                    Hãy nhìn 2 đồ thị bên trái và 4 đồ thị màu đỏ bên phải của <b>Slide 13</b>:<br>
+                    • <b>Hàng trên:</b> Tín hiệu gốc nằm chính giữa gốc $t=0$. Phổ biên độ $|X(f)|$ là hình chữ nhật màu đỏ, còn phổ pha $\angle X(f)$ nằm phẳng lì bằng $0$.<br>
+                    • <b>Hàng dưới:</b> Tín hiệu bị dịch sang phải (bị trễ một khoảng thời gian $t_0$). Khi biến đổi Fourier, bạn thấy <b>Phổ biên độ $|X(f)|$ giữ nguyên hình chữ nhật y hệt</b> (vì trễ thời gian không làm mất đi tần số nào cả!). Tuy nhiên, <b>Phổ pha $\angle X(f)$ bị nghiêng đi thành một đường thẳng dốc xuống</b> có phương trình $-\omega t_0$.<br>
+                    • <b>Ứng dụng:</b> Trong siêu âm y tế, địa chấn học hay Radar, sóng đi qua khối u hoặc lớp đất đá sẽ bị chậm lại. Máy thu chỉ cần đo độ dốc của đường pha màu đỏ là tính ra ngay độ trễ thời gian $t_0$ cực kỳ chính xác!
+                </p>
+            </div>
+            <div class="box warn">
+                <h4>Lý do 5 (Slide 14 & 15): Hàm mũ phức $e^{j\omega t}$ là "Hàm riêng" (Eigenfunction) của hệ LTI</h4>
+                <p>
+                    Ở <b>Slide 15</b> có một đoạn tiếng Anh cực kỳ quan trọng giải thích lý do toán học sâu xa nhất của Chương 3:<br>
+                    Từ <i>"Eigenfunction" (Hàm riêng)</i> có nghĩa là: Nếu bạn cho một tín hiệu hình thù bất kỳ đi vào hệ thống LTI, đầu ra thường bị biến dạng thành hình thù khác. <b>NHƯNG riêng tín hiệu mũ phức $e^{j\omega t}$ (hoặc sóng Sin/Cos) khi đi vào hệ thống LTI ở tần số $\omega$ nào, thì đi ra VẪN GIỮ NGUYÊN tần số $\omega$ đó!</b> Hệ thống chỉ làm thay đổi độ cao và góc pha của nó bằng cách nhân thêm một hằng số phức $H(\omega)$:<br>
+                    $$\text{Đầu vào } e^{j\omega t} \longrightarrow \text{Hệ thống LTI} \longrightarrow \text{Đầu ra } H(\omega)\cdot e^{j\omega t}$$
+                    Vì vậy, ở <b>Slide 14</b>, thay vì giải bài toán trực tiếp ở tầng trên ($u(t) \rightarrow h(t) \rightarrow i(t)$), ta dùng cầu thang <b>FT</b> đi xuống tầng dưới miền tần số ($U(f) \cdot H(f) = I(f)$), nhân xong rồi đi cầu thang ngược lên!
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 3: CÔNG THỨC EULER & SỐ PHỨC (SLIDE 16) ==================== -->
+    <section id="phan-3">
+        <span class="k b4">Giải thích chi tiết Slide 16 & Slide 31</span>
+        <h2 style="margin-top:8px">Mục 3. Giải mã Công thức Euler, Số Mũ Phức $e^{j\omega t}$ và Hình Lò Xo 3D</h2>
+        <p>
+            Khi đọc <b>Slide 16</b>, người mới học thường bị sốc: <i>"Đang học sóng âm thanh, điện áp là số thực, tự nhiên lôi cái $e^{j\omega t}$ với trục Thực (Real), trục Ảo (Imag) và cái lò xo xoắn ốc 3D vào làm gì?"</i>. Hãy bình tĩnh đọc 3 bước giải thích dưới đây, bạn sẽ thấy nó cực kỳ dễ hiểu:
+        </p>
+
+        <div class="step">
+            <h4>Bước 1: Ý nghĩa hình học của Công thức Euler $e^{j\theta} = \cos(\theta) + j\sin(\theta)$</h4>
+            <p>
+                Trên mặt phẳng tọa độ số phức (nhìn hình góc phải dưới của Slide 16): Trục ngang là <b>Trục Thực (Re - Real)</b>, trục dọc là <b>Trục Ảo (Im - Imaginary)</b>.<br>
+                Xét một điểm nằm trên đường tròn bán kính $R = 1$, tạo với trục ngang một góc $\theta$ (tính bằng radian). Theo lượng giác lớp 9:<br>
+                • Độ dài bóng chiếu xuống trục ngang (Trục Thực) chính là: $\cos(\theta)$.<br>
+                • Độ dài bóng chiếu lên trục dọc (Trục Ảo) chính là: $\sin(\theta)$.<br>
+                Nhà toán học Leonhard Euler đã chứng minh được rằng vị trí của điểm đó trên mặt phẳng phức có thể viết gọn thành lũy thừa cơ số $e$:
+            </p>
+            <div class="f">
+                $$e^{j\theta} = \cos(\theta) + j\sin(\theta) \qquad \text{và} \qquad e^{-j\theta} = \cos(\theta) - j\sin(\theta)$$
+            </div>
+        </div>
+
+        <div class="step">
+            <h4>Bước 2: Chứng minh 2 công thức đổi từ $\cos, \sin$ sang mũ phức (Dùng trong 90% bài tập!)</h4>
+            <p>
+                Từ 2 phương trình trên, nếu bạn <b>cộng vế với vế</b>, phần $j\sin(\theta)$ và $-j\sin(\theta)$ tự triệt tiêu nhau: $e^{j\theta} + e^{-j\theta} = 2\cos(\theta)$. Chia hai vế cho $2$, ta có công thức của $\cos(\theta)$.<br>
+                Ngược lại, nếu bạn <b>lấy phương trình đầu trừ phương trình sau</b>, phần $\cos(\theta)$ triệt tiêu: $e^{j\theta} - e^{-j\theta} = 2j\sin(\theta)$. Chia hai vế cho $2j$, ta có công thức của $\sin(\theta)$:
+            </p>
+            <div class="f">
+                $$\cos(\theta) = \frac{1}{2}\left(e^{j\theta} + e^{-j\theta}\right) \qquad ; \qquad \sin(\theta) = \frac{1}{2j}\left(e^{j\theta} - e^{-j\theta}\right)$$
+            </div>
+            <p class="mut">
+                <b>Ghi nhớ cực kỳ quan trọng để làm bài tập:</b> Cứ mỗi khi đề bài cho hàm $\cos(\omega_0 t)$, bạn đừng bao giờ đi tính tích phân! Hãy bung nó ra thành $\frac{1}{2}e^{j\omega_0 t} + \frac{1}{2}e^{-j\omega_0 t}$ là đọc được ngay kết quả trong 5 giây! (Xem Ví dụ 1 ở Mục 5).
+            </p>
+        </div>
+
+        <div class="step">
+            <h4>Bước 3: Giải thích Hình Lò Xo 3D ở Slide 16</h4>
+            <p>
+                Khi góc $\theta$ không đứng yên mà tăng đều theo thời gian: $\theta = \omega_0 t = 2\pi f_0 t$, thì điểm $e^{j\omega_0 t}$ sẽ <b>chạy vòng tròn đều đặn</b> trên mặt phẳng phức.<br>
+                Bây giờ, nếu bạn vừa cho điểm đó quay tròn, vừa <b>kéo cái vòng tròn đó tiến về phía trước dọc theo trục Thời gian (Time)</b>, quỹ đạo của điểm quay sẽ vẽ ra trong không gian một <b>đường xoắn ốc lò xo 3D</b> (đường màu xanh lá / xanh dương ở Slide 16)!<br>
+                • Nếu bạn chiếu đèn từ trên xuống mặt đất (mặt phẳng Thực - Thời gian): Cái bóng của lò xo chính là sóng $\cos(2\pi f_0 t)$!<br>
+                • Nếu bạn chiếu đèn ngang vào bức tường bên cạnh (mặt phẳng Ảo - Thời gian): Cái bóng của lò xo trên tường chính là sóng $\sin(2\pi f_0 t)$!
+            </p>
+        </div>
+
+        <div class="box">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px">
+                <div>
+                    <b>Mô phỏng trực quan Chuyển động quay của $e^{j\omega t}$ (Slide 16)</b>
+                    <div class="mut" style="font-size:13.5px">Quan sát cách mũi tên quay tròn tạo ra đồng thời cả sóng $\cos(\omega t)$ (xanh ngọc) và $\sin(\omega t)$ (hồng).</div>
+                </div>
+                <button id="toggleEulerBtn" class="btn-sim" type="button">Tạm dừng / Chạy tiếp</button>
+            </div>
+            <canvas id="eulerCanvas" width="800" height="250"></canvas>
+        </div>
+
+        <div class="box tip">
+            <h4>Kiến thức bổ trợ bắt buộc (Xuất hiện ở cuối Slide 31, 34, 46, 55): Đổi Số Phức sang Biên độ & Góc pha</h4>
+            <p>Trong các bài tập Fourier, kết quả bạn tính ra thường là một số phức có dạng đại số $z = a + jb$ (với $a = \text{Re}(z)$ là phần thực, $b = \text{Im}(z)$ là phần ảo). Để vẽ được <b>Phổ biên độ</b> và <b>Phổ pha</b>, bạn bắt buộc phải đổi $z$ sang dạng cực $z = |z|e^{j\angle z}$ theo công thức Pitago:</p>
+            <div class="f">
+                $$\text{Độ lớn (Biên độ): } |z| = \sqrt{a^2 + b^2} \qquad ; \qquad \text{Góc pha: } \angle z = \arg\{z\} = \arctan\left(\frac{b}{a}\right)$$
+            </div>
+            <p>
+                <b>Một số giá trị đặc biệt của $e^{j\theta}$ cực kỳ hay gặp khi rút gọn tích phân (như ở Slide 29, 31):</b><br>
+                • $e^{\pm j2k\pi} = \cos(2k\pi) \pm j\sin(2k\pi) = 1 + j0 = 1$ (với mọi số nguyên $k$).<br>
+                • $e^{\pm jk\pi} = \cos(k\pi) \pm j\sin(k\pi) = (-1)^k$ (Bằng $+1$ nếu $k$ chẵn, bằng $-1$ nếu $k$ lẻ).<br>
+                • $e^{j\pi/2} = \cos(\pi/2) + j\sin(\pi/2) = j \quad ; \quad e^{-j\pi/2} = -j$.
+            </p>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 4: LÝ THUYẾT CHUỖI FOURIER - FS (SLIDE 17 - 27) ==================== -->
+    <section id="phan-4">
+        <span class="k b5">Giải thích chi tiết Slide 17 đến Slide 27</span>
+        <h2 style="margin-top:8px">Mục 4. Chuỗi Fourier (Fourier Series - FS) cho Tín hiệu Tuần hoàn</h2>
+
+        <h3>4.1. Hai dạng biểu diễn của Chuỗi Fourier (Slide 17 - 19 & Slide 26 - 27)</h3>
+        <p>
+            Khi bạn có một tín hiệu liên tục $x(t)$ <b>tuần hoàn với chu kỳ cơ sở $T_0$</b> (nghĩa là $x(t + T_0) = x(t)$ với mọi $t$), tần số góc cơ sở của nó là $\omega_0 = \frac{2\pi}{T_0}$. Chuỗi Fourier khẳng định $x(t)$ có thể viết theo 1 trong 2 cách hoàn toàn tương đương sau:
+        </p>
+
+        <div class="grid2">
+            <div class="box">
+                <span class="k b1">Cách 1: Dạng Lượng Giác (Slide 19, 26)</span>
+                <div class="f">
+                    $$x(t) = a_0 + \sum_{k=1}^{\infty} \left( a_k \cos(k\omega_0 t) + b_k \sin(k\omega_0 t) \right)$$
+                </div>
+                <p style="font-size:14.5px">
+                    <i>Lưu ý nhỏ về ký hiệu ở Slide 19 và Slide 26:</i> Ở Slide 19 thầy viết số hạng đầu là $a_0$, khi đó $a_0 = \frac{1}{T_0}\int_{T_0}x(t)dt$. Còn ở Slide 26 thầy viết số hạng đầu là $\frac{a_0}{2}$ để công thức tính $a_0 = \frac{2}{T_0}\int_{T_0}x(t)dt$ có chung hệ số $\frac{2}{T_0}$ với $a_k$. Dù viết cách nào thì <b>cả cụm hằng số đứng đầu đó đều chính là giá trị trung bình của tín hiệu trong 1 chu kỳ</b>!<br>
+                    • Hệ số của Cos: $a_k = \frac{2}{T_0}\int_{T_0} x(t)\cos(k\omega_0 t)dt$<br>
+                    • Hệ số của Sin: $b_k = \frac{2}{T_0}\int_{T_0} x(t)\sin(k\omega_0 t)dt$
+                </p>
+            </div>
+
+            <div class="box">
+                <span class="k b4">Cách 2: Dạng Mũ Phức (Slide 27)</span>
+                <div class="f">
+                    $$x(t) = \sum_{k=-\infty}^{\infty} c_k e^{jk\omega_0 t}$$
+                    $$c_k = X[k] = \frac{1}{T_0} \int_{T_0} x(t) e^{-jk\omega_0 t} dt$$
+                </div>
+                <p style="font-size:14.5px">
+                    • Ký hiệu $\int_{T_0}$ nghĩa là bạn lấy tích phân trên <b>bất kỳ khoảng nào miễn là đủ 1 chu kỳ $T_0$</b> (thường chọn từ $0$ đến $T_0$, hoặc từ $-T_0/2$ đến $T_0/2$ tùy xem hình vẽ đoạn nào dễ tính hơn).<br>
+                    • Khi $k = 0$: $e^{-j\cdot 0 \cdot \omega_0 t} = e^0 = 1$, nên $c_0 = \frac{1}{T_0}\int_{T_0}x(t)dt$ chính là giá trị trung bình (thành phần 1 chiều DC) của tín hiệu.
+                </p>
+            </div>
+        </div>
+
+        <div class="box tip">
+            <b>Giải thích công thức quy đổi giữa $(a_k, b_k)$ và $c_k$ ở cuối Slide 26:</b>
+            <p>Tại sao $c_k = \frac{1}{2}(a_k - jb_k)$? Rất đơn giản! Ta lấy công thức tính $a_k$ trừ đi $j$ lần công thức tính $b_k$:</p>
+            <div class="f">
+                $$a_k - jb_k = \frac{2}{T_0}\int_{T_0} x(t) \underbrace{\left[\cos(k\omega_0 t) - j\sin(k\omega_0 t)\right]}_{e^{-jk\omega_0 t} \text{ (theo Euler)}} dt = 2 \cdot \underbrace{\left(\frac{1}{T_0}\int_{T_0} x(t)e^{-jk\omega_0 t}dt\right)}_{c_k} = 2c_k$$
+            </div>
+            <p>Từ đó suy ra: $c_k = \frac{1}{2}(a_k - jb_k)$ và $c_{-k} = \frac{1}{2}(a_k + jb_k)$. Ngược lại: $a_k = c_k + c_{-k}$ và $b_k = j(c_k - c_{-k})$.</p>
+        </div>
+
+        <h3>4.2. Giải thích tường tận 6 trang chứng minh Tích phân từ Slide 20 đến Slide 25</h3>
+        <p>
+            Từ Slide 20 đến Slide 25, rất nhiều bạn đọc xong bị "tẩu hỏa nhập ma" vì thấy tự nhiên nhân thêm $\cos(m\omega_0 t)$ rồi biến đổi lượng giác. Thực chất, 6 trang này chỉ nhằm trả lời một câu hỏi duy nhất: <b>"Giả sử $x(t) = a_0 + a_1\cos(\omega_0 t) + a_2\cos(2\omega_0 t) + \dots$, làm thế nào để ta tách riêng được hệ số $a_m$ bất kỳ ra khỏi cái tổng vô hạn đó?"</b>
+        </p>
+
+        <div class="step">
+            <b>Bước 1 (Slide 20): Nhân hai vế với "thuốc thử" $\cos(m\omega_0 t)$ rồi lấy tích phân 1 chu kỳ $T_0$</b><br>
+            Giả sử ta đang cần tìm hệ số thứ $m$ (ví dụ muốn tìm $a_3$ thì chọn $m=3$). Ta nhân cả hai vế của phương trình hàm chẵn $x_e(t) = \sum_{n=0}^{\infty} a_n \cos(n\omega_0 t)$ với $\cos(m\omega_0 t)$ và lấy tích phân trong 1 chu kỳ $T_0$:
+            <div class="f">$$\int_{T_0} x_e(t)\cos(m\omega_0 t)dt = \sum_{n=0}^{\infty} a_n \int_{T_0} \cos(n\omega_0 t)\cos(m\omega_0 t)dt$$</div>
+        </div>
+
+        <div class="step">
+            <b>Bước 2 (Slide 21): Áp dụng công thức biến đổi tích thành tổng ở cấp 3</b><br>
+            Ta dùng công thức lượng giác quen thuộc: $\cos(A)\cos(B) = \frac{1}{2}[\cos(A+B) + \cos(A-B)]$. Khi đó tích phân bên vế phải tách thành 2 tích phân con:
+            <div class="f">$$\frac{1}{2} \sum_{n=0}^{\infty} a_n \left[ \int_{T_0} \cos((m+n)\omega_0 t)dt + \int_{T_0} \cos((m-n)\omega_0 t)dt \right]$$</div>
+        </div>
+
+        <div class="step">
+            <b>Bước 3 (Slide 22 & 23): Phép màu xảy ra — Tất cả các tích phân đều bằng 0, trừ khi $m = n$!</b><br>
+            Hãy nhớ một quy luật hình học cực kỳ trực quan: <b>Một sóng $\cos$ hay $\sin$ bất kỳ (có tần số là bội nguyên của $\omega_0$) trong khoảng thời gian $T_0$ sẽ thực hiện đúng một số nguyên vòng dao động hoàn chỉnh. Mà cứ 1 vòng dao động hoàn chỉnh thì phần diện tích nhô lên (dương) luôn BẰNG HỆT phần diện tích lõm xuống (âm), nên cộng lại bằng $0$!</b><br>
+            • Do đó, tích phân thứ nhất $\int_{T_0} \cos((m+n)\omega_0 t)dt = 0$ luôn luôn (với $m > 0$).<br>
+            • Còn tích phân thứ hai $\int_{T_0} \cos((m-n)\omega_0 t)dt$:
+            <ul>
+                <li>Nếu $n \neq m$: Hiệu $(m-n)$ là một số nguyên khác $0$, nó vẫn là sóng $\cos$ dao động nguyên vòng trong chu kỳ $T_0$ $\Rightarrow$ <b>Tích phân bằng $0$!</b></li>
+                <li>Nếu $n = m$: Hiệu $(m-n) = 0$. Mà $\cos(0) = 1$ (không còn uốn lượn nữa mà là đường thẳng cao bằng $1$)! Khi đó tích phân trở thành: $\int_{T_0} 1\,dt = T_0$!</li>
+            </ul>
+            Như vậy, trong cái tổng vô hạn từ $n=0$ đến $\infty$, mọi số hạng $n \neq m$ đều bị nhân với $0$ và biến mất sạch! Chỉ còn sống sót duy nhất số hạng tại $n = m$:
+            <div class="f">$$\int_{T_0} x_e(t)\cos(m\omega_0 t)dt = \frac{1}{2} a_m T_0 \quad \Longrightarrow \quad a_m = \frac{2}{T_0}\int_{T_0} x_e(t)\cos(m\omega_0 t)dt$$</div>
+        </div>
+
+        <div class="step">
+            <b>Bước 4 (Slide 24 & 25): Trường hợp đặc biệt $m=0$ và hệ số $b_n$</b><br>
+            • Ở <b>Slide 24</b>: Khi $m=0$ và $n=0$, cả hai số hạng $\cos((0+0)\omega_0 t)$ và $\cos((0-0)\omega_0 t)$ đều bằng $\cos(0) = 1$, nên tổng của chúng không bị chia đôi nữa, dẫn đến $a_0 = \frac{1}{T_0}\int_{T_0} x_e(t)dt$.<br>
+            • Ở <b>Slide 25</b>: Hoàn toàn tương tự, nếu nhân hai vế của hàm lẻ $x_o(t)$ với $\sin(m\omega_0 t)$, ta tìm được $b_n = \frac{2}{T_0}\int_{T_0} x_o(t)\sin(n\omega_0 t)dt$. Và không có $b_0$ vì $\sin(0) = 0$.
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 5: GIẢI CHI TIẾT 5 VÍ DỤ CHUỖI FOURIER (SLIDE 28 - 38) ==================== -->
+    <section id="phan-5">
+        <span class="k b1">Giải thích chi tiết Slide 28 đến Slide 38</span>
+        <h2 style="margin-top:8px">Mục 5. Giải chi tiết từng bước 5 Ví dụ Chuỗi Fourier trong Slide</h2>
+        <p class="mut">Đây là phần trọng tâm nhất khi đi thi. Trong slide thầy giải khá vắn tắt, dưới đây là lời giải chi tiết từng bước biến đổi để bạn hiểu 100%:</p>
+
+        <div class="q-card">
+            <span class="k b1">Ví dụ 1 (Slide 28 & 29)</span>
+            <h3>Xác định biểu diễn FS dạng mũ phức của tín hiệu $x(t) = \cos(\omega_0 t)$</h3>
+            <div class="grid2">
+                <div class="box">
+                    <b>Cách 1 (Slide 28 - Đồng nhất hệ số, nhanh nhất):</b>
+                    <p>Định nghĩa chuỗi Fourier dạng mũ phức là:</p>
+                    $$x(t) = \sum_{k=-\infty}^{\infty} c_k e^{jk\omega_0 t} = \dots + c_{-1}e^{-j\omega_0 t} + c_0 + c_1 e^{j\omega_0 t} + \dots$$
+                    <p>Mặt khác, theo công thức Euler ở Mục 3, ta bung hàm $\cos(\omega_0 t)$ ra:</p>
+                    $$x(t) = \cos(\omega_0 t) = \frac{1}{2}e^{-j1\omega_0 t} + \frac{1}{2}e^{j1\omega_0 t}$$
+                    <p>
+                        Đặt hai biểu thức này cạnh nhau và <b>so sánh các số hạng tương ứng</b>:<br>
+                        • Đứng trước $e^{j1\omega_0 t}$ (ứng với $k = 1$) là số $\frac{1}{2} \Rightarrow c_1 = \frac{1}{2}$.<br>
+                        • Đứng trước $e^{-j1\omega_0 t}$ (ứng với $k = -1$) là số $\frac{1}{2} \Rightarrow c_{-1} = \frac{1}{2}$.<br>
+                        • Không hề có mặt các số hạng $k=0, \pm 2, \pm 3\dots \Rightarrow c_k = 0$ với mọi $|k| \neq 1$.
+                    </p>
+                </div>
+                <div class="box">
+                    <b>Cách 2 (Slide 29 - Tính bằng tích phân trực tiếp):</b>
+                    <p>Slide 29 chứng minh cho bạn thấy nếu lắp vào công thức tích phân thì cũng ra kết quả y hệt:</p>
+                    $$c_k = \frac{1}{T_0}\int_0^{T_0} \cos(\omega_0 t) e^{-jk\omega_0 t} dt = \frac{1}{2T_0}\int_0^{T_0} \left(e^{-j\omega_0 t} + e^{j\omega_0 t}\right)e^{-jk\omega_0 t}dt$$
+                    <p>Nhân phân phối $e^{-jk\omega_0 t}$ vào trong (nhớ $e^A \cdot e^B = e^{A+B}$):</p>
+                    $$c_k = \frac{1}{2T_0}\int_0^{T_0} e^{-j(k+1)\omega_0 t}dt + \frac{1}{2T_0}\int_0^{T_0} e^{-j(k-1)\omega_0 t}dt$$
+                    <p>
+                        Xét tại $k = 1$: Số hạng đầu có tích phân $\int_0^{T_0} e^{-j2\omega_0 t}dt = \left.\frac{e^{-j2\omega_0 t}}{-j2\omega_0}\right|_0^{T_0} = \frac{e^{-j4\pi} - 1}{-j2\omega_0} = 0$.<br>
+                        Còn số hạng thứ hai (khi $k=1$) có số mũ $k-1 = 0$, mà $e^0 = 1$, nên tích phân trở thành: $\frac{1}{2T_0}\int_0^{T_0} 1\,dt = \frac{1}{2T_0}\cdot T_0 = \frac{1}{2}$!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="q-card">
+            <span class="k b4">Ví dụ 2 (Slide 30 & 31)</span>
+            <h3>Tìm hệ số FS của tín hiệu tuần hoàn lặp lại hàm $x(t) = e^{-2t}$ trong khoảng $(0, 2)$</h3>
+            <p><b>Bước 1: Tìm chu kỳ $T_0$ và tần số góc $\omega_0$:</b> Nhìn đồ thị ở Slide 30, ta thấy đoạn đường cong tụt dốc $e^{-2t}$ cứ từ $0$ đến $2$ là lặp lại một lần (từ $-2$ đến $0$, từ $0$ đến $2$, từ $2$ đến $4\dots$). Vậy chu kỳ cơ sở là $T_0 = 2$. Suy ra tần số góc cơ sở: $\omega_0 = \frac{2\pi}{T_0} = \frac{2\pi}{2} = \pi$.</p>
+            <p><b>Bước 2: Thiết lập và tính tích phân tìm $c_k$:</b> Chọn khoảng lấy tích phân từ $0$ đến $2$ (vì trong khoảng này phương trình hàm là $x(t) = e^{-2t}$):</p>
+            <div class="f">
+                $$c_k = \frac{1}{T_0}\int_0^{T_0} x(t)e^{-jk\omega_0 t}dt = \frac{1}{2}\int_0^2 e^{-2t}e^{-jk\pi t}dt = \frac{1}{2}\int_0^2 e^{-(2 + jk\pi)t}dt$$
+            </div>
+            <p>Áp dụng công thức nguyên hàm cơ bản $\int e^{\alpha t}dt = \frac{e^{\alpha t}}{\alpha}$ với hằng số $\alpha = -(2 + jk\pi)$:</p>
+            <div class="f">
+                $$c_k = \frac{1}{2} \left[ \frac{e^{-(2 + jk\pi)t}}{-(2 + jk\pi)} \right]_{t=0}^{t=2} = \frac{1}{-2(2 + jk\pi)} \left( e^{-(2+jk\pi)\cdot 2} - e^0 \right) = \frac{1 - e^{-4}e^{-j2k\pi}}{4 + j2k\pi}$$
+            </div>
+            <p>Vì $e^{-j2k\pi} = \cos(2k\pi) - j\sin(2k\pi) = 1 - 0 = 1$, nên tử số rút gọn thành $1 - e^{-4}$: $c_k = \frac{1 - e^{-4}}{4 + j2k\pi}$.</p>
+            <p><b>Bước 3 (Giải thích các dòng biến đổi ở Slide 31):</b> Tại sao ở Slide 31 thầy lại nhân cả tử và mẫu với $(1 - jk\pi/2)$? Đó là thao tác <b>nhân lượng liên hợp để khử số ảo $j$ dưới mẫu số</b> (dùng hằng đẳng thức $(A+jB)(A-jB) = A^2 + B^2$), giúp tách riêng phần Thực (Re) và phần Ảo (Im):</p>
+            <div class="f">
+                $$c_k = \frac{1-e^{-4}}{4 + j2k\pi} = \frac{(1-e^{-4})(4 - j2k\pi)}{4^2 + (2k\pi)^2} = \underbrace{\frac{4(1-e^{-4})}{16 + 4k^2\pi^2}}_{\text{Phần Thực Re}(c_k)} - j\underbrace{\frac{2k\pi(1-e^{-4})}{16 + 4k^2\pi^2}}_{\text{Phần Ảo Im}(c_k)}$$
+            </div>
+        </div>
+
+        <div class="q-card">
+            <span class="k b3">Ví dụ 3 (Slide 32 & 33 - Trong Slide chỉ có đề và đồ thị, chưa có lời giải!)</span>
+            <h3>Xác định hệ số FS $X[k]$ của chuỗi xung vuông tuần hoàn chu kỳ $T$ (Slide 32)</h3>
+            <p><b>Phân tích hình vẽ Slide 32:</b> Lưu ý ký hiệu trên hình vẽ Slide 32 hơi khác các bài trước: Chu kỳ lặp lại của cả sóng vuông lớn được ký hiệu là $T$ (chứ không phải $T_0$), nên $\omega_0 = \frac{2\pi}{T}$. Còn ở gốc tọa độ, xung vuông nhô lên bằng $1$ trong khoảng từ $-T_0$ đến $+T_0$, và bằng $0$ ở hai bên.</p>
+            <p><b>Lời giải từng bước:</b> Ta chọn khoảng lấy tích phân 1 chu kỳ là từ $-T/2$ đến $+T/2$. Vì trong khoảng này tín hiệu chỉ bằng $1$ từ $-T_0$ đến $+T_0$ (ngoài ra bằng $0$), nên cận tích phân thu hẹp lại từ $-T_0$ đến $T_0$:</p>
+            <div class="f">
+                $$X[k] = c_k = \frac{1}{T}\int_{-T/2}^{T/2} x(t)e^{-jk\omega_0 t}dt = \frac{1}{T}\int_{-T_0}^{T_0} 1 \cdot e^{-jk\omega_0 t}dt$$
+            </div>
+            <p>
+                • <b>Trường hợp 1 (Khi $k = 0$):</b> Thay $k=0$ vào tích phân: $X[0] = \frac{1}{T}\int_{-T_0}^{T_0} 1\,dt = \frac{2T_0}{T}$.<br>
+                • <b>Trường hợp 2 (Khi $k \neq 0$):</b> Lấy nguyên hàm hàm mũ:
+            </p>
+            <div class="f">
+                $$X[k] = \frac{1}{T} \left[ \frac{e^{-jk\omega_0 t}}{-jk\omega_0} \right]_{-T_0}^{T_0} = \frac{1}{T} \cdot \frac{e^{-jk\omega_0 T_0} - e^{jk\omega_0 T_0}}{-jk\omega_0} = \frac{1}{k\omega_0 T} \cdot 2 \underbrace{\left( \frac{e^{jk\omega_0 T_0} - e^{-jk\omega_0 T_0}}{2j} \right)}_{\sin(k\omega_0 T_0) \text{ (theo Euler)}}$$
+            </div>
+            <p>Thay $\omega_0 T = 2\pi$ vào mẫu số, ta được kết quả nổi tiếng nhất của Chuỗi Fourier:</p>
+            <div class="f">
+                $$X[k] = \frac{\sin(k\omega_0 T_0)}{k\pi} = \frac{\sin\left(2\pi k \frac{T_0}{T}\right)}{k\pi}$$
+            </div>
+            <div class="box tip">
+                <b>Giải thích 3 đồ thị (a), (b), (c) ở Slide 33:</b><br>
+                • Hình (a) khi $T_0/T = 1/4$: Chu kỳ $T$ nhỏ, các vạch phổ $X[k]$ đứng thưa nhau.<br>
+                • Hình (b) khi $T_0/T = 1/16$ và Hình (c) khi $T_0/T = 1/64$: Khi giữ nguyên độ rộng xung $T_0$ nhưng <b>kéo chu kỳ lặp lại $T$ ra ngày càng xa nhau</b>, các vạch tần số $X[k]$ mọc lên ngày càng dày đặc, sát rạt vào nhau và tạo thành hình dáng của đường cong <b>Hàm Sinc</b>! Đây chính là bước đệm để chuyển sang Biến đổi Fourier (FT) ở Mục 6!
+            </div>
+        </div>
+
+        <div class="grid2">
+            <div class="q-card" style="margin:0">
+                <span class="k b2">Ví dụ 4 (Slide 34, 35, 36): Phổ biên độ & Phổ pha</span>
+                <h4>Tìm và vẽ phổ của $x(t) = 3\cos\left(\frac{\pi}{2}t + \frac{\pi}{4}\right)$</h4>
+                <p><b>Bước 1:</b> Nhìn vào số đứng trước $t$ trong hàm $\cos$, ta thấy ngay tần số góc cơ sở là $\omega_0 = \frac{\pi}{2}$ (chu kỳ $T_0 = \frac{2\pi}{\omega_0} = 4$).</p>
+                <p><b>Bước 2:</b> Áp dụng công thức Euler $\cos(\theta) = \frac{1}{2}(e^{j\theta} + e^{-j\theta})$ với $\theta = \frac{\pi}{2}t + \frac{\pi}{4}$:</p>
+                <div class="f">
+                    $$x(t) = \underbrace{\left(\frac{3}{2}e^{j\frac{\pi}{4}}\right)}_{c_1} e^{j1\cdot(\frac{\pi}{2})t} + \underbrace{\left(\frac{3}{2}e^{-j\frac{\pi}{4}}\right)}_{c_{-1}} e^{-j1\cdot(\frac{\pi}{2})t}$$
+                </div>
+                <p>
+                    <b>Bước 3 (Đọc kết quả để vẽ hình ở Slide 36):</b><br>
+                    • Tại $k = 1$: $c_1 = \frac{3}{2}e^{j\pi/4} \Rightarrow$ Biên độ $|c_1| = \frac{3}{2}$, Góc pha $\arg\{c_1\} = +\frac{\pi}{4}$.<br>
+                    • Tại $k = -1$: $c_{-1} = \frac{3}{2}e^{-j\pi/4} \Rightarrow$ Biên độ $|c_{-1}| = \frac{3}{2}$, Góc pha $\arg\{c_{-1}\} = -\frac{\pi}{4}$.<br>
+                    • Với tín hiệu thực, <b>Phổ biên độ $|c_k|$ luôn đối xứng chẵn</b>, còn <b>Phổ pha $\arg\{c_k\}$ luôn đối xứng lẻ</b>.
+                </p>
+            </div>
+
+            <div class="q-card" style="margin:0">
+                <span class="k b5">Ví dụ 5 (Slide 37 & 38): Biến đổi FS ngược & Parseval</span>
+                <h4>Cho $T_0=2$ và $c_k = \left(\frac{1}{2}\right)^{|k|}e^{jk\pi/20}$, tìm lại $x(t)$</h4>
+                <p>Vì $T_0 = 2 \Rightarrow \omega_0 = \frac{2\pi}{2} = \pi$. Lắp vào công thức tổng: $x(t) = \sum_{k=-\infty}^{\infty} \left(\frac{1}{2}\right)^{|k|} e^{jk\pi/20} e^{jk\pi t}$.</p>
+                <p><b>Giải thích mẹo tách tổng ở Slide 37:</b> Tách tổng từ $-\infty$ đến $\infty$ thành tổng từ $k=0\to\infty$ và tổng từ $k=-1\to-\infty$ (đổi biến $k\to -k$). Cộng thêm $1$ (ứng với $k=0$) vào tổng thứ hai rồi trừ trả $1$ ở cuối để dùng công thức cấp số nhân $\sum_{k=0}^{\infty}\alpha^k = \frac{1}{1-\alpha}$:</p>
+                <div class="f">
+                    $$x(t) = \frac{1}{1 - \frac{1}{2}e^{j\theta}} + \frac{1}{1 - \frac{1}{2}e^{-j\theta}} - 1 \quad \left(\theta = \pi t + \frac{\pi}{20}\right)$$
+                </div>
+                <p>Quy đồng mẫu số hai phân thức đầu: Mẫu chung là $\frac{5}{4} - \cos(\theta)$, rút gọn tử số ra đúng:</p>
+                <div class="f">$$x(t) = \frac{3}{5 - 4\cos(\pi t + \pi/20)}$$</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 6: BIẾN ĐỔI FOURIER - FT (SLIDE 39 - 54) ==================== -->
+    <section id="phan-6">
+        <span class="k b2">Giải thích chi tiết Slide 39 đến Slide 54</span>
+        <h2 style="margin-top:8px">Mục 6. Biến Đổi Fourier (Fourier Transform - FT) cho Tín hiệu Không Tuần Hoàn</h2>
+
+        <h3>6.1. Giải thích quá trình "Tiến hóa" từ Chuỗi (FS) sang Biến đổi (FT) ở Slide 40 - 45</h3>
+        <p>
+            Ở Mục 4 và 5, Chuỗi Fourier (FS) chỉ dùng được cho tín hiệu lặp đi lặp lại mãi mãi (tuần hoàn). Nhưng nếu tín hiệu $x(t)$ chỉ xuất hiện 1 lần rồi tắt hẳn (không tuần hoàn, như 1 xung tam giác ở <b>Slide 42</b>) thì làm thế nào? Hãy xem 3 bước biến đổi toán học ở <b>Slide 42, 43, 44</b>:
+        </p>
+
+        <div class="step">
+            <b>Bước 1 (Slide 42): Giả tạo hóa thành tín hiệu tuần hoàn $x_{T_0}(t)$</b><br>
+            Giả sử tín hiệu gốc $x(t)$ chỉ có mặt ở quanh gốc tọa độ. Ta cố tình copy-paste nó lặp đi lặp lại sau mỗi khoảng thời gian $T_0$ rất lớn để tạo ra hàm tuần hoàn giả tưởng $x_{T_0}(t)$. Rõ ràng nếu ta đẩy chu kỳ lặp lại $T_0$ ra xa tới vô cùng ($T_0 \rightarrow \infty$), thì những bản copy ở hai bên bị đẩy biến mất ở vô cực, hàm tuần hoàn $x_{T_0}(t)$ quay trở về chính là hàm không tuần hoàn $x(t)$ ban đầu: $\lim_{T_0 \rightarrow \infty} x_{T_0}(t) = x(t)$.
+        </div>
+
+        <div class="step">
+            <b>Bước 2 (Slide 43): Viết công thức Chuỗi Fourier cho hàm giả tưởng $x_{T_0}(t)$</b><br>
+            Trong khoảng 1 chu kỳ từ $-T_0/2$ đến $T_0/2$, hàm $x_{T_0}(t)$ chính là $x(t)$ (và ngoài khoảng đó thì $x(t) = 0$). Do đó tích phân tính $c_k$ có thể mở rộng cận ra từ $-\infty$ đến $+\infty$:
+            <div class="f">$$c_k = \frac{1}{T_0}\int_{-T_0/2}^{T_0/2} x_{T_0}(t)e^{-jk\omega_0 t}dt = \frac{1}{T_0} \underbrace{\int_{-\infty}^{\infty} x(t)e^{-jk\omega_0 t}dt}_{\text{Đặt bằng } X(k\omega_0)}$$</div>
+            Ta đặt cái tích phân bên trong là hàm đường bao $X(\omega) = \int_{-\infty}^{\infty} x(t)e^{-j\omega t}dt$. Khi đó $c_k = \frac{1}{T_0}X(k\omega_0)$. Thay $c_k$ và $\frac{1}{T_0} = \frac{\omega_0}{2\pi}$ vào chuỗi tổng $x_{T_0}(t)$:
+            <div class="f">$$x_{T_0}(t) = \sum_{k=-\infty}^{\infty} c_k e^{jk\omega_0 t} = \frac{1}{2\pi} \sum_{k=-\infty}^{\infty} X(k\omega_0) e^{jk\omega_0 t} \omega_0$$</div>
+        </div>
+
+        <div class="step">
+            <b>Bước 3 (Slide 44 & 45): Cho $T_0 \rightarrow \infty$, Tổng $\sum$ biến thành Tích phân $\int$!</b><br>
+            Khi chu kỳ thời gian $T_0 \rightarrow \infty$, thì khoảng cách giữa các tần số $\omega_0 = \frac{2\pi}{T_0}$ tiến dần về $0$ (trở thành vi phân siêu nhỏ $\omega_0 = \Delta\omega \rightarrow d\omega$). Tần số rời rạc $k\omega_0$ biến thành biến tần số liên tục $\omega$. Và tổng diện tích các hình chữ nhật hẹp $\sum (\dots)\Delta\omega$ ở hình vẽ <b>Slide 44</b> hội tụ thành <b>Tích phân diện tích dưới đường cong</b>! Ta thu được <b>Cặp Biến Đổi Fourier (Slide 45)</b>:
+        </div>
+
+        <div class="grid2">
+            <div class="box tip" style="text-align:center">
+                <span class="k b2">Biến đổi Fourier Thuận (Phân tích)</span>
+                <div class="f">$$X(\omega) = \mathcal{F}\{x(t)\} = \int_{-\infty}^{\infty} x(t) e^{-j\omega t} dt$$</div>
+                <small class="mut">Đổi từ Miền Thời Gian $x(t)$ sang Miền Tần Số liên tục $X(\omega)$</small>
+            </div>
+            <div class="box tip" style="text-align:center">
+                <span class="k b1">Biến đổi Fourier Ngược (Tổng hợp)</span>
+                <div class="f">$$x(t) = \mathcal{F}^{-1}\{X(\omega)\} = \frac{1}{2\pi} \int_{-\infty}^{\infty} X(\omega) e^{j\omega t} d\omega$$</div>
+                <small class="mut">Đổi từ Miền Tần Số $X(\omega)$ quay về Miền Thời Gian $x(t)$</small>
+            </div>
+        </div>
+
+        <h3>6.2. Giải thích Bảng Tính Chất (Slide 47-48) & Bảng Công Thức (Slide 50)</h3>
+        <div class="tw">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên tính chất (Slide 47-48)</th>
+                        <th>Miền Thời Gian $x(t)$</th>
+                        <th>Miền Tần Số $X(\omega)$</th>
+                        <th>Giải thích bản chất & Mẹo áp dụng làm bài</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>1. Tuyến tính (Linearity)</b></td>
+                        <td>$a_1 x_1(t) + a_2 x_2(t)$</td>
+                        <td>$a_1 X_1(\omega) + a_2 X_2(\omega)$</td>
+                        <td>Tổng các tín hiệu có biến đổi FT bằng tổng các FT thành phần.</td>
+                    </tr>
+                    <tr>
+                        <td><b>2. Dịch thời gian (Time shifting)</b></td>
+                        <td>$x(t - t_0)$</td>
+                        <td>$e^{-j\omega t_0} X(\omega)$</td>
+                        <td>Tín hiệu bị trễ đi $t_0$ giây thì chỉ việc nhân thêm $e^{-j\omega t_0}$ vào phổ cũ. Lưu ý: $|e^{-j\omega t_0}| = 1$ nên biên độ không đổi, góc pha cộng thêm $-\omega t_0$.</td>
+                    </tr>
+                    <tr>
+                        <td><b>3. Dịch tần số (Frequency shifting)</b></td>
+                        <td>$e^{j\omega_0 t} x(t)$</td>
+                        <td>$X(\omega - \omega_0)$</td>
+                        <td>Nhân tín hiệu với $e^{j\omega_0 t}$ (hoặc $\cos(\omega_0 t)$) sẽ bê toàn bộ phổ $X(\omega)$ dịch chuyển lên vị trí tần số sóng mang $\omega_0$ (Nguyên lý phát sóng Radio/Wi-Fi).</td>
+                    </tr>
+                    <tr>
+                        <td><b>4. Co giãn thời gian (Time scaling)</b></td>
+                        <td>$x(at)$</td>
+                        <td>$\frac{1}{|a|} X\left(\frac{\omega}{a}\right)$</td>
+                        <td>Nếu nén nhanh thời gian ($a > 1$, như tua nhanh băng ghi âm), thì tần số bị giãn rộng ra gấp $a$ lần (giọng nói bị éo éo cao vút lên)!</td>
+                    </tr>
+                    <tr>
+                        <td><b>5. Đối ngẫu (Duality)</b></td>
+                        <td>$X(t)$</td>
+                        <td>$2\pi x(-\omega)$</td>
+                        <td>Ví dụ biết xung vuông $p_a(t) \leftrightarrow \text{hàm Sinc}$, thì ngược lại hàm Sinc ở miền thời gian $\frac{\sin(at)}{\pi t}$ sẽ biến đổi thành xung vuông $p_a(\omega)$ ở miền tần số!</td>
+                    </tr>
+                    <tr>
+                        <td><b>6. Đạo hàm (Differentiation)</b></td>
+                        <td>$\frac{dx(t)}{dt}$</td>
+                        <td>$j\omega X(\omega)$</td>
+                        <td><b>Quan trọng số 1 để giải bài tập:</b> Đạo hàm bậc 1 theo thời gian biến thành phép nhân với $(j\omega)$. Đạo hàm bậc $k$ biến thành nhân với $(j\omega)^k$.</td>
+                    </tr>
+                    <tr>
+                        <td><b>7. Nhân chập (Convolution)</b></td>
+                        <td>$x_1(t) * x_2(t)$</td>
+                        <td>$X_1(\omega) \cdot X_2(\omega)$</td>
+                        <td>Tích chập miền thời gian tương đương phép nhân miền tần số. Ngược lại, nhân ở thời gian $x_1(t)x_2(t) \leftrightarrow \frac{1}{2\pi} X_1(\omega) * X_2(\omega)$.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>6.3. Xung Chữ Nhật, Hàm Sinc và Ứng dụng Truyền thông số BPSK (Slide 51 - 54)</h3>
+        <p>
+            <b>1. Giải thích Ví dụ 1 (Slide 51 & 52) - Xung chữ nhật biến thành Hàm Sinc:</b><br>
+            Xét xung chữ nhật $p_a(t) = 1$ khi $|t| < a$ (tức là từ $-a$ đến $a$) và bằng $0$ ở ngoài. Lắp vào tích phân FT:
+        </p>
+        <div class="f">
+            $$X(\omega) = \int_{-\infty}^{\infty} p_a(t)e^{-j\omega t}dt = \int_{-a}^{a} 1 \cdot e^{-j\omega t}dt = \left[ \frac{e^{-j\omega t}}{-j\omega} \right]_{-a}^{a} = \frac{e^{j\omega a} - e^{-j\omega a}}{j\omega} = \frac{2\sin(\omega a)}{\omega} = 2a \frac{\sin(\omega a)}{\omega a}$$
+        </div>
+        <p>
+            Hàm $\text{sinc}(u) = \frac{\sin(\pi u)}{\pi u}$ ở <b>Slide 52</b> có đỉnh cao nhất ở chính giữa ($u = 0$, gọi là <b>Mainlobe - Búp sóng chính</b>, vì theo giới hạn lớp 11: $\lim_{x\to 0}\frac{\sin x}{x} = 1$). Hai bên là các búp sóng phụ nhỏ dần (Sidelobes). Các điểm mà đồ thị cắt trục hoành bằng $0$ xảy ra khi $\sin(\omega a) = 0 \Leftrightarrow \omega a = \pm \pi, \pm 2\pi \Rightarrow \omega = \pm\frac{\pi}{a}, \pm\frac{2\pi}{a}\dots$
+        </p>
+
+        <div class="box">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+                <b>Mô phỏng Slide 51 & 52 — Kéo thử độ rộng xung $a$:</b>
+                <span>Độ rộng xung $a = $ <b id="pulseWidthValue" style="color:var(--c2);font-size:20px">1.5</b></span>
+            </div>
+            <input id="pulseWidthSlider" type="range" min="0.5" max="4" step="0.25" value="1.5">
+            <div class="grid2">
+                <div>
+                    <small class="mut"><b>MIỀN THỜI GIAN:</b> Xung chữ nhật $p_a(t)$ từ $-a$ đến $a$</small>
+                    <canvas id="rectTimeCanvas" width="400" height="220"></canvas>
+                </div>
+                <div>
+                    <small class="mut"><b>MIỀN TẦN SỐ:</b> Hàm Sinc $X(\omega) = 2a\frac{\sin(\omega a)}{\omega a}$</small>
+                    <canvas id="sincFreqCanvas" width="400" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="box warn">
+            <b>2. Giải thích Ví dụ 2 (Slide 53 & 54): Tín hiệu truyền thông số BPSK và Đồ thị Decibel (dB)</b>
+            <p>
+                • <b>Tại sao Slide 53 nói về bit "1" và bit "0"?</b> Trong mạng Internet/Wi-Fi/4G, để gửi chuỗi bit nhị phân <code>1 0 0 1 0 1 1</code> đi, người ta biến mỗi bit thành một xung điện hình chữ nhật dài $T_0$ giây (từ $-T_0/2$ đến $T_0/2$, nghĩa là $a = T_0/2$): Bit "1" là xung dương $+A_r$, bit "0" là xung âm $-A_r$ (kỹ thuật này gọi là BPSK).<br>
+                • <b>Ý nghĩa đồ thị ở Slide 54:</b> Khi biến đổi Fourier một xung bit dài $T_0$ đó, phổ của nó là hàm Sinc: $X_r(jf) = \frac{2\sin(\pi f T_0)}{2\pi f} = T_0 \frac{\sin(\pi f T_0)}{\pi f T_0}$. Nếu vẽ theo thang đo Decibel: $20\log_{10}\left|\frac{X_r(jf)}{T_0}\right|$ (Slide 54), ta thấy đỉnh búp chính ở $f=0$ có mức $0\text{ dB}$, còn đỉnh búp phụ thứ nhất thấp hơn đỉnh chính <b>$-13.46\text{ dB}$</b>, và đến tần số $\frac{10}{T_0}$ thì suy hao xuống <b>$-30\text{ dB}$</b>.<br>
+                • <b>Bài học thực tế cho kỹ sư Viễn thông:</b> Nếu bạn muốn truyền mạng tốc độ cực nhanh, bạn phải thu hẹp thời gian 1 bit $T_0$ thật nhỏ lại. Nhưng nhìn mô phỏng phía trên, khi $T_0$ (hay $a$) càng nhỏ thì phổ tần số Hàm Sinc <b>càng phình rộng ra</b>, tức là tốn rất nhiều băng thông (Bandwidth)! Đó là lý do mạng 5G tốc độ cao bắt buộc phải dùng băng thông tần số rộng hơn mạng 3G/4G rất nhiều!
+            </p>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 7: HỆ THỐNG LTI & GIẢI BÀI TẬP CUỐI CHƯƠNG (SLIDE 55 - 60) ==================== -->
+    <section id="phan-7">
+        <span class="k b3">Giải thích chi tiết Slide 55 đến Slide 60</span>
+        <h2 style="margin-top:8px">Mục 7. Đáp Ứng Tần Số $H(\omega)$ của Hệ thống LTI & Giải Bài Tập Vi Phân / Mạch RC</h2>
+
+        <h3>7.1. Đáp ứng xung $h(t)$ vs Đáp ứng tần số $H(\omega)$ (Slide 55 - 58)</h3>
+        <p>Hãy nhìn sơ đồ tổng quát cực kỳ hay ở <b>Slide 57</b>. Một hệ thống Tuyến tính Bất biến (LTI) có thể được mô tả theo 2 thế giới song song:</p>
+        <div class="grid2">
+            <div class="box">
+                <span class="k b3">1. Thế giới Miền Thời Gian</span>
+                <p>
+                    • Nếu đấm vào hệ thống một xung kim $\delta(t)$, hệ thống phản ứng lại bằng <b>Đáp ứng xung $h(t)$</b>.<br>
+                    • Nếu đưa vào tín hiệu bất kỳ $x(t)$, đầu ra $y(t)$ phải tính bằng phép <b>Tích chập</b>:
+                    $$y(t) = x(t) * h(t) = \int_{-\infty}^{\infty} h(\tau)x(t-\tau)d\tau$$
+                </p>
+            </div>
+            <div class="box">
+                <span class="k b1">2. Thế giới Miền Tần Số</span>
+                <p>
+                    • Biến đổi Fourier của đáp ứng xung $h(t)$ được gọi là <b>Đáp ứng tần số $H(\omega)$</b>:
+                    $$H(\omega) = \mathcal{F}\{h(t)\} = \int_{-\infty}^{\infty} h(t)e^{-j\omega t}dt$$
+                    • Phép tích chập biến thành <b>Phép Nhân</b>:
+                    $$Y(\omega) = X(\omega) \cdot H(\omega) \quad \Longrightarrow \quad H(\omega) = \frac{Y(\omega)}{X(\omega)}$$
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <b>Giải thích Công thức Tổng quát Phương trình Vi phân ở Slide 58:</b>
+            <p>Mọi hệ thống vật lý (mạch điện R-L-C, giảm xóc ô tô, hệ thống cơ học) đều được mô tả bởi phương trình vi phân bậc $N$ liên hệ giữa đầu ra $y(t)$ và đầu vào $x(t)$:
+            $$\sum_{k=0}^{N} a_k \frac{d^k y(t)}{dt^k} = \sum_{k=0}^{M} b_k \frac{d^k x(t)}{dt^k}$$
+            Áp dụng tính chất Đạo hàm của Fourier ($\frac{d^k}{dt^k} \leftrightarrow (j\omega)^k$), phương trình vi phân rắc rối lập tức biến thành <b>phương trình đại số lớp 8</b>:</p>
+            <div class="f">
+                $$Y(\omega) \sum_{k=0}^{N} a_k (j\omega)^k = X(\omega) \sum_{k=0}^{M} b_k (j\omega)^k \quad \Longrightarrow \quad H(\omega) = \frac{Y(\omega)}{X(\omega)} = \frac{\sum_{k=0}^{M} b_k (j\omega)^k}{\sum_{k=0}^{N} a_k (j\omega)^k}$$
+            </div>
+        </div>
+
+        <div class="grid2">
+            <div class="q-card" style="margin:0">
+                <span class="k b5">Lời giải chi tiết Bài tập Slide 59</span>
+                <h4>Tìm đáp ứng tần số $H(\omega)$ và đáp ứng xung $h(t)$ của hệ thống: $y'(t) + 2y(t) = x(t) + x'(t)$</h4>
+                <p><b>Bước 1: Biến đổi Fourier cả hai vế</b><br>
+                Nhớ quy tắc: $y(t) \rightarrow Y(\omega)$, và đạo hàm bậc nhất $y'(t) \rightarrow j\omega Y(\omega)$. Ta có:
+                $$j\omega Y(\omega) + 2Y(\omega) = X(\omega) + j\omega X(\omega)$$</p>
+                <p><b>Bước 2: Đặt nhân tử chung và lập tỷ số $H(\omega) = \frac{Y(\omega)}{X(\omega)}$</b>
+                $$Y(\omega) \cdot (2 + j\omega) = X(\omega) \cdot (1 + j\omega) \Longrightarrow H(\omega) = \frac{1 + j\omega}{2 + j\omega}$$</p>
+                <p><b>Bước 3: Tìm Đáp ứng xung $h(t)$ bằng Biến đổi Fourier ngược</b><br>
+                Tách tử số $1 + j\omega$ thành $(2 + j\omega) - 1$ để chia đa thức:</p>
+                <div class="f">$$H(\omega) = \frac{(2 + j\omega) - 1}{2 + j\omega} = 1 - \frac{1}{2 + j\omega}$$</div>
+                <p>Tra bảng Slide 50: Số $1 \xrightarrow{\mathcal{F}^{-1}} \delta(t)$; phân thức $\frac{1}{2 + j\omega} \xrightarrow{\mathcal{F}^{-1}} e^{-2t}u(t)$. Vậy:</p>
+                <div class="box ok">$$h(t) = \delta(t) - e^{-2t}u(t)$$</div>
+            </div>
+
+            <div class="q-card" style="margin:0">
+                <span class="k b3">Lời giải chi tiết Bài tập Mạch RC - Slide 60</span>
+                <h4>Tìm đáp ứng tần số $H(\omega)$ và đáp ứng xung $h(t)$ của mạch lọc RC</h4>
+                <p><b>Bước 1: Lập phương trình vật lý của mạch điện</b><br>
+                Nguồn phát điện áp đầu vào là $x(t)$, đi qua điện trở $R$ và tụ điện $C$. Điện áp đầu ra lấy trên hai đầu tụ điện là $y(t)$. Dòng điện chạy qua tụ điện là $i(t) = C \frac{dy(t)}{dt}$. Theo định luật Kirchhoff:
+                $$R C \frac{dy(t)}{dt} + y(t) = x(t)$$</p>
+                <p><b>Bước 2: Biến đổi Fourier hai vế để tìm $H(\omega)$</b>
+                $$RC (j\omega) Y(\omega) + Y(\omega) = X(\omega) \Longrightarrow H(\omega) = \frac{Y(\omega)}{X(\omega)} = \frac{1}{1 + j\omega RC}$$</p>
+                <p><b>Bước 3: Đưa về dạng chuẩn $\frac{1}{a + j\omega}$ để tìm $h(t)$</b><br>
+                Chia cả tử và mẫu cho $RC$:</p>
+                <div class="f">$$H(\omega) = \frac{1/RC}{\frac{1}{RC} + j\omega}$$</div>
+                <p>Áp dụng công thức $\frac{1}{a + j\omega} \leftrightarrow e^{-at}u(t)$ với $a = \frac{1}{RC}$:</p>
+                <div class="box ok">$$h(t) = \frac{1}{RC} e^{-\frac{t}{RC}} u(t)$$</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 8: TỔNG KẾT 4 PHÉP BIẾN ĐỔI FOURIER (SLIDE 61 - 62) ==================== -->
+    <section id="phan-8">
+        <span class="k b4">Giải thích chi tiết Slide 3, Slide 61 & Slide 62</span>
+        <h2 style="margin-top:8px">Mục 8. Bản Đồ Tổng Kết 4 Phép Biến Đổi Fourier & Quy Tắc Nhớ Nhanh</h2>
+        <p>
+            Ở <b>Slide 3, Slide 61 và Slide 62</b>, thầy tổng kết toàn bộ gia đình nhà Fourier gồm 4 phép biến đổi. Tại sao lại có tới 4 phép biến đổi? Vì tín hiệu trong thế giới thực có 2 thuộc tính: <b>Liên tục hay Rời rạc</b>, và <b>Tuần hoàn hay Không tuần hoàn</b> ($2 \times 2 = 4$ trường hợp).
+        </p>
+
+        <div class="box tip">
+            <b>Quy tắc đối ngẫu bất khả chiến bại để nhớ Bảng 3.2 (Slide 62):</b>
+            <ul>
+                <li><b>Cứ bên này TUẦN HOÀN (Periodic) $\Longleftrightarrow$ Thì sang bên kia sẽ RỜI RẠC (Discrete - gồm các vạch đứng cách nhau).</b></li>
+                <li><b>Cứ bên này LIÊN TỤC (Continuous) $\Longleftrightarrow$ Thì sang bên kia sẽ KHÔNG TUẦN HOÀN (Non-periodic - trải dài từ $-\infty$ đến $+\infty$).</b></li>
+                <li>Hệ quả: Cứ biến nào <b>Liên tục</b> thì dùng dấu <b>Tích phân $\int$</b>. Cứ biến nào <b>Rời rạc</b> thì dùng dấu <b>Tổng $\sum$</b>!</li>
+            </ul>
+        </div>
+
+        <div class="tw">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên Phép Biến Đổi</th>
+                        <th>Đặc điểm Miền Thời Gian</th>
+                        <th>Đặc điểm Miền Tần Số</th>
+                        <th>Cặp Công thức Tổng hợp & Phân tích (Slide 62)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>1. Chuỗi Fourier liên tục (FS)</b><br><span class="mut">(Học ở Mục 4 & 5)</span></td>
+                        <td>• <b>Liên tục</b> $x(t)$<br>• <b>Tuần hoàn</b> chu kỳ $T_0$</td>
+                        <td>• <b>Không tuần hoàn</b><br>• <b>Rời rạc</b> $X[k]$<br>($\omega_0 = 2\pi/T_0$)</td>
+                        <td>
+                            $$x(t) = \sum_{k=-\infty}^{\infty} X[k]e^{jk\omega_0 t}$$
+                            $$X[k] = \frac{1}{T_0}\int_0^{T_0} x(t)e^{-jk\omega_0 t}dt$$
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>2. Biến đổi Fourier liên tục (FT)</b><br><span class="mut">(Học ở Mục 6 & 7)</span></td>
+                        <td>• <b>Liên tục</b> $x(t)$<br>• <b>Không tuần hoàn</b></td>
+                        <td>• <b>Không tuần hoàn</b><br>• <b>Liên tục</b> $X(j\omega)$</td>
+                        <td>
+                            $$x(t) = \frac{1}{2\pi}\int_{-\infty}^{\infty} X(j\omega)e^{j\omega t}d\omega$$
+                            $$X(j\omega) = \int_{-\infty}^{\infty} x(t)e^{-j\omega t}dt$$
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>3. Chuỗi Fourier rời rạc (DTFS)</b><br><span class="mut">(Tín hiệu số tuần hoàn)</span></td>
+                        <td>• <b>Rời rạc</b> $x[n]$<br>• <b>Tuần hoàn</b> chu kỳ $N$ mẫu</td>
+                        <td>• <b>Tuần hoàn</b> chu kỳ $N$<br>• <b>Rời rạc</b> $X[k]$<br>($\Omega_0 = 2\pi/N$)</td>
+                        <td>
+                            $$x[n] = \sum_{k=0}^{N-1} X[k]e^{jk\Omega_0 n}$$
+                            $$X[k] = \frac{1}{N}\sum_{n=0}^{N-1} x[n]e^{-jk\Omega_0 n}$$
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>4. Biến đổi Fourier rời rạc (DTFT)</b><br><span class="mut">(Tín hiệu số không tuần hoàn)</span></td>
+                        <td>• <b>Rời rạc</b> $x[n]$<br>• <b>Không tuần hoàn</b></td>
+                        <td>• <b>Tuần hoàn</b> chu kỳ $2\pi$<br>• <b>Liên tục</b> $X(e^{j\Omega})$</td>
+                        <td>
+                            $$x[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi} X(e^{j\Omega})e^{j\Omega n}d\Omega$$
+                            $$X(e^{j\Omega}) = \sum_{n=-\infty}^{\infty} x[n]e^{-j\Omega n}$$
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 9: PHƯƠNG PHÁP & GIẢI CHI TIẾT 9 CÂU QUIZ 8 ==================== -->
+    <section id="phan-9">
+        <span class="k b2">Thực chiến Bài tập Portal UET - 8_NHCH_Đáp ứng tần số</span>
+        <h2 style="margin-top:8px">Mục 9. Phương Pháp Làm Bài & Giải Chi Tiết Từng Bước 9 Câu Quiz 8</h2>
+
+        <h3>9.0. Tại sao các đáp án trong Quiz lại có dạng $[A\cos(\dots) - B\sin(\dots)]$? Phương pháp giải 2 dạng bài trong Quiz 8</h3>
+        <p>
+            Khi nhìn vào 9 câu hỏi trong file Quiz 8, nếu không biết phương pháp, bạn sẽ cố gắng mang $x(t)$ đi biến đổi Fourier ra hàm $\delta(\omega)$, nhân với $H(\omega)$ rồi biến đổi ngược cực kỳ khổ sở. Thực chất, 9 câu hỏi này chỉ thuộc <b>2 Dạng Bài Cố Định</b> với quy trình giải từng bước như sau:
+        </p>
+
+        <div class="box tip">
+            <h4>DẠNG 1: Tín hiệu vào là Sóng Lượng Giác ($\sin, \cos$) cộng với Hằng số (Câu 2, 3, 4, 5, 7, 8, 9)</h4>
+            <p>
+                <b>Nguyên lý cốt lõi (Tính chất Hàm riêng ở Slide 55):</b> Khi một sóng mũ phức $e^{j\omega_0 t}$ (hoặc rời rạc $e^{j\Omega_0 n}$) đi qua hệ thống có đáp ứng tần số $H(\omega)$ (hoặc $H(\Omega)$), đầu ra chỉ đơn giản là <b>nhân chính sóng đó với giá trị của $H$ tại đúng tần số $\omega_0$ đó</b>:
+                $$e^{j\omega_0 t} \longrightarrow H(\omega_0)\cdot e^{j\omega_0 t} \qquad \text{và} \qquad e^{-j\omega_0 t} \longrightarrow H(-\omega_0)\cdot e^{-j\omega_0 t}$$
+            </p>
+            <p>
+                <b>Chứng minh Công thức "Tách Thực - Ảo":</b> Giả sử tại tần số $\omega_0$ của đầu vào, bạn thay số $\omega = \omega_0$ vào $H(\omega)$, rồi nhân liên hợp mẫu số để tách được $H(\omega_0)$ thành <b>Phần Thực $A$</b> và <b>Phần Ảo $B$</b>: $H(\omega_0) = A + jB$.<br>
+                • <b>Trường hợp 1: Nếu đầu vào là $x(t) = \cos(\omega_0 t + \phi)$:</b> Theo Euler, $\cos(\theta) = \text{Phần Thực của } \{e^{j\theta}\}$. Do đó đầu ra $y(t)$ sẽ là Phần Thực của $\{H(\omega_0)\cdot e^{j(\omega_0 t + \phi)}\}$:
+            </p>
+            <div class="f">
+                $$H(\omega_0)\cdot e^{j(\omega_0 t + \phi)} = (A + jB)\cdot \left[\cos(\omega_0 t + \phi) + j\sin(\omega_0 t + \phi)\right]$$
+                $$= \underbrace{\left[ A\cos(\omega_0 t + \phi) - B\sin(\omega_0 t + \phi) \right]}_{\text{Phần Thực (vì } j\cdot j = j^2 = -1\text{)}} + j\underbrace{\left[ A\sin(\omega_0 t + \phi) + B\cos(\omega_0 t + \phi) \right]}_{\text{Phần Ảo}}$$
+            </div>
+            <p>
+                • <b>Trường hợp 2: Nếu đầu vào là $x(t) = \sin(\omega_0 t + \phi)$:</b> Theo Euler, $\sin(\theta) = \text{Phần Ảo của } \{e^{j\theta}\}$. Nhìn vào Phần Ảo vừa nhân ở dòng trên, ta có ngay kết quả đầu ra cho hàm $\sin$!<br>
+                • <b>Trường hợp 3: Nếu đầu vào là một Hằng số $C$ (ví dụ $+1$ hoặc $+3$):</b> Hằng số không dao động nên có <b>tần số bằng $0$ ($\omega_0 = 0$ hoặc $\Omega_0 = 0$)</b>. Khi đi qua hệ thống, đầu ra chỉ việc lấy hằng số đó nhân với $H(0)$: $y_{DC} = C \cdot H(0)$.
+            </p>
+            <div class="f">
+                $$1.\ \text{Nếu } x = \cos(\theta) \implies y = A\cos(\theta) - B\sin(\theta)$$
+                $$2.\ \text{Nếu } x = \sin(\theta) \implies y = A\sin(\theta) + B\cos(\theta)$$
+                $$3.\ \text{Nếu } x = \text{Hằng số } C \ (\omega = 0) \implies y = C \cdot H(0)$$
+                <small>Mẹo nhớ dấu cực dễ: Với $\cos(\theta)$ thì $\cos$ đi trước và mang dấu TRỪ ($-B\sin$) ở giữa. Với $\sin(\theta)$ thì $\sin$ đi trước và mang dấu CỘNG ($+B\cos$) ở giữa!</small>
+            </div>
+        </div>
+
+        <div class="box warn">
+            <h4>DẠNG 2: Tín hiệu Rời rạc dạng Xung $\delta[n]$ và Bước nhảy $u[n]$ (Câu 1, Câu 6, và bước đầu Câu 7, 8)</h4>
+            <div class="grid3">
+                <div>
+                    <b>1. Xung đơn vị $\delta[n]$:</b>
+                    $$\delta[n] \longleftrightarrow 1$$
+                    $$\delta[n - k] \longleftrightarrow e^{-jk\Omega}$$
+                </div>
+                <div>
+                    <b>2. Hàm mũ rời rạc $a^n u[n]$:</b>
+                    $$a^n u[n] \longleftrightarrow \frac{1}{1 - a e^{-j\Omega}}$$
+                </div>
+                <div>
+                    <b>3. Hàm mũ liên tục $e^{-at}u(t)$:</b>
+                    $$e^{-at}u(t) \longleftrightarrow \frac{1}{a + j\omega}$$
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ 8 - Q1 -->
+        <div id="q8-1" class="q-card">
+            <div class="q-head">
+                <span class="k b1">Quiz 8 - Question 1 (1 pts) - Hệ thống rời rạc</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Cho một hệ thống có đáp ứng tần số $H(\Omega) = \frac{1}{1 - \frac{1}{2}e^{-j\Omega}}$. Tìm tín hiệu vào $x[n]$ của hệ thống nếu tín hiệu ra là $y[n] = \left(\frac{1}{2}\right)^n (u[n] - u[n-1])$.</p>
+            <div class="step">
+                <b>Bước 1: Giải mã và rút gọn tín hiệu ra $y[n]$ (Cực kỳ quan trọng!)</b><br>
+                • $u[n] = 1$ tại các điểm $n = 0, 1, 2, 3, 4\dots$ (và bằng $0$ khi $n < 0$).<br>
+                • $u[n-1] = 1$ tại các điểm $n = 1, 2, 3, 4\dots$ (và bằng $0$ khi $n < 1$).<br>
+                Khi lấy $u[n] - u[n-1]$, toàn bộ các điểm từ $n = 1, 2, 3\dots$ trở đi đều có $1 - 1 = 0$ (triệt tiêu sạch!). Chỉ còn sót lại <b>duy nhất điểm tại $n = 0$</b> có giá trị bằng $1 - 0 = 1$. Mà tín hiệu chỉ bằng $1$ tại $n=0$ và bằng $0$ tại mọi nơi khác chính là <b>xung đơn vị $\delta[n]$</b>! Vậy $u[n] - u[n-1] = \delta[n]$.<br>
+                Thay vào biểu thức của $y[n]$ (do $\delta[n]$ chỉ khác $0$ tại đúng $n = 0$):
+                $$y[n] = \left(\frac{1}{2}\right)^n \delta[n] = \left(\frac{1}{2}\right)^0 \delta[n] = 1 \cdot \delta[n] = \delta[n]$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Chuyển sang miền tần số để tìm $X(\Omega)$</b><br>
+                Biến đổi DTFT của $y[n] = \delta[n]$ là $Y(\Omega) = 1$. Theo công thức hệ thống LTI:
+                $$Y(\Omega) = X(\Omega) \cdot H(\Omega) \quad \Longrightarrow \quad X(\Omega) = \frac{Y(\Omega)}{H(\Omega)} = \frac{1}{\frac{1}{1 - \frac{1}{2}e^{-j\Omega}}} = 1 - \frac{1}{2}e^{-j\Omega}$$
+            </div>
+            <div class="step">
+                <b>Bước 3: Biến đổi ngược từ $X(\Omega)$ về tín hiệu thời gian $x[n]$</b><br>
+                Áp dụng $\mathcal{F}^{-1}\{1\} = \delta[n]$ và $\mathcal{F}^{-1}\{e^{-j1\Omega}\} = \delta[n-1]$:
+                $$X(\Omega) = 1 - \frac{1}{2}e^{-j\Omega} \quad \xrightarrow{\mathcal{F}^{-1}} \quad x[n] = \delta[n] - \frac{1}{2}\delta[n-1]$$
+            </div>
+            <div class="box ok">Kết luận Question 1: Chọn đáp án $x[n] = \delta[n] - \frac{1}{2}\delta[n-1]$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 8 - Q2 -->
+        <div id="q8-2" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 8 - Question 2 (1 pts) - Hệ thống liên tục</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm đáp ứng của hệ thống có đáp ứng tần số $H(\omega) = \frac{1}{1 - j\omega}$ với tín hiệu vào $x(t) = \sin\left(\frac{\pi}{2}t\right)$.</p>
+            <div class="step">
+                <b>Bước 1: Xác định tần số góc $\omega_0$ của tín hiệu đầu vào:</b> Hệ số đứng trước biến $t$ là $\omega_0 = \frac{\pi}{2}\text{ (rad/s)}$.
+            </div>
+            <div class="step">
+                <b>Bước 2: Tính giá trị $H(\omega_0)$ và nhân liên hợp để tách Phần Thực $A$, Phần Ảo $B$:</b><br>
+                Thay $\omega = \frac{\pi}{2}$ vào $H(\omega) = \frac{1}{1 - j\omega}$ và nhân cả tử lẫn mẫu với lượng liên hợp $\left(1 + j\frac{\pi}{2}\right)$:
+                $$H\left(\frac{\pi}{2}\right) = \frac{1}{1 - j\frac{\pi}{2}} = \frac{1 + j\frac{\pi}{2}}{\left(1 - j\frac{\pi}{2}\right)\left(1 + j\frac{\pi}{2}\right)} = \frac{1 + j\frac{\pi}{2}}{1 + \pi^2/4} = \underbrace{\left(\frac{1}{1 + \pi^2/4}\right)}_{A = \text{Re}\{H\}} + j\underbrace{\left(\frac{\pi/2}{1 + \pi^2/4}\right)}_{B = \text{Im}\{H\}}$$
+            </div>
+            <div class="step">
+                <b>Bước 3: Lắp vào Công thức Vàng số 2 (dành cho đầu vào là hàm $\sin$):</b>
+                $$y(t) = A\sin\left(\frac{\pi}{2}t\right) + B\cos\left(\frac{\pi}{2}t\right) = \frac{1}{1 + \pi^2/4}\left[ \sin\left(\frac{\pi}{2}t\right) + \frac{\pi}{2}\cos\left(\frac{\pi}{2}t\right) \right]$$
+            </div>
+            <div class="box ok">Kết luận Question 2: Chọn đáp án $y(t) = \frac{1}{1 + \pi^2/4}\left[\sin\left(\frac{\pi}{2}t\right) + \frac{\pi}{2}\cos\left(\frac{\pi}{2}t\right)\right]$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 8 - Q3 -->
+        <div id="q8-3" class="q-card">
+            <div class="q-head">
+                <span class="k b3">Quiz 8 - Question 3 (1 pts) - Hệ thống liên tục</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm đáp ứng của hệ thống có đáp ứng tần số $H(\omega) = \frac{1}{1 - j\omega}$ với tín hiệu vào $x(t) = \cos(2t) + 1$.</p>
+            <div class="step">
+                <b>Bước 1: Xử lý thành phần thứ nhất $x_1(t) = \cos(2t)$ (tại $\omega_1 = 2$):</b><br>
+                Thay $\omega = 2$ vào $H(\omega)$ và nhân liên hợp với $(1 + j2)$:
+                $$H(2) = \frac{1}{1 - j2} = \frac{1 + j2}{1^2 + 2^2} = \frac{1}{5} + j\frac{2}{5} \quad \Longrightarrow \quad A = \frac{1}{5},\ B = \frac{2}{5}$$
+                Vì $x_1(t) = \cos(2t)$ là hàm $\cos$, áp dụng <b>Công thức Vàng số 1</b> ($y_1 = A\cos(\theta) - B\sin(\theta)$):
+                $$y_1(t) = \frac{1}{5}\cos(2t) - \frac{2}{5}\sin(2t) = \frac{1}{5}\left[ \cos(2t) - 2\sin(2t) \right]$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Xử lý thành phần hằng số $x_2(t) = 1$ (tại $\omega_2 = 0$):</b><br>
+                $$H(0) = \frac{1}{1 - j\cdot 0} = 1 \quad \Longrightarrow \quad y_2(t) = 1 \cdot H(0) = 1$$
+            </div>
+            <div class="step">
+                <b>Bước 3: Cộng hai thành phần đầu ra lại:</b> $y(t) = y_1(t) + y_2(t) = \frac{1}{5}\left[ \cos(2t) - 2\sin(2t) \right] + 1$.
+            </div>
+            <div class="box ok">Kết luận Question 3: Chọn đáp án $y(t) = \frac{1}{5}\left[\cos(2t) - 2\sin(2t)\right] + 1$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 8 - Q4 -->
+        <div id="q8-4" class="q-card">
+            <div class="q-head">
+                <span class="k b5">Quiz 8 - Question 4 (1 pts) - Hệ thống rời rạc</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm đáp ứng của hệ thống có đáp ứng tần số $H(\Omega) = \frac{1}{1 + \frac{1}{2}e^{-j\Omega}}$ với tín hiệu vào $x[n] = \sin\left(\frac{\pi}{2}n\right) + 1$.</p>
+            <div class="step">
+                <b>Bước 1: Xử lý thành phần thứ nhất $x_1[n] = \sin\left(\frac{\pi}{2}n\right)$ (tại $\Omega_1 = \frac{\pi}{2}$):</b><br>
+                Vì $e^{-j\frac{\pi}{2}} = \cos(\pi/2) - j\sin(\pi/2) = -j$, thay vào $H(\pi/2)$ và nhân liên hợp với $(1 + j\frac{1}{2})$:
+                $$H\left(\frac{\pi}{2}\right) = \frac{1}{1 + \frac{1}{2}(-j)} = \frac{1}{1 - j\frac{1}{2}} = \frac{1 + j\frac{1}{2}}{1^2 + (1/2)^2} = \frac{1 + j\frac{1}{2}}{5/4} = \frac{4}{5} + j\frac{2}{5}$$
+                Suy ra $A = \frac{4}{5}$ và $B = \frac{2}{5}$. Vì đầu vào là hàm $\sin$, áp dụng <b>Công thức Vàng số 2</b> ($y_1 = A\sin + B\cos$):
+                $$y_1[n] = \frac{4}{5}\sin\left(\frac{\pi}{2}n\right) + \frac{2}{5}\cos\left(\frac{\pi}{2}n\right)$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Xử lý thành phần hằng số $x_2[n] = 1$ (tại $\Omega_2 = 0$):</b><br>
+                $$H(0) = \frac{1}{1 + \frac{1}{2}e^0} = \frac{1}{3/2} = \frac{2}{3} \quad \Longrightarrow \quad y_2[n] = 1 \cdot \frac{2}{3} = \frac{2}{3}$$
+            </div>
+            <div class="box ok">Kết luận Question 4: Chọn đáp án $y[n] = \frac{4}{5}\sin\left(\frac{\pi}{2}n\right) + \frac{2}{5}\cos\left(\frac{\pi}{2}n\right) + \frac{2}{3}$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 8 - Q5 -->
+        <div id="q8-5" class="q-card">
+            <div class="q-head">
+                <span class="k b1">Quiz 8 - Question 5 (1 pts) - Hệ thống rời rạc</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm đáp ứng của hệ thống có đáp ứng tần số $H(\Omega) = \frac{1}{1 + \frac{1}{2}e^{-j2\Omega}}$ với tín hiệu vào $x[n] = \cos\left(\frac{\pi}{4}n\right) + 1$.</p>
+            <div class="step">
+                <b>Bước 1: Xử lý thành phần thứ nhất $x_1[n] = \cos\left(\frac{\pi}{4}n\right)$ (tại $\Omega_1 = \frac{\pi}{4}$):</b><br>
+                Chú ý số mũ của $e$ là $-j2\Omega$. Khi thay $\Omega = \frac{\pi}{4}$ vào, ta có $2\Omega = \frac{\pi}{2}$, nên $e^{-j2\cdot\frac{\pi}{4}} = e^{-j\frac{\pi}{2}} = -j$:
+                $$H\left(\frac{\pi}{4}\right) = \frac{1}{1 - j\frac{1}{2}} = \frac{4}{5} + j\frac{2}{5} \quad \Longrightarrow \quad A = \frac{4}{5},\ B = \frac{2}{5}$$
+                Vì đầu vào là hàm $\cos$, áp dụng <b>Công thức Vàng số 1</b> ($y_1 = A\cos - B\sin$, ở giữa là dấu <b>TRỪ</b>):
+                $$y_1[n] = \frac{4}{5}\cos\left(\frac{\pi}{4}n\right) - \frac{2}{5}\sin\left(\frac{\pi}{4}n\right)$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Xử lý thành phần hằng số $x_2[n] = 1$ (tại $\Omega_2 = 0$):</b><br>
+                $$H(0) = \frac{1}{1 + \frac{1}{2}e^0} = \frac{2}{3} \quad \Longrightarrow \quad y_2[n] = \frac{2}{3}$$
+            </div>
+            <div class="box ok">Kết luận Question 5: Chọn đáp án $y[n] = \frac{4}{5}\cos\left(\frac{\pi}{4}n\right) - \frac{2}{5}\sin\left(\frac{\pi}{4}n\right) + \frac{2}{3}$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 8 - Q6 -->
+        <div id="q8-6" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 8 - Question 6 (1 pts) - Hệ thống rời rạc</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm đáp ứng của hệ thống có đáp ứng tần số $H(\Omega) = \frac{1}{1 - \frac{1}{2}e^{-j\Omega}}$ với tín hiệu vào $x[n] = \delta[n] - 2\delta[n-1]$.</p>
+            <div class="step">
+                <b>Bước 1: Tìm đáp ứng xung $h[n]$ của hệ thống từ $H(\Omega)$:</b><br>
+                $$h[n] = \mathcal{F}^{-1}\left\{\frac{1}{1 - \frac{1}{2}e^{-j\Omega}}\right\} = \left(\frac{1}{2}\right)^n u[n] = 2^{-n}u[n]$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Tìm đầu ra $y[n]$ khi đầu vào là $x[n] = \delta[n] - 2\delta[n-1]$:</b><br>
+                • Khi đầu vào là $\delta[n] \longrightarrow$ Đầu ra là $h[n] = 2^{-n}u[n]$.<br>
+                • Khi đầu vào là $-2\delta[n-1] \longrightarrow$ Đầu ra là $-2h[n-1] = -2 \cdot 2^{-(n-1)}u[n-1] = -4(2^{-n})u[n-1]$.<br>
+                • Tách $u[n] = \delta[n] + u[n-1]$, khi đó $2^{-n}u[n] = 2^{-0}\delta[n] + (2^{-n})u[n-1] = \delta[n] + (2^{-n})u[n-1]$.<br>
+                • Gom lại: $y[n] = \delta[n] + 1\cdot(2^{-n})u[n-1] - 4(2^{-n})u[n-1] = \delta[n] - 3(2^{-n})u[n-1]$.
+            </div>
+            <div class="box ok">Kết luận Question 6: Chọn đáp án $y[n] = \delta[n] - 3(2^{-n})u[n-1]$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 8 - Q7 -->
+        <div id="q8-7" class="q-card">
+            <div class="q-head">
+                <span class="k b2">Quiz 8 - Question 7 (1 pts) - Hệ thống rời rạc</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm đáp ứng của hệ thống có đáp ứng xung $h[n] = 2^{-n}u[n]$ với tín hiệu vào $x[n] = 3 + \cos\left(\pi n + \frac{\pi}{3}\right)$.</p>
+            <div class="step">
+                <b>Bước 1: Tìm hàm Đáp ứng tần số $H(\Omega)$ từ đáp ứng xung $h[n]$:</b><br>
+                $$H(\Omega) = \frac{1}{1 - \frac{1}{2}e^{-j\Omega}}$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Xử lý từng thành phần tần số:</b><br>
+                • Hằng số $x_1[n] = 3$ (tại $\Omega_1 = 0$): $H(0) = \frac{1}{1 - 1/2} = 2 \Longrightarrow y_1[n] = 3 \cdot 2 = 6$.<br>
+                • Sóng $x_2[n] = \cos\left(\pi n + \frac{\pi}{3}\right)$ (tại $\Omega_2 = \pi$): Vì $e^{-j\pi} = -1$, nên $H(\pi) = \frac{1}{1 - \frac{1}{2}(-1)} = \frac{1}{3/2} = \frac{2}{3}$ (là số thực hoàn toàn, $B=0$). Vậy $y_2[n] = \frac{2}{3}\cos\left(\pi n + \frac{\pi}{3}\right)$.
+            </div>
+            <div class="box ok">Kết luận Question 7: Chọn đáp án $y[n] = 6 + \frac{2}{3}\cos\left(\pi n + \frac{\pi}{3}\right)$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 8 - Q8 -->
+        <div id="q8-8" class="q-card">
+            <div class="q-head">
+                <span class="k b1">Quiz 8 - Question 8 (1 pts) - Hệ thống liên tục</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm đáp ứng của hệ thống có đáp ứng xung $h(t) = e^{-t}u(t)$ với tín hiệu vào $x(t) = \cos(2t)$.</p>
+            <div class="step">
+                <b>Bước 1: Tìm đáp ứng tần số $H(\omega)$:</b> Tra bảng $e^{-at}u(t) \longleftrightarrow \frac{1}{a + j\omega}$ với $a = 1 \Longrightarrow H(\omega) = \frac{1}{1 + j\omega}$.
+            </div>
+            <div class="step">
+                <b>Bước 2: Thay $\omega_0 = 2$ của $x(t) = \cos(2t)$ vào $H(\omega)$:</b><br>
+                $$H(2) = \frac{1}{1 + j2} = \frac{1 - j2}{1^2 + 2^2} = \frac{1}{5} - j\frac{2}{5} \quad \Longrightarrow \quad A = \frac{1}{5},\ B = -\frac{2}{5}$$
+                Áp dụng <b>Công thức Vàng số 1</b> ($y = A\cos(2t) - B\sin(2t)$):
+                $$y(t) = \frac{1}{5}\cos(2t) - \left(-\frac{2}{5}\right)\sin(2t) = \frac{1}{5}\left[ \cos(2t) + 2\sin(2t) \right]$$
+            </div>
+            <div class="box ok">Kết luận Question 8: Chọn đáp án $y(t) = \frac{1}{5}\left[\cos(2t) + 2\sin(2t)\right]$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 8 - Q9 -->
+        <div id="q8-9" class="q-card">
+            <div class="q-head">
+                <span class="k b3">Quiz 8 - Question 9 (1 pts) - Hệ thống liên tục</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm đáp ứng của hệ thống TTBB có đáp ứng tần số $H(\omega) = \frac{1}{2 + j\omega}$ với tín hiệu vào $x(t) = \cos(2t) + 1$.</p>
+            <div class="step">
+                <b>Bước 1: Xử lý $x_1(t) = \cos(2t)$ (tại $\omega_1 = 2$):</b><br>
+                $$H(2) = \frac{1}{2 + j2} = \frac{2 - j2}{2^2 + 2^2} = \frac{2 - j2}{8} = \frac{1}{4} - j\frac{1}{4} \quad \Longrightarrow \quad A = \frac{1}{4},\ B = -\frac{1}{4}$$
+                $$y_1(t) = \frac{1}{4}\cos(2t) - \left(-\frac{1}{4}\right)\sin(2t) = \frac{1}{4}\cos(2t) + \frac{1}{4}\sin(2t)$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Xử lý hằng số $x_2(t) = 1$ (tại $\omega_2 = 0$):</b><br>
+                $$H(0) = \frac{1}{2 + j\cdot 0} = \frac{1}{2} = \frac{2}{4} \quad \Longrightarrow \quad y(t) = \frac{1}{4}\left[ \cos(2t) + \sin(2t) + 2 \right]$$
+            </div>
+            <div class="box ok">Kết luận Question 9: Chọn đáp án $y(t) = \frac{1}{4}\left[\cos(2t) + \sin(2t) + 2\right]$ (Đáp án đầu tiên).</div>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 10: PHƯƠNG PHÁP & GIẢI CHI TIẾT 12 CÂU QUIZ 6 ==================== -->
+    <section id="phan-10">
+        <span class="k b1">Thực chiến Bài tập Portal UET - 6_NHCH_C3_FTFS</span>
+        <h2 style="margin-top:8px">Mục 10. Phương Pháp & Giải Chi Tiết Từng Bước 12 Câu Quiz 6 (Biến Đổi Fourier & Chuỗi Fourier)</h2>
+
+        <h3>10.0. Tổng hợp 4 Phương Pháp Giải Nhanh 12 Câu Quiz 6</h3>
+        <div class="grid2">
+            <div class="box tip">
+                <h4>Dạng 1 (Câu 1, 2): Tính FT của tín hiệu liên tục $x(t)$ có cửa sổ $[u(t-t_1) - u(t-t_2)]$</h4>
+                <p>
+                    • Cụm $[u(t-t_1) - u(t-t_2)]$ (với $t_1 < t_2$) chỉ bằng $1$ trong đoạn từ $t = t_1$ đến $t = t_2$, và bằng $0$ ở mọi nơi khác.<br>
+                    • Do đó, tích phân Fourier thu gọn cận thành từ $t_1$ đến $t_2$: $X(\omega) = \int_{t_1}^{t_2} x(t)e^{-j\omega t}dt$.<br>
+                    • Nếu gặp hàm dịch thời gian $x(t - t_0)$, dùng tính chất dịch thời gian: $\mathcal{F}\{x(t - t_0)\} = e^{-j\omega t_0}X(\omega)$.
+                </p>
+            </div>
+            <div class="box tip">
+                <h4>Dạng 2 (Câu 3, 4, 5): Tính DTFT của tín hiệu rời rạc $x[n]$</h4>
+                <p>
+                    • Công thức gốc DTFT: $X(\Omega) = \sum_{n=-\infty}^{\infty} x[n]e^{-j\Omega n}$.<br>
+                    • <b>Mẹo vàng cho cửa sổ hữu hạn $[u[n - n_1] - u[n - n_2]]$:</b> Cụm này chỉ bằng $1$ tại các số nguyên $n$ thỏa mãn $n_1 \le n \le n_2 - 1$ (điểm đầu $n_1$ thì <b>LẤY</b>, điểm cuối $n_2$ thì <b>KHÔNG LẤY</b>!). Chỉ việc liệt kê từng điểm $n$ ra rồi thay số cộng trực tiếp!
+                </p>
+            </div>
+            <div class="box warn">
+                <h4>Dạng 3 (Câu 6, 7, 8): Hệ số DTFS của lược xung $\sum \delta[n - Nm - n_0]$</h4>
+                <p>
+                    • Tín hiệu $x[n] = \sum_{m=-\infty}^{\infty} \delta[n - N m - n_0]$ lặp lại sau mỗi chu kỳ $N$ mẫu, trong 1 chu kỳ chỉ có duy nhất 1 xung nằm tại $n = n_0$ (khi $m=0$).<br>
+                    • Lắp vào công thức DTFS với $\Omega_0 = \frac{2\pi}{N}$: $X[k] = \frac{1}{N} e^{-jk\frac{2\pi}{N}n_0}$.
+                </p>
+            </div>
+            <div class="box warn">
+                <h4>Dạng 4 (Câu 9, 10, 11): Tìm hệ số FS $X[k]$ của tổng các hàm $\sin, \cos$ viết dưới dạng $\delta[k - k_0]$</h4>
+                <p>
+                    • <b>Bước 1:</b> Tìm $\omega_0$ chung bằng cách lấy <b>Ước chung lớn nhất (GCD)</b> của các tần số góc thành phần.<br>
+                    • <b>Bước 2:</b> Đổi $\cos, \sin$ sang mũ phức theo Euler (nhớ $\frac{1}{2j} = -\frac{j}{2}$).<br>
+                    • <b>Bước 3:</b> Hệ số đứng trước $e^{jk_0\omega_0 t}$ viết là $c_{k_0}\delta[k - k_0]$; hệ số đứng trước $e^{-jk_0\omega_0 t}$ viết là $c_{-k_0}\delta[k + k_0]$; hằng số $c_0$ viết là $c_0\delta[k]$.
+                </p>
+            </div>
+        </div>
+
+        <!-- QUIZ 6 - Q1 -->
+        <div id="q6-1" class="q-card">
+            <div class="q-head">
+                <span class="k b1">Quiz 6 - Question 1 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm biến đổi Fourier của tín hiệu $x(t) = e^{-|t-1|}$.</p>
+            <div class="step">
+                <b>Cách 1 (Dùng Bảng công thức Slide 50 + Tính chất Dịch thời gian Slide 47):</b><br>
+                • Tra bảng Slide 50: $g(t) = e^{-a|t|} \longleftrightarrow G(\omega) = \frac{2a}{a^2 + \omega^2}$. Với $a = 1 \Longrightarrow \mathcal{F}\{e^{-|t|}\} = \frac{2}{\omega^2 + 1}$.<br>
+                • Tín hiệu $x(t) = e^{-|t-1|} = g(t - 1)$ bị dịch trễ $t_0 = 1$, nên nhân thêm $e^{-j\omega \cdot 1}$:
+                $$X(\omega) = \frac{2e^{-j\omega}}{\omega^2 + 1}$$
+            </div>
+            <div class="step">
+                <b>Cách 2 (Tính trực tiếp bằng tích phân):</b> Đặt $\tau = t - 1 \Rightarrow t = \tau + 1$:
+                $$X(\omega) = \int_{-\infty}^{\infty} e^{-|\tau|}e^{-j\omega(\tau+1)}d\tau = e^{-j\omega}\left[ \int_{-\infty}^{0} e^{(1-j\omega)\tau}d\tau + \int_{0}^{\infty} e^{-(1+j\omega)\tau}d\tau \right] = e^{-j\omega}\left[ \frac{1}{1 - j\omega} + \frac{1}{1 + j\omega} \right] = \frac{2e^{-j\omega}}{\omega^2 + 1}$$
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 1: Chọn đáp án $X(\omega) = \frac{2e^{-j\omega}}{\omega^2 + 1}$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 6 - Q2 -->
+        <div id="q6-2" class="q-card">
+            <div class="q-head">
+                <span class="k b1">Quiz 6 - Question 2 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm biến đổi Fourier của tín hiệu $x(t) = e^{2t}[u(t) - u(t-1)]$.</p>
+            <div class="step">
+                • Hiệu $[u(t) - u(t-1)]$ chỉ bằng $1$ khi $0 \le t < 1$, và bằng $0$ ở ngoài khoảng $(0, 1)$.<br>
+                • Thay vào tích phân Biến đổi Fourier và gom số mũ:
+                $$X(\omega) = \int_{0}^{1} e^{2t} e^{-j\omega t}dt = \int_{0}^{1} e^{(2 - j\omega)t}dt = \left[ \frac{e^{(2 - j\omega)t}}{2 - j\omega} \right]_{t=0}^{t=1} = \frac{e^{2 - j\omega} - 1}{2 - j\omega}$$
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 2: Chọn đáp án $X(\omega) = \frac{e^{2 - j\omega} - 1}{2 - j\omega}$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 6 - Q3 -->
+        <div id="q6-3" class="q-card">
+            <div class="q-head">
+                <span class="k b3">Quiz 6 - Question 3 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm biến đổi Fourier của tín hiệu $x[n] = 2^{-n}u[n-1]$.</p>
+            <div class="step">
+                • Vì $u[n-1] = 1$ khi $n \ge 1$, tổng DTFT bắt đầu từ $n = 1$:
+                $$X(\Omega) = \sum_{n=1}^{\infty} \left(\frac{1}{2}\right)^n e^{-j\Omega n} = \sum_{n=1}^{\infty} \left(\frac{1}{2}e^{-j\Omega}\right)^n$$
+                • Áp dụng tổng cấp số nhân bắt đầu từ $n = 1$: $\sum_{n=1}^{\infty} \alpha^n = \frac{\alpha^1}{1 - \alpha}$ với $\alpha = \frac{1}{2}e^{-j\Omega}$:
+                $$X(\Omega) = \frac{\frac{1}{2}e^{-j\Omega}}{1 - \frac{1}{2}e^{-j\Omega}} = \frac{2 \cdot \left(\frac{1}{2}e^{-j\Omega}\right)}{2 \cdot \left(1 - \frac{1}{2}e^{-j\Omega}\right)} = \frac{e^{-j\Omega}}{2 - e^{-j\Omega}}$$
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 3: Chọn đáp án $X(\Omega) = \frac{e^{-j\Omega}}{2 - e^{-j\Omega}}$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 6 - Q4 -->
+        <div id="q6-4" class="q-card">
+            <div class="q-head">
+                <span class="k b3">Quiz 6 - Question 4 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm biến đổi Fourier của tín hiệu $x[n] = 2^n(u[n] - u[n-2])$.</p>
+            <div class="step">
+                • Cụm $(u[n] - u[n-2])$ chỉ bằng $1$ tại <b>đúng 2 điểm nguyên là $n = 0$ và $n = 1$</b>.<br>
+                • Thay trực tiếp $n = 0$ và $n = 1$ vào tổng DTFT:
+                $$X(\Omega) = \sum_{n=0}^{1} 2^n e^{-j\Omega n} = 2^0 e^{0} + 2^1 e^{-j\Omega} = 1 + 2e^{-j\Omega}$$
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 4: Chọn đáp án $X(\Omega) = 1 + 2e^{-j\Omega}$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 6 - Q5 -->
+        <div id="q6-5" class="q-card">
+            <div class="q-head">
+                <span class="k b3">Quiz 6 - Question 5 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm biến đổi Fourier của tín hiệu $x[n] = \sin\left(\frac{\pi}{2}n\right)(u[n+1] - u[n-2])$.</p>
+            <div class="step">
+                • Cửa sổ $(u[n+1] - u[n-2])$ chỉ bằng $1$ tại <b>3 điểm nguyên: $n = -1$, $n = 0$, và $n = 1$</b>.<br>
+                • Tính giá trị mẫu: $x[-1] = \sin(-\pi/2) = -1$; $x[0] = \sin(0) = 0$; $x[1] = \sin(\pi/2) = +1$.<br>
+                • Thay vào tổng DTFT và dùng Euler ($e^{j\Omega} - e^{-j\Omega} = j2\sin(\Omega)$):
+                $$X(\Omega) = (-1)e^{-j\Omega(-1)} + 0 + (+1)e^{-j\Omega(1)} = -\left(e^{j\Omega} - e^{-j\Omega}\right) = -j2\sin(\Omega)$$
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 5: Chọn đáp án $X(\Omega) = -j2\sin(\Omega)$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 6 - Q6, 7, 8 -->
+        <div id="q6-6" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 6 - Question 6, Question 7 & Question 8 (3 pts)</span>
+                <span class="k b2">Đáp án đúng: Đều là Đáp án 1</span>
+            </div>
+            <p>
+                • <b>Question 6:</b> Tìm các hệ số chuỗi Fourier của tín hiệu $x[n] = \sum_{m=-\infty}^{+\infty} \delta[n - 3m - 1]$.<br>
+                • <b>Question 7:</b> Tìm các hệ số chuỗi Fourier của tín hiệu $x[n] = \sum_{m=-\infty}^{+\infty} \delta[n - 3m]$.<br>
+                • <b>Question 8:</b> Tìm các hệ số chuỗi Fourier của tín hiệu $x[n] = \sum_{m=-\infty}^{+\infty} \delta[n - 3m + 1]$.
+            </p>
+            <div class="step">
+                <b>Bước 1: Xác định chu kỳ cơ sở $N$ và tần số góc cơ sở $\Omega_0$:</b><br>
+                Chỉ số lặp $m$ được nhân với $3$ ($-3m$), nên chu kỳ cơ sở là $N = 3$, tần số góc cơ sở $\Omega_0 = \frac{2\pi}{3}$. Công thức DTFS trong 1 chu kỳ (chọn $m = 0$):
+                $$X[k] = \frac{1}{3} \sum_{n=\langle 3 \rangle} x[n]e^{-jk\frac{2\pi}{3}n}$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Xét vị trí xung nổ tại $m = 0$ cho từng câu:</b><br>
+                • <b>Giải Question 6:</b> Tại $m = 0$, $x[n] = \delta[n - 1]$ chỉ bằng $1$ tại <b>$n = 1$</b> $\Longrightarrow X[k] = \frac{1}{3}e^{-j\frac{2\pi}{3}k}$ (Chọn Đáp án 1).<br>
+                • <b>Giải Question 7:</b> Tại $m = 0$, $x[n] = \delta[n]$ chỉ bằng $1$ tại <b>$n = 0$</b> $\Longrightarrow X[k] = \frac{1}{3}e^0 = \frac{1}{3}$ (Chọn Đáp án 1).<br>
+                • <b>Giải Question 8:</b> Tại $m = 0$, $x[n] = \delta[n + 1]$ chỉ bằng $1$ tại <b>$n = -1$</b> $\Longrightarrow X[k] = \frac{1}{3}e^{-jk\frac{2\pi}{3}(-1)} = \frac{1}{3}e^{j\frac{2\pi}{3}k}$ (Chọn Đáp án 1).
+            </div>
+        </div>
+
+        <!-- QUIZ 6 - Q9 -->
+        <div id="q6-9" class="q-card">
+            <div class="q-head">
+                <span class="k b2">Quiz 6 - Question 9 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Xác định các hệ số chuỗi Fourier của tín hiệu $x(t) = \sin\left(\frac{\pi}{3}t - \frac{\pi}{2}\right) + 2\cos\left(\frac{\pi}{2}t\right)$.</p>
+            <div class="step">
+                <b>Bước 1: Tìm tần số góc cơ sở chung $\omega_0$:</b><br>
+                Sóng 1 có $\omega_1 = \frac{\pi}{3} \implies T_1 = 6\text{ s}$. Sóng 2 có $\omega_2 = \frac{\pi}{2} \implies T_2 = 4\text{ s}$. Chu kỳ chung $T_0 = \text{BCNN}(6, 4) = 12\text{ s} \implies \omega_0 = \frac{2\pi}{12} = \frac{\pi}{6}\text{ (rad/s)}$.<br>
+                • Khi đó $\omega_1 = \frac{\pi}{3} = 2\omega_0$ (bậc hài $k = \pm 2$); và $\omega_2 = \frac{\pi}{2} = 3\omega_0$ (bậc hài $k = \pm 3$).
+            </div>
+            <div class="step">
+                <b>Bước 2: Rút gọn lượng giác và đổi sang mũ phức Euler:</b><br>
+                • Ta có $\sin\left(\frac{\pi}{3}t - \frac{\pi}{2}\right) = -\cos\left(\frac{\pi}{3}t\right) = -\cos(2\omega_0 t) = -\frac{1}{2}e^{j2\omega_0 t} - \frac{1}{2}e^{-j2\omega_0 t} \implies -\frac{1}{2}\delta[k-2] - \frac{1}{2}\delta[k+2]$.<br>
+                • Còn $2\cos\left(\frac{\pi}{2}t\right) = 2\cos(3\omega_0 t) = 1\cdot e^{j3\omega_0 t} + 1\cdot e^{-j3\omega_0 t} \implies +\delta[k-3] + \delta[k+3]$.
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 9: Chọn đáp án $X[k] = -\frac{1}{2}\delta[k-2] - \frac{1}{2}\delta[k+2] + \delta[k-3] + \delta[k+3]$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 6 - Q10 -->
+        <div id="q6-10" class="q-card">
+            <div class="q-head">
+                <span class="k b2">Quiz 6 - Question 10 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Xác định các hệ số chuỗi Fourier của tín hiệu $x(t) = 3\cos\left(\frac{\pi}{2}t + \frac{\pi}{4}\right)$.</p>
+            <div class="step">
+                Đây chính là Ví dụ ở Slide 35: Với $\omega_0 = \frac{\pi}{2}$, áp dụng Euler:
+                $$x(t) = \left(\frac{3}{2}e^{j\pi/4}\right) e^{j1\cdot\omega_0 t} + \left(\frac{3}{2}e^{-j\pi/4}\right) e^{-j1\cdot\omega_0 t}$$
+                Vậy $X[1] = \frac{3}{2}e^{j\pi/4}$, $X[-1] = \frac{3}{2}e^{-j\pi/4}$, và bằng $0$ với các $k$ còn lại.
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 10: Chọn Đáp án 1.</div>
+        </div>
+
+        <!-- QUIZ 6 - Q11 -->
+        <div id="q6-11" class="q-card">
+            <div class="q-head">
+                <span class="k b2">Quiz 6 - Question 11 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Xác định các hệ số chuỗi Fourier của tín hiệu $x(t) = \sin(2t) - \cos(3t + 1) + 1$.</p>
+            <div class="step">
+                • Ước chung lớn nhất của $\omega_1 = 2$ và $\omega_2 = 3$ là $\omega_0 = 1\text{ rad/s}$.<br>
+                • Hằng số $+1 \implies \delta[k]$.<br>
+                • $\sin(2t) = \frac{e^{j2t} - e^{-j2t}}{2j} = -\frac{j}{2}e^{j2t} + \frac{j}{2}e^{-j2t} \implies -\frac{j}{2}\delta[k-2] + \frac{j}{2}\delta[k+2]$.<br>
+                • $-\cos(3t + 1) = -\frac{e^j}{2}e^{j3t} - \frac{e^{-j}}{2}e^{-j3t} \implies -\frac{e^j}{2}\delta[k-3] - \frac{e^{-j}}{2}\delta[k+3]$.
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 11: Chọn đáp án $X[k] = \delta[k] - \frac{j}{2}\delta[k-2] + \frac{j}{2}\delta[k+2] - \frac{e^j}{2}\delta[k-3] - \frac{e^{-j}}{2}\delta[k+3]$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 6 - Q12 -->
+        <div id="q6-12" class="q-card">
+            <div class="q-head">
+                <span class="k b2">Quiz 6 - Question 12 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Xác định các hệ số chuỗi Fourier của tín hiệu tuần hoàn $x(t)$ có chu kỳ cơ sở $T = 2$ giây và một chu kỳ được biểu diễn: $x(t) = 1$ với $0 \le t < 1$, và $x(t) = 0$ với $1 \le t < 2$.</p>
+            <div class="step">
+                Chu kỳ $T = 2 \implies \omega_0 = \frac{2\pi}{2} = \pi$. Thay vào tích phân tính $X[k]$:
+                $$X[k] = \frac{1}{2}\int_0^1 1 \cdot e^{-jk\pi t}dt = \frac{1}{2} \left[ \frac{e^{-jk\pi t}}{-jk\pi} \right]_{t=0}^{t=1} = \frac{1 - e^{-jk\pi}}{j2k\pi}$$
+            </div>
+            <div class="box ok">Kết luận Quiz 6 - Question 12: Chọn đáp án $X[k] = \frac{1 - e^{-jk\pi}}{j2k\pi}$ (Đáp án đầu tiên).</div>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 11: PHƯƠNG PHÁP & GIẢI CHI TIẾT 7 CÂU QUIZ 7 ==================== -->
+    <section id="phan-11">
+        <span class="k b4">Thực chiến Bài tập Portal UET - 7_NHCH_C3_Fourier ngược</span>
+        <h2 style="margin-top:8px">Mục 11. Phương Pháp & Giải Chi Tiết Từng Bước 7 Câu Quiz 7 (Biến Đổi Fourier Ngược)</h2>
+
+        <h3>11.0. Hai Quy Tắc Vàng Khi Làm Bài Tập Biến Đổi Fourier Ngược</h3>
+        <div class="grid2">
+            <div class="box tip">
+                <h4>1. Quy tắc đối ngẫu vị trí xung giữa $x[n]$ và $X[k]$ (Câu 2, 3, 4)</h4>
+                <p>
+                    • Nếu đề bài cho $X[k]$ có chứa hàm $\cos, \sin$ theo biến $k$, hãy bung $\cos, \sin$ ra mũ phức $e^{\pm jk\Omega_0 n_0}$ rồi <b>đưa về dạng chuẩn $e^{-jk\Omega_0 n_0}$</b> để đọc vị trí xung $\delta[n - n_0]$:<br>
+                    • Trong công thức phân tích có dấu TRỪ sẵn $e^{-jk\Omega_0 n}$, nên $e^{-jk\Omega_0(2)}$ ứng với $n = +2$ tức $\delta[n-2]$, còn $e^{+jk\Omega_0(2)} = e^{-jk\Omega_0(-2)}$ ứng với $n = -2$ tức $\delta[n+2]$!
+                </p>
+            </div>
+            <div class="box warn">
+                <h4>2. Quy tắc ghép cặp xung $\delta[k - k_0]$ thành hàm $\cos, \sin$ (Câu 5, 6, 7)</h4>
+                <p>
+                    • Mỗi xung $A\,\delta[k - k_0]$ (tại $k = k_0$) khi lắp vào tổng $x(t) = \sum X[k]e^{jk\omega_0 t}$ sẽ biến thành $A\,e^{jk_0\omega_0 t}$.<br>
+                    • Gom 2 số hạng đối xứng:<br>
+                    <b>$A\,e^{jk_0\omega_0 t} + A\,e^{-jk_0\omega_0 t} = 2A\cos(k_0\omega_0 t)$</b><br>
+                    <b>$-jA\,e^{jk_0\omega_0 t} + jA\,e^{-jk_0\omega_0 t} = 2A\sin(k_0\omega_0 t)$</b>
+                </p>
+            </div>
+        </div>
+
+        <!-- QUIZ 7 - Q1 -->
+        <div id="q7-1" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 7 - Question 1 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm các hệ số chuỗi Fourier của tín hiệu tuần hoàn $x[n]$ có chu kỳ cơ sở $N = 10$ và một chu kỳ được biểu diễn: $x[0] = 1$, $x[8] = -1$, và bằng $0$ tại các $n$ còn lại.</p>
+            <div class="step">
+                <b>Bước 1: Lắp vào công thức DTFS với $N = 10$:</b><br>
+                $$X[k] = \frac{1}{10} \sum_{n=0}^{9} x[n]e^{-jk\frac{2\pi}{10}n} = \frac{1}{10} \left( 1\cdot e^0 - 1\cdot e^{-jk\frac{16\pi}{10}} \right) = \frac{1}{10}\left(1 - e^{-j\frac{8\pi}{5}k}\right)$$
+            </div>
+            <div class="step">
+                <b>Bước 2: Dùng tính tuần hoàn $e^{+j2\pi k} = 1$ để đổi $-\frac{8\pi}{5}k$ thành $+\frac{2\pi}{5}k$:</b><br>
+                $$e^{-j\frac{8\pi}{5}k} = e^{-j\frac{8\pi}{5}k} \cdot e^{+j\frac{10\pi}{5}k} = e^{+j\frac{2\pi}{5}k} \quad \Longrightarrow \quad X[k] = \frac{1}{10}\left(1 - e^{j\frac{2\pi}{5}k}\right)$$
+            </div>
+            <div class="box ok">Kết luận Quiz 7 - Question 1: Chọn đáp án $X[k] = \frac{1}{10}\left(1 - e^{j\frac{2\pi}{5}k}\right)$ (Đáp án đầu tiên - số mũ mang dấu DƯƠNG!).</div>
+        </div>
+
+        <!-- QUIZ 7 - Q2 -->
+        <div id="q7-2" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 7 - Question 2 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm mối quan hệ giữa hai tín hiệu tuần hoàn $x[n]$ và $y[n]$ có cùng chu kỳ cơ sở $N = 20$, biết quan hệ giữa các hệ số chuỗi Fourier của chúng: $Y[k] = \cos\left(\frac{\pi}{5}k\right)X[k]$.</p>
+            <div class="step">
+                • Với $N = 20 \implies \Omega_0 = \frac{2\pi}{20} = \frac{\pi}{10}$. Góc trong hàm $\cos$ là $\frac{\pi}{5}k = 2\Omega_0 k$.<br>
+                • Bung Euler: $Y[k] = \frac{1}{2}\left(e^{+jk\Omega_0(2)}X[k] + e^{-jk\Omega_0(2)}X[k]\right) \xrightarrow{\text{DTFS}^{-1}} y[n] = \frac{1}{2}\left(x[n + 2] + x[n - 2]\right)$.
+            </div>
+            <div class="box ok">Kết luận Quiz 7 - Question 2: Chọn đáp án $y[n] = \frac{1}{2}(x[n+2] + x[n-2])$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 7 - Q3 -->
+        <div id="q7-3" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 7 - Question 3 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm một chu kỳ của tín hiệu tuần hoàn $x[n]$ với các hệ số chuỗi Fourier được cho như sau: $X[k] = \cos\left(\frac{4\pi}{11}k\right) + 2j\sin\left(\frac{6\pi}{11}k\right)$.</p>
+            <div class="step">
+                • Chu kỳ $N = 11 \implies \Omega_0 = \frac{2\pi}{11}$. Ta có $\frac{4\pi}{11}k = 2\Omega_0 k$ và $\frac{6\pi}{11}k = 3\Omega_0 k$.<br>
+                • Bung Euler và viết theo dạng chuẩn $e^{-jk\Omega_0 n_0}$:<br>
+                $$\cos(2\Omega_0 k) = \frac{1}{2}e^{-jk\Omega_0(2)} + \frac{1}{2}e^{-jk\Omega_0(-2)}$$
+                $$2j\sin(3\Omega_0 k) = 2j \cdot \frac{e^{j3\Omega_0 k} - e^{-j3\Omega_0 k}}{2j} = -1\cdot e^{-jk\Omega_0(3)} + 1\cdot e^{-jk\Omega_0(-3)}$$
+                • Đọc vị trí xung: $x[n] = \frac{1}{2}\delta[n-2] + \frac{1}{2}\delta[n+2] - \delta[n-3] + \delta[n+3]$ (với $-5 \le n \le 5$).
+            </div>
+            <div class="box ok">Kết luận Quiz 7 - Question 3: Chọn đáp án $x[n] = \frac{1}{2}\delta[n-2] + \frac{1}{2}\delta[n+2] - \delta[n-3] + \delta[n+3]$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 7 - Q4 -->
+        <div id="q7-4" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 7 - Question 4 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm tín hiệu $x[n]$ có biến đổi Fourier $X(\Omega) = \sin\left(2\Omega + \frac{\pi}{2}\right)$.</p>
+            <div class="step">
+                Ta có $\sin\left(2\Omega + \frac{\pi}{2}\right) = \cos(2\Omega) = \frac{1}{2}\left(e^{j2\Omega} + e^{-j2\Omega}\right) \xrightarrow{\mathcal{F}^{-1}} x[n] = \frac{1}{2}\left(\delta[n + 2] + \delta[n - 2]\right)$.
+            </div>
+            <div class="box ok">Kết luận Quiz 7 - Question 4: Chọn đáp án $x[n] = \frac{1}{2}(\delta[n+2] + \delta[n-2])$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 7 - Q5 -->
+        <div id="q7-5" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 7 - Question 5 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Tìm tín hiệu tuần hoàn $x[n]$ có chu kỳ cơ sở $N = 6$ với các hệ số chuỗi Fourier được cho như sau: $X[k] = \delta[k-2] - 2\delta[k-3] + \delta[k-4]$ với $0 \le k \le 5$.</p>
+            <div class="step">
+                • Với $N = 6 \implies \Omega_0 = \frac{2\pi}{6} = \frac{\pi}{3}$. Lắp vào công thức tổng hợp DTFS:
+                $$x[n] = \sum_{k=0}^{5} X[k]e^{jk\frac{\pi}{3}n} = e^{j\frac{2\pi}{3}n} - 2e^{j\pi n} + e^{j\frac{4\pi}{3}n}$$
+                • Vì $n$ nguyên nên $e^{-j2\pi n} = 1 \implies e^{j\frac{4\pi}{3}n} = e^{j(\frac{4\pi}{3} - 2\pi)n} = e^{-j\frac{2\pi}{3}n}$. Và $e^{j\pi n} = \cos(\pi n)$.<br>
+                • Gộp lại: $x[n] = \left(e^{j\frac{2\pi}{3}n} + e^{-j\frac{2\pi}{3}n}\right) - 2\cos(\pi n) = 2\cos\left(\frac{2\pi}{3}n\right) - 2\cos(\pi n)$.
+            </div>
+            <div class="box ok">Kết luận Quiz 7 - Question 5: Chọn đáp án $x[n] = 2\cos\left(\frac{2\pi}{3}n\right) - 2\cos(\pi n)$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 7 - Q6 -->
+        <div id="q7-6" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 7 - Question 6 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Xác định tín hiệu tuần hoàn $x(t)$ có các hệ số chuỗi Fourier và tần số cơ sở được cho như sau: $X[k] = -j\delta[k-2] + j\delta[k+2] + 2\delta[k-3] + 2\delta[k+3]$, $\Omega_0 = \pi$.</p>
+            <div class="step">
+                $$x(t) = \left(-j e^{j2\pi t} + j e^{-j2\pi t}\right) + \left(2e^{j3\pi t} + 2e^{-j3\pi t}\right) = 2\cdot\frac{e^{j2\pi t} - e^{-j2\pi t}}{2j} + 4\cdot\frac{e^{j3\pi t} + e^{-j3\pi t}}{2} = 2\sin(2\pi t) + 4\cos(3\pi t)$$
+            </div>
+            <div class="box ok">Kết luận Quiz 7 - Question 6: Chọn đáp án $x(t) = 2\sin(2\pi t) + 4\cos(3\pi t)$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 7 - Q7 -->
+        <div id="q7-7" class="q-card">
+            <div class="q-head">
+                <span class="k b4">Quiz 7 - Question 7 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <p><b>Đề bài:</b> Xác định tín hiệu tuần hoàn $x(t)$ có chu kỳ cơ sở $T = 6$ giây và các hệ số chuỗi Fourier được cho như sau: $X[k] = \delta[k+2] + \delta[k-2] + 2j\delta[k+3] - 2j\delta[k-3]$.</p>
+            <div class="step">
+                • Chu kỳ $T = 6 \implies \omega_0 = \frac{2\pi}{6} = \frac{\pi}{3}$.<br>
+                • Tại $k = \pm 2$ ($2\omega_0 = \frac{2\pi}{3}$): $1\cdot e^{j\frac{2\pi}{3}t} + 1\cdot e^{-j\frac{2\pi}{3}t} = 2\cos\left(\frac{2\pi}{3}t\right)$.<br>
+                • Tại $k = \pm 3$ ($3\omega_0 = \pi$): $-2j e^{j\pi t} + 2j e^{-j\pi t} = 4 \cdot \frac{e^{j\pi t} - e^{-j\pi t}}{2j} = 4\sin(\pi t)$.
+            </div>
+            <div class="box ok">Kết luận Quiz 7 - Question 7: Chọn đáp án $x(t) = 2\cos\left(\frac{2\pi}{3}t\right) + 4\sin(\pi t)$ (Đáp án đầu tiên).</div>
+        </div>
+    </section>
+
+    <!-- ==================== MỤC 12: PHƯƠNG PHÁP & GIẢI CHI TIẾT 9 CÂU QUIZ 9 ==================== -->
+    <section id="phan-12">
+        <span class="k b3">Thực chiến Bài tập Portal UET - 9_NHCH_C3_Đồ thị phổ của tín hiệu</span>
+        <h2 style="margin-top:8px">Mục 12. Phương Pháp Đọc Đồ Thị Phổ Trong 5 Giây & Giải Chi Tiết 9 Câu Quiz 9</h2>
+
+        <h3>12.0. Quy Tắc 3 Bước Nhìn Hình Đọc Ngay Phương Trình $x(t)$ (Đúng 100% Cho Mọi Câu!)</h3>
+        <div class="grid3">
+            <div class="box tip">
+                <h4>Quy tắc 1: Đọc vạch ở chính giữa ($\omega = 0$) $\rightarrow$ Hằng số DC</h4>
+                <p>
+                    • Độ cao trên đồ thị Biên độ là $M_0$ (không nhân đôi!).<br>
+                    • Nếu tại $\omega = 0$ <b>KHÔNG có vạch pha</b> (pha $= 0$): Hằng số mang <b>dấu CỘNG ($+M_0$)</b>.<br>
+                    • Nếu tại $\omega = 0$ <b>CÓ vạch pha cao bằng $\pi$</b>: Hằng số mang <b>dấu TRỪ ($-M_0$)</b> (vì $e^{j\pi} = -1$)!
+                </p>
+            </div>
+            <div class="box tip">
+                <h4>Quy tắc 2: Đọc các cặp vạch hai bên ($\pm 200\pi, \pm 400\pi$) $\rightarrow$ NHÂN ĐÔI độ cao!</h4>
+                <p>
+                    Hai vạch âm và dương ghép lại theo Euler: $M_k e^{j\theta} + M_k e^{-j\theta} = (2M_k)\cos(\theta)$.<br>
+                    • Vạch cao $1 \xrightarrow{\times 2} \mathbf{2}\cos(\dots)$<br>
+                    • Vạch cao $\frac{3}{4} \xrightarrow{\times 2} \mathbf{\frac{3}{2}}\cos(\dots)$<br>
+                    • Vạch cao $\frac{1}{2} \xrightarrow{\times 2} \mathbf{1}\cos(\dots)$
+                </p>
+            </div>
+            <div class="box warn">
+                <h4>Quy tắc 3: Chỉ nhìn NỬA BÊN PHẢI ($\omega > 0$) của đồ thị Pha để lấy dấu góc pha!</h4>
+                <p>
+                    • Nếu tại $+200\pi$ (hoặc $+400\pi$), vạch pha <b>chổng lên trên ($+\pi/4$)</b> $\rightarrow$ Viết là $\cos(\dots \mathbf{+ \frac{\pi}{4}})$.<br>
+                    • Nếu vạch pha <b>chúc xuống dưới ($-\pi/4$)</b> $\rightarrow$ Viết là $\cos(\dots \mathbf{- \frac{\pi}{4}})$.<br>
+                    • Nếu <b>không có vạch pha</b> $\rightarrow$ Góc pha bằng $0$: $\cos(\omega_k t)$.
+                </p>
+            </div>
+        </div>
+
+        <!-- QUIZ 9 - Q1 -->
+        <div id="q9-1" class="q-card">
+            <div class="q-head">
+                <span class="k b3">Quiz 9 - Question 1 (1 pts)</span>
+                <span class="k b2">Đáp án đúng: Đáp án 1</span>
+            </div>
+            <div class="grid2">
+                <div>
+                    <small class="mut"><b>Đồ thị Biên độ $|X(\omega)|$ (Câu 1, 2, 3, 4 giống nhau)</b></small>
+                    <svg viewBox="0 0 320 125">
+                        <line x1="10" y1="95" x2="310" y2="95" stroke="var(--mut)" stroke-width="1.5"/>
+                        <line x1="50" y1="95" x2="50" y2="25" stroke="var(--c1)" stroke-width="3"/>
+                        <text x="55" y="35" fill="var(--ink)" font-size="11" font-weight="bold">1</text>
+                        <text x="32" y="112" fill="var(--c1)" font-size="10">-400π</text>
+                        <line x1="105" y1="95" x2="105" y2="45" stroke="var(--c1)" stroke-width="3"/>
+                        <text x="95" y="40" fill="var(--ink)" font-size="11" font-weight="bold">3/4</text>
+                        <text x="88" y="112" fill="var(--c1)" font-size="10">-200π</text>
+                        <line x1="160" y1="95" x2="160" y2="25" stroke="var(--c3)" stroke-width="3"/>
+                        <text x="165" y="35" fill="var(--c3)" font-size="11" font-weight="bold">1</text>
+                        <text x="157" y="112" fill="var(--mut)" font-size="10">0</text>
+                        <line x1="215" y1="95" x2="215" y2="45" stroke="var(--c1)" stroke-width="3"/>
+                        <text x="205" y="40" fill="var(--ink)" font-size="11" font-weight="bold">3/4</text>
+                        <text x="200" y="112" fill="var(--c1)" font-size="10">200π</text>
+                        <line x1="270" y1="95" x2="270" y2="25" stroke="var(--c1)" stroke-width="3"/>
+                        <text x="275" y="35" fill="var(--ink)" font-size="11" font-weight="bold">1</text>
+                        <text x="255" y="112" fill="var(--c1)" font-size="10">400π</text>
+                    </svg>
+                </div>
+                <div>
+                    <small class="mut"><b>Đồ thị Pha $\angle X(\omega)$ (Câu 1)</b></small>
+                    <svg viewBox="0 0 320 125">
+                        <line x1="10" y1="68" x2="310" y2="68" stroke="var(--mut)" stroke-width="1.5"/>
+                        <line x1="50" y1="68" x2="50" y2="38" stroke="var(--mut)" stroke-width="2"/>
+                        <text x="55" y="38" fill="var(--mut)" font-size="10">π/4</text>
+                        <text x="32" y="83" fill="var(--mut)" font-size="10">-400π</text>
+                        <line x1="160" y1="68" x2="160" y2="15" stroke="var(--c3)" stroke-width="3"/>
+                        <text x="165" y="25" fill="var(--c3)" font-size="11" font-weight="bold">π</text>
+                        <text x="157" y="83" fill="var(--c3)" font-size="10">0</text>
+                        <line x1="270" y1="68" x2="270" y2="105" stroke="var(--c4)" stroke-width="3"/>
+                        <text x="242" y="118" fill="var(--c4)" font-size="11" font-weight="bold">-π/4</text>
+                        <text x="255" y="62" fill="var(--c4)" font-size="10">400π</text>
+                    </svg>
+                </div>
+            </div>
+            <ul>
+                <li><b>Tại $\omega = 0$:</b> Biên độ cao $1$, nhưng đồ thị Pha tại $\omega = 0$ có cột cao $\pi \Longrightarrow$ Hằng số DC là $1 \cdot e^{j\pi} = \mathbf{-1}$.</li>
+                <li><b>Tại $\omega = +200\pi$:</b> Biên độ cao $\frac{3}{4} \xrightarrow{\times 2} \frac{3}{2}$, pha tại $+200\pi$ bằng $0 \Longrightarrow \mathbf{+\frac{3}{2}\cos(200\pi t)}$.</li>
+                <li><b>Tại $\omega = +400\pi$:</b> Biên độ cao $1 \xrightarrow{\times 2} 2$, pha tại $+400\pi$ chúc xuống $-\frac{\pi}{4} \Longrightarrow \mathbf{+2\cos\left(400\pi t - \frac{\pi}{4}\right)}$.</li>
+            </ul>
+            <div class="box ok">Kết luận Quiz 9 - Question 1: Chọn đáp án $x(t) = -1 + 2\cos\left(400\pi t - \frac{\pi}{4}\right) + \frac{3}{2}\cos(200\pi t)$ (Đáp án đầu tiên).</div>
+        </div>
+
+        <!-- QUIZ 9 - Q2, Q3, Q4 -->
+        <div id="q9-2" class="q-card">
+            <div class="q-head">
+                <span class="k b3">Quiz 9 - Question 2, Question 3 & Question 4 (3 pts)</span>
+                <span class="k b2">Đáp án đúng: Đều là Đáp án 1</span>
+            </div>
+            <p>Cả 3 câu 2, 3, 4 đều có chung đồ thị Biên độ với Câu 1 (vạch tại $0$ cao $1$; tại $200\pi$ cao $\frac{3}{4} \xrightarrow{\times 2} \frac{3}{2}$; tại $400\pi$ cao $1 \xrightarrow{\times 2} 2$), chỉ khác nhau đồ thị Pha:</p>
+            <div class="step">
+                <b>• Giải Question 2:</b> Tại $\omega = 0$ không có vạch pha ($\implies \mathbf{+1}$); tại $+200\pi$ pha hướng lên $+\frac{\pi}{4}$ ($\implies \mathbf{+\frac{3}{2}\cos(200\pi t + \frac{\pi}{4})}$); tại $+400\pi$ pha chúc xuống $-\frac{\pi}{4}$ ($\implies \mathbf{+2\cos(400\pi t - \frac{\pi}{4})}$).<br>
+                $\Longrightarrow$ <b>Đáp án Question 2:</b> $x(t) = 1 + 2\cos\left(400\pi t - \frac{\pi}{4}\right) + \frac{3}{2}\cos\left(200\pi t + \frac{\pi}{4}\right)$.
+            </div>
+            <div class="step">
+                <b>• Giải Question 3:</b> Tại $\omega = 0$ không có vạch pha ($\implies \mathbf{+1}$); tại $+200\pi$ pha hướng lên $+\frac{\pi}{4}$ ($\implies \mathbf{+\frac{3}{2}\cos(200\pi t + \frac{\pi}{4})}$); tại $+400\pi$ không có vạch pha ($\implies \mathbf{+2\cos(400\pi t)}$).<br>
+                $\Longrightarrow$ <b>Đáp án Question 3:</b> $x(t) = 1 + 2\cos(400\pi t) + \frac{3}{2}\cos\left(200\pi t + \frac{\pi}{4}\right)$.
+            </div>
+            <div class="step">
+                <b>• Giải Question 4:</b> Tại $\omega = 0$ <b>có vạch pha $\pi$</b> ($\implies \mathbf{-1}$); tại $+200\pi$ pha hướng lên $+\frac{\pi}{4}$ ($\implies \mathbf{+\frac{3}{2}\cos(200\pi t + \frac{\pi}{4})}$); tại $+400\pi$ không có vạch pha ($\implies \mathbf{+2\cos(400\pi t)}$).<br>
+                $\Longrightarrow$ <b>Đáp án Question 4:</b> $x(t) = -1 + 2\cos(400\pi t) + \frac{3}{2}\cos\left(200\pi t + \frac{\pi}{4}\right)$.
+            </div>
+        </div>
+
+        <!-- QUIZ 9 - Q5, Q6, Q7 -->
+        <div id="q9-5" class="q-card">
+            <div class="q-head">
+                <span class="k b1">Quiz 9 - Question 5, Question 6 & Question 7 (3 pts)</span>
+                <span class="k b2">Đáp án đúng: Đều là Đáp án 1</span>
+            </div>
+            <div class="grid2">
+                <div>
+                    <small class="mut"><b>Đồ thị Biên độ $|X(\omega)|$ (Câu 5, 6, 7 giống nhau)</b></small>
+                    <svg viewBox="0 0 320 125">
+                        <line x1="10" y1="95" x2="310" y2="95" stroke="var(--mut)" stroke-width="1.5"/>
+                        <line x1="50" y1="95" x2="50" y2="25" stroke="var(--c1)" stroke-width="3"/>
+                        <text x="55" y="35" fill="var(--ink)" font-size="11" font-weight="bold">1</text>
+                        <text x="32" y="112" fill="var(--c1)" font-size="10">-400π</text>
+                        <line x1="105" y1="95" x2="105" y2="58" stroke="var(--c1)" stroke-width="3"/>
+                        <text x="110" y="62" fill="var(--ink)" font-size="11" font-weight="bold">1/2</text>
+                        <text x="88" y="112" fill="var(--c1)" font-size="10">-200π</text>
+                        <line x1="160" y1="95" x2="160" y2="42" stroke="var(--c3)" stroke-width="3"/>
+                        <text x="165" y="48" fill="var(--c3)" font-size="11" font-weight="bold">3/4</text>
+                        <text x="157" y="112" fill="var(--mut)" font-size="10">0</text>
+                        <line x1="215" y1="95" x2="215" y2="58" stroke="var(--c1)" stroke-width="3"/>
+                        <text x="220" y="62" fill="var(--ink)" font-size="11" font-weight="bold">1/2</text>
+                        <text x="200" y="112" fill="var(--c1)" font-size="10">200π</text>
+                        <line x1="270" y1="95" x2="270" y2="25" stroke="var(--c1)" stroke-width="3"/>
+                        <text x="275" y="35" fill="var(--ink)" font-size="11" font-weight="bold">1</text>
+                        <text x="255" y="112" fill="var(--c1)" font-size="10">400π</text>
+                    </svg>
+                </div>
+                <div>
+                    <small class="mut"><b>Đồ thị Pha $\angle X(\omega)$ (Minh họa Câu 5)</b></small>
+                    <svg viewBox="0 0 320 125">
+                        <line x1="10" y1="65" x2="310" y2="65" stroke="var(--mut)" stroke-width="1.5"/>
+                        <line x1="105" y1="65" x2="105" y2="22" stroke="var(--mut)" stroke-width="2"/>
+                        <text x="110" y="32" fill="var(--mut)" font-size="10">π/4</text>
+                        <text x="88" y="80" fill="var(--mut)" font-size="10">-200π</text>
+                        <text x="157" y="80" fill="var(--mut)" font-size="10">0</text>
+                        <line x1="215" y1="65" x2="215" y2="108" stroke="var(--c4)" stroke-width="3"/>
+                        <text x="220" y="108" fill="var(--c4)" font-size="11" font-weight="bold">-π/4</text>
+                        <text x="222" y="80" fill="var(--c4)" font-size="10">200π</text>
+                    </svg>
+                </div>
+            </div>
+            <p>Ở cả 3 câu 5, 6, 7: Tại $\omega = 0$ cao $\frac{3}{4}$ (pha $= 0 \implies \mathbf{+\frac{3}{4}}$); tại $+200\pi$ cao $\frac{1}{2} \xrightarrow{\times 2} \mathbf{1}\cos(\dots)$; tại $+400\pi$ cao $1 \xrightarrow{\times 2} \mathbf{2}\cos(\dots)$:</p>
+            <div class="step">
+                <b>• Giải Question 5:</b> Tại $+200\pi$ pha chúc xuống $-\frac{\pi}{4}$; tại $+400\pi$ không có vạch pha.<br>
+                $\Longrightarrow$ <b>Đáp án Question 5:</b> $x(t) = \frac{3}{4} + 2\cos(400\pi t) + \cos\left(200\pi t - \frac{\pi}{4}\right)$.
+            </div>
+            <div class="step">
+                <b>• Giải Question 6:</b> Tại $+200\pi$ pha chúc xuống $-\frac{\pi}{4}$; tại $+400\pi$ pha hướng lên $+\frac{\pi}{4}$.<br>
+                $\Longrightarrow$ <b>Đáp án Question 6:</b> $x(t) = 2\cos\left(400\pi t + \frac{\pi}{4}\right) + \cos\left(200\pi t - \frac{\pi}{4}\right) + \frac{3}{4}$.
+            </div>
+            <div class="step">
+                <b>• Giải Question 7:</b> Tại $+200\pi$ không có vạch pha; tại $+400\pi$ pha hướng lên $+\frac{\pi}{4}$.<br>
+                $\Longrightarrow$ <b>Đáp án Question 7:</b> $x(t) = 2\cos\left(400\pi t + \frac{\pi}{4}\right) + \cos(200\pi t) + \frac{3}{4}$.
+            </div>
+        </div>
+
+        <!-- QUIZ 9 - Q8, Q9 -->
+        <div id="q9-8" class="q-card">
+            <div class="q-head">
+                <span class="k b2">Quiz 9 - Question 8 & Question 9 (2 pts)</span>
+                <span class="k b2">Đáp án đúng: Đều là Đáp án 1</span>
+            </div>
+            <p>Ở Câu 8 và Câu 9, tại gốc $\omega = 0$ trên đồ thị Biên độ <b>không còn vạch nào nữa</b> (tức là hằng số DC $= 0$):</p>
+            <div class="step">
+                <b>• Giải Question 8:</b> Tại $+200\pi$ cao $\frac{1}{2} \xrightarrow{\times 2} 1$ (không có vạch pha $\implies \mathbf{+\cos(200\pi t)}$); tại $+400\pi$ cao $1 \xrightarrow{\times 2} 2$ (vạch pha hướng lên $+\frac{\pi}{4} \implies \mathbf{+2\cos(400\pi t + \frac{\pi}{4})}$).<br>
+                $\Longrightarrow$ <b>Đáp án Question 8:</b> $x(t) = 2\cos\left(400\pi t + \frac{\pi}{4}\right) + \cos(200\pi t)$.
+            </div>
+            <div class="step">
+                <b>• Giải Question 9:</b> Tại $+200\pi$ cao $\frac{1}{2} \xrightarrow{\times 2} 1$ (vạch pha chúc xuống $-\frac{\pi}{4} \implies \mathbf{+\cos(200\pi t - \frac{\pi}{4})}$); tại $+400\pi$ cao $1 \xrightarrow{\times 2} 2$ (vạch pha hướng lên $+\frac{\pi}{4} \implies \mathbf{+2\cos(400\pi t + \frac{\pi}{4})}$).<br>
+                $\Longrightarrow$ <b>Đáp án Question 9:</b> $x(t) = 2\cos\left(400\pi t + \frac{\pi}{4}\right) + \cos\left(200\pi t - \frac{\pi}{4}\right)$.
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const quickDrawer = document.getElementById('quickDrawer');
+    const drawerBackdrop = document.getElementById('drawerBackdrop');
+
+    function toggleDrawer(forceState) {
+        const willOpen = typeof forceState === 'boolean'
+            ? forceState
+            : !quickDrawer.classList.contains('open');
+        quickDrawer.classList.toggle('open', willOpen);
+        drawerBackdrop.classList.toggle('open', willOpen);
+        menuToggleBtn.classList.toggle('active', willOpen);
+    }
+
+    menuToggleBtn.addEventListener('click', () => toggleDrawer());
+    drawerBackdrop.addEventListener('click', () => toggleDrawer(false));
+
+    // Tự động đóng bảng chọn khi người dùng bấm vào 1 bài học / câu hỏi để tua đến đó
+    document.querySelectorAll('#quickDrawer a').forEach(link => {
+        link.addEventListener('click', () => {
+            toggleDrawer(false);
+        });
+    });
+
+    // Nhấn phím Esc để đóng nhanh bảng chọn
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && quickDrawer.classList.contains('open')) {
+            toggleDrawer(false);
+        }
+    });
+
+    // Theme toggle (Light / Dark)
+    const themeToggleBtn = document.getElementById('themeToggle');
+    themeToggleBtn.addEventListener('click', () => {
+        const root = document.documentElement;
+        const current = root.getAttribute('data-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = current ? current === 'dark' : prefersDark;
+        root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    });
+
+    // ================= 1. SQUARE WAVE SYNTHESIS (SLIDE 5 & 9) =================
+    const harmonicsSlider = document.getElementById('harmonicsSlider');
+    const harmonicsValue = document.getElementById('harmonicsValue');
+    const sqTimeCanvas = document.getElementById('squareTimeCanvas');
+    const sqFreqCanvas = document.getElementById('squareFreqCanvas');
+    const sqTimeCtx = sqTimeCanvas.getContext('2d');
+    const sqFreqCtx = sqFreqCanvas.getContext('2d');
+
+    const colors = ['#f472b6', '#a78bfa', '#34d399', '#fbbf24', '#fb7185', '#60a5fa'];
+
+    function drawSquareSynthesis() {
+        const maxN = parseInt(harmonicsSlider.value);
+        harmonicsValue.textContent = maxN;
+
+        const w = sqTimeCanvas.width;
+        const h = sqTimeCanvas.height;
+        sqTimeCtx.clearRect(0, 0, w, h);
+
+        sqTimeCtx.strokeStyle = '#3b4380';
+        sqTimeCtx.lineWidth = 1;
+        sqTimeCtx.beginPath();
+        sqTimeCtx.moveTo(0, h / 2);
+        sqTimeCtx.lineTo(w, h / 2);
+        sqTimeCtx.stroke();
+
+        for (let n = 1, idx = 0; n <= maxN; n += 2, idx++) {
+            sqTimeCtx.strokeStyle = colors[idx % colors.length] + '55';
+            sqTimeCtx.lineWidth = 1.5;
+            sqTimeCtx.beginPath();
+            for (let x = 0; x < w; x++) {
+                const t = (x / w) * 4 * Math.PI;
+                const y = (h / 2) - (4 / (n * Math.PI)) * Math.sin(n * t) * 70;
+                if (x === 0) sqTimeCtx.moveTo(x, y);
+                else sqTimeCtx.lineTo(x, y);
+            }
+            sqTimeCtx.stroke();
+        }
+
+        sqTimeCtx.strokeStyle = '#38d9a9';
+        sqTimeCtx.lineWidth = 3;
+        sqTimeCtx.beginPath();
+        for (let x = 0; x < w; x++) {
+            const t = (x / w) * 4 * Math.PI;
+            let sum = 0;
+            for (let n = 1; n <= maxN; n += 2) {
+                sum += (4 / (n * Math.PI)) * Math.sin(n * t);
+            }
+            const y = (h / 2) - sum * 70;
+            if (x === 0) sqTimeCtx.moveTo(x, y);
+            else sqTimeCtx.lineTo(x, y);
+        }
+        sqTimeCtx.stroke();
+
+        const fw = sqFreqCanvas.width;
+        const fh = sqFreqCanvas.height;
+        sqFreqCtx.clearRect(0, 0, fw, fh);
+
+        sqFreqCtx.strokeStyle = '#3b4380';
+        sqFreqCtx.beginPath();
+        sqFreqCtx.moveTo(15, fh - 30);
+        sqFreqCtx.lineTo(fw - 10, fh - 30);
+        sqFreqCtx.stroke();
+
+        for (let n = 1, idx = 0; n <= 29; n += 2, idx++) {
+            const xPos = 25 + idx * 19;
+            const amp = (4 / (n * Math.PI));
+            const barHeight = amp * 130;
+            const isActive = n <= maxN;
+
+            sqFreqCtx.strokeStyle = isActive ? '#ffd43b' : '#3b4380';
+            sqFreqCtx.lineWidth = 3;
+            sqFreqCtx.beginPath();
+            sqFreqCtx.moveTo(xPos, fh - 30);
+            sqFreqCtx.lineTo(xPos, fh - 30 - (isActive ? barHeight : 4));
+            sqFreqCtx.stroke();
+
+            sqFreqCtx.fillStyle = isActive ? '#ff8fb8' : '#58608a';
+            sqFreqCtx.beginPath();
+            sqFreqCtx.arc(xPos, fh - 30 - (isActive ? barHeight : 4), 4, 0, Math.PI * 2);
+            sqFreqCtx.fill();
+
+            if (n <= 15) {
+                sqFreqCtx.fillStyle = '#a4abd6';
+                sqFreqCtx.font = '10px Be Vietnam Pro, sans-serif';
+                sqFreqCtx.fillText(n + 'f0', xPos - 7, fh - 12);
+            }
+        }
+    }
+
+    harmonicsSlider.addEventListener('input', drawSquareSynthesis);
+    drawSquareSynthesis();
+
+    // ================= 2. EULER PHASOR ANIMATION (SLIDE 16) =================
+    const eulerCanvas = document.getElementById('eulerCanvas');
+    const eulerCtx = eulerCanvas.getContext('2d');
+    const toggleEulerBtn = document.getElementById('toggleEulerBtn');
+    let eulerAngle = 0;
+    let eulerRunning = true;
+
+    toggleEulerBtn.addEventListener('click', () => {
+        eulerRunning = !eulerRunning;
+    });
+
+    function animateEuler() {
+        if (eulerRunning) {
+            eulerAngle += 0.03;
+        }
+        const w = eulerCanvas.width;
+        const h = eulerCanvas.height;
+        eulerCtx.clearRect(0, 0, w, h);
+
+        const cx = 140;
+        const cy = h / 2;
+        const radius = 78;
+
+        eulerCtx.strokeStyle = '#3b4380';
+        eulerCtx.lineWidth = 1.2;
+        eulerCtx.beginPath();
+        eulerCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+        eulerCtx.moveTo(cx - radius - 20, cy);
+        eulerCtx.lineTo(w - 20, cy);
+        eulerCtx.moveTo(cx, cy - radius - 20);
+        eulerCtx.lineTo(cx, cy + radius + 20);
+        eulerCtx.stroke();
+
+        const vx = cx + radius * Math.cos(eulerAngle);
+        const vy = cy - radius * Math.sin(eulerAngle);
+
+        eulerCtx.strokeStyle = '#38d9a9';
+        eulerCtx.lineWidth = 4;
+        eulerCtx.beginPath();
+        eulerCtx.moveTo(cx, cy);
+        eulerCtx.lineTo(vx, cy);
+        eulerCtx.stroke();
+
+        eulerCtx.strokeStyle = '#ff8fb8';
+        eulerCtx.lineWidth = 4;
+        eulerCtx.beginPath();
+        eulerCtx.moveTo(vx, cy);
+        eulerCtx.lineTo(vx, vy);
+        eulerCtx.stroke();
+
+        eulerCtx.strokeStyle = '#ffd43b';
+        eulerCtx.lineWidth = 3;
+        eulerCtx.beginPath();
+        eulerCtx.moveTo(cx, cy);
+        eulerCtx.lineTo(vx, vy);
+        eulerCtx.stroke();
+
+        eulerCtx.fillStyle = '#ffd43b';
+        eulerCtx.beginPath();
+        eulerCtx.arc(vx, vy, 5, 0, Math.PI * 2);
+        eulerCtx.fill();
+
+        const waveStartX = 280;
+
+        eulerCtx.strokeStyle = '#ff8fb888';
+        eulerCtx.setLineDash([4, 4]);
+        eulerCtx.beginPath();
+        eulerCtx.moveTo(vx, vy);
+        eulerCtx.lineTo(waveStartX, vy);
+        eulerCtx.stroke();
+        eulerCtx.setLineDash([]);
+
+        eulerCtx.strokeStyle = '#ff8fb8';
+        eulerCtx.lineWidth = 2.5;
+        eulerCtx.beginPath();
+        for (let x = 0; x < w - waveStartX - 20; x++) {
+            const t = eulerAngle - x * 0.03;
+            const y = cy - radius * Math.sin(t);
+            if (x === 0) eulerCtx.moveTo(waveStartX + x, y);
+            else eulerCtx.lineTo(waveStartX + x, y);
+        }
+        eulerCtx.stroke();
+
+        eulerCtx.strokeStyle = '#38d9a9';
+        eulerCtx.lineWidth = 2;
+        eulerCtx.beginPath();
+        for (let x = 0; x < w - waveStartX - 20; x++) {
+            const t = eulerAngle - x * 0.03;
+            const y = cy - radius * Math.cos(t);
+            if (x === 0) eulerCtx.moveTo(waveStartX + x, y);
+            else eulerCtx.lineTo(waveStartX + x, y);
+        }
+        eulerCtx.stroke();
+
+        requestAnimationFrame(animateEuler);
+    }
+    animateEuler();
+
+    // ================= 3. RECTANGULAR PULSE & SINC (SLIDE 51 & 52) =================
+    const pulseSlider = document.getElementById('pulseWidthSlider');
+    const pulseVal = document.getElementById('pulseWidthValue');
+    const rectCanvas = document.getElementById('rectTimeCanvas');
+    const sincCanvas = document.getElementById('sincFreqCanvas');
+    const rectCtx = rectCanvas.getContext('2d');
+    const sincCtx = sincCanvas.getContext('2d');
+
+    function drawRectSinc() {
+        const a = parseFloat(pulseSlider.value);
+        pulseVal.textContent = a;
+
+        const rw = rectCanvas.width;
+        const rh = rectCanvas.height;
+        rectCtx.clearRect(0, 0, rw, rh);
+
+        const midX = rw / 2;
+        const baseY = rh - 40;
+
+        rectCtx.strokeStyle = '#3b4380';
+        rectCtx.lineWidth = 1.2;
+        rectCtx.beginPath();
+        rectCtx.moveTo(10, baseY);
+        rectCtx.lineTo(rw - 10, baseY);
+        rectCtx.moveTo(midX, 10);
+        rectCtx.lineTo(midX, rh - 10);
+        rectCtx.stroke();
+
+        const pixelA = a * 38;
+        rectCtx.strokeStyle = '#6ea0ff';
+        rectCtx.lineWidth = 3;
+        rectCtx.fillStyle = 'rgba(110, 160, 255, 0.18)';
+        rectCtx.beginPath();
+        rectCtx.moveTo(10, baseY);
+        rectCtx.lineTo(midX - pixelA, baseY);
+        rectCtx.lineTo(midX - pixelA, baseY - 110);
+        rectCtx.lineTo(midX + pixelA, baseY - 110);
+        rectCtx.lineTo(midX + pixelA, baseY);
+        rectCtx.lineTo(rw - 10, baseY);
+        rectCtx.stroke();
+        rectCtx.fillRect(midX - pixelA, baseY - 110, pixelA * 2, 110);
+
+        rectCtx.fillStyle = '#a4abd6';
+        rectCtx.font = '12px Be Vietnam Pro, sans-serif';
+        rectCtx.fillText('-a', midX - pixelA - 8, baseY + 18);
+        rectCtx.fillText('+a', midX + pixelA - 8, baseY + 18);
+        rectCtx.fillText('1', midX + 6, baseY - 112);
+
+        const sw = sincCanvas.width;
+        const sh = sincCanvas.height;
+        sincCtx.clearRect(0, 0, sw, sh);
+
+        const sMidX = sw / 2;
+        const sBaseY = sh - 55;
+
+        sincCtx.strokeStyle = '#3b4380';
+        sincCtx.lineWidth = 1.2;
+        sincCtx.beginPath();
+        sincCtx.moveTo(10, sBaseY);
+        sincCtx.lineTo(sw - 10, sBaseY);
+        sincCtx.moveTo(sMidX, 10);
+        sincCtx.lineTo(sMidX, sh - 10);
+        sincCtx.stroke();
+
+        sincCtx.strokeStyle = '#38d9a9';
+        sincCtx.lineWidth = 3;
+        sincCtx.beginPath();
+        for (let x = 10; x < sw - 10; x++) {
+            const omega = (x - sMidX) / 22;
+            let sincVal = 1;
+            if (Math.abs(omega) > 0.001) {
+                sincVal = Math.sin(omega * a) / (omega * a);
+            }
+            const heightScale = (2 * a) * 20;
+            const y = sBaseY - sincVal * Math.min(heightScale, 135);
+            if (x === 10) sincCtx.moveTo(x, y);
+            else sincCtx.lineTo(x, y);
+        }
+        sincCtx.stroke();
+
+        sincCtx.fillStyle = '#38d9a9';
+        sincCtx.font = '12px Be Vietnam Pro, sans-serif';
+        sincCtx.fillText('Đỉnh = 2a = ' + (2 * a).toFixed(1), sMidX + 8, 25);
+    }
+
+    pulseSlider.addEventListener('input', drawRectSinc);
+    drawRectSinc();
+</script>
+</body>
+</html>
