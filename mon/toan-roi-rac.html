@@ -74,7 +74,7 @@ window.MathJax = {
 /* ==========================================================================
    2. CẤU TRÚC BỐ CỤC & TYPOGRAPHY
    ========================================================================== */
-html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; overflow-x: hidden; }
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -82,23 +82,26 @@ body {
   color: var(--ink);
   font: 17.5px/1.92 "Be Vietnam Pro", system-ui, sans-serif;
   letter-spacing: 0.01em;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
-main { max-width: 860px; margin: 0 auto; padding: 28px 20px 90px; }
+main { max-width: 860px; width: 100%; margin: 0 auto; padding: 28px 20px 90px; }
 header { padding: 38px 0 14px; }
 
 h1 {
-  font-size: clamp(30px, 6.5vw, 46px);
-  line-height: 1.2;
+  font-size: clamp(28px, 6vw, 44px);
+  line-height: 1.25;
   margin: 10px 0 16px;
   font-weight: 800;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   background: linear-gradient(90deg, var(--c1), var(--c5), var(--c4));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-h2 { font-size: 24px; line-height: 1.4; margin: 0 0 16px; font-weight: 800; }
-h3 { font-size: 19.5px; line-height: 1.45; margin: 30px 0 12px; color: var(--c5); font-weight: 800; }
+h2 { font-size: clamp(20px, 4.5vw, 24px); line-height: 1.4; margin: 0 0 16px; font-weight: 800; }
+h3 { font-size: clamp(17.5px, 3.8vw, 19.5px); line-height: 1.45; margin: 30px 0 12px; color: var(--c5); font-weight: 800; }
 
 section {
   background: var(--card);
@@ -107,6 +110,12 @@ section {
   margin: 28px 0;
   border-left: 8px solid var(--c1);
   box-shadow: 0 4px 20px rgba(0,0,0,.04);
+  max-width: 100%;
+  overflow: hidden;
+}
+@media (max-width: 600px) {
+  main { padding: 20px 12px 70px; }
+  section { padding: 22px 16px; border-radius: 18px; }
 }
 section:nth-of-type(5n+2) { border-color: var(--c2); }
 section:nth-of-type(5n+3) { border-color: var(--c3); }
@@ -115,23 +124,33 @@ section:nth-of-type(5n+5) { border-color: var(--c5); }
 
 p { margin: 16px 0; line-height: 1.95; }
 .mut { color: var(--mut); }
-ul, ol { margin: 14px 0; padding-left: 24px; }
+ul, ol { margin: 14px 0; padding-left: 22px; }
 li { margin: 12px 0; line-height: 1.9; }
 
 /* Hộp thông tin, mẹo, cảnh báo, ví dụ ẩn dụ */
-.box { background: var(--tint); border-radius: 14px; padding: 18px 22px; margin: 20px 0; line-height: 1.95; }
+.box {
+  background: var(--tint);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin: 20px 0;
+  line-height: 1.95;
+  max-width: 100%;
+  overflow-x: auto;
+}
 .tip { border-left: 5px solid var(--c3); }
 .warn { border-left: 5px solid var(--c4); }
 .analogy { border-left: 5px solid var(--c2); }
 
-/* Hộp công thức và phân số */
+/* Hộp công thức và chống tràn MathJax toàn cục */
 .f {
   background: var(--tint);
   border-radius: 14px;
-  padding: 18px 20px;
+  padding: 16px 18px;
   margin: 18px 0;
-  font-size: 18px;
+  font-size: 16.5px;
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   text-align: center;
   line-height: 2;
 }
@@ -141,6 +160,19 @@ li { margin: 12px 0; line-height: 1.9; }
   color: var(--mut);
   display: block;
   margin-top: 8px;
+}
+
+/* Chống tràn tuyệt đối cho mọi công thức MathJax (cả inline và display) */
+mjx-container {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  vertical-align: middle;
+}
+mjx-container[display="true"] {
+  display: block !important;
+  margin: 12px 0 !important;
+  padding: 4px 0 !important;
 }
 
 /* Đồ họa Vector SVG & Nhãn màu (Badges) */
@@ -173,35 +205,34 @@ svg text { fill: var(--ink); font: 13px "Be Vietnam Pro", sans-serif; }
 .b5 { background: var(--c5); }
 
 /* Bảng dữ liệu */
-.tw { overflow-x: auto; margin: 18px 0; }
+.tw { overflow-x: auto; margin: 18px 0; max-width: 100%; border-radius: 12px; border: 1px solid var(--g); }
 table { border-collapse: collapse; width: 100%; font-size: 15.5px; min-width: 480px; line-height: 1.75; }
-td, th { padding: 13px 14px; border-bottom: 1px solid var(--g); text-align: left; }
+td, th { padding: 12px 14px; border-bottom: 1px solid var(--g); text-align: left; }
 th { color: var(--c5); font-weight: 800; background: var(--tint); }
 .sum li { margin: 12px 0; }
 
-/* Khối mã giả (Pseudocode) */
+/* Khung giả mã (Pseudocode) */
 .pseudo {
   background: var(--tint);
-  border: 1px solid var(--g);
-  border-left: 5px solid var(--c5);
-  border-radius: 12px;
+  border: 1.5px solid var(--g);
+  border-left: 6px solid var(--c5);
+  border-radius: 14px;
   padding: 16px 20px;
+  margin: 18px 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 15px;
-  line-height: 1.8;
+  line-height: 1.85;
   overflow-x: auto;
-  margin: 16px 0;
+  max-width: 100%;
 }
 
-/* ==========================================================================
-   3. HỆ THỐNG NÚT BẤM, TAB MÔ HÌNH & DROPDOWN TÙY CHỈNH
-   ========================================================================== */
+/* Hệ thống nút bấm */
 .btn-group { display: flex; gap: 14px; flex-wrap: wrap; margin: 20px 0 12px; }
 .btn {
   appearance: none; -webkit-appearance: none;
   border: 2px solid transparent;
   border-radius: 999px;
-  padding: 12px 26px;
+  padding: 12px 24px;
   font: 700 15px/1.4 "Be Vietnam Pro", system-ui, sans-serif;
   cursor: pointer;
   transition: all .24s cubic-bezier(.2,.8,.2,1);
@@ -212,9 +243,12 @@ th { color: var(--c5); font-weight: 800; background: var(--tint); }
   letter-spacing: 0.01em;
   position: relative;
   overflow: hidden;
+  max-width: 100%;
+  text-align: center;
 }
 .btn::before {
   content: "";
+  flex: 0 0 8px;
   width: 8px; height: 8px;
   border-radius: 50%;
   background: currentColor;
@@ -255,11 +289,13 @@ th { color: var(--c5); font-weight: 800; background: var(--tint); }
   background: var(--tint);
   border: 1px solid var(--g);
   line-height: 1.95;
+  max-width: 100%;
+  overflow-x: auto;
 }
 .panel.open { display: block; animation: fadeIn .2s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
-.step { margin: 18px 0; padding-bottom: 16px; border-bottom: 1px dashed var(--g); line-height: 1.95; }
+.step { margin: 18px 0; padding-bottom: 16px; border-bottom: 1px dashed var(--g); line-height: 1.95; max-width: 100%; overflow-x: auto; }
 .step:last-child { border-bottom: none; padding-bottom: 0; }
 .cmt {
   display: block;
@@ -275,10 +311,10 @@ th { color: var(--c5); font-weight: 800; background: var(--tint); }
 }
 
 /* Thẻ Công thức & Thẻ Mô phỏng */
-.formula-card { border: 1px solid var(--g); border-radius: 16px; padding: 22px; margin: 24px 0; background: var(--card); }
-.formula-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-top: 14px; font-size: 15.5px; line-height: 1.9; }
-.formula-meta div { background: var(--tint); padding: 16px 18px; border-radius: 12px; }
-.sim-card { border: 1px solid var(--g); border-radius: 20px; padding: 24px; margin: 24px 0; background: var(--card); box-shadow: 0 8px 28px rgba(0,0,0,.05); }
+.formula-card { border: 1px solid var(--g); border-radius: 16px; padding: 22px; margin: 24px 0; background: var(--card); max-width: 100%; overflow: hidden; }
+.formula-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 14px; margin-top: 14px; font-size: 15.5px; line-height: 1.9; }
+.formula-meta > div { background: var(--tint); padding: 16px 18px; border-radius: 12px; min-width: 0; max-width: 100%; overflow-x: auto; }
+.sim-card { border: 1px solid var(--g); border-radius: 20px; padding: 22px; margin: 24px 0; background: var(--card); box-shadow: 0 8px 28px rgba(0,0,0,.05); max-width: 100%; }
 
 /* Nút chọn chế độ mô hình (Segmented Pill Radio Buttons) */
 .sim-tabs {
@@ -290,10 +326,11 @@ th { color: var(--c5); font-weight: 800; background: var(--tint); }
 }
 .sim-tab {
   appearance: none; -webkit-appearance: none;
-  flex: 1 1 180px;
+  flex: 1 1 170px;
+  min-width: 0;
   border: 1.5px solid var(--g);
   border-radius: 14px;
-  padding: 12px 16px;
+  padding: 12px 14px;
   background: var(--card);
   color: var(--ink);
   font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif;
@@ -302,7 +339,7 @@ th { color: var(--c5); font-weight: 800; background: var(--tint); }
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,.03);
 }
 .sim-tab::before {
@@ -334,7 +371,7 @@ th { color: var(--c5); font-weight: 800; background: var(--tint); }
 /* Hàng điều khiển thanh trượt & hộp chọn */
 .ctrl-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
   gap: 16px;
   align-items: center;
   margin: 14px 0;
@@ -342,7 +379,9 @@ th { color: var(--c5); font-weight: 800; background: var(--tint); }
   padding: 16px 18px;
   border-radius: 16px;
   border: 1.5px solid var(--g);
+  max-width: 100%;
 }
+.ctrl-row > div { min-width: 0; max-width: 100%; }
 .ctrl-row label { font-size: 14.5px; font-weight: 700; display: block; margin-bottom: 10px; color: var(--ink); }
 
 /* Bộ chọn danh sách thả xuống tùy chỉnh (Custom Dropdown Select) */
@@ -353,12 +392,13 @@ select.native-select-hidden {
   overflow: hidden !important; clip: rect(0,0,0,0) !important;
   border: 0 !important; opacity: 0 !important; pointer-events: none !important;
 }
-.csel-wrap { position: relative; width: 100%; user-select: none; font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif; z-index: 5; }
+.csel-wrap { position: relative; width: 100%; max-width: 100%; user-select: none; font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif; z-index: 5; }
 .csel-wrap.open { z-index: 45; }
 .csel-trigger {
   appearance: none; -webkit-appearance: none;
   width: 100%;
-  padding: 13px 46px 13px 18px;
+  max-width: 100%;
+  padding: 13px 44px 13px 16px;
   border-radius: 14px;
   border: 2px solid var(--c5);
   background: var(--card);
@@ -369,20 +409,21 @@ select.native-select-hidden {
   transition: all .22s ease;
   box-shadow: 0 4px 12px rgba(112,72,232,.1);
   position: relative; text-align: left;
+  min-width: 0;
 }
 .csel-trigger::before {
   content: "";
   flex: 0 0 10px; width: 10px; height: 10px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--c1), var(--c5));
-  margin-right: 12px;
+  margin-right: 10px;
   box-shadow: 0 0 0 3px var(--tint);
 }
-.csel-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.csel-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .csel-trigger:hover { border-color: var(--c1); background: var(--tint); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(112,72,232,.18); }
 .csel-wrap.open .csel-trigger { border-color: var(--c1); background: var(--card); box-shadow: 0 0 0 4px rgba(112,72,232,.22); }
 .csel-arrow {
-  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
   width: 26px; height: 26px; border-radius: 8px;
   background: var(--tint);
   display: flex; align-items: center; justify-content: center;
@@ -423,7 +464,7 @@ select.native-select-hidden {
   box-shadow: 0 4px 12px rgba(112,72,232,.3);
 }
 .csel-opt.selected::before { border-color: #fff; background: #fff; box-shadow: inset 0 0 0 3px var(--c5); }
-.menu-selector-wrap .csel-trigger { border: 2px solid var(--c5); background: var(--tint); font-size: 15px; font-weight: 700; }
+.menu-selector-wrap .csel-trigger { border: 2px solid var(--c5); background: var(--tint); font-size: 14.5px; font-weight: 700; }
 
 /* Thanh trượt Range Slider tùy chỉnh */
 input[type=range] {
@@ -448,19 +489,15 @@ input[type=range]::-moz-range-thumb {
   cursor: pointer; transition: transform .15s;
 }
 
-/* ==========================================================================
-   4. THANH CUỘN TÙY CHỈNH & MENU GÓC TRÊN BÊN TRÁI
-   ========================================================================== */
+/* Thanh cuộn tùy chỉnh & Menu góc trên bên trái */
 * { scrollbar-width: thin; scrollbar-color: var(--c5) var(--tint); }
 ::-webkit-scrollbar { width: 9px; height: 9px; }
 ::-webkit-scrollbar-track { background: var(--tint); border-radius: 999px; margin: 4px; }
 ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--c1), var(--c5)); border-radius: 999px; border: 2px solid var(--tint); transition: background .2s; }
 ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, var(--c5), var(--c4)); }
 ::-webkit-scrollbar-corner { background: transparent; }
-.f::-webkit-scrollbar, .tw::-webkit-scrollbar, #mn::-webkit-scrollbar { height: 6px; width: 6px; }
-.f::-webkit-scrollbar-thumb, .tw::-webkit-scrollbar-thumb, #mn::-webkit-scrollbar-thumb { border-width: 1px; }
 
-/* Nút 3 gạch (Hamburger Button) ở góc trên bên trái */
+/* Nút 3 gạch (Hamburger Button) */
 #mb {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 12px);
@@ -513,12 +550,13 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
 <!-- Menu điều hướng chứa bộ chọn bài học và mục lục tự động -->
 <nav id="mn" hidden aria-label="Menu bài học và mục lục">
   <div class="menu-selector-wrap">
-    <label for="lesson-select">Chọn bài học / chủ đề:</label>
+    <label for="lesson-select">Chọn bài học Toán Rời Rạc:</label>
     <select id="lesson-select" onchange="loadLesson(this.value)">
-      <option value="1">Bài 1 & 2 (Ôn nhanh): Logic, Vị từ & Lượng từ</option>
-      <option value="2">Bài 3 & 4 (Ôn nhanh): Lượng từ lồng nhau & Suy luận</option>
-      <option value="3">Bài 5 (Trọng tâm): Đại số Bool, Thuật toán, Big-O & Euclid</option>
-      <option value="4" selected>Bài 6 (Chuyên sâu): Lý thuyết số & Mật mã hóa RSA</option>
+      <option value="1">Phần 1 (Bài 1 & 2): Tương đương Mệnh đề, Vị từ & Lượng từ (Tóm tắt)</option>
+      <option value="2">Phần 2 (Bài 3 & 4): Lượng từ lồng nhau & Quy tắc suy luận (Tóm tắt)</option>
+      <option value="3">Phần 3 (Bài 5 - Trọng tâm): Đại số Bool, Big-O & Thuật toán Euclid</option>
+      <option value="4">Phần 4 (Bài 6 - Chuyên sâu): Lý thuyết số & Mật mã hóa RSA</option>
+      <option value="5" selected>Phần 5 (Mục 3.2, 3.3, 3.4 - Mới): Quy nạp Toán học & Đệ quy</option>
     </select>
   </div>
   <div class="toc-title">Mục lục bài đang mở</div>
@@ -529,293 +567,276 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
 <main id="app-content"></main>
 
 <!-- ==========================================================================
-     PHẦN 1 (TƯƠNG ỨNG FILE BÀI 1.PDF & BÀI 2.PDF): ÔN NHANH LOGIC, VỊ TỪ & LƯỢNG TỪ
+     PHẦN 1 (TƯƠNG ỨNG BÀI 1.PDF & BÀI 2.PDF): ÔN NHANH LOGIC MỆNH ĐỀ & VỊ TỪ
      ========================================================================== -->
 <template id="tpl-buoi-1">
   <header>
-    <span class="k b1">TOÁN RỜI RẠC · ÔN TẬP NỀN TẢNG (FILE BÀI 1 & 2)</span>
+    <span class="k b1">TOÁN RỜI RẠC · BÀI 1 & BÀI 2 (TÓM TẮT CỐT LÕI)</span>
     <h1>Sự Tương Đương Mệnh Đề, Vị Từ & Lượng Từ</h1>
-    <p class="mut">Tóm tắt cô đọng nhất các quy tắc biến đổi logic và lượng từ hóa thông qua ví dụ thực tế để em lấy lại gốc nhanh chóng trước khi vào phần nâng cao.</p>
+    <p class="mut">Theo đúng yêu cầu của em, phần Bài 1 và Bài 2 được cô đọng những kiến thức và công thức biến đổi quan trọng nhất để em hệ thống hóa lại nền tảng thật nhanh trước khi vào sâu Bài 5 và Bài 6.</p>
   </header>
 
   <section>
-    <h2>1. Tương Đương Logic & 3 Trạng Thái Của Mệnh Đề</h2>
-    <p>Trong Toán rời rạc, mỗi câu khẳng định (mệnh đề $p, q$) chỉ mang một trong hai giá trị: <b>Đúng ($T$ - True)</b> hoặc <b>Sai ($F$ - False)</b>. Khi ghép nhiều mệnh đề lại bằng các phép toán: Phủ định ($\neg$ - Không), Hội ($\land$ - Và), Tuyển ($\lor$ - Hoặc), Kéo theo ($\rightarrow$ - Nếu... thì...), ta thu được mệnh đề phức hợp thuộc 1 trong 3 loại:</p>
+    <h2>1. Tương Đương Logic & Các Luật Biến Đổi Mệnh Đề (File Bài 1.pdf)</h2>
+    <p>Trong logic toán học, một <b>Mệnh đề ($p, q, r$)</b> là một câu khẳng định chỉ nhận đúng 1 trong 2 giá trị: <b>Đúng ($T$ - True)</b> hoặc <b>Sai ($F$ - False)</b>. Khi ghép các mệnh đề lại, ta gặp 3 khái niệm nền tảng:</p>
     <ul>
-      <li><span class="k b2">Hằng đúng (Tautology)</span> Luôn luôn đúng ($T$) bất chấp các thành phần bên trong đúng hay sai. Ví dụ: $p \lor \neg p \equiv T$ ("Hôm nay trời mưa hoặc hôm nay trời không mưa" — câu này luôn đúng!).</li>
-      <li><span class="k b4">Hằng sai (Contradiction)</span> Luôn luôn sai ($F$) trong mọi hoàn cảnh. Ví dụ: $p \land \neg p \equiv F$ ("Hôm nay trời mưa VÀ hôm nay trời không mưa" — vô lý!).</li>
-      <li><span class="k b3">Khả dĩ / Tiếp liên (Contingency)</span> Lúc đúng, lúc sai tùy thuộc vào tình huống thực tế.</li>
+      <li><span class="k b2">Hằng đúng (Tautology)</span> Là mệnh đề phức hợp <b>luôn luôn Đúng ($T$)</b> bất kể các biến thành phần đúng hay sai. Ví dụ: $p \lor \neg p \equiv T$ ("Hôm nay trời mưa hoặc hôm nay trời không mưa" — câu này luôn đúng!).</li>
+      <li><span class="k b4">Hằng sai / Mâu thuẫn (Contradiction)</span> Là mệnh đề <b>luôn luôn Sai ($F$)</b>. Ví dụ: $p \land \neg p \equiv F$.</li>
+      <li><span class="k b3">Khả dĩ / Tiếp liên (Contingency)</span> Lúc đúng lúc sai tùy trường hợp.</li>
     </ul>
 
     <div class="box analogy">
-      <b>Ẩn dụ "Hai cách nói cùng một sự thật" (Tương đương logic $p \equiv q$):</b><br>
-      Hai mệnh đề $p$ và $q$ gọi là tương đương logic (ký hiệu $p \equiv q$) nếu chúng luôn có cùng kết quả Đúng/Sai trong mọi hoàn cảnh (tức $p \leftrightarrow q$ là hằng đúng). Giống như câu <i>"Ly nước đầy một nửa"</i> và <i>"Ly nước vơi một nửa"</i> — cách diễn đạt khác nhau nhưng bản chất sự thật là một!
+      <b>Ẩn dụ thực tế về "Tương đương logic ($p \equiv q$)":</b><br>
+      Hai mệnh đề $p$ và $q$ gọi là <b>tương đương logic</b> (ký hiệu $p \equiv q$) khi $p \leftrightarrow q$ là hằng đúng. Hãy tưởng tượng $p$ và $q$ như hai tờ tiền: một tờ $100.000\text{đ}$ và hai tờ $50.000\text{đ}$. Hình thức viết bên ngoài khác nhau, nhưng <b>giá trị chân lý</b> trong mọi hoàn cảnh đều giống hệt nhau! Nhờ đó ta có thể thay thế biểu thức phức tạp bằng biểu thức ngắn gọn hơn.
     </div>
 
-    <h3>1.1. Bảng Cẩm Nang Các Luật Tương Đương Quan Trọng Nhất</h3>
+    <div class="formula-card">
+      <h3>Công thức Trọng tâm 1 (Bài 1): Bộ Luật Rút Gọn Mệnh Đề Quan Trọng Nhất</h3>
+      <div class="f">
+        $$\text{De Morgan: } \neg(p \land q) \equiv \neg p \lor \neg q \qquad \big|\qquad \neg(p \lor q) \equiv \neg p \land \neg q$$
+        $$\text{Kéo theo: } p \rightarrow q \equiv \neg p \lor q \equiv \neg q \rightarrow \neg p \qquad \big|\qquad \neg(p \rightarrow q) \equiv p \land \neg q$$
+        $$\text{Hấp thụ (Hút thu): } p \lor (p \land q) \equiv p \qquad \big|\qquad p \land (p \lor q) \equiv p$$
+      </div>
+      <div class="formula-meta">
+        <div>
+          <b>1. Giải nghĩa ký hiệu & Đơn vị:</b><br>
+          • $\neg$: Phủ định (KHÔNG).<br>
+          • $\land$: Phép hội (VÀ — chỉ đúng khi cả hai cùng đúng).<br>
+          • $\lor$: Phép tuyển (HOẶC — đúng khi có ít nhất 1 anh đúng).<br>
+          • $\rightarrow$: Phép kéo theo (NẾU $p$ THÌ $q$ — chỉ sai duy nhất khi $p$ Đúng mà $q$ Sai).<br>
+          • $\equiv$: Tương đương logic (không có đơn vị vật lý, giá trị thuộc $\{T, F\}$).
+        </div>
+        <div>
+          <b>2. Tại sao có & Khi nào dùng?</b><br>
+          • <b>Luật De Morgan:</b> Đưa dấu phủ định $\neg$ vào trong ngoặc thì phải <b>đổi dấu VÀ ($\land$) thành HOẶC ($\lor$)</b> và ngược lại.<br>
+          • <b>Luật phá dấu kéo theo ($p \rightarrow q \equiv \neg p \lor q$):</b> Đây là "chìa khóa vàng" dùng trong mọi bài tập chứng minh tương đương. Hễ thấy mũi tên $\rightarrow$, lập tức đổi thành "Phủ định vế trước HOẶC giữ nguyên vế sau"!
+        </div>
+      </div>
+    </div>
+
     <div class="tw">
       <table>
         <tr>
           <th>Tên luật</th>
-          <th>Phép Tuyển ($\lor$ - HOẶC)</th>
-          <th>Phép Hội ($\land$ - VÀ)</th>
-          <th>Mẹo hiểu nhanh</th>
+          <th>Dạng phép Tuyển ($\lor$)</th>
+          <th>Dạng phép Hội ($\land$)</th>
+          <th>Mẹo nhớ nhanh</th>
         </tr>
         <tr>
           <td><b>Luật đồng nhất</b></td>
           <td>$p \lor F \equiv p$</td>
           <td>$p \land T \equiv p$</td>
-          <td>Cộng với $0$ hay nhân với $1$ thì giữ nguyên.</td>
+          <td>Cộng $0$ hay nhân $1$ thì giữ nguyên chính nó</td>
         </tr>
         <tr>
-          <td><b>Luật trội</b></td>
+          <td><b>Luật trội (Nuốt)</b></td>
           <td>$p \lor T \equiv T$</td>
           <td>$p \land F \equiv F$</td>
-          <td>"Hoặc Đúng" thì luôn Đúng; "Và Sai" thì luôn Sai.</td>
+          <td>HOẶC với Đúng luôn Đúng; VÀ với Sai luôn Sai</td>
         </tr>
         <tr>
-          <td><b>Luật De Morgan</b></td>
-          <td>$\neg(p \lor q) \equiv \neg p \land \neg q$</td>
-          <td>$\neg(p \land q) \equiv \neg p \lor \neg q$</td>
-          <td>Đưa dấu $\neg$ vào trong ngoặc: Đổi $\lor$ thành $\land$ và ngược lại!</td>
+          <td><b>Luật phủ định</b></td>
+          <td>$p \lor \neg p \equiv T$</td>
+          <td>$p \land \neg p \equiv F$</td>
+          <td>Hai thái cực đối lập đứng cạnh nhau</td>
         </tr>
         <tr>
-          <td><b>Luật hấp thụ (Hút thu)</b></td>
-          <td>$p \lor (p \land q) \equiv p$</td>
-          <td>$p \land (p \lor q) \equiv p$</td>
-          <td>Thành phần $p$ đứng ngoài "nuốt chửng" cả cụm chứa nó.</td>
+          <td><b>Luật phân phối</b></td>
+          <td>$p \lor (q \land r) \equiv (p \lor q) \land (p \lor r)$</td>
+          <td>$p \land (q \lor r) \equiv (p \land q) \lor (p \land r)$</td>
+          <td>Nhân/cộng phân phối vào từng số hạng trong ngoặc</td>
         </tr>
       </table>
     </div>
   </section>
 
   <section>
-    <h2>2. Vị Từ & Lượng Từ ($\forall, \exists$)</h2>
-    <p>Câu <i>"$x > 3$"</i> chưa phải là mệnh đề vì ta chưa biết $x$ là số mấy. Khuôn mẫu câu chứa biến như vậy gọi là <b>Vị từ $P(x)$</b>. Để biến vị từ thành mệnh đề có tính Đúng/Sai rõ ràng, ta có 2 cách: gán số cụ thể (như $P(4)$ là Đúng), hoặc dùng <b>Lượng từ</b>:</p>
-    <ul>
-      <li><b>Lượng từ phổ quát ($\forall x P(x)$ — "Với mọi $x$"):</b> Đúng khi và chỉ khi <b>tất cả</b> phần tử trong không gian đều thỏa mãn $P(x)$. Chỉ cần <b>1 kẻ làm sai</b> (gọi là <i>phản ví dụ</i>), cả câu $\forall x P(x)$ lập tức <b>SAI</b>.</li>
-      <li><b>Lượng từ tồn tại ($\exists x P(x)$ — "Tồn tại ít nhất một $x$"):</b> Chỉ cần tìm được <b>ít nhất 1 phần tử</b> thỏa mãn $P(x)$ là cả câu <b>ĐÚNG</b>. Nó chỉ sai khi toàn bộ không gian đều làm $P(x)$ sai.</li>
-    </ul>
+    <h2>2. Vị Từ & Lượng Từ Hóa $\forall, \exists$ (File Bài 2.pdf)</h2>
+    <p>Một câu chứa biến như $P(x): \text{“}x > 3\text{”}$ chưa biết đúng hay sai khi chưa biết $x$ là số mấy — ta gọi $P(x)$ là <b>Vị từ (Hàm mệnh đề)</b>. Để biến một vị từ thành mệnh đề có tính Đúng/Sai rõ ràng, ta có 2 cách: gán số cụ thể (như $P(4) = T, P(2) = F$) hoặc dùng <b>Lượng từ</b> trên một <b>Không gian (miền giá trị) $M$</b>:</p>
 
     <div class="formula-card">
-      <h3>Công thức Trọng tâm 1: Luật Phá Bỏ Kéo Theo & Phủ Định Lượng Từ</h3>
+      <h3>Công thức Trọng tâm 2 (Bài 2): Hai Lượng Từ $\forall, \exists$ & Luật Phủ Định De Morgan Cho Lượng Từ</h3>
       <div class="f">
-        $$(1)\quad p \rightarrow q \equiv \neg p \lor q \equiv \neg q \rightarrow \neg p$$
-        $$(2)\quad \neg(\forall x P(x)) \equiv \exists x \neg P(x) \qquad \text{và} \qquad \neg(\exists x P(x)) \equiv \forall x \neg P(x)$$
+        $$\forall x P(x) \equiv P(x_1) \land P(x_2) \land \dots \land P(x_n) \qquad \big|\qquad \exists x P(x) \equiv P(x_1) \lor P(x_2) \lor \dots \lor P(x_n)$$
+        $$\neg\big(\forall x P(x)\big) \equiv \exists x \big(\neg P(x)\big) \qquad \big|\qquad \neg\big(\exists x P(x)\big) \equiv \forall x \big(\neg P(x)\big)$$
       </div>
       <div class="formula-meta">
         <div>
-          <b>1. Giải nghĩa ký hiệu & Đơn vị:</b><br>
-          • $p, q$: Các mệnh đề đơn (Đơn vị: Giá trị chân lý $T/F$).<br>
-          • $\neg$: Phép phủ định (đảo ngược $T \leftrightarrow F$).<br>
-          • $\forall$: Lượng từ "Với mọi"; $\exists$: Lượng từ "Tồn tại".<br>
-          • $P(x)$: Vị từ phụ thuộc biến $x$ trên miền không gian $M$.
+          <b>1. Giải nghĩa ký hiệu:</b><br>
+          • $\forall x P(x)$ (Lượng từ phổ quát — <b>"Với mọi $x$"</b>): Chỉ Đúng khi $P(x)$ đúng với TẤT CẢ mọi phần tử trong không gian. Chỉ cần 1 <b>phản ví dụ</b> làm $P(x)$ sai là cả câu Sai.<br>
+          • $\exists x P(x)$ (Lượng từ tồn tại — <b>"Tồn tại ít nhất một $x$"</b>): Đúng ngay khi tìm được DÙ CHỈ 1 phần tử $x$ làm $P(x)$ đúng.
         </div>
         <div>
-          <b>2. Tại sao có & Khi nào dùng?</b><br>
-          • <b>Bản chất:</b> Công thức (1) nói rằng lời hứa "Nếu $p$ thì $q$" chỉ bị phá vỡ khi $p$ xảy ra mà $q$ không xảy ra. Công thức (2) nói rằng phủ định của "Tất cả đều đúng" là "Có ít nhất 1 anh sai".<br>
-          • <b>Khi nào dùng:</b> Dùng (1) khi cần rút gọn biểu thức có dấu $\rightarrow$; dùng (2) khi đề bài yêu cầu "Tìm mệnh đề phủ định của câu...".
+          <b>2. Quy tắc "Vàng" khi dịch câu sang biểu thức Logic:</b><br>
+          • Đi với <b>"Mọi ($\forall$)"</b> bắt buộc dùng dấu kéo theo ($\rightarrow$): $\forall x (S(x) \rightarrow C(x))$ (Với mọi người $x$, NẾU $x$ là SV lớp này THÌ $x$ đã học Giải tích).<br>
+          • Đi với <b>"Có một / Tồn tại ($\exists$)"</b> bắt buộc dùng dấu VÀ ($\land$): $\exists x (S(x) \land M(x))$ (Tồn tại người $x$ là SV lớp này VÀ đã đi thăm TP.HCM).
         </div>
       </div>
     </div>
 
-    <div class="box warn">
-      <b>Bẫy kinh điển khi dịch câu sang Logic (Cực kỳ hay thi!):</b><br>
-      Khi không gian $M$ là "Tất cả mọi người":<br>
-      • Câu <i>"Mọi sinh viên lớp này đều đã học Giải tích"</i> phải đi với dấu kéo theo ($\rightarrow$): $\mathbf{\forall x (S(x) \rightarrow C(x))}$ ("Với mọi người $x$, NẾU $x$ là SV lớp này THÌ $x$ học Giải tích"). Tuyệt đối không viết $\forall x (S(x) \land C(x))$ vì viết thế có nghĩa là "Mọi người trên trái đất đều là SV lớp này và học Giải tích"!<br>
-      • Câu <i>"Có một sinh viên lớp này đã tới TP.HCM"</i> phải đi với dấu hội ($\land$): $\mathbf{\exists x (S(x) \land M(x))}$ ("Tồn tại người $x$ vừa là SV lớp này VỪA đã tới TP.HCM").
-    </div>
-  </section>
-
-  <section>
-    <h2>3. Bài Tập Ôn Nhanh (Bài 1 & 2)</h2>
     <div class="formula-card">
-      <h3 id="bt-b1-1">Câu 1: Chứng minh tương đương logic bằng biến đổi đại số</h3>
-      <p><b>Đề bài:</b> Không lập bảng chân trị, hãy dùng các luật tương đương logic để chứng minh rằng: $\neg(p \lor (\neg p \land q)) \equiv \neg p \land \neg q$.</p>
+      <h3 id="bt-b1-1">Bài tập mẫu (Bài 1 & 2): Chứng minh tương đương không dùng bảng chân trị</h3>
+      <p><b>Đề bài:</b> Dùng chuỗi các tương đương logic để chứng minh rằng $\neg(p \lor (\neg p \land q)) \equiv \neg p \land \neg q$ (Ví dụ trang 16-19 File Bài 1.pdf).</p>
       <div class="btn-group">
         <button type="button" class="btn btn-hint" onclick="togglePanel('h-b1-1')">Xem Gợi ý</button>
         <button type="button" class="btn btn-sol" onclick="togglePanel('s-b1-1')">Xem Lời giải chi tiết</button>
       </div>
       <div id="h-b1-1" class="panel">
-        Áp dụng <b>Luật De Morgan</b> từ ngoài vào trong để đẩy dấu $\neg$ vào các ngoặc, sau đó dùng <b>Luật phân phối</b> và <b>Luật phủ định</b> ($\neg p \land p \equiv F$).
+        Đưa dấu $\neg$ bên ngoài vào trong ngoặc bằng luật De Morgan, sau đó áp dụng luật phân phối và luật phủ định!
       </div>
       <div id="s-b1-1" class="panel">
         <div class="step">
-          <span class="cmt">// Bước 1: Dùng luật De Morgan cho phép tuyển $\lor$ ở ngoài cùng: $\neg(A \lor B) \equiv \neg A \land \neg B$</span>
-          $$\neg(p \lor (\neg p \land q)) \equiv \neg p \land \neg(\neg p \land q)$$
-          <span class="cmt">// Bước 2: Tiếp tục dùng luật De Morgan cho cụm $\neg(\neg p \land q)$ và luật phủ định kép $\neg(\neg p) \equiv p$:</span>
-          $$\equiv \neg p \land (p \lor \neg q)$$
-          <span class="cmt">// Bước 3: Dùng luật phân phối của phép $\land$ đối với phép $\lor$:</span>
-          $$\equiv (\neg p \land p) \lor (\neg p \land \neg q)$$
-          <span class="cmt">// Bước 4: Vì $\neg p \land p \equiv F$ (luật phủ định) và $F \lor X \equiv X$ (luật đồng nhất):</span>
-          $$\equiv F \lor (\neg p \land \neg q) \equiv \mathbf{\neg p \land \neg q} \quad (\text{đpcm})$$
+          Ta biến đổi vế trái từng bước như sau:
+          $$\neg(p \lor (\neg p \land q)) \equiv \neg p \land \neg(\neg p \land q) \quad \text{(Luật De Morgan cho phép } \lor \text{)}$$
+          $$\equiv \neg p \land (\neg(\neg p) \lor \neg q) \quad \text{(Luật De Morgan cho phép } \land \text{)}$$
+          $$\equiv \neg p \land (p \lor \neg q) \quad \text{(Luật phủ định kép: } \neg(\neg p) \equiv p \text{)}$$
+          $$\equiv (\neg p \land p) \lor (\neg p \land \neg q) \quad \text{(Luật phân phối)}$$
+          $$\equiv F \lor (\neg p \land \neg q) \quad \text{(Luật phủ định: } \neg p \land p \equiv F \text{)}$$
+          $$\equiv \mathbf{\neg p \land \neg q} \quad \text{(Luật đồng nhất: } F \lor X \equiv X \text{ — ĐPCM!)}$$
         </div>
       </div>
     </div>
 
     <div class="btn-group">
-      <button type="button" class="btn btn-sol" onclick="document.getElementById('lesson-select').value='2';loadLesson('2')">Chuyển tiếp sang Bài 3 & 4 (Lượng từ lồng nhau & Suy luận)</button>
+      <button type="button" class="btn btn-sol" onclick="document.getElementById('lesson-select').value='2';loadLesson('2')">Chuyển tiếp sang Phần 2 (Bài 3 & 4)</button>
+      <button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='4';loadLesson('4')">Đến thẳng Bài 6 (Chuyên sâu RSA)</button>
     </div>
   </section>
 </template>
 
 <!-- ==========================================================================
-     PHẦN 2 (TƯƠNG ỨNG FILE BÀI 3.PDF & BÀI 4.PDF): LƯỢNG TỪ LỒNG NHAU & SUY LUẬN
+     PHẦN 2 (TƯƠNG ỨNG BÀI 3.PDF & BÀI 4.PDF): LƯỢNG TỪ LỒNG NHAU & SUY LUẬN
      ========================================================================== -->
 <template id="tpl-buoi-2">
   <header>
-    <span class="k b2">TOÁN RỜI RẠC · ÔN TẬP NỀN TẢNG (FILE BÀI 3 & 4)</span>
-    <h1>Lượng Từ Lồng Nhau & Các Phương Pháp Chứng Minh</h1>
-    <p class="mut">Nắm nhanh quy tắc thứ tự lượng từ lồng nhau, các quy tắc suy luận hợp thức (Modus Ponens, Modus Tollens, Phân giải) và nhận diện ngụy biện.</p>
+    <span class="k b2">TOÁN RỜI RẠC · BÀI 3 & BÀI 4 (TÓM TẮT CỐT LÕI)</span>
+    <h1>Lượng Từ Lồng Nhau & Các Quy Tắc Suy Luận, Chứng Minh</h1>
+    <p class="mut">Tóm tắt súc tích cách đọc/phủ định các lượng từ lồng nhau ($\forall x \exists y$) và bảng các quy tắc suy luận chuẩn mực (Modus Ponens, Modus Tollens, Phân giải) để tránh bẫy ngụy biện.</p>
   </header>
 
   <section>
-    <h2>1. Lượng Từ Lồng Nhau (Nested Quantifiers)</h2>
-    <p>Khi một câu có nhiều biến (như $x$ và $y$), các lượng từ sẽ đứng lồng vào nhau. Hãy đọc chúng <b>từ trái sang phải</b> như hai vòng lặp <code>for</code> lồng nhau trong lập trình!</p>
+    <h2>1. Lượng Từ Lồng Nhau & Tầm Quan Trọng Của Thứ Tự (File Bài 3.pdf)</h2>
+    <p>Khi một câu có nhiều biến (như $x$ và $y$), các lượng từ đứng nối tiếp nhau tạo thành <b>Lượng từ lồng nhau</b>. Em hãy nhớ quy tắc đọc từ trái sang phải như một vòng lặp lồng nhau trong lập trình:</p>
 
     <div class="box analogy">
-      <b>Ẩn dụ "Chìa khóa và Ổ khóa" — Tại sao đổi chỗ $\forall$ và $\exists$ lại làm đổi hoàn toàn nghĩa?</b><br>
-      Xét hai câu sau:<br>
-      • <b>$\forall x \exists y (x + y = 0)$:</b> <i>"Với mỗi ổ khóa $x$, tồn tại một chìa khóa riêng $y$ mở được nó"</i> (Mỗi số thực $x$ đều có một số đối $y = -x$ của riêng nó). $\rightarrow$ <b>ĐÚNG!</b><br>
-      • <b>$\exists y \forall x (x + y = 0)$:</b> <i>"Tồn tại một chiếc chìa khóa vạn năng $y$ mở được TẤT CẢ mọi ổ khóa $x$"</i> (Có một số $y$ cố định mà cộng với số $x$ nào cũng bằng $0$). $\rightarrow$ <b>SAI!</b><br>
-      <b>Kết luận sống còn:</b> Cùng loại ($\forall x \forall y$ hoặc $\exists x \exists y$) thì đổi chỗ thoải mái. Khác loại ($\forall x \exists y$ và $\exists y \forall x$) thì <b>TUYỆT ĐỐI KHÔNG ĐƯỢC ĐỔI CHỖ!</b>
+      <b>Ẩn dụ "Chọn người yêu" để hiểu tại sao ĐỔI CHỖ $\forall$ và $\exists$ lại làm ĐỔI NGHĨA hoàn toàn:</b><br>
+      Xét vị từ $Q(x, y): x + y = 0$ trên tập số thực $\mathbb{R}$:<br>
+      • <b>$\forall x \exists y (x + y = 0)$ — ĐÚNG ($T$):</b> "Với mỗi số $x$ bất kỳ đưa ra trước, ta luôn chọn được một số $y$ (phụ thuộc vào $x$, chính là $y = -x$) để tổng bằng $0$". (Giống như: <i>Ai cũng tìm được một người phù hợp với riêng mình</i>).<br>
+      • <b>$\exists y \forall x (x + y = 0)$ — SAI ($F$):</b> "Tồn tại một con số $y$ siêu phàm cố định trước, sao cho cộng với MỌI số $x$ trên đời đều bằng $0$". Làm gì có số $y$ nào như vậy!
     </div>
-
-    <h3>1.1. Bảng Tóm Tắt 4 Kết Hợp Lượng Từ Lồng Nhau</h3>
-    <div class="tw">
-      <table>
-        <tr>
-          <th>Biểu thức</th>
-          <th>Ý nghĩa đời thường</th>
-          <th>Khi nào ĐÚNG?</th>
-        </tr>
-        <tr>
-          <td>$\forall x \forall y P(x,y)$</td>
-          <td>Mọi cặp $x, y$ bất kỳ đều thỏa mãn.</td>
-          <td>Đúng với mọi cặp $(x,y)$.</td>
-        </tr>
-        <tr>
-          <td>$\forall x \exists y P(x,y)$</td>
-          <td>Mỗi anh $x$ đều tìm được ít nhất một anh $y$ đi kèm (phụ thuộc vào $x$).</td>
-          <td>Với mỗi $x$, có ít nhất một $y$ làm $P(x,y)$ đúng.</td>
-        </tr>
-        <tr>
-          <td>$\exists x \forall y P(x,y)$</td>
-          <td>Có một "siêu nhân" $x$ cố định thỏa mãn với tất cả mọi $y$.</td>
-          <td>Tìm được 1 phần tử $x$ khớp với toàn bộ $y$.</td>
-        </tr>
-        <tr>
-          <td>$\exists x \exists y P(x,y)$</td>
-          <td>Có ít nhất một cặp $(x,y)$ thỏa mãn.</td>
-          <td>Chỉ cần 1 cặp $(x,y)$ đúng là đủ.</td>
-        </tr>
-      </table>
-    </div>
-  </section>
-
-  <section>
-    <h2>2. Các Quy Tắc Suy Luận & Tránh Bẫy Ngụy Biện</h2>
-    <p>Một suy luận từ các giả thiết $p_1, p_2, \dots, p_n$ ra kết luận $q$ gọi là <b>hợp thức (valid)</b> nếu biểu thức $(p_1 \land p_2 \land \dots \land p_n) \rightarrow q$ là một <b>hằng đúng</b>.</p>
 
     <div class="formula-card">
-      <h3>Công thức Trọng tâm 2: 5 Quy Tắc Suy Luận Cốt Lõi Nhất</h3>
+      <h3>Công thức Trọng tâm 1 (Bài 3): Bảng Ý Nghĩa & Phủ Định Lượng Từ Lồng Nhau</h3>
       <div class="f">
-        $$\text{Modus Ponens: } \frac{p, \quad p \rightarrow q}{\therefore q} \qquad \text{Modus Tollens: } \frac{\neg q, \quad p \rightarrow q}{\therefore \neg p}$$
-        $$\text{Tam đoạn luận giả định: } \frac{p \rightarrow q, \quad q \rightarrow r}{\therefore p \rightarrow r} \qquad \text{Phân giải: } \frac{p \lor q, \quad \neg p \lor r}{\therefore q \lor r}$$
+        $$\neg\big(\forall x \exists y P(x,y)\big) \equiv \exists x \forall y \big(\neg P(x,y)\big) \qquad \big|\qquad \neg\big(\exists x \forall y P(x,y)\big) \equiv \forall x \exists y \big(\neg P(x,y)\big)$$
       </div>
       <div class="formula-meta">
         <div>
-          <b>1. Giải nghĩa ký hiệu & Đơn vị:</b><br>
-          • Các dòng trên gạch ngang: Các <b>Giả thiết / Tiền đề</b> đã cho là Đúng ($T$).<br>
-          • Dấu $\therefore$ (đọc là "Vậy thì / Suy ra"): Kết luận rút ra ở dòng dưới.<br>
-          • $q \lor r$ trong quy tắc phân giải gọi là <b>giải thức (resolvent)</b> sau khi triệt tiêu cặp $p$ và $\neg p$.
+          <b>1. Giải nghĩa ký hiệu:</b><br>
+          • $\forall x \forall y$ và $\exists x \exists y$: Cùng loại lượng từ thì <b>được phép đổi chỗ</b> ($\forall x \forall y \equiv \forall y \forall x$).<br>
+          • $\forall x \exists y$ và $\exists y \forall x$: Khác loại lượng từ thì <b>TUYỆT ĐỐI KHÔNG ĐƯỢC tự ý đổi chỗ</b>!
         </div>
         <div>
-          <b>2. Tại sao có & Khi nào dùng?</b><br>
-          • <b>Modus Ponens (Khẳng định):</b> Có $p$ đúng và có cầu nối $p \rightarrow q$, ta bước qua cầu lấy $q$.<br>
-          • <b>Modus Tollens (Phản chứng lùi):</b> Thấy hậu quả $q$ KHÔNG xảy ra ($\neg q$), suy ngược lại nguyên nhân $p$ chắc chắn KHÔNG xảy ra ($\neg p$).<br>
-          • <b>Phân giải (Resolution):</b> Dùng trong lập trình AI/Prolog để khử biến đối dấu ($p$ và $\neg p$).
+          <b>2. Cách lấy phủ định siêu tốc:</b><br>
+          • Khi đẩy dấu $\neg$ đi qua chuỗi lượng từ từ trái sang phải: Hễ gặp $\forall$ thì lật thành $\exists$, gặp $\exists$ thì lật thành $\forall$, cuối cùng đặt dấu $\neg$ vào ngay trước vị từ ở trong cùng!
         </div>
       </div>
-    </div>
-
-    <div class="box warn">
-      <b>2 Lỗi Ngụy Biện (Fallacies) Rất Dễ Mắc Phải:</b><br>
-      Giả sử có câu: <i>"Nếu trời mưa ($p$) thì đường ướt ($q$)"</i> ($p \rightarrow q$).<br>
-      1. <b>Ngụy biện khẳng định kết luận:</b> Thấy đường ướt ($q$), vội kết luận trời vừa mưa ($p$). <b>SAI!</b> Vì có thể xe phun nước vừa đi qua ($[(p \rightarrow q) \land q] \rightarrow p$ KHÔNG phải hằng đúng).<br>
-      2. <b>Ngụy biện phủ định giả thiết:</b> Thấy trời không mưa ($\neg p$), vội kết luận đường không ướt ($\neg q$). <b>SAI!</b> ($[(p \rightarrow q) \land \neg p] \rightarrow \neg q$ KHÔNG phải hằng đúng).
     </div>
   </section>
 
   <section>
-    <h2>3. Bài Tập Ôn Nhanh (Bài 3 & 4)</h2>
-    <div class="formula-card">
-      <h3 id="bt-b2-1">Câu 1: Chuỗi suy luận kết hợp lượng từ</h3>
-      <p><b>Đề bài:</b> Cho 2 tiền đề trong lớp học: (1) <i>"Có một sinh viên trong lớp không đọc sách"</i>: $\exists x (C(x) \land \neg B(x))$ và (2) <i>"Mọi sinh viên trong lớp đều vượt qua kỳ thi đầu"</i>: $\forall x (C(x) \rightarrow P(x))$. Hãy trình bày từng bước suy luận hợp thức để rút ra kết luận: $\exists x (P(x) \land \neg B(x))$ (<i>"Có người qua kỳ thi đầu mà không đọc sách"</i>).</p>
-      <div class="btn-group">
-        <button type="button" class="btn btn-hint" onclick="togglePanel('h-b2-1')">Xem Gợi ý</button>
-        <button type="button" class="btn btn-sol" onclick="togglePanel('s-b2-1')">Xem Lời giải chi tiết</button>
-      </div>
-      <div id="h-b2-1" class="panel">
-        Bước đầu tiên hãy dùng <b>Cụ thể hóa tồn tại</b> gọi tên người sinh viên đó là $a$, sau đó dùng <b>Cụ thể hóa phổ quát</b> áp vào $a$, dùng <b>Modus Ponens</b> rồi <b>Tổng quát hóa tồn tại</b>.
-      </div>
-      <div id="s-b2-1" class="panel">
-        <div class="step">
-          1. $\exists x (C(x) \land \neg B(x))$ — <i>Tiền đề 1</i>.<br>
-          2. $C(a) \land \neg B(a)$ — <i>Cụ thể hóa tồn tại từ (1): Gọi phần tử tồn tại đó là bạn $a$</i>.<br>
-          3. $C(a)$ và $\neg B(a)$ — <i>Quy tắc rút gọn tách từ (2)</i>.<br>
-          4. $\forall x (C(x) \rightarrow P(x))$ — <i>Tiền đề 2</i>.<br>
-          5. $C(a) \rightarrow P(a)$ — <i>Cụ thể hóa phổ quát từ (4) áp dụng cho bạn $a$</i>.<br>
-          6. $P(a)$ — <i>Luật Modus Ponens từ $C(a)$ ở (3) và (5)</i>.<br>
-          7. $P(a) \land \neg B(a)$ — <i>Quy tắc kết hợp từ $P(a)$ ở (6) và $\neg B(a)$ ở (3)</i>.<br>
-          8. $\mathbf{\exists x (P(x) \land \neg B(x))}$ — <i>Tổng quát hóa tồn tại từ (7) (ĐPCM)</i>.
-        </div>
-      </div>
+    <h2>2. Các Quy Tắc Suy Luận Hợp Thức & Cảnh Giác Ngụy Biện (File Bài 4.pdf)</h2>
+    <p>Một suy luận từ các giả thiết $p_1, p_2, \dots, p_n$ ra kết luận $q$ gọi là <b>Hợp thức (Valid)</b> nếu mệnh đề $(p_1 \land p_2 \land \dots \land p_n) \rightarrow q$ là một <b>hằng đúng</b>.</p>
+
+    <div class="tw">
+      <table>
+        <tr>
+          <th>Tên quy tắc suy luận</th>
+          <th>Sơ đồ suy diễn</th>
+          <th>Hằng đúng cơ sở</th>
+          <th>Ý nghĩa đời thường</th>
+        </tr>
+        <tr>
+          <td><b>Modus Ponens</b> (Luật tách rời)</td>
+          <td>Có $p$ và $p \rightarrow q \implies \therefore q$</td>
+          <td>$[p \land (p \rightarrow q)] \rightarrow q$</td>
+          <td>Nếu trời mưa thì đường ướt. Trời đang mưa $\Rightarrow$ Đường ướt!</td>
+        </tr>
+        <tr>
+          <td><b>Modus Tollens</b> (Phản đảo)</td>
+          <td>Có $\neg q$ và $p \rightarrow q \implies \therefore \neg p$</td>
+          <td>$[\neg q \land (p \rightarrow q)] \rightarrow \neg p$</td>
+          <td>Nếu mưa thì đường ướt. Đường KHÔNG ướt $\Rightarrow$ Trời không mưa!</td>
+        </tr>
+        <tr>
+          <td><b>Tam đoạn luận giả định</b> (Bắc cầu)</td>
+          <td>Có $p \rightarrow q$ và $q \rightarrow r \implies \therefore p \rightarrow r$</td>
+          <td>$[(p \rightarrow q) \land (q \rightarrow r)] \rightarrow (p \rightarrow r)$</td>
+          <td>Bắc cầu chuỗi kéo theo liên tiếp</td>
+        </tr>
+        <tr>
+          <td><b>Tam đoạn luận tuyển</b> (Loại trừ)</td>
+          <td>Có $p \lor q$ và $\neg p \implies \therefore q$</td>
+          <td>$[(p \lor q) \land \neg p] \rightarrow q$</td>
+          <td>Chỉ có A hoặc B. Không phải A $\Rightarrow$ Chắc chắn là B!</td>
+        </tr>
+        <tr>
+          <td><b>Quy tắc Phân giải</b> (Resolution)</td>
+          <td>Có $p \lor q$ và $\neg p \lor r \implies \therefore q \lor r$</td>
+          <td>$[(p \lor q) \land (\neg p \lor r)] \rightarrow (q \lor r)$</td>
+          <td>Triệt tiêu cặp đối đầu $p$ và $\neg p$ (Trái tim của lập trình AI/Prolog)</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="box warn">
+      <b>Cảnh báo 2 lỗi NGỤY BIỆN (Fallacies — Suy luận SAI) cực kỳ hay bẫy trong đề thi:</b><br>
+      1. <b>Ngụy biện khẳng định kết luận:</b> Thấy $p \rightarrow q$ đúng và $q$ đúng rồi vội kết luận $p$ đúng là <b>SAI</b>! (Ví dụ: "Nếu làm hết sách bài tập thì giỏi Toán rời rạc. Bạn đã giỏi Toán rời rạc $\Rightarrow$ Bạn đã làm hết sách" là SAI vì bạn có thể giỏi nhờ học web tương tác này!).<br>
+      2. <b>Ngụy biện phủ định giả thiết:</b> Thấy $p \rightarrow q$ đúng và $\neg p$ đúng rồi kết luận $\neg q$ đúng cũng là <b>SAI</b>!
     </div>
 
     <div class="btn-group">
-      <button type="button" class="btn btn-sol" onclick="document.getElementById('lesson-select').value='3';loadLesson('3')">Chuyển sang Bài 5 (Trọng tâm): Đại số Bool, Thuật toán & Euclid</button>
+      <button type="button" class="btn btn-sol" onclick="document.getElementById('lesson-select').value='3';loadLesson('3')">Chuyển sang Phần 3 (Bài 5 - Trọng tâm Đại số Bool, Big-O & Euclid)</button>
+      <button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='4';loadLesson('4')">Chuyển sang Phần 4 (Bài 6 - Chuyên sâu RSA)</button>
     </div>
   </section>
 </template>
 
 <!-- ==========================================================================
-     PHẦN 3 (TƯƠNG ỨNG FILE BÀI 5.PDF): HỌC KỸ ĐẠI SỐ BOOL, THUẬT TOÁN, BIG-O & EUCLID
+     PHẦN 3 (TƯƠNG ỨNG BÀI 5.PDF): HỌC KỸ ĐẠI SỐ BOOL, THUẬT TOÁN, BIG-O & EUCLID
      ========================================================================== -->
 <template id="tpl-buoi-3">
   <header>
-    <span class="k b4">TOÁN RỜI RẠC · BÀI 5 (HỌC KỸ TRỌNG TÂM)</span>
+    <span class="k b4">TOÁN RỜI RẠC · BÀI 5 (PHẦN TRỌNG TÂM KỸ LƯỠNG)</span>
     <h1>Đại Số Bool, Thiết Kế Mạch, Độ Phức Tạp Big-O & Thuật Toán Euclid</h1>
-    <p class="mut">Trong bài này, thầy sẽ dẫn dắt em đi thật chậm và chi tiết qua 4 trụ cột cực kỳ quan trọng của Khoa học máy tính: Từ bóng bán dẫn 0-1 (Đại số Bool), Cách viết Thuật toán, Đo tốc độ bằng Big-O cho đến Thuật toán Euclid tìm Ước chung lớn nhất.</p>
+    <p class="mut">Từ Bài 5 trở đi, chúng ta học thật chậm và thật sâu. Bài giảng số 5 của trường ĐH Công Nghệ (UET) gồm 4 trụ cột lớn: Đại số Bool & Mạch số, Thuật toán tìm kiếm/sắp xếp/tham lam, Độ tăng hàm ($O, \Omega, \Theta$) và Số nguyên tố/Thuật toán Euclid.</p>
   </header>
 
-  <!-- CHỦ ĐỀ 1: ĐẠI SỐ BOOL & THIẾT KẾ MẠCH -->
   <section>
-    <h2>1. Đại Số Bool & Biểu Diễn Tổng-Các-Tích (TCT)</h2>
-    <p>Năm 1854, George Boole phát triển một hệ đại số chỉ làm việc trên tập hợp vỏn vẹn 2 phần tử: $\mathbf{B = \{0, 1\}}$. Đến năm 1938, Claude Shannon nhận ra rằng $0$ và $1$ chính là hai trạng thái <b>Ngắt điện ($0$)</b> và <b>Có điện ($1$)</b> của công tắc mạch điện tử!</p>
+    <h2>1. Đại Số Bool & Biểu Diễn Tổng-Các-Tích (TCT / Minterm)</h2>
+    <p>Năm 1854, George Boole sáng lập ra đại số chỉ làm việc trên tập $B = \{0, 1\}$. Đến năm 1938, Claude Shannon nhận ra rằng $0$ (ngắt điện) và $1$ (có điện) khớp hoàn hảo với công tắc mạch điện tử!</p>
 
     <div class="box analogy">
-      <b>Ẩn dụ "Công tắc đèn điện" cho 3 phép toán Bool cơ bản:</b><br>
-      • <b>Phủ định (Complement $\overline{x}$ — Cổng NOT):</b> Nút đảo ngược. Đang tắt thành bật ($\overline{0} = 1$), đang bật thành tắt ($\overline{1} = 0$).<br>
-      • <b>Tổng Bool ($x + y$ — Cổng OR / Mắc song song):</b> Chỉ cần <b>ít nhất 1</b> công tắc bật là đèn sáng: $1 + 0 = 1$, $0 + 1 = 1$, và đặc biệt $\mathbf{1 + 1 = 1}$ (Hai công tắc song song cùng bật thì đèn vẫn sáng chứ không nổ thành $2$!). Chỉ tắt khi $0 + 0 = 0$.<br>
-      • <b>Tích Bool ($x \cdot y$ hay $xy$ — Cổng AND / Mắc nối tiếp):</b> Phải bật <b>cả hai</b> công tắc thì điện mới thông: $1 \cdot 1 = 1$. Chỉ cần 1 anh tắt là tắt hết ($1 \cdot 0 = 0$).<br>
-      • <b>Thứ tự ưu tiên tính toán:</b> (1) Phủ định $\overline{x}$ $\rightarrow$ (2) Tích $x \cdot y$ $\rightarrow$ (3) Tổng $x + y$.
+      <b>Ẩn dụ "Công tắc bóng đèn" cho 3 phép toán Bool cơ bản:</b><br>
+      • <b>Phủ định (NOT — $\overline{x}$):</b> Đảo ngược trạng thái: $\overline{0} = 1,\ \overline{1} = 0$.<br>
+      • <b>Tích Bool (AND — $x \cdot y$):</b> Giống 2 công tắc mắc <b>nối tiếp</b>. Phải bật CẢ HAI ($1 \cdot 1 = 1$) đèn mới sáng; chỉ cần 1 anh tắt là tắt hết ($1 \cdot 0 = 0$).<br>
+      • <b>Tổng Bool (OR — $x + y$):</b> Giống 2 công tắc mắc <b>song song</b>. Chỉ cần ÍT NHẤT 1 công tắc bật là đèn sáng! Đặc biệt lưu ý: Trong đại số Bool, $\mathbf{1 + 1 = 1}$ (hai công tắc cùng bật thì đèn vẫn sáng mức $1$, không có số $2$!).<br>
+      • <b>Thứ tự ưu tiên khi tính toán:</b> (1) Phủ định $\overline{x}$ $\rightarrow$ (2) Tích $x \cdot y$ $\rightarrow$ (3) Tổng $x + y$.
     </div>
 
-    <h3>1.1. Khái niệm Biến tử (Literal), Tiểu hạng (Minterm) & Dạng TCT</h3>
-    <p>Khi đi thi, đề bài rất hay yêu cầu: <i>"Tìm khai triển Tổng-các-Tích (TCT / Sum-of-Products) của hàm Bool $F(x, y, z)$"</i>. Để làm được trong 30 giây, em cần hiểu 3 từ khóa:</p>
-    <ol>
-      <li><b>Biến tử (Literal):</b> Là một biến hoặc phủ định của nó (ví dụ: $x, \overline{x}, y, \overline{y}$).</li>
-      <li><b>Tiểu hạng (Minterm) của $n$ biến:</b> Là một tích gồm <b>đủ mặt cả $n$ biến</b> (mỗi biến xuất hiện đúng 1 lần dưới dạng giữ nguyên hoặc có gạch đầu).<br>
-      <i>Quy tắc vàng:</i> Tiểu hạng chỉ nhận giá trị bằng $\mathbf{1}$ tại đúng 1 bộ giá trị duy nhất! Muốn tiểu hạng bằng $1$: biến nào đang bằng $1$ thì <b>giữ nguyên</b> ($x$), biến nào đang bằng $0$ thì <b>đội mũ gạch ngang</b> ($\overline{x}$) để đảo nó thành $1$.<br>
-      <i>Ví dụ:</i> Với bộ $(x=1, y=0, z=0)$, tiểu hạng tương ứng là $x\overline{y}\overline{z}$ (vì $1 \cdot \overline{0} \cdot \overline{0} = 1 \cdot 1 \cdot 1 = 1$).</li>
-      <li><b>Tổng-các-Tích (TCT):</b> Là cách viết hàm $F$ thành tổng ($+$) của các tiểu hạng ứng với những dòng có $F = 1$ trong bảng chân trị.</li>
-    </ol>
+    <h3>1.1. Biến tử (Literal), Tiểu hạng (Minterm) và Khai triển Tổng-các-Tích (TCT)</h3>
+    <p>Giả sử em có bảng chân trị của một hàm $F(x, y, z)$, làm sao để viết ra công thức đại số và lắp thành mạch điện? Ta dùng phương pháp <b>Tổng-các-Tích (Sum-of-Products)</b>:</p>
+    <ul>
+      <li><b>Biến tử (Literal):</b> Là biến $x$ hoặc phủ định $\overline{x}$ của nó.</li>
+      <li><b>Tiểu hạng (Minterm) của $n$ biến:</b> Là tích của đủ $n$ biến tử (mỗi biến xuất hiện đúng 1 lần). <b>Quy tắc tạo tiểu hạng bằng $1$:</b> Nhìn vào một dòng của bảng chân trị, biến nào có giá trị bằng $\mathbf{1}$ thì giữ nguyên ($x$), biến nào bằng $\mathbf{0}$ thì đội thêm dấu gạch ngang ($\overline{x}$) để biến nó thành $1$! Ví dụ: bộ $(x=1, y=0, z=0)$ ứng với tiểu hạng $x\overline{y}\overline{z}$.</li>
+      <li><b>Khai triển Tổng-các-Tích (TCT):</b> Nhặt tất cả các hàng trong bảng chân trị mà tại đó hàm $\mathbf{F = 1}$, viết tiểu hạng cho từng hàng đó rồi <b>cộng ($+$) tất cả lại với nhau</b>!</li>
+    </ul>
 
     <div class="formula-card">
       <h3>Công thức Trọng tâm 1 (Bài 5): Số Hàm Bool & Các Đẳng Thức Rút Gọn Mạch</h3>
       <div class="f">
-        $$\text{Số hàm Bool bậc } n = 2^{(2^n)} \qquad \big|\qquad \text{NAND: } x \mid y = \overline{xy} \qquad \big|\qquad \text{NOR: } x \downarrow y = \overline{x+y}$$
+        $$\text{Số hàm Bool bậc } n = 2^{(2^n)}$$
+        $$\text{NAND: } x \mid y = \overline{xy} \qquad \big|\qquad \text{NOR: } x \downarrow y = \overline{x+y}$$
         $$\text{Luật phân phối cộng: } x + yz = (x+y)(x+z) \qquad \big|\qquad \text{Luật nuốt: } x + xy = x$$
       </div>
       <div class="formula-meta">
@@ -974,7 +995,8 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
     <div class="formula-card">
       <h3>Công thức Trọng tâm 3 (Bài 5): Kiểm Tra Nguyên Tố $\sqrt{n}$, $\gcd$, $\text{lcm}$ & Thuật Toán Euclid</h3>
       <div class="f">
-        $$\gcd(a, b) = p_1^{\min(a_1, b_1)} \cdots p_k^{\min(a_k, b_k)} \qquad \big|\qquad \text{lcm}(a, b) = p_1^{\max(a_1, b_1)} \cdots p_k^{\max(a_k, b_k)}$$
+        $$\gcd(a, b) = p_1^{\min(a_1, b_1)} \cdots p_k^{\min(a_k, b_k)}$$
+        $$\text{lcm}(a, b) = p_1^{\max(a_1, b_1)} \cdots p_k^{\max(a_k, b_k)}$$
         $$\text{Thuật toán Euclid: Với } a = bq + r \implies \mathbf{\gcd(a, b) = \gcd(b, r)}$$
       </div>
       <div class="formula-meta">
@@ -1180,7 +1202,7 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
       <h3>Công thức Trọng tâm 2 (Bài 6): Đẳng Thức Bézout & Nghịch Đảo Mô-đu-lô $\overline{a}$</h3>
       <div class="f">
         $$\text{Định lý Bézout: } \gcd(a, b) = sa + tb \quad (s, t \in \mathbb{Z})$$
-        $$\text{Nghịch đảo Modulo: Khi } \gcd(a, m) = 1 \implies \exists!\ \overline{a} \in \{1, \dots, m-1\} \text{ sao cho } \mathbf{a \cdot \overline{a} \equiv 1 \pmod m}$$
+        $$\text{Khi } \gcd(a, m) = 1 \implies \exists!\ \overline{a} \in \{1, \dots, m-1\}: \quad \mathbf{a \cdot \overline{a} \equiv 1 \pmod m}$$
       </div>
       <div class="formula-meta">
         <div>
@@ -1387,8 +1409,9 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
     <div class="formula-card">
       <h3>Công thức Trọng tâm 5 (Bài 6): Toàn Bộ Quy Trình 3 Giai Đoạn Của Thuật Toán RSA</h3>
       <div class="f">
-        $$\text{1. Tạo khóa: } n = p \cdot q, \quad \varphi(n) = (p-1)(q-1), \quad \gcd(e, \varphi(n)) = 1, \quad d \cdot e \equiv 1 \pmod{(p-1)(q-1)}$$
-        $$\text{2. Mã hóa từng khối } M: \quad \mathbf{C = M^e \bmod n} \qquad \big|\qquad \text{3. Giải mã khối } C: \quad \mathbf{M = C^d \bmod n}$$
+        $$\text{1. Tạo khóa: } n = p \cdot q, \quad \varphi(n) = (p-1)(q-1)$$
+        $$\gcd(e, \varphi(n)) = 1, \quad d \cdot e \equiv 1 \pmod{(p-1)(q-1)}$$
+        $$\text{2. Mã hóa: } \mathbf{C = M^e \bmod n} \qquad \big|\qquad \text{3. Giải mã: } \mathbf{M = C^d \bmod n}$$
       </div>
       <div class="formula-meta">
         <div>
@@ -1654,6 +1677,461 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
       <li><b>Lũy thừa mô-đu-lô nhanh ($b^n \bmod m$):</b> Đổi số mũ $n$ sang nhị phân, bình phương biến $\text{power}$ qua từng bước và chỉ nhân vào $x$ tại những vị trí bit nhị phân bằng $1$.</li>
       <li><b>Hệ mật mã RSA:</b> Khóa công khai $(n = pq, e)$ với $\gcd(e, (p-1)(q-1)) = 1$. Khóa giải mã bí mật $d$ thỏa mãn $de \equiv 1 \pmod{(p-1)(q-1)}$. Mã hóa: $C = M^e \bmod n$; Giải mã: $M = C^d \bmod n$.</li>
       <li><b>Giao thức Diffie-Hellman:</b> Alice gửi $a^{k_1} \bmod p$, Bob gửi $a^{k_2} \bmod p$, khóa chung là $K = a^{k_1 k_2} \bmod p$.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="document.getElementById('lesson-select').value='5';loadLesson('5')">Chuyển tiếp sang Phần 5 (Mới): Quy nạp Toán học & Đệ quy (3.2 - 3.4)</button>
+    </div>
+  </section>
+</template>
+
+<!-- ==========================================================================
+     PHẦN 5 (MỤC 3.2, 3.3, 3.4): PHÉP QUY NẠP TOÁN HỌC, ĐỊNH NGHĨA & THUẬT TOÁN ĐỆ QUY
+     ========================================================================== -->
+<template id="tpl-buoi-5">
+  <header>
+    <span class="k b2">TOÁN RỜI RẠC · CHƯƠNG 3 (MỤC 3.2, 3.3 & 3.4 — CHUYÊN SÂU)</span>
+    <h1>Phép Quy Nạp Toán Học, Định Nghĩa Đệ Quy & Thuật Toán Đệ Quy</h1>
+    <p class="mut">Tài liệu học lại từ gốc cho 3 file bài giảng mới của em: Từ hiệu ứng "Quân cờ Domino" của Quy nạp toán học (3.2), Dãy số Fibonacci & Định lý Lamé trong Định nghĩa đệ quy (3.3), cho đến cách thiết kế và đếm số phép nhân của Thuật toán đệ quy (3.4). Tất cả các ví dụ và bài tập trong file đều được giải chi tiết từng bước!</p>
+  </header>
+
+  <!-- ========================================================================
+       MỤC 1 (FILE 3.2): PHÉP QUY NẠP TOÁN HỌC
+       ======================================================================== -->
+  <section>
+    <h2>1. Phép Quy Nạp Toán Học (Mục 3.2) — Nghệ Thuật Xô Đổ Vô Hạn Quân Domino</h2>
+    <p>Trong toán học và tin học, làm sao chúng ta chứng minh được một công thức $P(n)$ là <b>đúng với mọi số nguyên dương $n = 1, 2, 3, \dots$ tới vô cùng</b>? Chúng ta không thể ngồi thay từng số tới hết đời được! Kỹ thuật giúp chứng minh vô hạn trường hợp chỉ bằng 2 bước ngắn gọn gọi là <b>Phép quy nạp toán học (Mathematical Induction)</b>.</p>
+
+    <div class="box analogy">
+      <b>Ẩn dụ "Hiệu ứng Quân cờ Domino" hoặc "Leo chiếc thang vô tận":</b><br>
+      Hãy tưởng tượng có một hàng dài vô tận các quân cờ Domino đánh số $1, 2, 3, \dots, k, k+1, \dots$ Làm sao để em chắc chắn rằng <b>TẤT CẢ các quân cờ đều sẽ đổ</b>?<br>
+      Em chỉ cần kiểm tra đúng 2 điều kiện:<br>
+      1. <b>Bước cơ sở (Đẩy ngã quân cờ đầu tiên):</b> Em dùng tay đẩy ngã quân cờ số $1$ (hoặc quân bắt đầu $k_0$), tức chứng minh $P(k_0)$ là Đúng.<br>
+      2. <b>Bước quy nạp (Khoảng cách truyền lực):</b> Em chứng minh rằng ở bất kỳ vị trí nào, <b>NẾU quân thứ $k$ đã đổ THÌ nó chắc chắn sẽ đập làm đổ quân thứ $k+1$ đứng ngay sau nó</b> ($P(k) \rightarrow P(k+1)$).<br>
+      Khi cả 2 điều này cùng đúng: Quân $1$ đổ $\Rightarrow$ kéo quân $2$ đổ $\Rightarrow$ kéo quân $3$ đổ $\Rightarrow \dots$ Toàn bộ hàng Domino vô tận sụp đổ hoàn toàn!
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức Trọng tâm 1 (Mục 3.2): Nguyên Lý Quy Nạp Toán Học & Số Điều Hòa $H_n$</h3>
+      <div class="f">
+        $$\text{Quy tắc suy luận Quy nạp: } \Big[ P(k_0) \land \forall k \ge k_0 \big(P(k) \rightarrow P(k+1)\big) \Big] \rightarrow \forall n \ge k_0\, P(n)$$
+        $$\text{Số điều hòa (Harmonic number): } H_n = 1 + \frac{1}{2} + \frac{1}{3} + \dots + \frac{1}{n} = \sum_{i=1}^{n} \frac{1}{i}$$
+      </div>
+      <div class="formula-meta">
+        <div>
+          <b>1. Giải nghĩa ký hiệu & Đơn vị:</b><br>
+          • $P(n)$: Hàm mệnh đề phụ thuộc vào số nguyên $n$ (ví dụ một đẳng thức, bất đẳng thức hoặc tính chất chia hết).<br>
+          • $k_0$: Giá trị nguyên khởi đầu ở <b>Bước cơ sở</b> (thường là $k_0 = 1$, đôi khi là $0$ hoặc $3, 4\dots$ tùy đề bài).<br>
+          • $P(k)$: Gọi là <b>Giả thiết quy nạp</b> (ta giả sử mệnh đề đã đúng ở bậc $k$).<br>
+          • $P(k+1)$: Mệnh đề ở bậc kế tiếp cần chứng minh.<br>
+          • $H_n$: Số điều hòa thứ $n$ (không có đơn vị vật lý, rất hay gặp khi đánh giá độ phức tạp thuật toán).
+        </div>
+        <div>
+          <b>2. Tại sao có & Khi nào dùng?</b><br>
+          • <b>Tại sao hợp lệ?</b> Ở Bước quy nạp, ta KHÔNG hề "ngộ nhận" $P(k)$ đúng vô điều kiện, mà ta chứng minh mệnh đề kéo theo $P(k) \rightarrow P(k+1)$ đúng. Kết hợp với $P(k_0)$ đúng ở bước cơ sở và áp dụng luật <i>Modus Ponens</i> liên tiếp, ta suy ra $P(n)$ đúng với mọi $n$.<br>
+          • <b>Khi nào dùng?</b> Hễ đề bài yêu cầu <i>"Chứng minh với mọi số nguyên dương $n$..."</i> cho một tổng hữu hạn, bất đẳng thức chứa $n$, tính chia hết, hoặc độ phức tạp của chương trình!
+        </div>
+      </div>
+    </div>
+
+    <div class="box tip">
+      <b>Bí quyết "Vàng" khi trình bày Bước Quy Nạp ($P(k) \rightarrow P(k+1)$) để đạt điểm tuyệt đối:</b><br>
+      Khi xét biểu thức của $P(k+1)$, em <b>ĐỪNG biến đổi rối rắm</b>, mà hãy tìm cách <b>tách riêng phần biểu thức cũ của $P(k)$ ra một cụm</b>, sau đó <b>thay Giả thiết quy nạp $P(k)$ vào cụm đó</b> rồi rút gọn đại số là ra ngay kết quả! Hãy xem ngay 5 ví dụ chuẩn trong file `3.2. Phép quy nạp toán học.docx` dưới đây:
+    </div>
+
+    <!-- GIẢI CHI TIẾT CÁC VÍ DỤ & BÀI TẬP TRONG FILE 3.2 -->
+    <div class="formula-card">
+      <h3 id="bt-32-1">Ví dụ 1 & Ví dụ 2 (File 3.2): Chứng minh Tổng số lẻ & Bất đẳng thức mũ</h3>
+      <p><b>Đề bài:</b> Dùng quy nạp toán học chứng minh với mọi số nguyên dương $n \ge 1$:<br>
+      a) <b>Ví dụ 1:</b> Tổng của $n$ số nguyên dương lẻ đầu tiên bằng $n^2$: $1 + 3 + 5 + \dots + (2n - 1) = n^2$.<br>
+      b) <b>Ví dụ 2:</b> Bất đẳng thức $n < 2^n$ với mọi số nguyên dương $n$.</p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('h-32-1')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('s-32-1')">Xem Lời giải chi tiết</button>
+      </div>
+      <div id="h-32-1" class="panel">
+        • Câu a: Ở bước $k+1$, số lẻ thứ $k+1$ là $2(k+1)-1 = 2k+1$. Tách tổng $k+1$ số lẻ thành (Tổng $k$ số lẻ đầu) $+ (2k+1)$ rồi thay $k^2$ vào!<br>
+        • Câu b: Từ giả thiết $k < 2^k$, cộng thêm $1$ vào vế trái: $k + 1 < 2^k + 1 \le 2^k + 2^k = 2^{k+1}$.
+      </div>
+      <div id="s-32-1" class="panel">
+        <div class="step">
+          <b>a) Chứng minh $P(n): 1 + 3 + \dots + (2n - 1) = n^2$ với mọi $n \ge 1$:</b>
+          <span class="cmt">// Bước 1 (Bước cơ sở với $n = 1$):</span>
+          Khi $n = 1$, vế trái chỉ có số hạng đầu tiên là $1$, vế phải là $1^2 = 1$. Vậy $P(1)$ đúng!
+          <span class="cmt">// Bước 2 (Bước quy nạp): Giả sử $P(k)$ đúng với số nguyên dương $k$ bất kỳ, tức là ta có Giả thiết quy nạp:</span>
+          $$1 + 3 + 5 + \dots + (2k - 1) = k^2 \quad (*)$$
+          Ta cần chứng minh $P(k+1)$ cũng đúng, tức là phải chứng minh:
+          $$1 + 3 + \dots + (2k - 1) + (2k + 1) = (k + 1)^2$$
+          <span class="cmt">// Thực hiện tách cụm vế trái của $P(k+1)$ và thế $(*)$ vào:</span>
+          $$\text{VT} = \underbrace{\big[1 + 3 + \dots + (2k - 1)\big]}_{\text{Thay bằng } k^2 \text{ theo } (*)} + (2k + 1) = k^2 + 2k + 1 = \mathbf{(k + 1)^2} = \text{VP}$$
+          Vậy $P(k+1)$ đúng. Theo nguyên lý quy nạp toán học, $P(n)$ đúng với mọi $n \ge 1$!
+        </div>
+        <div class="step">
+          <b>b) Chứng minh $P(n): n < 2^n$ với mọi $n \ge 1$:</b>
+          <span class="cmt">// Bước 1 (Bước cơ sở với $n = 1$):</span>
+          Khi $n = 1$, ta có $1 < 2^1 = 2$ (Đúng!).
+          <span class="cmt">// Bước 2 (Bước quy nạp): Giả sử $P(k)$ đúng với $k \ge 1$, tức là $k < 2^k$. Ta cần chứng minh $P(k+1): k + 1 < 2^{k+1}$.</span>
+          Cộng $1$ vào cả hai vế của giả thiết quy nạp $k < 2^k$, ta được:
+          $$k + 1 < 2^k + 1$$
+          Vì $k \ge 1$ nên $1 < 2^k$. Thay $1$ bằng $2^k$ để làm trội hơn nữa:
+          $$k + 1 < 2^k + 1 < 2^k + 2^k = 2 \cdot 2^k = \mathbf{2^{k+1}}$$
+          Vậy $P(k+1)$ đúng. Kết luận: $n < 2^n$ với mọi số nguyên dương $n$.
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-32-2">Ví dụ 3 & Ví dụ 6 (File 3.2): Tính chia hết & Bất đẳng thức Số điều hòa $H_{2^n}$</h3>
+      <p><b>Đề bài:</b> Dùng quy nạp toán học chứng minh:<br>
+      a) <b>Ví dụ 3:</b> $n^3 - n$ luôn chia hết cho $3$ với mọi số nguyên dương $n$.<br>
+      b) <b>Ví dụ 6 (Bất đẳng thức với các số điều hòa):</b> Cho $H_n = 1 + \frac{1}{2} + \frac{1}{3} + \dots + \frac{1}{n}$. Hãy chứng minh rằng với mọi số nguyên không âm $n \ge 0$, ta có:
+      $$H_{2^n} \ge 1 + \frac{n}{2}$$</p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('h-32-2')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('s-32-2')">Xem Lời giải chi tiết</button>
+      </div>
+      <div id="h-32-2" class="panel">
+        • Câu a: Khai triển $(k+1)^3 - (k+1) = (k^3 - k) + 3(k^2 + k)$.<br>
+        • Câu b: Viết $H_{2^{k+1}} = H_{2^k} + \left(\frac{1}{2^k + 1} + \frac{1}{2^k + 2} + \dots + \frac{1}{2^k + 2^k}\right)$. Trong ngoặc có đúng $2^k$ phân số, và mỗi phân số đều $\ge \frac{1}{2^k + 2^k} = \frac{1}{2^{k+1}}$!
+      </div>
+      <div id="s-32-2" class="panel">
+        <div class="step">
+          <b>a) Chứng minh $P(n): (n^3 - n) \vdots 3$ với mọi $n \ge 1$:</b>
+          <span class="cmt">// Bước cơ sở ($n = 1$): $1^3 - 1 = 0$, mà $0$ chia hết cho $3$ nên $P(1)$ đúng.</span>
+          <span class="cmt">// Bước quy nạp: Giả sử $(k^3 - k) \vdots 3$. Xét tại $n = k + 1$:</span>
+          $$(k + 1)^3 - (k + 1) = (k^3 + 3k^2 + 3k + 1) - k - 1 = \mathbf{(k^3 - k) + 3(k^2 + k)}$$
+          Vì $(k^3 - k)$ chia hết cho $3$ (theo giả thiết quy nạp) và $3(k^2 + k)$ hiển nhiên chia hết cho $3$, nên tổng của chúng chia hết cho $3$. Vậy $P(k+1)$ đúng (ĐPCM)!
+        </div>
+        <div class="step">
+          <b>b) Chứng minh $H_{2^n} \ge 1 + \frac{n}{2}$ với mọi $n \ge 0$:</b>
+          <span class="cmt">// Bước cơ sở ($n = 0$): Vế trái là $H_{2^0} = H_1 = 1$. Vế phải là $1 + \frac{0}{2} = 1$. Vì $1 \ge 1$ nên $P(0)$ đúng!</span>
+          <span class="cmt">// Bước quy nạp: Giả sử $P(k)$ đúng, tức $H_{2^k} \ge 1 + \frac{k}{2}$. Xét $H_{2^{k+1}}$ (tổng từ $\frac{1}{1}$ đến $\frac{1}{2^{k+1}}$):</span>
+          $$H_{2^{k+1}} = \underbrace{\left(1 + \frac{1}{2} + \dots + \frac{1}{2^k}\right)}_{H_{2^k}} + \underbrace{\left(\frac{1}{2^k + 1} + \frac{1}{2^k + 2} + \dots + \frac{1}{2^{k+1}}\right)}_{\text{Có đúng } 2^{k+1} - 2^k = 2^k \text{ số hạng}}$$
+          <span class="cmt">// Đánh giá cụm ngoặc thứ hai: Có tất cả $2^k$ phân số, và mỗi phân số đều lớn hơn hoặc bằng phân số cuối cùng là $\frac{1}{2^{k+1}}$:</span>
+          $$\frac{1}{2^k + 1} + \frac{1}{2^k + 2} + \dots + \frac{1}{2^{k+1}} \ge 2^k \cdot \frac{1}{2^{k+1}} = \frac{2^k}{2 \cdot 2^k} = \mathbf{\frac{1}{2}}$$
+          <span class="cmt">// Thay giả thiết quy nạp $H_{2^k} \ge 1 + \frac{k}{2}$ vào:</span>
+          $$H_{2^{k+1}} \ge \left(1 + \frac{k}{2}\right) + \frac{1}{2} = \mathbf{1 + \frac{k + 1}{2}}$$
+          Vậy $P(k+1)$ đúng! (Nhờ bất đẳng thức này, ta chứng minh được chuỗi điều hòa phân kỳ tới $\infty$ khi $n \to \infty$).
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-32-3">Bài tập 58 trang 258 (File 3.2): Tổng các số điều hòa</h3>
+      <p><b>Đề bài:</b> Dùng quy nạp toán học chứng minh rằng với mọi số nguyên dương $n \ge 1$:
+      $$H_1 + H_2 + \dots + H_n = (n + 1)H_n - n$$
+      trong đó $H_k = 1 + \frac{1}{2} + \dots + \frac{1}{k}$.</p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('h-32-3')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('s-32-3')">Xem Lời giải chi tiết</button>
+      </div>
+      <div id="h-32-3" class="panel">
+        Ở bước $k+1$, sau khi thay giả thiết quy nạp vào $H_1 + \dots + H_k$, hãy chú ý mối liên hệ giữa hai số điều hòa liên tiếp: $\mathbf{H_k = H_{k+1} - \frac{1}{k+1}}$!
+      </div>
+      <div id="s-32-3" class="panel">
+        <div class="step">
+          <b>Bước 1 (Bước cơ sở với $n = 1$):</b><br>
+          • Vế trái: $H_1 = 1$.<br>
+          • Vế phải: $(1 + 1)H_1 - 1 = 2 \times 1 - 1 = 1$.<br>
+          Hai vế bằng nhau ($1 = 1$), vậy mệnh đề đúng với $n = 1$.
+        </div>
+        <div class="step">
+          <b>Bước 2 (Bước quy nạp):</b><br>
+          Giả sử đẳng thức đúng với $n = k \ge 1$, tức là:
+          $$H_1 + H_2 + \dots + H_k = (k + 1)H_k - k$$
+          Ta cần chứng minh đẳng thức đúng với $n = k + 1$, tức là:
+          $$H_1 + H_2 + \dots + H_k + H_{k+1} = (k + 2)H_{k+1} - (k + 1)$$
+          <span class="cmt">// Biến đổi Vế trái của bậc $k+1$ bằng cách thế Giả thiết quy nạp vào $k$ số hạng đầu:</span>
+          $$\text{VT} = \big[(k + 1)H_k - k\big] + H_{k+1}$$
+          <span class="cmt">// Mấu chốt ăn điểm: Vì $H_{k+1} = H_k + \frac{1}{k+1}$, ta rút ra $H_k = H_{k+1} - \frac{1}{k+1}$ rồi thế vào biểu thức trên:</span>
+          $$\text{VT} = (k + 1)\left(H_{k+1} - \frac{1}{k+1}\right) - k + H_{k+1}$$
+          $$= (k + 1)H_{k+1} - \frac{k+1}{k+1} - k + H_{k+1}$$
+          $$= (k + 1)H_{k+1} - 1 - k + H_{k+1} = \mathbf{(k + 2)H_{k+1} - (k + 1)} = \text{VP}$$
+          Vậy mệnh đề đúng với $n = k + 1$. Theo nguyên lý quy nạp toán học, bài toán được chứng minh hoàn toàn!
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MỤC 2 (FILE 3.3): ĐỊNH NGHĨA ĐỆ QUY, FIBONACCI & ĐỊNH LÝ LAMÉ
+       ======================================================================== -->
+  <section>
+    <h2>2. Định Nghĩa Đệ Quy, Dãy Fibonacci & Định Lý Lamé (Mục 3.3)</h2>
+    <p>Trong nhiều bài toán, việc viết ngay một công thức trực tiếp (tường minh) cho đối tượng thứ $n$ là rất khó, nhưng việc mô tả <b>cách tạo ra đối tượng thứ $n$ từ các đối tượng nhỏ hơn đứng trước nó</b> lại cực kỳ dễ! Kỹ thuật định nghĩa một đối tượng thông qua chính nó gọi là <b>Phép đệ quy (Recursion)</b>.</p>
+
+    <div class="box analogy">
+      <b>Ẩn dụ "Búp bê Nga Matryoshka" cho Định nghĩa Đệ quy:</b><br>
+      Mỗi con búp bê lớn chứa bên trong nó một con búp bê nhỏ hơn có hình dáng y hệt (đó là <b>Bước đệ quy</b>: quy cái lớn $f(n)$ về cái bé hơn $f(n-1)$). Nhưng nếu cứ mở mãi thì biết bao giờ mới dừng? Phải có <b>con búp bê gỗ đặc nhỏ nhất ở trong cùng</b> không mở thêm được nữa (đó chính là <b>Bước cơ sở</b> $f(0)$ hoặc $f(1)$)! Thiếu Bước cơ sở, phép đệ quy sẽ rơi vào vòng lặp vô tận.
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức Trọng tâm 2 (Mục 3.3): Dãy Fibonacci, Tỷ Lệ Vàng $\alpha$ & Định Lý Lamé</h3>
+      <div class="f">
+        $$\text{Dãy Fibonacci: } f_0 = 0,\quad f_1 = 1,\quad f_n = f_{n-1} + f_{n-2} \quad (\forall n \ge 2)$$
+        $$\text{Cận dưới tỷ lệ vàng: } f_n > \alpha^{n-2} \quad (\forall n \ge 3), \text{ với } \alpha = \frac{1 + \sqrt{5}}{2} \approx 1.618$$
+        $$\text{Định lý Lamé (Số phép chia Euclid cho } a \ge b > 0\text{): } N_{\text{chia}} \le 5 \times (\text{Số chữ số thập phân của } b)$$
+      </div>
+      <div class="formula-meta">
+        <div>
+          <b>1. Giải nghĩa ký hiệu & Đơn vị:</b><br>
+          • $f_n$: Số Fibonacci thứ $n$. Các số đầu tiên của dãy là:
+          $$f_0=0,\ f_1=1,\ f_2=1,\ f_3=2,\ f_4=3,\ f_5=5,\ f_6=8,\ f_7=13,\ f_8=21\dots$$
+          • $\alpha = \frac{1+\sqrt{5}}{2}$: Hằng số <b>Tỷ lệ vàng (Golden Ratio)</b>, là nghiệm dương của phương trình đặc trưng $\alpha^2 = \alpha + 1$.<br>
+          • $N_{\text{chia}}$: Tổng số phép chia lấy dư dùng trong Thuật toán Euclid để tìm $\gcd(a,b)$ (đơn vị: số lần chia).
+        </div>
+        <div>
+          <b>2. Tại sao có & Khi nào dùng?</b><br>
+          • <b>Tại sao $\alpha^2 = \alpha + 1$ lại xuất hiện?</b> Vì quy luật cộng $f_n = f_{n-1} + f_{n-2}$ tương ứng với lũy thừa $\alpha^n = \alpha^{n-1} + \alpha^{n-2}$ (chia hai vế cho $\alpha^{n-2}$ được $\alpha^2 = \alpha + 1$).<br>
+          • <b>Ý nghĩa Định lý Lamé:</b> Giải thích tại sao Thuật toán Euclid chạy nhanh khủng khiếp (độ phức tạp $O(\log b)$)! Ví dụ số $b$ có $100$ chữ số thập phân thì Euclid tốn <b>tối đa $5 \times 100 = 500$ phép chia</b> là tìm ra ngay $\gcd(a,b)$!
+        </div>
+      </div>
+    </div>
+
+    <!-- GIẢI CHI TIẾT CÁC VÍ DỤ & BÀI TẬP TRONG FILE 3.3 -->
+    <div class="formula-card">
+      <h3 id="bt-33-1">Bài 1 (Trang 273) & Kiểm tra Định lý Lamé (File 3.3)</h3>
+      <p><b>Đề bài:</b><br>
+      a) <b>Bài 1 trang 273:</b> Hãy tìm $f(1), f(2), f(3), f(4)$ với $f(n)$ được định nghĩa đệ quy bởi: $f(0) = 1$ và $f(n+1) = f(n) + 2$ với $n = 0, 1, 2, \dots$<br>
+      b) <b>Kiểm tra Định lý Lamé trong file:</b> Cho $a = 595321$ và $b = 1053$. Hãy chạy từng bước thuật toán Euclid để tìm $\gcd(a, b)$, đếm số phép chia thực tế và kiểm chứng với cận trên của Định lý Lamé.</p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('h-33-1')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('s-33-1')">Xem Lời giải chi tiết</button>
+      </div>
+      <div id="h-33-1" class="panel">
+        • Câu a: Thay lần lượt $n = 0, 1, 2, 3$ vào công thức $f(n+1) = f(n) + 2$.<br>
+        • Câu b: Số nhỏ hơn là $b = 1053$ có $4$ chữ số thập phân $\Rightarrow$ Theo Định lý Lamé, số phép chia không vượt quá $5 \times 4 = 20$ lần.
+      </div>
+      <div id="s-33-1" class="panel">
+        <div class="step">
+          <b>a) Tính $f(1), f(2), f(3), f(4)$ từ định nghĩa đệ quy:</b><br>
+          Ta có bước cơ sở $f(0) = 1$. Áp dụng liên tiếp công thức $f(n+1) = f(n) + 2$:
+          <ul>
+            <li>Với $n = 0$: $f(1) = f(0) + 2 = 1 + 2 = \mathbf{3}$</li>
+            <li>Với $n = 1$: $f(2) = f(1) + 2 = 3 + 2 = \mathbf{5}$</li>
+            <li>Với $n = 2$: $f(3) = f(2) + 2 = 5 + 2 = \mathbf{7}$</li>
+            <li>Với $n = 3$: $f(4) = f(3) + 2 = 7 + 2 = \mathbf{9}$</li>
+          </ul>
+          <i>(Nhận xét: Đây chính là cấp số cộng các số lẻ dương với công thức tường minh $f(n) = 2n + 1$).</i>
+        </div>
+        <div class="step">
+          <b>b) Kiểm tra Định lý Lamé với $a = 595321$ và $b = 1053$:</b><br>
+          • <b>Đánh giá theo Định lý Lamé:</b> Số nhỏ hơn là $b = 1053$ có <b>$4$ chữ số</b> trong hệ thập phân. Theo Định lý Lamé, số phép chia Euclid tối đa là:
+          $$N_{\max} = 5 \times 4 = \mathbf{20\text{ phép chia}}$$
+          • <b>Thực hiện chia Euclid thực tế cho $(595321, 1053)$:</b>
+          <ol>
+            <li>Phép chia 1: $595321 = 565 \times 1053 + \mathbf{376}$</li>
+            <li>Phép chia 2: $1053 = 2 \times 376 + \mathbf{301}$</li>
+            <li>Phép chia 3: $376 = 1 \times 301 + \mathbf{75}$</li>
+            <li>Phép chia 4: $301 = 4 \times 75 + \mathbf{1}$</li>
+            <li>Phép chia 5: $75 = 75 \times 1 + \mathbf{0}$ (Dư bằng $0 \Rightarrow$ Dừng!).</li>
+          </ol>
+          • <b>Kết luận:</b> Vậy $\gcd(595321, 1053) = 1$ và thuật toán chỉ tốn đúng <b>$5$ phép chia</b> (nhỏ hơn rất nhiều so với giới hạn $20$ phép chia của Định lý Lamé: $5 \le 20$, hoàn toàn nghiệm đúng!).
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-33-2">Ví dụ 6 & Bài tập 12 trang 273 (File 3.3): Hai bài chứng minh Fibonacci kinh điển</h3>
+      <p><b>Đề bài:</b><br>
+      a) <b>Ví dụ 6:</b> Chứng minh rằng với mọi $n \ge 3$, số Fibonacci thỏa mãn $f_n > \alpha^{n-2}$, trong đó $\alpha = \frac{1 + \sqrt{5}}{2}$.<br>
+      b) <b>Bài tập 12 trang 273 (Hệ thức Cassini):</b> Chứng minh rằng với mọi số nguyên dương $n \ge 1$:
+      $$f_{n+1} f_{n-1} - f_n^2 = (-1)^n$$</p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('h-33-2')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('s-33-2')">Xem Lời giải chi tiết</button>
+      </div>
+      <div id="h-33-2" class="panel">
+        • Câu a (Quy nạp mạnh): Lưu ý $\alpha = \frac{1+\sqrt{5}}{2}$ là nghiệm của phương trình $\alpha^2 = \alpha + 1$. Khi đó $\alpha^{k-1} = \alpha^2 \cdot \alpha^{k-3} = (\alpha + 1)\alpha^{k-3} = \alpha^{k-2} + \alpha^{k-3}$.<br>
+        • Câu b: Ở bước $k+1$, ta cần tính $f_{k+2}f_k - f_{k+1}^2$. Hãy thay $f_{k+2} = f_{k+1} + f_k$ rồi đặt nhân tử chung!
+      </div>
+      <div id="s-33-2" class="panel">
+        <div class="step">
+          <b>a) Chứng minh $f_n > \alpha^{n-2}$ với mọi $n \ge 3$ (Bằng Quy nạp mạnh):</b><br>
+          • <b>Bước cơ sở ($n = 3$ và $n = 4$):</b><br>
+          - Với $n = 3$: $f_3 = 2 > \alpha^{3-2} = \frac{1+\sqrt{5}}{2} \approx 1.618$ (Đúng!).<br>
+          - Với $n = 4$: $f_4 = 3 > \alpha^{4-2} = \alpha^2 = \frac{3+\sqrt{5}}{2} \approx 2.618$ (Đúng!).<br>
+          • <b>Bước quy nạp:</b> Giả sử bất đẳng thức đúng với mọi $j$ từ $3$ đến $k$ ($k \ge 4$), tức là ta có $f_{k-1} > \alpha^{k-3}$ và $f_k > \alpha^{k-2}$. Ta cần chứng minh nó đúng với $k + 1$, tức $f_{k+1} > \alpha^{k-1}$.<br>
+          <span class="cmt">// Chìa khóa: Vì $\alpha = \frac{1+\sqrt{5}}{2}$ thỏa mãn $\alpha^2 = \alpha + 1$, nhân hai vế với $\alpha^{k-3}$ ta có $\alpha^{k-1} = \alpha^{k-2} + \alpha^{k-3}$.</span>
+          Từ định nghĩa Fibonacci và giả thiết quy nạp:
+          $$f_{k+1} = f_k + f_{k-1} > \alpha^{k-2} + \alpha^{k-3} = \alpha^{k-3}(\alpha + 1) = \alpha^{k-3} \cdot \alpha^2 = \mathbf{\alpha^{k-1}}$$
+          Vậy bất đẳng thức đúng với $n = k + 1$ (ĐPCM)!
+        </div>
+        <div class="step">
+          <b>b) Chứng minh hệ thức Cassini $f_{n+1} f_{n-1} - f_n^2 = (-1)^n$ với mọi $n \ge 1$:</b><br>
+          • <b>Bước cơ sở ($n = 1$):</b><br>
+          Vế trái: $f_2 \cdot f_0 - f_1^2 = 1 \cdot 0 - 1^2 = -1$. Vế phải: $(-1)^1 = -1$. Vậy mệnh đề đúng với $n = 1$!<br>
+          • <b>Bước quy nạp:</b> Giả sử đẳng thức đúng với $n = k$, tức là:
+          $$f_{k+1} f_{k-1} - f_k^2 = (-1)^k \quad (*)$$
+          Xét vế trái tại $n = k + 1$: $\text{VT} = f_{k+2} f_k - f_{k+1}^2$.
+          <span class="cmt">// Thay $f_{k+2} = f_{k+1} + f_k$ (theo định nghĩa Fibonacci) vào số hạng đầu:</span>
+          $$\text{VT} = (f_{k+1} + f_k) f_k - f_{k+1}^2 = f_{k+1} f_k + f_k^2 - f_{k+1}^2$$
+          <span class="cmt">// Nhóm $f_{k+1}$ của số hạng đầu và số hạng cuối, đồng thời thay $f_{k+1} - f_k = f_{k-1}$:</span>
+          $$\text{VT} = f_k^2 - f_{k+1}(f_{k+1} - f_k) = f_k^2 - f_{k+1} f_{k-1} = -\big(f_{k+1} f_{k-1} - f_k^2\big)$$
+          <span class="cmt">// Thay giả thiết quy nạp $(*)$ vào ngoặc:</span>
+          $$\text{VT} = -(-1)^k = (-1)^1 \cdot (-1)^k = \mathbf{(-1)^{k+1}} = \text{VP}$$
+          Vậy đẳng thức đúng với mọi số nguyên dương $n$!
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MỤC 3 (FILE 3.4): CÁC THUẬT TOÁN ĐỆ QUY & GIẢI BÀI TẬP 16, 17, 18*, 19*, 44*
+       ======================================================================== -->
+  <section>
+    <h2>3. Các Thuật Toán Đệ Quy & Tối Ưu Hóa Lũy Thừa (Mục 3.4)</h2>
+    <p>Một thuật toán được gọi là <b>Thuật toán đệ quy (Recursive Algorithm)</b> nếu nó giải quyết một bài toán bằng cách tự gọi lại chính nó nhưng với <b>dữ liệu đầu vào nhỏ hơn</b>, cho đến khi chạm tới trường hợp cơ sở biết ngay đáp án.</p>
+
+    <div class="pseudo">
+      <b>THUẬT TOÁN 1 (Trong File 3.4): Thuật toán đệ quy tuyến tính tính $a^n$</b><br>
+      <b>procedure</b> power($a$: số thực khác $0$; $n$: số nguyên không âm)<br>
+      <b>if</b> $n = 0$ <b>then</b> $\text{power}(a, n) := 1$ &nbsp;&nbsp;<span style="color:var(--c2)">// Bước cơ sở: $a^0 = 1$ (0 phép nhân)</span><br>
+      <b>else</b> $\text{power}(a, n) := a \cdot \text{power}(a, n - 1)$ &nbsp;&nbsp;<span style="color:var(--c5)">// Bước đệ quy: $a^n = a \cdot a^{n-1}$</span>
+    </div>
+
+    <p>Hãy quan sát: Để tính $\text{power}(a, n)$ theo Thuật toán 1, mỗi lần giảm $n$ đi $1$ đơn vị ta phải thực hiện $1$ phép nhân với $a$. Vậy để tính $a^n$ ta tốn đúng $\mathbf{n}$ <b>phép nhân</b>! Nhưng nếu dùng tư tưởng <b>Bình phương liên tiếp (Chia để trị)</b> trong các Bài tập 16, 17, 18*, 19* của File 3.4, tốc độ sẽ tăng lên gấp bội!</p>
+
+    <!-- GIẢI CHI TIẾT BỘ BÀI TẬP 16, 17, 18*, 19*, 44* TRONG FILE 3.4 -->
+    <div class="formula-card">
+      <h3 id="bt-34-1">Bài tập 16 & Bài tập 17 (File 3.4): Thuật toán đệ quy tính $a^{2^n}$ & So sánh số phép nhân</h3>
+      <p><b>Đề bài (Từ ảnh chụp trong File 3.4):</b><br>
+      • <b>Bài 16:</b> Hãy nghĩ ra thuật toán đệ quy tính $a^{2^n}$, trong đó $a$ là một số thực và $n$ là một số nguyên dương. <i>(Gợi ý: Dùng đẳng thức $a^{2^{n+1}} = (a^{2^n})^2$)</i>.<br>
+      • <b>Bài 17:</b> Hãy so sánh số các phép nhân dùng trong thuật toán ở Bài tập 16 với số phép nhân dùng trong Thuật toán 1 để tính $a^{2^n}$.</p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('h-34-1')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('s-34-1')">Xem Lời giải chi tiết</button>
+      </div>
+      <div id="h-34-1" class="panel">
+        • Bài 16: Lưu kết quả gọi đệ quy $t := \text{expPower}(a, n-1) = a^{2^{n-1}}$ vào một biến tạm rồi trả về $t \cdot t$ để chỉ tốn $1$ phép nhân ở mỗi bước!<br>
+        • Bài 17: Thuật toán Bài 16 chỉ tốn $n$ phép nhân, còn Thuật toán 1 tốn tới $2^n$ phép nhân!
+      </div>
+      <div id="s-34-1" class="panel">
+        <div class="step">
+          <b>Lời giải Bài tập 16 (Thiết kế thuật toán đệ quy tính $a^{2^n}$):</b><br>
+          Ta dựa vào bước cơ sở khi $n = 0$ thì $a^{2^0} = a^1 = a$ (hoặc với $n = 1$ thì $a^{2^1} = a^2 = a \cdot a$) và công thức truy hồi $a^{2^n} = \left(a^{2^{n-1}}\right)^2$:
+          <div class="pseudo">
+            <b>procedure</b> squarePower($a$: số thực; $n$: số nguyên không âm)<br>
+            <b>if</b> $n = 0$ <b>then return</b> $a$ &nbsp;&nbsp;<span style="color:var(--c2)">// Hoặc nếu n nguyên dương: if n = 1 then return a * a</span><br>
+            <b>else</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;$t := \text{squarePower}(a, n - 1)$ &nbsp;&nbsp;<span style="color:var(--c5)">// Gọi đệ quy 1 lần để tính $a^{2^{n-1}}$</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> $t \cdot t$ &nbsp;&nbsp;<span style="color:var(--c2)">// Bình phương kết quả: $(a^{2^{n-1}})^2 = a^{2^n}$</span>
+          </div>
+        </div>
+        <div class="step">
+          <b>Lời giải Bài tập 17 (So sánh số lượng phép nhân):</b><br>
+          • <b>Trong thuật toán ở Bài tập 16:</b> Mỗi bước đệ quy từ $n$ xuống $n-1$ chỉ thực hiện đúng $1$ phép nhân ($t \cdot t$). Do đó, để tính $a^{2^n}$, thuật toán Bài 16 chỉ dùng đúng $\mathbf{n}$ <b>phép nhân</b> (Độ phức tạp $O(n)$).<br>
+          • <b>Trong Thuật toán 1 (`power` cổ điển):</b> Để tính $a^M$ với số mũ $M = 2^n$, Thuật toán 1 trừ số mũ đi $1$ ở mỗi bước nên phải thực hiện đúng $\mathbf{2^n}$ <b>phép nhân</b> (Độ phức tạp hàm mũ $O(2^n)$)!<br>
+          • <b>Ví dụ trực quan:</b> Với $n = 10$ (tức tính $a^{1024}$): Thuật toán Bài 16 chỉ mất <b>$10$ phép nhân</b>, trong khi Thuật toán 1 mất tới <b>$1024$ phép nhân</b>!
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-34-2">Bài tập 18* & Bài tập 19* (File 3.4): Thuật toán Đệ quy Chia để trị tính $a^n$ bất kỳ</h3>
+      <p><b>Đề bài (Từ ảnh chụp trong File 3.4):</b><br>
+      • <b>Bài 18*:</b> Dùng thuật toán ở Bài tập 16 để nghĩ ra một thuật toán đệ quy tính $a^n$, với $n$ là số nguyên không âm. <i>(Gợi ý: Sử dụng biểu diễn nhị phân / tính chẵn lẻ của $n$)</i>.<br>
+      • <b>Bài 19*:</b> Hãy so sánh số các phép nhân dùng trong thuật toán ở Bài tập 18* với số phép nhân dùng trong Thuật toán 1 để tính $a^n$.</p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('h-34-2')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('s-34-2')">Xem Lời giải chi tiết</button>
+      </div>
+      <div id="h-34-2" class="panel">
+        Chia $n$ cho $2$: Nếu $n$ chẵn ($n = 2m$, bit cuối nhị phân là $0$) thì $a^n = (a^m)^2$. Nếu $n$ lẻ ($n = 2m+1$, bit cuối nhị phân là $1$) thì $a^n = (a^m)^2 \cdot a$!
+      </div>
+      <div id="s-34-2" class="panel">
+        <div class="step">
+          <b>Lời giải Bài tập 18* (Thuật toán đệ quy tính nhanh $a^n$):</b><br>
+          Đặt $m = \lfloor n/2 \rfloor$ (tương ứng dịch phải 1 bit trong biểu diễn nhị phân của $n$). Ta có:<br>
+          - Nếu $n$ chẵn: $a^n = (a^{n/2})^2$ (tốn $1$ phép nhân sau khi gọi đệ quy).<br>
+          - Nếu $n$ lẻ: $a^n = (a^{\lfloor n/2 \rfloor})^2 \cdot a$ (tốn $2$ phép nhân sau khi gọi đệ quy).
+          <div class="pseudo">
+            <b>procedure</b> fastPower($a$: số thực khác $0$; $n$: số nguyên không âm)<br>
+            <b>if</b> $n = 0$ <b>then return</b> $1$<br>
+            <b>else</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;$half := \text{fastPower}(a, \lfloor n / 2 \rfloor)$<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<b>if</b> $n$ là số chẵn <b>then return</b> $half \cdot half$<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<b>else return</b> $half \cdot half \cdot a$
+          </div>
+        </div>
+        <div class="step">
+          <b>Lời giải Bài tập 19* (So sánh số phép nhân):</b><br>
+          • <b>Thuật toán Bài 18* (`fastPower`):</b> Mỗi bước đệ quy chia đôi số mũ $n \to \lfloor n/2 \rfloor$, nên số bước gọi đệ quy bằng số bit nhị phân của $n$, tức là $\lfloor \log_2 n \rfloor + 1$ bước. Mỗi bước tốn tối đa $2$ phép nhân. Do đó tổng số phép nhân nhiều nhất chỉ là $\mathbf{2\lfloor \log_2 n \rfloor}$ <b>phép nhân</b> — Độ phức tạp $\mathbf{O(\log n)}$.<br>
+          • <b>Thuật toán 1 (`power`):</b> Tốn đúng $\mathbf{n}$ <b>phép nhân</b> — Độ phức tạp $\mathbf{O(n)}$.<br>
+          • Như vậy, thuật toán Bài 18* nhanh hơn theo cấp số mũ (ví dụ với $n = 1.000.000$, Bài 18* chỉ tốn khoảng $\le 40$ phép nhân thay vì $1.000.000$ phép nhân!).
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-34-3">Bài tập 44* (File 3.4): Chứng minh $\log(n!) > \frac{n \log n}{4}$ với $n > 4$</h3>
+      <p><b>Đề bài (Từ ảnh chụp cuối File 3.4):</b> Chứng minh rằng $\log(n!) > \frac{n \log n}{4}$ với mọi $n > 4$.<br>
+      <i>(Gợi ý trong sách: Hãy bắt đầu từ bất đẳng thức $n! > n(n-1)(n-2)\dots \lceil n/2 \rceil$)</i>.</p>
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('h-34-3')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('s-34-3')">Xem Lời giải chi tiết</button>
+      </div>
+      <div id="h-34-3" class="panel">
+        Trong tích $n(n-1)(n-2)\dots \lceil n/2 \rceil$, có ít nhất $\frac{n}{2}$ thừa số, và mỗi thừa số đều $\ge \frac{n}{2}$. Ngoài ra khi $n > 4$ thì $\frac{n}{2} > \sqrt{n} = n^{1/2}$!
+      </div>
+      <div id="s-34-3" class="panel">
+        <div class="step">
+          <b>Bước 1: Đánh giá $n!$ qua nửa đầu các thừa số lớn nhất:</b><br>
+          Với $n > 4$, vì các thừa số từ $1$ đến $\lceil n/2 \rceil - 1$ đều $\ge 1$ (và có ít nhất các số $1, 2$ nên tích của chúng $> 1$), khi bỏ đi nửa dưới ta có bất đẳng thức:
+          $$n! = n(n-1)\dots \lceil n/2 \rceil \cdot (\lceil n/2 \rceil - 1)\cdots 2 \cdot 1 > n(n-1)(n-2)\dots \lceil n/2 \rceil$$
+        </div>
+        <div class="step">
+          <b>Bước 2: Đếm số thừa số và làm nhỏ mỗi thừa số về $\frac{n}{2}$:</b><br>
+          Tích $n(n-1)(n-2)\dots \lceil n/2 \rceil$ có số lượng thừa số là $n - \lceil n/2 \rceil + 1 \ge \frac{n}{2}$ thừa số. Vì mỗi thừa số trong tích đều lớn hơn hoặc bằng $\lceil n/2 \rceil \ge \frac{n}{2}$, nên:
+          $$n! > \underbrace{\frac{n}{2} \cdot \frac{n}{2} \cdots \frac{n}{2}}_{\ge\ n/2 \text{ thừa số}} \ge \left(\frac{n}{2}\right)^{n/2}$$
+        </div>
+        <div class="step">
+          <b>Bước 3: Lấy lô-ga-rít hai vế và sử dụng điều kiện $n > 4$:</b><br>
+          Vì $n > 4 \implies n^2 > 4n \implies \frac{n}{2} > \sqrt{n} = n^{1/2}$. Thay $\frac{n}{2} > n^{1/2}$ vào bất đẳng thức trên:
+          $$n! > \left(\frac{n}{2}\right)^{n/2} > \left(n^{1/2}\right)^{n/2} = n^{n/4}$$
+          Lấy $\log$ cả hai vế (hàm $\log$ đồng biến), ta thu được ngay điều phải chứng minh:
+          $$\mathbf{\log(n!) > \log\left(n^{n/4}\right) = \frac{n \log n}{4}} \quad (\forall n > 4)$$
+          <i>(Ghi chú thêm: Nếu viết theo cơ số 2: $\log_2(n!) > \frac{n}{2}\log_2(n/2) = \frac{n}{2}(\log_2 n - 1) > \frac{n}{2} \cdot \frac{\log_2 n}{2} = \frac{n\log_2 n}{4}$ vì khi $n > 4$ thì $\log_2 n > 2 \Rightarrow \log_2 n - 1 > \frac{1}{2}\log_2 n$).</i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MỤC 4: MÔ HÌNH TƯƠNG TÁC QUY NẠP & ĐỆ QUY
+       ======================================================================== -->
+  <section>
+    <h2>4. Phòng Thí Nghiệm Tương Tác: Quy Nạp Hình Học, Fibonacci & Lũy Thừa Đệ Quy</h2>
+    <p>Em hãy kéo thanh trượt $n$ và chuyển qua lại giữa 3 chế độ dưới đây để tận mắt nhìn thấy tại sao $1+3+\dots+(2n-1)$ lại ghép vừa khít thành hình vuông $n^2$, cách dãy Fibonacci vượt qua đường cong tỷ lệ vàng $\alpha^{n-2}$, và sự chênh lệch số phép nhân trong thuật toán đệ quy:</p>
+
+    <div class="sim-card">
+      <div class="sim-tabs" id="ind-tabs">
+        <button type="button" class="sim-tab active" onclick="selectIndMode('odd', this)">1. Quy Nạp Tổng Số Lẻ ($n^2$)</button>
+        <button type="button" class="sim-tab" onclick="selectIndMode('fib', this)">2. Đệ Quy Fibonacci vs. $\alpha^{n-2}$</button>
+        <button type="button" class="sim-tab" onclick="selectIndMode('pow', this)">3. Đệ Quy Lũy Thừa (Bài 16-19*)</button>
+      </div>
+
+      <div class="ctrl-row">
+        <div>
+          <label>Chọn bậc quy nạp / chỉ số $n$ (<span id="val-ind-n">5</span>):</label>
+          <input type="range" id="sl-ind-n" min="1" max="10" step="1" value="5" oninput="renderIndSim()">
+        </div>
+        <div>
+          <label>Cơ số $a$ (Dùng cho Tab 3 — <span id="val-ind-a">2</span>):</label>
+          <input type="range" id="sl-ind-a" min="2" max="5" step="1" value="2" oninput="renderIndSim()">
+        </div>
+      </div>
+
+      <div id="ind-desc" class="box"></div>
+      <svg id="ind-svg" viewBox="0 0 680 250"></svg>
+    </div>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Phần 5 (Mục 3.2, 3.3, 3.4): Bí Quyết Làm Bài Thi Quy Nạp & Đệ Quy</h2>
+    <ul>
+      <li><b>Quy nạp toán học (3.2):</b> Luôn gồm 2 bước bắt buộc: (1) Kiểm tra Bước cơ sở $P(k_0)$ đúng; (2) Giả sử $P(k)$ đúng, tách biểu thức ở bước $k+1$ để xuất hiện cụm $P(k)$ rồi thế giả thiết quy nạp vào.</li>
+      <li><b>Định nghĩa đệ quy & Fibonacci (3.3):</b> Dãy Fibonacci $f_0=0, f_1=1, f_n = f_{n-1}+f_{n-2}$ tăng nhanh hơn hàm mũ tỷ lệ vàng ($f_n > \alpha^{n-2}$ với $\alpha = \frac{1+\sqrt{5}}{2}$). Nhờ đó Định lý Lamé khẳng định số phép chia Euclid tìm $\gcd(a,b)$ không bao giờ vượt quá $5$ lần số chữ số thập phân của số nhỏ hơn $b$.</li>
+      <li><b>Thuật toán đệ quy (3.4):</b> Đệ quy tuyến tính tính $a^n$ tốn $n$ phép nhân, nhưng đệ quy chia để trị theo nhị phân ($a^n = (a^{\lfloor n/2 \rfloor})^2 \cdot a^{n \bmod 2}$) giảm số phép nhân xuống chỉ còn $O(\log_2 n)$.</li>
     </ul>
   </section>
 </template>
@@ -1924,6 +2402,125 @@ function renderCryptoSim() {
 window.renderCryptoSim = renderCryptoSim;
 
 /* ==========================================================================
+   MÔ HÌNH TƯƠNG TÁC PHẦN 5: QUY NẠP TOÁN HỌC, FIBONACCI & ĐỆ QUY LŨY THỪA
+   ========================================================================== */
+let currentIndMode = 'odd';
+
+function selectIndMode(mode, btn) {
+  currentIndMode = mode;
+  if (btn) {
+    document.querySelectorAll('#ind-tabs .sim-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderIndSim();
+}
+window.selectIndMode = selectIndMode;
+
+function renderIndSim() {
+  const svgEl = $('ind-svg'), descEl = $('ind-desc');
+  if (!svgEl || !descEl) return;
+
+  const n = +$('sl-ind-n').value;
+  const a = +$('sl-ind-a').value;
+  $('val-ind-n').textContent = n;
+  $('val-ind-a').textContent = a;
+
+  const colors = ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--c4)', 'var(--c5)'];
+  let svg = '';
+
+  if (currentIndMode === 'odd') {
+    const terms = [];
+    for (let i = 1; i <= n; i++) terms.push(2 * i - 1);
+    const lastOdd = 2 * n - 1;
+    descEl.innerHTML = `<b>Chứng minh hình học Tổng $n = ${n}$ số lẻ đầu tiên:</b> Mỗi bước quy nạp từ $k-1 \\to k$ chính là ghép thêm một đường viền chữ L gồm $\\mathbf{2k-1}$ ô vuông vào hình vuông cũ!<br>
+    $$${terms.join(' + ')} = \\mathbf{${n}^2 = ${n * n}}$$
+    Lớp ngoài cùng vừa ghép thêm (bậc $n=${n}$) có đúng $2(${n})-1 = \\mathbf{${lastOdd}}$ ô vuông.`;
+
+    const cellSize = Math.min(18, Math.floor(185 / n));
+    const startX = 75, startY = 30;
+
+    for (let r = 0; r < n; r++) {
+      for (let c = 0; c < n; c++) {
+        const layer = Math.max(r, c);
+        const col = colors[layer % colors.length];
+        const isOuter = (layer === n - 1);
+        svg += `<rect x="${startX + c * cellSize}" y="${startY + r * cellSize}" width="${cellSize - 2}" height="${cellSize - 2}" rx="3" fill="${col}" opacity="${isOuter ? '1' : '0.45'}"/>`;
+      }
+    }
+
+    svg += `<rect x="315" y="38" width="335" height="172" rx="16" fill="var(--card)" stroke="var(--c5)" stroke-width="2.5"/>`;
+    svg += `<text x="482" y="72" text-anchor="middle" style="font-weight:800;fill:var(--c5)">BƯỚC QUY NẠP P(${n - 1}) → P(${n})</text>`;
+    svg += `<text x="482" y="108" text-anchor="middle" style="font-size:14px">Hình vuông cũ P(${n - 1}): ${(n - 1)}² = ${(n - 1) * (n - 1)} ô</text>`;
+    svg += `<text x="482" y="138" text-anchor="middle" style="font-size:14px;font-weight:700;fill:var(--c4)">+ Viền chữ L mới (2·${n} - 1): + ${lastOdd} ô</text>`;
+    svg += `<text x="482" y="176" text-anchor="middle" style="font-size:18px;font-weight:800;fill:var(--c2)">Tổng P(${n}) = ${n}² = ${n * n} ô vuông</text>`;
+
+  } else if (currentIndMode === 'fib') {
+    const fib = [0, 1];
+    for (let i = 2; i <= 12; i++) fib[i] = fib[i - 1] + fib[i - 2];
+    const alpha = (1 + Math.sqrt(5)) / 2;
+    const fn = fib[n];
+    const bound = Math.pow(alpha, n - 2);
+
+    descEl.innerHTML = `<b>Dãy Đệ quy Fibonacci & Cận dưới Tỷ lệ vàng (Ví dụ 6 Mục 3.3):</b> Tại $n = \\mathbf{${n}}$, ta có:<br>
+    • Công thức đệ quy: $f_{${n}} = ${n >= 2 ? `f_{${n - 1}} + f_{${n - 2}} = ${fib[n - 1]} + ${fib[n - 2]} = ` : ''}\\mathbf{${fn}}$.<br>
+    • So sánh với $\\alpha^{n-2}$ (với $\\alpha = \\frac{1+\\sqrt{5}}{2} \\approx 1.618$): $f_{${n}} = \\mathbf{${fn}}$ ${n >= 3 ? `> \\alpha^{${n - 2}} \\approx \\mathbf{${bound.toFixed(2)}}` : '(Bất đẳng thức xét từ $n \\ge 3$)'}.`;
+
+    const ox = 55, oy = 205, gw = 580, gh = 165;
+    svg += `<line x1="${ox}" y1="25" x2="${ox}" y2="${oy}" stroke="var(--ink)" stroke-width="2"/>`;
+    svg += `<line x1="${ox}" y1="${oy}" x2="${ox + gw}" y2="${oy}" stroke="var(--ink)" stroke-width="2"/>`;
+
+    const maxF = fib[Math.max(n, 6)];
+    for (let i = 1; i <= n; i++) {
+      const cx = ox + (i / (n + 0.6)) * gw;
+      const barH = (fib[i] / maxF) * (gh - 15);
+      const bH = i >= 3 ? (Math.pow(alpha, i - 2) / maxF) * (gh - 15) : 0;
+
+      svg += `<rect x="${cx - 16}" y="${oy - barH}" width="32" height="${barH}" rx="6" fill="var(--c1)" opacity="${i === n ? '1' : '0.65'}"/>`;
+      svg += `<text x="${cx}" y="${oy - barH - 7}" text-anchor="middle" style="font-size:12px;font-weight:800;fill:var(--c1)">f_${i}=${fib[i]}</text>`;
+      svg += `<text x="${cx}" y="${oy + 20}" text-anchor="middle" style="font-size:12px;fill:var(--mut)">n=${i}</text>`;
+
+      if (i >= 3) {
+        svg += `<circle cx="${cx}" cy="${oy - bH}" r="5.5" fill="var(--c4)"/>`;
+      }
+    }
+    svg += `<text x="345" y="242" text-anchor="middle" style="font-size:12.5px;font-weight:700;fill:var(--c4)">● Chấm hồng: Giá trị cận dưới α^(n-2) luôn nằm thấp hơn cột f_n với mọi n ≥ 3</text>`;
+
+  } else {
+    // So sánh số phép nhân giữa Thuật toán 1 và Bài 16, Bài 18*
+    const exp2n = Math.pow(2, n);
+    let fastMults = 0;
+    let tempN = n;
+    while (tempN > 0) {
+      fastMults += (tempN % 2 === 1) ? 2 : 1;
+      tempN = Math.floor(tempN / 2);
+    }
+    if (n > 0) fastMults -= 1; // Bước cơ sở đến n=1 không tốn phép nhân thừa
+
+    descEl.innerHTML = `<b>So sánh Thuật toán Đệ quy Lũy thừa (Bài 16 - 19* Mục 3.4) với cơ số $a = ${a}, n = ${n}$:</b><br>
+    • <b>Bài toán 1 (Tính $a^{2^n} = ${a}^{${exp2n}}$):</b> Thuật toán 1 tốn $\\mathbf{2^{${n}} = ${exp2n}}$ phép nhân, trong khi Thuật toán Đệ quy Bài 16 chỉ tốn đúng $\\mathbf{${n}}$ <b>phép nhân</b>!<br>
+    • <b>Bài toán 2 (Tính $a^n = ${a}^{${n}} = ${Math.pow(a, n)}$):</b> Thuật toán 1 tốn $\\mathbf{${n}}$ phép nhân, còn Đệ quy Chia để trị Bài 18* ($n = (${n.toString(2)})_2$) chỉ tốn $\\mathbf{${fastMults}}$ <b>phép nhân</b>!`;
+
+    svg += `
+      <rect x="28" y="38" width="295" height="175" rx="16" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5"/>
+      <text x="175" y="70" text-anchor="middle" style="font-weight:800;fill:var(--c4)">SO SÁNH TÍNH a^(2^n) = ${a}^${exp2n}</text>
+      <text x="175" y="108" text-anchor="middle" style="font-size:14px">Thuật toán 1 (Cổ điển): <tspan style="font-weight:800;fill:var(--c4)">${exp2n} phép nhân</tspan></text>
+      <text x="175" y="142" text-anchor="middle" style="font-size:14px">Bài tập 16 (Bình phương): <tspan style="font-weight:800;fill:var(--c2)">${n} phép nhân</tspan></text>
+      <text x="175" y="182" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--mut)">Tiết kiệm: ${exp2n - n} phép nhân!</text>
+
+      <rect x="355" y="38" width="295" height="175" rx="16" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="502" y="70" text-anchor="middle" style="font-weight:800;fill:var(--c2)">SO SÁNH TÍNH a^n = ${a}^${n} = ${Math.pow(a, n)}</text>
+      <text x="502" y="108" text-anchor="middle" style="font-size:14px">Thuật toán 1 (a · a^(n-1)): <tspan style="font-weight:800;fill:var(--c4)">${n} phép nhân</tspan></text>
+      <text x="502" y="142" text-anchor="middle" style="font-size:14px">Bài tập 18* (Chia đôi mũ): <tspan style="font-weight:800;fill:var(--c2)">${fastMults} phép nhân</tspan></text>
+      <text x="502" y="182" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--c5)">Nhị phân của n: (${n.toString(2)})₂</text>
+    `;
+  }
+
+  svgEl.innerHTML = svg;
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
+}
+window.renderIndSim = renderIndSim;
+
+/* ==========================================================================
    HỆ THỐNG LÕI TỰ ĐỘNG: TOC, CUSTOM DROPDOWN & ON-DEMAND LOADER
    ========================================================================== */
 function buildTOC() {
@@ -2021,6 +2618,8 @@ function loadLesson(lessonId) {
       renderBoolSim();
     } else if (lessonId === '4') {
       renderCryptoSim();
+    } else if (lessonId === '5') {
+      renderIndSim();
     }
   }
 
@@ -2055,10 +2654,9 @@ window.loadLesson = loadLesson;
     }
   });
 
-  // Mặc định mở Bài 6 (Chuyên sâu Lý thuyết số & RSA) để em học ngay phần quan trọng nhất,
-  // đồng thời có thể chuyển qua Bài 1-4 và Bài 5 bất cứ lúc nào từ Menu góc trái!
-  $('lesson-select').value = '4';
-  loadLesson('4');
+  // Mặc định mở Phần 5 (Bài mới: Quy nạp Toán học, Định nghĩa Đệ quy & Thuật toán Đệ quy)
+  $('lesson-select').value = '5';
+  loadLesson('5');
 })();
 </script>
 </body>
