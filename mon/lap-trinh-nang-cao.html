@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- [THAY ĐỔI 1]: Đổi tiêu đề dự án của bạn tại đây -->
+<title>Lập trình nâng cao – Java (UET.CS2043)</title>
+
+<!-- Font chữ Be Vietnam Pro hiện đại, hỗ trợ tiếng Việt hoàn hảo -->
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+
+
+
+<style>
+/* ==========================================================================
+   1. BẢNG MÀU & BIẾN HỆ THỐNG (Tự động thích ứng Light Mode / Dark Mode)
+   ========================================================================== */
+:root {
+  --bg: #f6f8ff;
+  --card: #ffffff;
+  --ink: #1d2350;
+  --mut: #58608a;
+  --c1: #2f6fed; /* Xanh dương chủ đạo */
+  --c2: #12b886; /* Xanh ngọc lục bảo */
+  --c3: #f59f00; /* Vàng cam nổi bật */
+  --c4: #e64980; /* Hồng đậm cảnh báo/nhấn mạnh */
+  --c5: #7048e8; /* Tím hiện đại */
+  --g: #c9cfe8;  /* Màu viền lưới */
+  --tint: #eaf0ff; /* Màu nền phụ */
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10142e;
+    --card: #1a2046;
+    --ink: #eef0ff;
+    --mut: #a4abd6;
+    --c1: #6ea0ff;
+    --c2: #38d9a9;
+    --c3: #ffd43b;
+    --c4: #ff8fb8;
+    --c5: #a78bfa;
+    --g: #3b4380;
+    --tint: #222b5e;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #10142e;
+  --card: #1a2046;
+  --ink: #eef0ff;
+  --mut: #a4abd6;
+  --c1: #6ea0ff;
+  --c2: #38d9a9;
+  --c3: #ffd43b;
+  --c4: #ff8fb8;
+  --c5: #a78bfa;
+  --g: #3b4380;
+  --tint: #222b5e;
+}
+
+/* ==========================================================================
+   2. CẤU TRÚC BỐ CỤC & TYPOGRAPHY (Đã dãn dòng thoáng mắt)
+   ========================================================================== */
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 17.5px/1.92 "Be Vietnam Pro", system-ui, sans-serif;
+  letter-spacing: 0.01em;
+}
+main { max-width: 860px; margin: 0 auto; padding: 28px 20px 90px; }
+header { padding: 38px 0 14px; }
+
+h1 {
+  font-size: clamp(30px, 6.5vw, 46px);
+  line-height: 1.2;
+  margin: 10px 0 16px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(90deg, var(--c1), var(--c5), var(--c4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+h2 { font-size: 24px; line-height: 1.4; margin: 0 0 16px; font-weight: 800; }
+h3 { font-size: 19.5px; line-height: 1.45; margin: 30px 0 12px; color: var(--c5); font-weight: 800; }
+
+section {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 30px 28px;
+  margin: 28px 0;
+  border-left: 8px solid var(--c1);
+  box-shadow: 0 4px 20px rgba(0,0,0,.04);
+}
+section:nth-of-type(5n+2) { border-color: var(--c2); }
+section:nth-of-type(5n+3) { border-color: var(--c3); }
+section:nth-of-type(5n+4) { border-color: var(--c4); }
+section:nth-of-type(5n+5) { border-color: var(--c5); }
+
+p { margin: 16px 0; line-height: 1.95; }
+.mut { color: var(--mut); }
+ul, ol { margin: 14px 0; padding-left: 24px; }
+li { margin: 12px 0; line-height: 1.9; }
+
+/* Hộp thông tin, mẹo, cảnh báo, ví dụ ẩn dụ */
+.box { background: var(--tint); border-radius: 14px; padding: 18px 22px; margin: 20px 0; line-height: 1.95; }
+.tip { border-left: 5px solid var(--c3); }
+.warn { border-left: 5px solid var(--c4); }
+.analogy { border-left: 5px solid var(--c2); }
+
+/* Hộp công thức và phân số */
+.f {
+  background: var(--tint);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 18px 0;
+  font-size: 18px;
+  overflow-x: auto;
+  text-align: center;
+  line-height: 2;
+}
+.f small {
+  font: 14.5px/1.75 "Be Vietnam Pro", sans-serif;
+  font-style: normal;
+  color: var(--mut);
+  display: block;
+  margin-top: 8px;
+}
+
+/* Đồ họa Vector SVG & Nhãn màu (Badges) */
+svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 16px 0;
+  background: var(--tint);
+  border-radius: 14px;
+  border: 1px solid var(--g);
+}
+.ax { stroke: var(--g); stroke-width: 1.5; }
+svg text { fill: var(--ink); font: 13px "Be Vietnam Pro", sans-serif; }
+
+.k {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  vertical-align: middle;
+  margin: 2px 4px 2px 0;
+}
+.b1 { background: var(--c1); }
+.b2 { background: var(--c2); }
+.b3 { background: var(--c3); color: #222; }
+.b4 { background: var(--c4); }
+.b5 { background: var(--c5); }
+
+/* Bảng dữ liệu */
+.tw { overflow-x: auto; margin: 18px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 15.5px; min-width: 480px; line-height: 1.75; }
+td, th { padding: 13px 14px; border-bottom: 1px solid var(--g); text-align: left; }
+th { color: var(--c5); font-weight: 800; background: var(--tint); }
+.sum li { margin: 12px 0; }
+
+/* ==========================================================================
+   3. HỆ THỐNG NÚT BẤM, TAB MÔ HÌNH & DROPDOWN TÙY CHỈNH (Không dùng mặc định)
+   ========================================================================== */
+.btn-group { display: flex; gap: 14px; flex-wrap: wrap; margin: 20px 0 12px; }
+.btn {
+  appearance: none; -webkit-appearance: none;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 12px 26px;
+  font: 700 15px/1.4 "Be Vietnam Pro", system-ui, sans-serif;
+  cursor: pointer;
+  transition: all .24s cubic-bezier(.2,.8,.2,1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+}
+.btn::before {
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+  transition: transform .2s ease;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.04); }
+.btn:hover::before { transform: scale(1.3); }
+.btn:active { transform: translateY(0) scale(0.97); }
+
+.btn-hint {
+  background: var(--tint);
+  color: var(--ink);
+  border-color: var(--c3);
+  box-shadow: 0 4px 14px rgba(245,159,0,.18);
+}
+.btn-hint::before { background: var(--c3); box-shadow: 0 0 8px var(--c3); }
+.btn-hint:hover {
+  background: linear-gradient(135deg, #fff3bf, #ffe066);
+  color: #1d2350;
+  box-shadow: 0 8px 22px rgba(245,159,0,.32);
+}
+
+.btn-sol {
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(112,72,232,.32);
+}
+.btn-sol::before { background: #fff; box-shadow: 0 0 8px #fff; }
+.btn-sol:hover { box-shadow: 0 10px 26px rgba(112,72,232,.48); }
+
+/* Khung ẩn/hiện Gợi ý & Lời giải */
+.panel {
+  display: none;
+  margin-top: 16px;
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: var(--tint);
+  border: 1px solid var(--g);
+  line-height: 1.95;
+}
+.panel.open { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+.step { margin: 18px 0; padding-bottom: 16px; border-bottom: 1px dashed var(--g); line-height: 1.95; }
+.step:last-child { border-bottom: none; padding-bottom: 0; }
+.cmt {
+  display: block;
+  color: var(--mut);
+  font-size: 15px;
+  line-height: 1.85;
+  font-style: italic;
+  background: rgba(130,140,190,0.12);
+  padding: 11px 16px;
+  border-radius: 10px;
+  margin: 10px 0;
+  border-left: 3.5px solid var(--mut);
+}
+
+/* Thẻ Công thức & Thẻ Mô phỏng */
+.formula-card { border: 1px solid var(--g); border-radius: 16px; padding: 22px; margin: 24px 0; background: var(--card); }
+.formula-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin-top: 14px; font-size: 15.5px; line-height: 1.9; }
+.formula-meta div { background: var(--tint); padding: 16px 18px; border-radius: 12px; }
+.sim-card { border: 1px solid var(--g); border-radius: 20px; padding: 24px; margin: 24px 0; background: var(--card); box-shadow: 0 8px 28px rgba(0,0,0,.05); }
+
+/* Nút chọn chế độ mô hình (Segmented Pill Radio Buttons) */
+.sim-tabs {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 20px; padding: 10px;
+  background: var(--tint);
+  border-radius: 18px;
+  border: 1.5px solid var(--g);
+}
+.sim-tab {
+  appearance: none; -webkit-appearance: none;
+  flex: 1 1 180px;
+  border: 1.5px solid var(--g);
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: var(--card);
+  color: var(--ink);
+  font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif;
+  cursor: pointer;
+  transition: all .22s cubic-bezier(.2,.8,.2,1);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.03);
+}
+.sim-tab::before {
+  content: "";
+  flex: 0 0 16px; width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--mut);
+  background: transparent;
+  transition: all .2s ease;
+  box-sizing: border-box;
+}
+.sim-tab:hover { border-color: var(--c5); color: var(--c5); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(112,72,232,.14); }
+.sim-tab:hover::before { border-color: var(--c5); transform: scale(1.1); }
+.sim-tab:active { transform: translateY(0) scale(0.98); }
+.sim-tab.active {
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 8px 20px rgba(112,72,232,.36);
+  transform: translateY(-1px);
+  font-weight: 700;
+}
+.sim-tab.active::before {
+  border-color: #fff;
+  background: #fff;
+  box-shadow: inset 0 0 0 3.5px var(--c5);
+}
+
+/* Hàng điều khiển thanh trượt & hộp chọn */
+.ctrl-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  align-items: center;
+  margin: 14px 0;
+  background: var(--tint);
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1.5px solid var(--g);
+}
+.ctrl-row label { font-size: 14.5px; font-weight: 700; display: block; margin-bottom: 10px; color: var(--ink); }
+
+/* Bộ chọn danh sách thả xuống tùy chỉnh (Custom Dropdown Select) */
+select.native-select-hidden {
+  position: absolute !important;
+  width: 1px !important; height: 1px !important;
+  padding: 0 !important; margin: -1px !important;
+  overflow: hidden !important; clip: rect(0,0,0,0) !important;
+  border: 0 !important; opacity: 0 !important; pointer-events: none !important;
+}
+.csel-wrap { position: relative; width: 100%; user-select: none; font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif; z-index: 5; }
+.csel-wrap.open { z-index: 45; }
+.csel-trigger {
+  appearance: none; -webkit-appearance: none;
+  width: 100%;
+  padding: 13px 46px 13px 18px;
+  border-radius: 14px;
+  border: 2px solid var(--c5);
+  background: var(--card);
+  color: var(--ink);
+  font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all .22s ease;
+  box-shadow: 0 4px 12px rgba(112,72,232,.1);
+  position: relative; text-align: left;
+}
+.csel-trigger::before {
+  content: "";
+  flex: 0 0 10px; width: 10px; height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  margin-right: 12px;
+  box-shadow: 0 0 0 3px var(--tint);
+}
+.csel-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+.csel-trigger:hover { border-color: var(--c1); background: var(--tint); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(112,72,232,.18); }
+.csel-wrap.open .csel-trigger { border-color: var(--c1); background: var(--card); box-shadow: 0 0 0 4px rgba(112,72,232,.22); }
+.csel-arrow {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; border-radius: 8px;
+  background: var(--tint);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .25s ease; pointer-events: none;
+}
+.csel-arrow::after {
+  content: ""; width: 7px; height: 7px;
+  border-right: 2.5px solid var(--c5);
+  border-bottom: 2.5px solid var(--c5);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .25s ease;
+}
+.csel-wrap.open .csel-arrow { background: var(--c5); }
+.csel-wrap.open .csel-arrow::after { border-color: #fff; transform: translateY(2px) rotate(-135deg); }
+.csel-menu {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 60;
+  background: var(--card); border: 2px solid var(--c5);
+  border-radius: 16px; padding: 8px;
+  box-shadow: 0 14px 36px rgba(16,20,46,.28);
+  display: none; max-height: 280px; overflow-y: auto;
+}
+.csel-wrap.open .csel-menu { display: block; animation: fadeIn .18s ease; }
+.csel-opt {
+  padding: 11px 14px; border-radius: 11px;
+  color: var(--ink); cursor: pointer;
+  transition: all .16s ease; margin: 3px 0;
+  line-height: 1.45; display: flex; align-items: center; gap: 10px;
+}
+.csel-opt::before {
+  content: ""; flex: 0 0 14px; width: 14px; height: 14px;
+  border-radius: 50%; border: 2px solid var(--g); transition: all .16s ease;
+}
+.csel-opt:hover { background: var(--tint); color: var(--c5); padding-left: 18px; }
+.csel-opt:hover::before { border-color: var(--c5); }
+.csel-opt.selected {
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  color: #fff; font-weight: 700;
+  box-shadow: 0 4px 12px rgba(112,72,232,.3);
+}
+.csel-opt.selected::before { border-color: #fff; background: #fff; box-shadow: inset 0 0 0 3px var(--c5); }
+.menu-selector-wrap .csel-trigger { border: 2px solid var(--c5); background: var(--tint); font-size: 15px; font-weight: 700; }
+
+/* Thanh trượt Range Slider tùy chỉnh */
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 8px; border-radius: 999px;
+  background: var(--g); outline: none; margin: 6px 0; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  border: 3px solid var(--card);
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  cursor: pointer; transition: transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.12); }
+input[type=range]::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  border: 3px solid var(--card);
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  cursor: pointer; transition: transform .15s;
+}
+
+/* ==========================================================================
+   4. THANH CUỘN TÙY CHỈNH & MENU GÓC TRÊN BÊN TRÁI
+   ========================================================================== */
+* { scrollbar-width: thin; scrollbar-color: var(--c5) var(--tint); }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: var(--tint); border-radius: 999px; margin: 4px; }
+::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--c1), var(--c5)); border-radius: 999px; border: 2px solid var(--tint); transition: background .2s; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, var(--c5), var(--c4)); }
+::-webkit-scrollbar-corner { background: transparent; }
+.f::-webkit-scrollbar, .tw::-webkit-scrollbar, #mn::-webkit-scrollbar { height: 6px; width: 6px; }
+.f::-webkit-scrollbar-thumb, .tw::-webkit-scrollbar-thumb, #mn::-webkit-scrollbar-thumb { border-width: 1px; }
+
+/* Nút 3 gạch (Hamburger Button) ở góc trên bên trái */
+#mb {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 14px; z-index: 30;
+  width: 46px; height: 46px;
+  border: 0; border-radius: 14px;
+  background: var(--c5); color: #fff;
+  cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25);
+}
+#mb span { display: block; width: 22px; height: 3px; border-radius: 2px; background: #fff; transition: transform .2s, opacity .2s; }
+#mb[aria-expanded=true] span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+#mb[aria-expanded=true] span:nth-child(2) { opacity: 0; }
+#mb[aria-expanded=true] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+#mb:focus-visible, #mn a:focus-visible { outline: 3px solid var(--c3); outline-offset: 2px; }
+
+/* Hộp Menu Mục lục & Bộ chọn bài học */
+#mn {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 66px);
+  left: 14px; z-index: 30;
+  width: min(360px, calc(100vw - 28px));
+  max-height: calc(100vh - 90px - env(safe-area-inset-top, 0px));
+  overflow-y: auto;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 34px rgba(0,0,0,.3);
+  border: 1px solid var(--g);
+}
+#mn[hidden] { display: none; }
+.menu-selector-wrap { padding-bottom: 12px; margin-bottom: 10px; border-bottom: 2px solid var(--g); }
+.menu-selector-wrap label { display: block; font-size: 13px; font-weight: 800; color: var(--c5); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.toc-title { font-size: 13px; font-weight: 800; color: var(--mut); text-transform: uppercase; margin: 8px 0 4px; padding: 0 8px; }
+#toc-links a { display: block; padding: 7px 10px; border-radius: 10px; color: var(--ink); text-decoration: none; font-size: 14.5px; line-height: 1.4; }
+#toc-links a:hover { background: var(--tint); }
+#toc-links a.sub { padding-left: 24px; font-size: 13.5px; color: var(--mut); }
+#toc-links a.grp { font-weight: 600; margin-top: 4px; }
+section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px); }
+
+/* ===== Bổ sung: code, tra cứu nhanh ===== */
+code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; background: var(--tint); padding: 1px 7px; border-radius: 7px; }
+.pw { position: relative; margin: 14px 0; }
+pre { background: #0f1430; color: #e8ebff; border-radius: 14px; padding: 18px 20px; margin: 0; overflow-x: auto; font: 14px/1.75 ui-monospace, Menlo, Consolas, monospace; border: 1px solid var(--g); }
+pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
+pre i { font-style: normal; }
+.t-k { color: #ff8fb8; } .t-s { color: #38d9a9; } .t-c { color: #8d96c8; } .t-n { color: #ffd43b; }
+.cp { position: absolute; top: 8px; right: 8px; z-index: 2; border: 1px solid #3b4380; background: #1a2046; color: #eef0ff; border-radius: 9px; padding: 4px 12px; font: 600 12.5px "Be Vietnam Pro", sans-serif; cursor: pointer; }
+.cp:hover { background: var(--c5); }
+.formula-card h3 { margin-top: 0; }
+.srch { width: 100%; padding: 14px 18px; border-radius: 14px; border: 2px solid var(--c5); background: var(--card); color: var(--ink); font: 600 16px "Be Vietnam Pro", sans-serif; outline: none; margin: 8px 0 16px; }
+.srch:focus { border-color: var(--c1); box-shadow: 0 0 0 4px rgba(112,72,232,.22); }
+.chips, .rel { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.chip { appearance: none; border: 1.5px solid var(--g); background: var(--tint); color: var(--ink); border-radius: 999px; padding: 6px 16px; font: 600 14px "Be Vietnam Pro", sans-serif; cursor: pointer; transition: all .18s; }
+.chip:hover { border-color: var(--c5); color: var(--c5); transform: translateY(-1px); }
+.chip.big { padding: 10px 18px; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chip.on { background: linear-gradient(135deg, var(--c1), var(--c5)); color: #fff; border-color: transparent; }
+.chip small { color: var(--mut); font-weight: 500; font-family: ui-monospace, monospace; }
+.chip.on small { color: #fff; }
+.bk { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); left: 68px; z-index: 30; height: 46px; padding: 0 18px; border: 0; border-radius: 14px; background: var(--c1); color: #fff; font: 700 14.5px "Be Vietnam Pro", sans-serif; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+.bk[hidden] { display: none; }
+.bk:hover { filter: brightness(1.1); }
+.chip .k { margin: 0; font-size: 12px; padding: 1px 8px; }
+</style>
+</head>
+<body>
+
+<!-- Nút 3 gạch ở góc trên bên trái -->
+<button id="mb" type="button" aria-label="Mở menu chọn bài và mục lục" aria-expanded="false" aria-controls="mn">
+  <span></span><span></span><span></span>
+</button>
+<button id="bk" class="bk" type="button" hidden onclick="goBack()">← Quay lại</button>
+
+<!-- Menu điều hướng chứa bộ chọn bài học (On-Demand Loader) và mục lục tự động -->
+<nav id="mn" hidden aria-label="Menu bài học và mục lục">
+  <div class="menu-selector-wrap">
+    <label for="lesson-select">Chọn bài học / chủ đề:</label>
+    <!-- [THAY ĐỔI 2]: Thêm hoặc sửa danh sách các bài học của dự án mới tại đây -->
+    <select id="lesson-select" onchange="loadLesson(this.value)">
+      <option value="ref">Tra cứu nhanh</option>
+      <option value="2" selected>Bài 2: Thêm về Java</option>
+      <option value="3">Bài 3: Thừa kế và Đa hình</option>
+      <option value="4">Bài 4: Lớp trừu tượng, Giao diện, Tổng quát</option>
+      <option value="5a">Bài 5.1: Cấu trúc dữ liệu trong Java</option>
+      <option value="5b">Bài 5.2: Ngoại lệ và Luồng vào-ra</option>
+      <option value="6">Bài 6: Mẫu thiết kế và Nguyên lý thiết kế</option>
+      <option value="7">Bài 7: Đa luồng</option>
+    </select>
+  </div>
+  <div class="toc-title">Mục lục bài đang mở</div>
+  <div id="toc-links"></div>
+</nav>
+
+<!-- Khu vực chứa nội dung bài học được nạp động (chỉ giữ 1 bài trong DOM để chống lag) -->
+<main id="app-content"></main>
+
+<script>
+const $ = id => document.getElementById(id);
+const J = String.raw;
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const KW = 'class|interface|extends|implements|public|private|protected|static|final|abstract|void|int|long|double|float|boolean|char|byte|new|return|if|else|for|while|try|catch|finally|throw|throws|this|super|import|package|instanceof|synchronized|volatile|null|true|false|default';
+const HLRE = new RegExp('(//.*$)|("(?:[^"\\\\\\n]|\\\\.)*")|\\b(' + KW + ')\\b|\\b(\\d+(?:\\.\\d+)?)\\b', 'gm');
+const hl = s => esc(s).replace(HLRE, (m,c,st,kw,n) => c ? `<i class="t-c">${c}</i>` : st ? `<i class="t-s">${st}</i>` : kw ? `<i class="t-k">${kw}</i>` : `<i class="t-n">${n}</i>`);
+const pre = c => `<div class="pw"><button type="button" class="cp" onclick="cp(this)">Chép</button><pre><code>${hl(c.trim())}</code></pre></div>`;
+const chips = r => r && r.length ? `<div class="rel"><b>Tra nhanh:</b> ${r.map(n => `<button type="button" class="chip" onclick="openRef('${n}')">${n}</button>`).join('')}</div>` : '';
+const card = (t,c,e,u,r) => `<div class="formula-card"><h3>${t}</h3>${pre(c)}<div class="formula-meta"><div><b>Tác dụng:</b><br>${e}</div><div><b>Cách dùng:</b><br>${u}</div></div>${chips(r)}</div>`;
+const sec = (h,b) => `<section><h2>${h}</h2>${b}</section>`;
+const ul = a => '<ul>' + a.map(x => `<li>${x}</li>`).join('') + '</ul>';
+const box = (c,b) => `<div class="box ${c}">${b}</div>`;
+const tb = (h,rows) => `<div class="tw"><table><tr>${h.map(x => `<th>${x}</th>`).join('')}</tr>${rows.map(r => `<tr>${r.map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`;
+
+const LES = {
+'2': {b:'b1', n:'BÀI 2', t:'Thêm về Java', d:'Lớp, đối tượng, tham chiếu, constructor, this, static, package, nhập liệu.',
+body: () => sec('Tóm tắt nhanh để ôn', ul([
+ '<b>Mỗi lớp một tệp</b> <code>.java</code>; lớp <code>public</code> phải trùng tên tệp. <code>main()</code> do JVM gọi.',
+ '<b>Đối tượng</b> nằm ở Heap, thao tác qua <b>tham chiếu</b> (ở Stack), bắt buộc tạo bằng <code>new</code>.',
+ '<b>Truy cập:</b> <code>public</code> (mọi nơi) › <code>protected</code> (lớp con + cùng gói) › mặc định (cùng gói) › <code>private</code> (chỉ trong lớp).',
+ '<b>Constructor:</b> trùng tên lớp, không kiểu trả về. Không khai báo thì có constructor rỗng; đã khai báo constructor có tham số thì <b>mất</b> constructor mặc định.',
+ '<b>Truyền tham số:</b> Java chỉ truyền giá trị; với đối tượng, thứ được sao chép là tham chiếu.',
+ '<b>GC</b> tự thu hồi đối tượng khi không còn tham chiếu trỏ tới.'])
+ + box('warn','<b>Bẫy:</b> <code>a == b</code> chỉ so sánh tham chiếu; so nội dung dùng <code>equals()</code>. <code>b = a</code> không sao chép đối tượng, chỉ cho hai tham chiếu cùng trỏ một đối tượng.'))
+ + sec('Code, tác dụng, cách dùng',
+ card('Lớp, constructor, overloading', J`
+class MyDate {
+    private int day, month, year;
+    public MyDate() { day = 1; month = 1; year = 2014; }
+    public MyDate(int d, int m, int y) { day = d; month = m; year = y; }
+    public void setMonth(int m) { month = m; }
+    public void setMonth(String s) { /* đổi tên tháng -> số */ }
+}
+MyDate d1 = new MyDate();
+MyDate d2 = new MyDate(19, 9, 2014);`,
+ 'Khai báo lớp với thuộc tính <code>private</code>, nhiều constructor và nạp chồng phương thức (cùng tên, khác danh sách tham số).',
+ 'Gọi <code>new MyDate(...)</code> để chọn constructor theo tham số. Truy cập thuộc tính qua getter/setter, không truy cập <code>d.year</code> trực tiếp.', ['this','static'])
+ + card('this và copy constructor', J`
+class Date {
+    int year, month, day;
+    Date(int year, int month, int day) {
+        this.year = year; this.month = month; this.day = day;
+    }
+    Date(Date d) { this(d.year, d.month, d.day); }
+}
+Date b = new Date(a);`,
+ '<code>this.x</code> phân biệt thuộc tính với tham số trùng tên; <code>this(...)</code> gọi constructor khác; copy constructor tạo bản sao độc lập.',
+ '<code>this(...)</code> phải là <b>lệnh đầu tiên</b> trong constructor. Dùng copy constructor trong getter/setter để không lộ tham chiếu nội bộ.', ['this'])
+ + card('static: thuộc tính và phương thức của lớp', J`
+public class Dummy {
+    static int counter = 0;
+    static int count() { return counter; }
+    Dummy() { counter++; }
+}
+new Dummy(); new Dummy();
+System.out.println(Dummy.count()); // 2`,
+ 'Thành phần <code>static</code> thuộc về lớp, được chia sẻ giữa mọi đối tượng, gọi không cần đối tượng.',
+ 'Gọi qua tên lớp: <code>Dummy.count()</code>. Phương thức static không dùng được thành phần non-static vì không có <code>this</code>.', ['static'])
+ + card('package, import, biên dịch', J`
+// dse/hello/Hello.java
+package dse.hello;
+public class Hello { public void sayHello() { System.out.println("Hello"); } }
+
+// dse/test/Main.java
+import dse.hello.Hello;
+public class Main { public static void main(String[] a) { new Hello().sayHello(); } }
+
+// javac dse/test/Main.java   |   java dse.test.Main`,
+ 'Gom lớp vào gói; <code>package</code> ở dòng đầu tệp; <code>import</code> để dùng tên ngắn.',
+ 'Chỉ lớp <code>public</code> mới <code>new</code> được từ gói khác. Chạy lớp trong gói phải dùng tên đầy đủ <code>dse.test.Main</code>.', ['package / import'])
+ + card('Scanner và tham số dòng lệnh', J`
+Scanner sc = new Scanner(System.in);
+String w = sc.next();
+int i = sc.nextInt();
+while (sc.hasNextLong()) { long x = sc.nextLong(); }
+
+public static void main(String[] args) {
+    for (String s : args) System.out.println(s);
+}`,
+ 'Đọc dữ liệu từ bàn phím theo kiểu; <code>args</code> chứa các tham số khi chạy <code>java Prog hello world</code>.',
+ '<code>import java.util.Scanner;</code>. Kiểm tra <code>hasNextType()</code> trước khi <code>nextType()</code> để tránh lỗi hết dữ liệu.', ['Scanner']))
+},
+
+'3': {b:'b2', n:'BÀI 3', t:'Thừa kế và Đa hình', d:'extends, super, overriding, final, ép kiểu, liên kết động, instanceof.',
+body: () => sec('Tóm tắt nhanh để ôn', ul([
+ '<b>has-a</b> (composition): đối tượng chứa đối tượng khác. <b>is-a</b> (inheritance): lớp con là một loại của lớp cha, dùng <code>extends</code>.',
+ 'Lớp con kế thừa thuộc tính và phương thức <b>non-private</b>; <b>không</b> kế thừa constructor. Constructor cha chạy trước, gọi tường minh bằng <code>super(...)</code> ở dòng đầu.',
+ '<b>Overriding:</b> cùng tên, cùng tham số, cùng kiểu trả về, phạm vi truy cập <b>không chặt hơn</b> lớp cha.',
+ 'Mọi lớp đều kế thừa <code>Object</code>.',
+ '<b>Đa hình:</b> tham chiếu kiểu cha trỏ tới đối tượng kiểu con. Phương thức chạy theo <b>kiểu đối tượng thật</b> (liên kết động), trừ <code>private</code>/<code>final</code>/<code>static</code> (liên kết tĩnh).'])
+ + box('warn','<b>Bẫy:</b> gọi phương thức bị ghi đè trong constructor của lớp cha sẽ chạy bản của lớp con khi thuộc tính lớp con chưa được gán (thấy giá trị 0/null).'))
+ + sec('Code, tác dụng, cách dùng',
+ card('extends, super, overriding', J`
+class Person {
+    protected String name; protected int age;
+    Person(String n, int a) { name = n; age = a; }
+    public String getDetail() { return name + ", " + age; }
+}
+class Employee extends Person {
+    double salary;
+    Employee(String n, int a, double s) { super(n, a); salary = s; }
+    @Override
+    public String getDetail() { return super.getDetail() + ", " + salary; }
+}`,
+ 'Tái sử dụng và chi tiết hóa lớp cha. <code>super(...)</code> gọi constructor cha, <code>super.method()</code> gọi bản của cha.',
+ 'Thêm <code>@Override</code> để trình biên dịch kiểm tra. Cha không có constructor mặc định thì con bắt buộc gọi <code>super(...)</code>.', ['extends / implements','super'])
+ + card('Đa hình: mảng và tham số', J`
+Animal[] animals = { new Dog(), new Cat(), new Lion() };
+for (Animal a : animals) a.makeNoise();
+
+class Vet { void giveShot(Animal a) { a.makeNoise(); } }
+new Vet().giveShot(new Dog());`,
+ 'Một đoạn mã dùng cho nhiều kiểu con; thêm lớp con mới không phải sửa mã cũ.',
+ 'Khai báo biến, mảng, tham số bằng kiểu cha; gán đối tượng con vào.', ['instanceof'])
+ + card('Ép kiểu và instanceof', J`
+Person p = new Employee("An", 20, 5.0);
+if (p instanceof Employee) {
+    Employee e = (Employee) p;
+    e.setSalary(6.0);
+}`,
+ 'Upcasting (lên) tự động; downcasting (xuống) phải ép kiểu tường minh. <code>instanceof</code> kiểm tra kiểu thật.',
+ 'Chỉ downcast trên tham chiếu đã upcast; kiểm tra <code>instanceof</code> trước để tránh <code>ClassCastException</code>.', ['instanceof'])
+ + card('final', J`
+final double PI = 3.14;
+final class Util { }
+class A { final void f() { } }
+void copyTo(final MyDate d) { d.year = 1; }`,
+ 'Biến: gán một lần. Phương thức: không bị ghi đè. Lớp: không có lớp con. Tham số: không gán lại được tham chiếu.',
+ 'Tham số <code>final</code> vẫn cho đổi thuộc tính của đối tượng được trỏ tới.', ['final']))
+},
+
+'4': {b:'b3', n:'BÀI 4', t:'Lớp trừu tượng, Giao diện, Lập trình tổng quát', d:'abstract, interface, template method, generic class/method, wildcard.',
+body: () => sec('Tóm tắt nhanh để ôn', ul([
+ '<b>abstract class</b>: không tạo được đối tượng, có thể chứa phương thức thường lẫn trừu tượng. Quan hệ <b>is-a</b>.',
+ '<b>interface</b>: "hợp đồng" hành vi; phương thức mặc định <code>public abstract</code>, hằng số <code>public static final</code>. Quan hệ <b>behaves-like</b>; một lớp <code>implements</code> nhiều interface.',
+ '<b>Generic</b>: kiểu dữ liệu để chờ xác định khi dùng. Quy ước: E (Element), K, V (Key, Value), N (Number), T (Type).',
+ 'Ưu điểm: một mã cho nhiều kiểu, kiểm tra kiểu lúc biên dịch, bớt ép kiểu. Nhược điểm: không dùng được kiểu nguyên thủy, không <code>new T()</code>, không <code>new T[n]</code>, không <code>instanceof</code>.'])
+ + box('tip','<b>Wildcard:</b> <code>&lt;?&gt;</code> mọi kiểu; <code>&lt;? extends T&gt;</code> T hoặc con của T; <code>&lt;? super T&gt;</code> T hoặc cha của T.'))
+ + sec('Code, tác dụng, cách dùng',
+ card('abstract class và template method', J`
+abstract class Shape {
+    protected int x, y;
+    abstract void erase();
+    abstract void draw();
+    void moveTo(int x1, int y1) { erase(); x = x1; y = y1; draw(); }
+}
+class Circle extends Shape {
+    void erase() { System.out.println("erase"); }
+    void draw()  { System.out.println("draw"); }
+}`,
+ 'Lớp khuôn mẫu: <code>moveTo</code> cố định thuật toán, lớp con chỉ cài đặt các bước trừu tượng.',
+ 'Lớp con bắt buộc cài đặt mọi phương thức trừu tượng (hoặc tự là abstract). <code>new Shape()</code> báo lỗi.', ['abstract'])
+ + card('interface và implements', J`
+interface CanFly { void fly(); }
+interface CanSwim { void swim(); }
+class Hero extends ActionCharacter implements CanFly, CanSwim {
+    public void fly() { }
+    public void swim() { }
+}
+static void v(CanFly x) { x.fly(); }
+v(new Hero());`,
+ 'Quy định hành vi mà không ràng buộc cách cài đặt; dùng interface như một kiểu dữ liệu.',
+ 'Cài đặt phương thức phải khai báo <code>public</code>. Interface kế thừa interface bằng <code>extends</code>.', ['interface','extends / implements'])
+ + card('Lớp và phương thức tổng quát', J`
+public class Pair<K, V> {
+    private K key; private V value;
+    public Pair(K k, V v) { key = k; value = v; }
+    public K getKey() { return key; }
+    public V getValue() { return value; }
+}
+Pair<String, Integer> p = new Pair<>("Even", 8);
+
+public static <K, V> boolean compare(Pair<K, V> a, Pair<K, V> b) {
+    return a.getKey().equals(b.getKey()) && a.getValue().equals(b.getValue());
+}`,
+ 'Lớp <code>Pair</code> dùng được cho mọi cặp kiểu; <code>compare</code> là phương thức tổng quát (<code>&lt;K, V&gt;</code> đứng trước kiểu trả về).',
+ 'Chỉ định kiểu khi khai báo: <code>Pair&lt;String, Integer&gt;</code>. Kiểu tổng quát phải là lớp (<code>Integer</code>, không phải <code>int</code>).', ['Generics'])
+ + card('Wildcard', J`
+static double sum(List<? extends Number> list) {
+    double s = 0;
+    for (Number n : list) s += n.doubleValue();
+    return s;
+}
+sum(List.of(1, 2, 3));`,
+ 'Nhận danh sách của <code>Number</code> hoặc bất kỳ lớp con nào (Integer, Double...).',
+ '<code>extends</code> để đọc ra, <code>super</code> để ghi vào. Không thể <code>new</code> một kiểu wildcard.', ['Generics']))
+},
+
+'5a': {b:'b4', n:'BÀI 5.1', t:'Cấu trúc dữ liệu trong Java', d:'Object, wrapper, String, StringBuffer, Math, mảng, Collection, Map.',
+body: () => sec('Tóm tắt nhanh để ôn', ul([
+ '<b>Object</b> là cha của mọi lớp: <code>equals()</code>, <code>toString()</code>, <code>getClass()</code> (thường ghi đè <code>equals</code>, <code>toString</code>).',
+ '<b>Wrapper</b> bọc kiểu nguyên thủy thành đối tượng: byte→Byte, int→Integer, long→Long, float→Float, double→Double, boolean→Boolean, char→Character.',
+ '<b>String</b> bất biến: mọi thay đổi tạo xâu mới. <b>StringBuffer</b> sửa được tại chỗ, hợp với xâu dài hay đổi.',
+ '<b>Mảng</b> kích thước cố định; <b>ArrayList</b> co giãn tự động.',
+ '<b>Collection</b> gồm List (có thứ tự), Set (không trùng), Queue (FIFO). <b>Map</b> lưu cặp (key, value), key không trùng.'])
+ + tb(['Cần','Chọn','Lý do'],[
+ ['Truy cập theo chỉ số, danh sách co giãn','<code>ArrayList</code>','get(i) nhanh'],
+ ['Vào sau ra trước (LIFO)','<code>Stack</code>','push / pop / peek'],
+ ['Vào trước ra trước (FIFO)','<code>Queue</code> (<code>LinkedList</code>)','add / poll'],
+ ['Thao tác hai đầu','<code>Deque</code>','addFirst / pollLast'],
+ ['Tra cứu theo khóa tức thì','<code>HashMap</code>','get(key) không cần vòng lặp']]))
+ + sec('Code, tác dụng, cách dùng',
+ card('String, StringBuffer, Math', J`
+String s = "đường đi mua đường";
+s.indexOf("đường");       // 0
+s.lastIndexOf("đường");   // 13
+"A".compareTo("B");       // < 0
+StringBuffer sb = new StringBuffer("abc");
+sb.append("d").insert(0, "x").reverse();
+Math.max(5, 10);  Math.ceil(5.4);  Math.round(5.4);`,
+ 'Tìm kiếm, so sánh xâu; sửa xâu tại chỗ; các hàm toán học thông dụng.',
+ 'So sánh nội dung dùng <code>equals</code>, không dùng <code>==</code>. <code>ceil</code>/<code>floor</code> trả double, <code>round</code> trả số nguyên.', ['String','StringBuffer','Math'])
+ + card('Mảng và lớp Arrays', J`
+int[] a = new int[10];
+int[][] m = new int[3][4];
+int[] arr = {3, 1, 2};
+Arrays.sort(arr);                    // [1,2,3]
+Arrays.binarySearch(arr, 3);         // 2
+System.arraycopy(arr, 0, a, 1, 2);`,
+ 'Khai báo, sắp xếp, tìm nhị phân, sao chép mảng.',
+ '<code>binarySearch</code> chỉ đúng khi mảng đã sắp xếp. Chỉ số từ 0 đến <code>length - 1</code>.', ['Arrays'])
+ + card('ArrayList', J`
+ArrayList<String> cars = new ArrayList<>();
+cars.add("Volvo"); cars.add("BMW");
+cars.remove("BMW"); cars.add("Mazda");
+System.out.println(cars);           // [Volvo, Mazda]
+int i = cars.indexOf("Mazda");      // 1, -1 nếu không có
+for (String c : cars) System.out.println(c);`,
+ 'Danh sách có thứ tự, kích thước tự thay đổi.',
+ 'Dùng <code>indexOf</code>/<code>contains</code> để tìm thay cho vòng lặp thủ công; duyệt bằng for-each.', ['ArrayList'])
+ + card('Stack, Queue, Iterator', J`
+Stack<String> st = new Stack<>();
+st.push("sáng"); st.push("tối");
+st.pop();                          // "tối"
+Queue<String> q = new LinkedList<>();
+q.add("o1"); q.add("o2");
+q.poll();                          // "o1"
+Iterator<String> it = q.iterator();
+while (it.hasNext()) System.out.println(it.next());`,
+ 'LIFO với Stack, FIFO với Queue; Iterator duyệt (và xóa) phần tử khi đang duyệt.',
+ 'Xóa phần tử trong lúc duyệt phải dùng <code>it.remove()</code>, không dùng <code>list.remove()</code>.', ['Stack','Queue / Deque','Iterator'])
+ + card('HashMap', J`
+HashMap<String, Book> allBooks = new HashMap<>();
+allBooks.put("1234567", book);
+Book b = allBooks.get("1234567");
+for (Map.Entry<String, Book> e : allBooks.entrySet())
+    System.out.println(e.getKey());`,
+ 'Tìm đối tượng theo khóa gần như tức thì, nhanh hơn rất nhiều so với duyệt ArrayList khi dữ liệu lớn.',
+ 'Key phải là đối tượng (dùng wrapper cho kiểu nguyên thủy). <code>put</code> cùng key sẽ ghi đè.', ['HashMap']))
+},
+
+'5b': {b:'b5', n:'BÀI 5.2', t:'Xử lý ngoại lệ và Luồng vào-ra', d:'try-catch-finally, throw/throws, ngoại lệ tự định nghĩa, file I/O, stream.',
+body: () => sec('Tóm tắt nhanh để ôn', ul([
+ '<b>Checked exception</b>: bắt buộc xử lý hoặc khai báo <code>throws</code> (ví dụ <code>IOException</code>, <code>FileNotFoundException</code>).',
+ '<b>Runtime exception</b> (unchecked): do lỗi lập trình (<code>NullPointerException</code>...). <b>Error</b>: ngoài tầm kiểm soát (<code>OutOfMemoryError</code>).',
+ '<b>JRE xử lý:</b> tạo đối tượng exception → tìm trên call stack → chuyển cho nơi có handler khớp kiểu; không có thì chương trình kết thúc.',
+ 'Quy tắc ghi đè: cha ném ngoại lệ thì con ném cùng kiểu, kiểu con hoặc không ném; cha không ném thì con chỉ được ném unchecked.',
+ '<b>Luồng:</b> byte (<code>InputStream</code>/<code>OutputStream</code>) và ký tự (<code>Reader</code>/<code>Writer</code>). Dùng bộ đệm để giảm số lần truy cập thiết bị. Đối tượng ghi/đọc qua stream phải <code>Serializable</code>.'])
+ + box('warn','<b>Bẫy:</b> các khối <code>catch</code> phải xếp từ kiểu con đến kiểu cha; <code>catch (Exception e)</code> đặt trước sẽ chặn các catch sau.'))
+ + sec('Code, tác dụng, cách dùng',
+ card('try-catch-finally', J`
+BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
+try {
+    int num = Integer.parseInt(buf.readLine());
+} catch (IOException e) {
+    System.err.println("IO Exception");
+} finally {
+    buf.close();
+}`,
+ 'Tách mã xử lý lỗi khỏi luồng chính. <code>finally</code> luôn chạy, dùng để dọn dẹp.',
+ 'Mỗi catch bắt một kiểu; <code>e.getMessage()</code> lấy nội dung, <code>e.printStackTrace()</code> in vết call stack.', ['try-catch-finally'])
+ + card('throws, throw, ngoại lệ tự định nghĩa', J`
+class MyException extends Exception {
+    public MyException() {}
+    public MyException(String msg) { super(msg); }
+}
+static float chia(int a, int b) throws MyException {
+    if (b == 0) throw new MyException("mau so = 0");
+    return (float) a / b;
+}
+try { chia(1, 0); } catch (MyException e) { System.err.println(e.getMessage()); }`,
+ '<code>throw</code> ném một đối tượng ngoại lệ; <code>throws</code> khai báo kiểu ngoại lệ phương thức có thể ném ra.',
+ 'Lớp ngoại lệ mới kế thừa <code>Exception</code>. Đổi checked sang unchecked: <code>throw new RuntimeException(e)</code>.', ['throw / throws'])
+ + card('Đọc, ghi, sao chép tệp văn bản', J`
+BufferedReader in = new BufferedReader(new FileReader(args[0]));
+PrintWriter out = new PrintWriter(new FileWriter(args[1]));
+String s;
+while ((s = in.readLine()) != null) out.println(s);
+in.close();
+out.close();`,
+ 'Đọc từng dòng từ tệp và ghi sang tệp khác.',
+ 'Bọc <code>FileReader</code> bằng <code>BufferedReader</code>, <code>FileWriter</code> bằng <code>PrintWriter</code>. Luôn <code>close()</code> (hoặc dùng try-with-resources).', ['BufferedReader','PrintWriter','File'])
+ + card('Data stream và Object stream', J`
+DataOutputStream dout = new DataOutputStream(new FileOutputStream("a.dat"));
+dout.writeInt(7);
+dout.close();
+
+class Record implements Serializable { String name; float score; }
+ObjectOutputStream oo = new ObjectOutputStream(new FileOutputStream("r.dat"));
+oo.writeObject(new Record());
+Record r = (Record) new ObjectInputStream(new FileInputStream("r.dat")).readObject();`,
+ 'Ghi/đọc kiểu nguyên thủy dạng nhị phân và ghi/đọc nguyên đối tượng (chuỗi hóa).',
+ 'Đọc đến khi bắt <code>EOFException</code>. Đọc đúng thứ tự và đúng kiểu như khi ghi.', ['ObjectOutputStream']))
+},
+
+'6a': {b:'b1', n:'BÀI 6.1', t:'Mẫu thiết kế (phần 1)', d:'Singleton, Factory Method, Abstract Factory, Adapter.',
+body: () => sec('Tóm tắt nhanh để ôn', ul([
+ 'Mẫu thiết kế (MTK) là giải pháp đã được kiểm chứng cho một vấn đề lặp lại; mốc: <b>Gang of Four</b> (1995).',
+ 'MTK giải quyết yêu cầu phi chức năng: khả năng thay đổi, tương tác, tái sử dụng, độ tin cậy.',
+ '<b>3 loại:</b> Khởi tạo (creational), Cấu trúc (structural), Hành vi (behavioral).',
+ 'Một MTK gồm: tên, ngữ cảnh, vấn đề, giải pháp, kết quả.'])
+ + tb(['Mẫu','Loại','Dấu hiệu cần dùng (smell)'],[
+ ['Singleton','Khởi tạo','Dữ liệu toàn cục, nhiều thể hiện của tài nguyên (kết nối DB)'],
+ ['Factory Method','Khởi tạo','switch / if-else dài để chọn lớp cần <code>new</code>'],
+ ['Abstract Factory','Khởi tạo','Nhiều "dòng" đối tượng đi cùng nhau (giao diện Windows / Mac)'],
+ ['Adapter','Cấu trúc','Giao diện của lớp có sẵn không khớp với nơi dùng']]))
+ + sec('Code: các mẫu khởi tạo và cấu trúc',
+ card('Singleton', J`
+class Singleton {
+    private static Singleton instance = null;
+    private Singleton() {}
+    public static synchronized Singleton getInstance() {
+        if (instance == null) instance = new Singleton();
+        return instance;
+    }
+}`,
+ 'Đảm bảo lớp chỉ có đúng một đối tượng.',
+ 'Constructor <code>private</code>, lấy đối tượng qua <code>getInstance()</code>. <code>synchronized</code> để an toàn khi đa luồng.', ['static','synchronized'])
+ + card('Factory Method', J`
+abstract class Application {
+    abstract Document createDocument();
+    void newDocument() { Document d = createDocument(); d.open(); }
+}
+class MyApplication extends Application {
+    Document createDocument() { return new MyDocument(); }
+}`,
+ 'Lớp cha định nghĩa quy trình, lớp con quyết định tạo đối tượng cụ thể nào.',
+ 'Thay <code>switch</code> chọn lớp bằng phương thức tạo (factory method) được ghi đè ở lớp con.', ['abstract'])
+ + card('Abstract Factory', J`
+interface UIFactory { Window createWindow(); Scrollbar createScrollbar(); }
+class BoyUIFactory implements UIFactory {
+    public Window createWindow() { return new BoyWindow(); }
+    public Scrollbar createScrollbar() { return new BoyScrollbar(); }
+}
+UIFactory f = new GirlUIFactory();
+Window w = f.createWindow();`,
+ 'Tạo cả họ đối tượng liên quan mà client không phụ thuộc lớp cụ thể.',
+ 'Client chỉ giữ <code>UIFactory</code>; đổi "dòng" sản phẩm bằng cách đổi factory. Thêm loại sản phẩm mới phải sửa mọi factory.', ['interface'])
+ + card('Adapter', J`
+interface IMath { int[] sort(int[] arr); }
+class MyModule implements IMath {
+    private MyMathLib lib = new MyMathLib();
+    public int[] sort(int[] arr) { return lib.quicksort(arr); }
+}`,
+ 'Làm cầu nối giữa giao diện cần dùng (<code>IMath</code>) và lớp có sẵn không sửa được (<code>MyMathLib</code>).',
+ 'Cách khuyên dùng: chứa đối tượng cần bọc (composition) và chuyển lời gọi sang nó.', ['extends / implements']))
+},
+
+'6b': {b:'b2', n:'BÀI 6.2', t:'Mẫu thiết kế (tiếp) và Nguyên lý thiết kế', d:'Composite, Decorator, Proxy, DRY, KISS, YAGNI, SOLID.',
+body: () => sec('Composite, Decorator, Proxy: bảng so sánh và code', tb(['Mẫu','Dấu hiệu cần dùng','Ý tưởng'],[
+ ['Composite','Mã đầy <code>instanceof</code> để phân biệt phần tử đơn và tập hợp (file / folder)','Cùng một interface cho phần tử đơn và container; container duyệt các phần tử con'],
+ ['Decorator','Bùng nổ số lớp con cho mọi tổ hợp tính năng (SMS+Facebook+Slack)','Bọc đối tượng trong đối tượng cùng interface, mỗi lớp bọc thêm một chức năng'],
+ ['Proxy','Cần kiểm soát truy cập đối tượng thật','Đối tượng đại diện cùng interface, kiểm tra rồi mới chuyển lời gọi']])
+ + card('Composite', J`
+interface FileItem { void print(); }
+class File implements FileItem {
+    String name;
+    public void print() { System.out.println(name); }
+}
+class Folder implements FileItem {
+    String name; List<FileItem> items = new ArrayList<>();
+    public void print() {
+        System.out.println(name);
+        for (FileItem o : items) o.print();
+    }
+}`,
+ 'Duyệt cả cây thư mục bằng một lời gọi <code>print()</code>, không cần phân biệt file hay folder.',
+ 'Client chỉ làm việc với <code>FileItem</code>; <code>Folder</code> đệ quy qua các phần tử con.', ['interface'])
+ + card('Decorator', J`
+interface Notifier { void send(String msg); }
+class EmailNotifier implements Notifier { public void send(String m) { } }
+class NotifierDecorator implements Notifier {
+    protected Notifier component;
+    NotifierDecorator(Notifier n) { component = n; }
+    public void send(String m) { component.send(m); }
+}
+class FacebookNotifier extends NotifierDecorator {
+    FacebookNotifier(Notifier n) { super(n); }
+    public void send(String m) { super.send(m); /* gửi Facebook */ }
+}
+Notifier n = new FacebookNotifier(new EmailNotifier());
+n.send("Alert!");`,
+ 'Thêm chức năng (gửi nhiều kênh) lúc chạy mà không tạo lớp cho từng tổ hợp.',
+ 'Xếp chồng: <code>new SMSNotifier(new FacebookNotifier(new EmailNotifier()))</code>.', ['super'])
+ + card('Proxy', J`
+class Proxy implements ServiceInterface {
+    private Service realService;
+    public void operation() {
+        if (checkAccess()) realService.operation();
+    }
+}`,
+ 'Kiểm soát (phân quyền, tải chậm, ghi log) trước khi gọi đối tượng thật.',
+ 'Client dùng <code>ServiceInterface</code>, không biết đang nói chuyện với proxy.', ['interface']))
+ + sec('Nguyên lý thiết kế: bảng ôn', ul([
+ '<b>DRY</b> – Don’t Repeat Yourself: không lặp mã. <b>KISS</b> – giữ đơn giản. <b>YAGNI</b> – You Aren’t Gonna Need It: chưa cần thì chưa viết.'])
+ + tb(['SOLID','Nội dung','Vi phạm điển hình'],[
+ ['<b>S</b>RP','Một lớp chỉ có một lý do để thay đổi','<code>Person</code> vừa lưu dữ liệu vừa có <code>format(type)</code> với <code>switch</code> JSON/XML'],
+ ['<b>O</b>CP','Mở để mở rộng, đóng để sửa đổi','<code>drawAllShapes()</code> dùng <code>instanceof</code>; sửa: <code>shape.draw()</code> đa hình'],
+ ['<b>L</b>SP','Lớp con thay thế được lớp cha','Con ném <code>Exception</code> rộng hơn cha ném <code>IOException</code>'],
+ ['<b>I</b>SP','Không ép client phụ thuộc phương thức không dùng','<code>Bike</code> phải cài <code>startEngine()</code>; tách interface nhỏ'],
+ ['<b>D</b>IP','Phụ thuộc vào abstraction, không vào chi tiết','<code>MediaPlayer</code> tự <code>new AudioPlayer()</code>; nên giữ interface và tiêm vào']])
+ + card('OCP: dùng đa hình thay vì instanceof', J`
+abstract class Shape { abstract void draw(); }
+class Rectangle extends Shape { void draw() { } }
+class Circle extends Shape { void draw() { } }
+class Diagram {
+    List<Shape> shapes = new ArrayList<>();
+    void drawAllShapes() { for (Shape s : shapes) s.draw(); }
+}`,
+ 'Thêm hình mới (Triangle) mà không sửa <code>Diagram</code>.',
+ 'Khi thấy chuỗi <code>if (x instanceof ...)</code>, hãy chuyển hành vi vào lớp con.', ['instanceof']))
+},
+
+'7': {b:'b3', n:'BÀI 7', t:'Đa luồng (Concurrency và Multithreading)', d:'Thread, Runnable, ExecutorService, Callable/Future, synchronized, Lock, Virtual Thread.',
+body: () => sec('Tóm tắt nhanh để ôn', ul([
+ '<b>Process</b>: chương trình đang chạy, cô lập. <b>Thread</b>: một đường thực thi trong process, có call stack riêng nhưng <b>dùng chung dữ liệu</b>.',
+ '<b>Định luật Amdahl:</b> với B là tỉ lệ không thể song song và N là số bộ xử lý, mức tăng tốc tối đa là <code>1 / (B + (1 − B) / N)</code>.',
+ '<b>Vòng đời thread:</b> NEW → RUNNABLE → (BLOCKED / WAITING / TIMED_WAITING) → TERMINATED.',
+ '<b>Vấn đề:</b> race condition (nhiều thread cùng sửa dữ liệu, kết quả sai) và visibility (thread này không thấy thay đổi của thread kia).',
+ '<b>Giải pháp:</b> chỉ một thread truy cập tại một thời điểm (<code>synchronized</code>, Lock) và bảo đảm thay đổi được nhìn thấy (<code>volatile</code>, happens-before).'])
+ + box('tip','Chọn <b>Runnable</b> thay vì kế thừa <b>Thread</b>: tách nhiệm vụ khỏi cơ chế chạy, và lớp vẫn còn quyền kế thừa lớp khác.'))
+ + sec('Code, tác dụng, cách dùng',
+ card('Tạo, chạy, chờ thread', J`
+Thread t1 = new Thread(() -> System.out.println("chạy trong " + Thread.currentThread().getName()));
+t1.start();
+Thread.sleep(1000);
+t1.join();`,
+ 'Tạo thread từ lambda <code>Runnable</code>, khởi chạy, tạm dừng, chờ thread kết thúc.',
+ 'Gọi <code>start()</code>, không gọi <code>run()</code> trực tiếp (sẽ chạy trên thread hiện tại). <code>sleep</code>, <code>join</code> ném <code>InterruptedException</code>.', ['Thread'])
+ + card('ExecutorService và thread pool', J`
+ExecutorService ex = Executors.newFixedThreadPool(4);
+for (int i = 0; i < 10; i++) {
+    int id = i;
+    ex.execute(() -> System.out.println("task " + id));
+}
+ex.shutdown();`,
+ 'Dùng lại một nhóm thread cố định, tác vụ dư được xếp hàng đợi.',
+ 'Luôn <code>shutdown()</code> khi xong; nếu không chương trình không kết thúc.', ['ExecutorService'])
+ + card('Callable và Future', J`
+Callable<String> job = () -> { Thread.sleep(2000); return "xong"; };
+Future<String> f = ex.submit(job);
+String kq = f.get();
+f.cancel(true);
+List<Future<String>> all = ex.invokeAll(List.of(job, job));`,
+ 'Tác vụ có kết quả trả về và được ném checked exception; <code>Future</code> nhận kết quả khi có.',
+ '<code>get()</code> chặn đến khi xong. <code>invokeAll</code> chờ tất cả, <code>invokeAny</code> lấy kết quả nhanh nhất.', ['Future','ExecutorService'])
+ + card('synchronized và volatile', J`
+class Counter {
+    private int c = 0;
+    public synchronized void inc() { c++; }
+    public int get() { return c; }
+}
+private volatile boolean running = true;`,
+ '<code>synchronized</code> chỉ cho một thread vào tại một thời điểm (dùng khóa nội tại của đối tượng); <code>volatile</code> bảo đảm mọi thread thấy giá trị mới nhất.',
+ 'Đặt <code>synchronized</code> lên phương thức hoặc khối <code>synchronized (obj) { ... }</code>. <code>volatile</code> không làm <code>c++</code> trở thành nguyên tử.', ['synchronized','volatile'])
+ + card('ReentrantLock, ReadWriteLock, Atomic', J`
+ReentrantLock lock = new ReentrantLock();
+lock.lock();
+try { c++; } finally { lock.unlock(); }
+if (lock.tryLock()) { try { } finally { lock.unlock(); } }
+AtomicInteger n = new AtomicInteger();
+n.incrementAndGet();`,
+ 'Khóa linh hoạt hơn <code>synchronized</code> (<code>tryLock</code> không chờ); biến atomic cập nhật an toàn không cần khóa.',
+ '<code>unlock()</code> luôn đặt trong <code>finally</code>. <code>ReadWriteLock</code> cho nhiều thread đọc cùng lúc, hợp khi đọc nhiều hơn ghi.', ['ReentrantLock','AtomicInteger'])
+ + card('Virtual Thread (Java 21+)', J`
+Thread.ofVirtual().start(() -> System.out.println("virtual"));
+try (var ex = Executors.newVirtualThreadPerTaskExecutor()) {
+    ex.submit(() -> "task");
+}`,
+ 'Thread do JVM quản lý, tạo không cần system call, không tốn context switch của hệ điều hành; tạo được rất nhiều.',
+ 'API giống thread thường. Không cần gom vào pool; mỗi tác vụ một virtual thread.', ['Thread','ExecutorService']))
+}
+};
+
+LES['6'] = {b:'b1', n:'BÀI 6', t:'Mẫu thiết kế và Nguyên lý thiết kế', d:'Singleton, Factory Method, Abstract Factory, Adapter, Composite, Decorator, Proxy; DRY, KISS, YAGNI, SOLID.',
+  body: ((a, b) => () => a() + b())(LES['6a'].body, LES['6b'].body)};
+delete LES['6a']; delete LES['6b'];
+
+const E = (n,k,l,d,s,m,r,x) => ({n,k,l,d,s,m,r:r||[],x:x||''});
+const REF = [
+E('ArrayList','Lớp','5a','Danh sách có thứ tự, kích thước tự co giãn, cài đặt <code>List</code>, truy cập theo chỉ số.',
+ J`import java.util.ArrayList;
+ArrayList<String> ds = new ArrayList<>();
+ArrayList<Integer> a = new ArrayList<>(100);  // dung lượng ban đầu
+ArrayList<String> b = new ArrayList<>(ds);    // sao chép`,
+ [['add(E e)','Thêm vào cuối'],['add(int i, E e)','Chèn tại vị trí i'],['get(int i)','Lấy phần tử ở vị trí i'],['set(int i, E e)','Thay phần tử ở vị trí i'],['remove(int i)','Xóa theo chỉ số, trả phần tử bị xóa'],['remove(Object o)','Xóa phần tử đầu tiên bằng o'],['size()','Số phần tử'],['isEmpty()','true nếu rỗng'],['contains(Object o)','true nếu có o'],['indexOf(Object o)','Vị trí đầu tiên, -1 nếu không có'],['lastIndexOf(Object o)','Vị trí cuối cùng'],['clear()','Xóa hết'],['addAll(Collection c)','Thêm cả tập'],['sort(Comparator c)','Sắp xếp (hoặc Collections.sort(list))'],['iterator()','Lấy Iterator để duyệt']],
+ ['LinkedList','Iterator','HashMap','Arrays'],
+ J`ArrayList<Integer> l = new ArrayList<>(List.of(5, 6, 7));
+l.remove(1);                    // xóa theo chỉ số 1 -> [5, 7]
+l.remove(Integer.valueOf(7));   // xóa giá trị 7 -> [5]
+for (int x : l) System.out.println(x);`),
+E('LinkedList','Lớp','5a','Danh sách liên kết; cài đặt cả <code>List</code> và <code>Deque</code> nên dùng làm hàng đợi.',
+ J`Queue<String> q = new LinkedList<>();
+Deque<String> d = new LinkedList<>();`,
+ [['add(E e)','Thêm cuối'],['addFirst(E e) / addLast(E e)','Thêm đầu / cuối'],['poll()','Lấy và xóa phần tử đầu'],['pollFirst() / pollLast()','Lấy và xóa đầu / cuối'],['peek()','Xem phần tử đầu, không xóa'],['get(int i)','Truy cập theo chỉ số (chậm hơn ArrayList)']],
+ ['Queue / Deque','ArrayList']),
+E('Queue / Deque','Giao diện','5a','<code>Queue</code>: hàng đợi FIFO (vào trước ra trước). <code>Deque</code>: hàng đợi hai đầu, kế thừa Queue.',
+ J`Queue<String> orders = new LinkedList<>();
+Deque<Integer> dq = new LinkedList<>();`,
+ [['add(E e)','Thêm vào hàng đợi'],['poll()','Lấy và xóa phần tử đầu (null nếu rỗng)'],['peek()','Xem phần tử đầu'],['addFirst(E) / addLast(E)','Deque: thêm đầu / cuối'],['pollFirst() / pollLast()','Deque: lấy và xóa đầu / cuối']],
+ ['LinkedList','Stack'],
+ J`orders.add("order1"); orders.add("order2");
+orders.poll();   // "order1"`),
+E('Stack','Lớp','5a','Ngăn xếp LIFO (vào sau ra trước).',
+ J`Stack<String> st = new Stack<>();`,
+ [['push(E item)','Đẩy lên đỉnh'],['pop()','Lấy và xóa phần tử trên đỉnh'],['peek()','Xem đỉnh, không xóa'],['empty()','true nếu rỗng'],['search(Object o)','Vị trí của o tính từ đỉnh']],
+ ['Queue / Deque'],
+ J`st.push("sáng"); st.push("tối");
+st.pop();   // "tối"`),
+E('Iterator','Giao diện','5a','Duyệt tập hợp và xóa phần tử an toàn trong lúc duyệt.',
+ J`Iterator<String> it = list.iterator();`,
+ [['hasNext()','true nếu còn phần tử kế tiếp'],['next()','Trả về phần tử kế tiếp'],['remove()','Xóa phần tử vừa trả về bởi next()']],
+ ['ArrayList'],
+ J`while (it.hasNext()) {
+    if (it.next().isEmpty()) it.remove();
+}`),
+E('HashMap','Lớp','5a','Lưu cặp (key, value), key không trùng, tìm theo key gần như tức thì.',
+ J`import java.util.HashMap;
+HashMap<String, Integer> map = new HashMap<>();`,
+ [['put(K k, V v)','Thêm hoặc ghi đè'],['get(Object k)','Lấy value, null nếu không có'],['getOrDefault(k, def)','Lấy value hoặc giá trị mặc định'],['containsKey(Object k)','Có key không'],['containsValue(Object v)','Có value không'],['remove(Object k)','Xóa theo key'],['putIfAbsent(k, v)','Chỉ thêm nếu chưa có key'],['size()','Số cặp'],['keySet()','Tập các key'],['values()','Tập các value'],['entrySet()','Tập các cặp (Map.Entry)'],['clear()','Xóa hết']],
+ ['ArrayList'],
+ J`map.put("A", 1);
+int n = map.getOrDefault("B", 0);
+for (Map.Entry<String, Integer> e : map.entrySet())
+    System.out.println(e.getKey() + "=" + e.getValue());`),
+E('String','Lớp','5a','Xâu ký tự bất biến: mọi thay đổi tạo ra xâu mới.',
+ J`String s = "abc";
+String t = new String(s);`,
+ [['length()','Độ dài'],['charAt(int i)','Ký tự ở vị trí i'],['equals(String s)','So nội dung'],['equalsIgnoreCase(String s)','So nội dung không phân biệt hoa thường'],['compareTo(String s)','0 bằng; &lt;0 nhỏ hơn; &gt;0 lớn hơn'],['concat(String s)','Ghép xâu (hoặc dùng +)'],['indexOf(String s)','Vị trí xuất hiện đầu tiên, -1 nếu không có'],['lastIndexOf(String s)','Vị trí xuất hiện cuối cùng'],['substring(int b, int e)','Cắt xâu con [b, e)'],['replace(char a, char b)','Thay ký tự'],['trim()','Cắt khoảng trắng hai đầu'],['split(String regex)','Tách thành mảng'],['toUpperCase() / toLowerCase()','Đổi hoa / thường']],
+ ['StringBuffer','Integer']),
+E('StringBuffer','Lớp','5a','Xâu sửa được tại chỗ, không tạo bản sao như <code>String</code>; hợp với xâu dài, đổi nhiều.',
+ J`StringBuffer sb = new StringBuffer();
+StringBuffer sb2 = new StringBuffer("abc");
+StringBuffer sb3 = new StringBuffer(50);`,
+ [['append(String s)','Ghép vào cuối'],['insert(int off, String s)','Chèn tại off'],['delete(int start, int end)','Xóa từ start đến end - 1'],['setCharAt(int i, char c)','Thay ký tự ở i'],['reverse()','Đảo xâu'],['length()','Độ dài'],['charAt(int i)','Ký tự ở i'],['toString()','Chuyển sang String']],
+ ['String']),
+E('Math','Lớp','5a','Hàm và hằng số toán học; lớp <code>final</code>, gọi trực tiếp qua tên lớp.',
+ J`Math.max(5, 10);
+double r = Math.sqrt(16);`,
+ [['max(a, b) / min(a, b)','Lớn nhất / nhỏ nhất'],['ceil(double)','Làm tròn lên (trả double)'],['floor(double)','Làm tròn xuống (trả double)'],['round(float)','Làm tròn gần nhất (trả số nguyên)'],['abs(x)','Giá trị tuyệt đối'],['pow(a, b)','a mũ b'],['sqrt(x)','Căn bậc hai'],['random()','Số thực ngẫu nhiên trong [0, 1)'],['Math.PI / Math.E','Hằng số π và e']]),
+E('Arrays','Lớp','5a','Lớp tiện ích xử lý mảng (<code>java.util</code>).',
+ J`int[] a = {3, 1, 2};
+Arrays.sort(a);`,
+ [['sort(arr)','Sắp xếp tăng dần tại chỗ'],['equals(a, b)','So sánh nội dung hai mảng'],['binarySearch(arr, key)','Tìm nhị phân (mảng phải đã sắp xếp)'],['fill(arr, v)','Gán mọi phần tử bằng v'],['copyOf(arr, n)','Sao chép sang mảng độ dài n'],['toString(arr)','Chuỗi dạng [1, 2, 3]'],['System.arraycopy(src, s, des, d, len)','Sao chép đoạn giữa hai mảng']],
+ ['ArrayList']),
+E('Integer','Lớp','5a','Lớp wrapper của <code>int</code>; <code>Character</code>, <code>Double</code>... dùng tương tự.',
+ J`Integer k = Integer.valueOf("12");
+int i = Integer.parseInt("12");`,
+ [['parseInt(String s)','Chuyển xâu thành int'],['valueOf(String s)','Chuyển xâu thành Integer'],['intValue()','Lấy giá trị int từ đối tượng'],['MAX_VALUE / MIN_VALUE','2^31 - 1 / -2^31'],['Character.isDigit(c)','Có phải chữ số'],['Character.isLetter(c)','Có phải chữ cái'],['Character.isUpperCase(c) / isLowerCase(c)','Chữ hoa / chữ thường']],
+ ['String']),
+E('Scanner','Lớp','2','Nhập dữ liệu kiểu nguyên thủy và xâu từ bàn phím, tệp hoặc xâu.',
+ J`import java.util.Scanner;
+Scanner sc = new Scanner(System.in);
+Scanner sf = new Scanner(new File("data.txt"));
+Scanner ss = new Scanner("2 3 5 7");`,
+ [['next()','Đọc một từ'],['nextLine()','Đọc cả dòng'],['nextInt() / nextDouble() / nextLong()','Đọc số theo kiểu'],['hasNext()','Còn dữ liệu không'],['hasNextInt() / hasNextLong()','Token kế tiếp có đúng kiểu không'],['close()','Đóng']],
+ ['File','BufferedReader'],
+ J`while (sc.hasNextInt()) System.out.println(sc.nextInt());`),
+E('File','Lớp','5b','Thao tác thông tin tệp và thư mục (<code>java.io</code>); không phải stream.',
+ J`File f = new File("data.txt");
+File g = new File("myDocs", "data.txt");`,
+ [['getName() / getPath() / getAbsolutePath()','Tên, đường dẫn, đường dẫn tuyệt đối'],['exists()','Có tồn tại không'],['isFile() / isDirectory()','Là tệp / thư mục'],['canRead() / canWrite()','Quyền đọc / ghi'],['length()','Kích thước (byte)'],['lastModified()','Thời điểm sửa cuối'],['delete()','Xóa'],['mkdir()','Tạo thư mục'],['list()','Tên các mục trong thư mục'],['renameTo(File f)','Đổi tên']],
+ ['BufferedReader','Scanner']),
+E('BufferedReader','Lớp','5b','Đọc ký tự có bộ đệm, đọc từng dòng bằng <code>readLine()</code>.',
+ J`BufferedReader in = new BufferedReader(new FileReader("data.txt"));
+BufferedReader kb = new BufferedReader(new InputStreamReader(System.in));`,
+ [['readLine()','Đọc một dòng, null khi hết tệp'],['read()','Đọc một ký tự, -1 khi hết'],['close()','Đóng luồng']],
+ ['PrintWriter','File','try-catch-finally']),
+E('PrintWriter','Lớp','5b','Ghi văn bản theo dòng ra tệp hoặc luồng.',
+ J`PrintWriter out = new PrintWriter(new FileWriter("data.out"));`,
+ [['println(x)','Ghi và xuống dòng'],['print(x)','Ghi không xuống dòng'],['flush()','Đẩy bộ đệm ra thiết bị'],['close()','Đóng luồng']],
+ ['BufferedReader']),
+E('ObjectOutputStream','Lớp','5b','Ghi đối tượng ra tệp (chuỗi hóa); đối tượng phải <code>implements Serializable</code>. Đọc lại bằng <code>ObjectInputStream</code>.',
+ J`ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("r.dat"));
+ObjectInputStream in = new ObjectInputStream(new FileInputStream("r.dat"));`,
+ [['writeObject(Object o)','Ghi đối tượng'],['readObject()','Đọc đối tượng (ép kiểu lại)'],['DataOutputStream.writeInt(...)','Ghi kiểu nguyên thủy'],['DataInputStream.readInt()','Đọc kiểu nguyên thủy'],['RandomAccessFile.seek(pos)','Nhảy tới vị trí để đọc/ghi ngẫu nhiên']],
+ ['File']),
+E('Thread','Lớp','7','Một luồng thực thi. Tạo bằng <code>Runnable</code> (nên dùng) hoặc kế thừa <code>Thread</code>.',
+ J`Thread t = new Thread(() -> System.out.println("hi"));
+t.start();
+Thread v = Thread.ofVirtual().start(() -> { });   // Java 21+`,
+ [['start()','Khởi chạy thread mới'],['run()','Mã của thread (đừng gọi trực tiếp)'],['join()','Chờ thread kết thúc'],['Thread.sleep(ms)','Tạm dừng thread hiện tại'],['interrupt()','Yêu cầu ngắt thread'],['isAlive()','Còn chạy không'],['setDaemon(true)','Thread nền'],['Thread.currentThread()','Thread hiện tại']],
+ ['ExecutorService','synchronized']),
+E('ExecutorService','Giao diện','7','Quản lý thread pool và vòng đời tác vụ (<code>java.util.concurrent</code>).',
+ J`ExecutorService ex = Executors.newFixedThreadPool(4);
+ExecutorService one = Executors.newSingleThreadExecutor();
+ExecutorService vt = Executors.newVirtualThreadPerTaskExecutor();`,
+ [['execute(Runnable r)','Chạy tác vụ, không có kết quả'],['submit(Callable c)','Chạy tác vụ, trả Future'],['invokeAll(tasks)','Chạy tất cả, trả List&lt;Future&gt;'],['invokeAny(tasks)','Trả kết quả của tác vụ xong nhanh nhất'],['shutdown()','Ngừng nhận tác vụ mới, chờ tác vụ cũ'],['shutdownNow()','Ngắt ngay'],['awaitTermination(t, unit)','Chờ pool kết thúc']],
+ ['Future','Thread']),
+E('Future','Giao diện','7','Nhận kết quả của <code>Callable</code> khi có. <code>Callable&lt;V&gt;</code> có <code>V call() throws Exception</code>.',
+ J`Future<String> f = ex.submit(() -> "kq");`,
+ [['get()','Chờ và lấy kết quả'],['get(timeout, unit)','Chờ có giới hạn thời gian'],['isDone()','Đã xong chưa'],['cancel(boolean mayInterrupt)','Hủy tác vụ'],['isCancelled()','Đã bị hủy chưa']],
+ ['ExecutorService']),
+E('ReentrantLock','Lớp','7','Khóa loại trừ tương hỗ, linh hoạt hơn <code>synchronized</code>. <code>ReadWriteLock</code> tách khóa đọc / ghi.',
+ J`ReentrantLock lock = new ReentrantLock();
+ReadWriteLock rw = new ReentrantReadWriteLock();`,
+ [['lock()','Lấy khóa (chờ nếu bị giữ)'],['unlock()','Nhả khóa (đặt trong finally)'],['tryLock()','Thử lấy khóa, không chờ'],['rw.readLock() / rw.writeLock()','Khóa đọc (nhiều thread) / khóa ghi (một thread)']],
+ ['synchronized','AtomicInteger'],
+ J`lock.lock();
+try { count++; } finally { lock.unlock(); }`),
+E('AtomicInteger','Lớp','7','Số nguyên cập nhật nguyên tử, an toàn đa luồng không cần khóa.',
+ J`AtomicInteger n = new AtomicInteger(0);`,
+ [['get() / set(v)','Đọc / gán'],['incrementAndGet()','Tăng 1 rồi trả giá trị mới'],['getAndIncrement()','Trả giá trị cũ rồi tăng 1'],['addAndGet(d)','Cộng d rồi trả giá trị mới'],['compareAndSet(e, v)','Gán v nếu giá trị hiện tại bằng e']],
+ ['ReentrantLock','synchronized']),
+E('this','Từ khóa','2','Tham chiếu tới chính đối tượng hiện tại.',
+ J`this.x = x;
+this(a, b);
+return this;`,
+ [['this.field','Phân biệt thuộc tính với tham số trùng tên'],['this(...)','Gọi constructor khác, phải là lệnh đầu'],['return this','Cho phép gọi nối tiếp']],
+ ['super','static']),
+E('super','Từ khóa','3','Tham chiếu tới lớp cha.',
+ J`super(x, y);
+super.getDetail();`,
+ [['super(...)','Gọi constructor cha, phải là lệnh đầu'],['super.method()','Gọi phương thức của cha (bản bị ghi đè)']],
+ ['this','extends / implements']),
+E('static','Từ khóa','2','Thành phần thuộc về lớp, dùng chung cho mọi đối tượng.',
+ J`static int counter = 0;
+static int count() { return counter; }
+Dummy.count();`,
+ [['static field','Một bản duy nhất, chia sẻ'],['static method','Gọi qua tên lớp; không dùng được thành phần non-static'],['static final','Hằng số']],
+ ['this','final']),
+E('final','Từ khóa','3','Cố định: biến, phương thức, lớp hoặc tham số.',
+ J`final int MAX = 10;
+final void f() { }
+final class A { }`,
+ [['final variable','Gán một lần'],['final method','Không bị ghi đè'],['final class','Không có lớp con'],['final parameter','Không gán lại tham chiếu']],
+ ['static']),
+E('abstract','Từ khóa','4','Lớp không tạo được đối tượng và/hoặc phương thức chưa có thân.',
+ J`abstract class Shape {
+    abstract void draw();
+}`,
+ [['abstract class','Không <code>new</code>; có thể có phương thức thường và trừu tượng'],['abstract method','Không có thân; lớp con bắt buộc cài đặt']],
+ ['interface','extends / implements']),
+E('interface','Từ khóa','4','Hợp đồng hành vi: phương thức trừu tượng và hằng số.',
+ J`interface Config {
+    int MAX_CONN = 20;
+    void display();
+}`,
+ [['Phương thức','Mặc định public abstract'],['Hằng số','Mặc định public static final'],['interface I3 extends I1, I2','Interface kế thừa nhiều interface']],
+ ['abstract','extends / implements']),
+E('extends / implements','Từ khóa','3','<code>extends</code>: kế thừa lớp (một cha) hoặc interface kế thừa interface. <code>implements</code>: cài đặt interface (nhiều).',
+ J`class Employee extends Person { }
+class Hero extends Base implements CanFly, CanSwim { }
+interface I3 extends I1, I2 { }`,
+ [['class A extends B','Một lớp cha duy nhất'],['class A implements I1, I2','Nhiều interface'],['interface I extends I1, I2','Interface kế thừa nhiều interface']],
+ ['super','interface','abstract']),
+E('instanceof','Từ khóa','3','Kiểm tra kiểu thật của đối tượng trước khi ép kiểu.',
+ J`if (p instanceof Employee) {
+    Employee e = (Employee) p;
+}`,
+ [['obj instanceof Type','true nếu obj là Type hoặc lớp con']],
+ ['extends / implements']),
+E('package / import','Từ khóa','2','Gom lớp vào gói và dùng lớp của gói khác.',
+ J`package dse.hello;
+import dse.hello.Hello;
+import java.util.*;`,
+ [['package x.y;','Dòng đầu tệp'],['import x.y.Class;','Dùng tên ngắn'],['Compile / chạy','javac dse/test/Main.java ; java dse.test.Main']],
+ ['static']),
+E('try-catch-finally','Từ khóa','5b','Bắt và xử lý ngoại lệ, dọn dẹp bằng <code>finally</code>.',
+ J`try {
+    // có thể ném ngoại lệ
+} catch (IOException e) {
+    e.printStackTrace();
+} finally {
+    // luôn chạy
+}`,
+ [['try','Khối lệnh có thể ném ngoại lệ'],['catch (Type e)','Bắt ngoại lệ; xếp từ kiểu con đến kiểu cha'],['finally','Luôn chạy dù có ngoại lệ hay không'],['e.getMessage()','Nội dung ngoại lệ'],['e.printStackTrace()','In vết call stack']],
+ ['throw / throws']),
+E('throw / throws','Từ khóa','5b','<code>throw</code> ném một đối tượng ngoại lệ; <code>throws</code> khai báo ngoại lệ phương thức có thể ném.',
+ J`void f() throws IOException {
+    throw new IOException("lỗi");
+}`,
+ [['throw e;','Ném ngoại lệ (cả ném lại trong catch)'],['throws T1, T2','Khai báo ở prototype phương thức'],['new RuntimeException(e)','Đổi checked sang unchecked'],['class E extends Exception','Ngoại lệ tự định nghĩa']],
+ ['try-catch-finally']),
+E('synchronized','Từ khóa','7','Chỉ cho một thread vào tại một thời điểm (khóa nội tại / monitor của đối tượng).',
+ J`public synchronized void inc() { c++; }
+synchronized (this) { c++; }`,
+ [['synchronized method','Khóa theo đối tượng gọi (hoặc theo lớp nếu static)'],['synchronized (obj) { }','Khối lệnh được khóa theo obj']],
+ ['volatile','ReentrantLock']),
+E('volatile','Từ khóa','7','Bảo đảm mọi thread thấy giá trị mới nhất của biến (chống lỗi nhất quán bộ nhớ); không bảo đảm tính nguyên tử.',
+ J`private volatile boolean running = true;`,
+ [['volatile','Không tối ưu / sắp xếp lại lệnh quanh biến']],
+ ['synchronized','AtomicInteger']),
+E('Generics','Từ khóa','4','Lập trình tổng quát: lớp, interface, phương thức dùng kiểu chờ xác định.',
+ J`class Box<T> { T t; }
+<K, V> boolean compare(Pair<K, V> a, Pair<K, V> b) { }
+List<? extends Number> l;`,
+ [['class A<T1, T2>','Lớp tổng quát'],['<T> T f(T x)','Phương thức tổng quát'],['&lt;?&gt; / &lt;? extends T&gt; / &lt;? super T&gt;','Wildcard'],['Quy ước tên','E, K, V, N, T'],['Hạn chế','Không new T(), không new T[n], không instanceof, không kiểu nguyên thủy']],
+ ['interface']),
+E('Singleton','Mẫu TK','6','Chỉ cho phép đúng một đối tượng của lớp (kết nối CSDL, trình quản lý cửa sổ).',
+ J`class Singleton {
+    private static Singleton instance = null;
+    private Singleton() {}
+    public static synchronized Singleton getInstance() {
+        if (instance == null) instance = new Singleton();
+        return instance;
+    }
+}`,
+ [['private constructor','Chặn bên ngoài tự new'],['static instance','Lưu đối tượng duy nhất'],['getInstance()','Lần đầu tạo, các lần sau trả lại đối tượng cũ'],['synchronized','Tránh tạo hai đối tượng khi đa luồng']],
+ ['static','synchronized']),
+E('Factory Method','Mẫu TK','6','Lớp cha khai báo phương thức tạo đối tượng, lớp con quyết định tạo lớp cụ thể nào. Thay cho switch / if-else chọn lớp.',
+ J`abstract class Application {
+    abstract Document createDocument();
+    void newDocument() { Document d = createDocument(); d.open(); }
+}
+class MyApplication extends Application {
+    Document createDocument() { return new MyDocument(); }
+}`,
+ [['Creator','Lớp cha, chứa factoryMethod() trừu tượng'],['ConcreteCreator','Lớp con ghi đè, trả về ConcreteProduct'],['Product','Giao diện/lớp của sản phẩm']],
+ ['abstract','Abstract Factory']),
+E('Abstract Factory','Mẫu TK','6','Tạo cả một "dòng" đối tượng đi cùng nhau mà client không phụ thuộc lớp cụ thể.',
+ J`interface UIFactory { Window createWindow(); Scrollbar createScrollbar(); }
+class BoyUIFactory implements UIFactory { /* trả BoyWindow, BoyScrollbar */ }
+UIFactory f = new GirlUIFactory();`,
+ [['AbstractFactory','Interface khai báo các hàm tạo'],['ConcreteFactory','Mỗi dòng sản phẩm một factory'],['Client','Chỉ dùng interface'],['Thêm loại sản phẩm','Phải sửa mọi factory']],
+ ['Factory Method','interface']),
+E('Adapter','Mẫu TK','6','Cầu nối giữa giao diện đang cần và lớp có sẵn không khớp (không sửa được mã nguồn).',
+ J`interface IMath { int[] sort(int[] arr); }
+class MyModule implements IMath {
+    private MyMathLib lib = new MyMathLib();
+    public int[] sort(int[] arr) { return lib.quicksort(arr); }
+}`,
+ [['Target','Giao diện client cần (IMath)'],['Adaptee','Lớp có sẵn (MyMathLib)'],['Adapter','Cài Target, bên trong gọi Adaptee']],
+ ['interface']),
+E('Composite','Mẫu TK','6','Xử lý phần tử đơn và tập hợp chung một interface (file / folder).',
+ J`interface FileItem { void print(); }
+class Folder implements FileItem {
+    List<FileItem> items = new ArrayList<>();
+    public void print() { for (FileItem o : items) o.print(); }
+}`,
+ [['Component','Interface chung (FileItem)'],['Leaf','Phần tử đơn (File, Shortcut)'],['Composite','Chứa các Component con (Folder)']],
+ ['interface','Decorator']),
+E('Decorator','Mẫu TK','6','Thêm chức năng cho đối tượng lúc chạy bằng cách lồng các đối tượng cùng interface; tránh bùng nổ lớp con.',
+ J`Notifier n = new EmailNotifier();
+n = new FacebookNotifier(n);
+n = new SMSNotifier(n);
+n.send("Alert!");`,
+ [['Component','Interface chung (Notifier)'],['ConcreteComponent','Đối tượng lõi (EmailNotifier)'],['Decorator','Giữ tham chiếu component và chuyển lời gọi'],['ConcreteDecorator','Gọi super.send() rồi thêm việc của mình']],
+ ['Proxy','super']),
+E('Proxy','Mẫu TK','6','Đối tượng đại diện cùng interface, kiểm soát truy cập trước khi chuyển cho đối tượng thật.',
+ J`class Proxy implements ServiceInterface {
+    private Service realService;
+    public void operation() { if (checkAccess()) realService.operation(); }
+}`,
+ [['ServiceInterface','Interface chung'],['Service','Đối tượng thật'],['Proxy','Kiểm tra (checkAccess) rồi gọi Service']],
+ ['Decorator','interface']),
+E('SOLID','Mẫu TK','6','Năm nguyên lý thiết kế hướng đối tượng. Cùng với DRY, KISS, YAGNI.',
+ J`// OCP: đa hình thay cho instanceof
+for (Shape s : shapes) s.draw();`,
+ [['S – Single Responsibility','Một lớp chỉ có một lý do để thay đổi'],['O – Open/Closed','Mở để mở rộng, đóng để sửa đổi'],['L – Liskov Substitution','Lớp con thay thế được lớp cha'],['I – Interface Segregation','Không ép client phụ thuộc phương thức không dùng'],['D – Dependency Inversion','Phụ thuộc abstraction, không phụ thuộc chi tiết'],['DRY / KISS / YAGNI','Không lặp mã / giữ đơn giản / chưa cần thì chưa viết']],
+ ['interface','abstract'])
+];
+
+const REFIDX = {}; REFIDX['x'] = 0; REF.forEach((r,i) => REFIDX[r.n] = i);
+const LNAME = {'2':'Bài 2','3':'Bài 3','4':'Bài 4','5a':'Bài 5.1','5b':'Bài 5.2','6':'Bài 6','7':'Bài 7'};
+let refKind = 'all', refLes = 'all', refCur = null, navStack = [];
+const KC = {'Lớp':'b1','Giao diện':'b5','Từ khóa':'b2','Mẫu TK':'b3'};
+const curState = () => ({id: $('lesson-select').value, ref: refCur, y: window.scrollY});
+function updateBack() { const b = $('bk'); if (b) b.hidden = !navStack.length; }
+function goBack() {
+  const s = navStack.pop(); if (!s) return;
+  setSel(s.id);
+  loadLesson(s.id, s.id === 'ref' ? s.ref : undefined, true);
+  setTimeout(() => window.scrollTo({top: s.y, behavior: 'instant'}), 60);
+  updateBack();
+}
+window.goBack = goBack;
+function jumpRef(n) { navStack.push(curState()); showRef(n); updateBack(); }
+window.jumpRef = jumpRef;
+
+function cp(btn) {
+  const t = btn.parentNode.querySelector('pre').innerText;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { btn.textContent = 'Đã chép'; setTimeout(() => btn.textContent = 'Chép', 1200); }, () => { btn.textContent = 'Lỗi'; });
+}
+window.cp = cp;
+
+function refPage() {
+  return `<header><span class="k b4">TRA CỨU NHANH</span><h1>Tra cứu nhanh lệnh Java</h1><p class="mut">Gõ tên lớp, từ khóa hoặc tên hàm (ví dụ <code>ArrayList</code>, <code>add</code>, <code>synchronized</code>) rồi bấm vào mục để xem tác dụng, cú pháp khởi tạo, các hàm con và mục liên quan.</p></header>
+  <section><h2>Tìm lệnh</h2>
+  <input id="q" class="srch" type="search" autocomplete="off" placeholder="Tìm: ArrayList, add, remove, Thread, try..." oninput="renderRef()">
+  <div class="sim-tabs" id="kinds">
+    <button type="button" class="sim-tab active" onclick="setKind('all',this)">Tất cả</button>
+    <button type="button" class="sim-tab" onclick="setKind('Lớp',this)">Lớp</button>
+    <button type="button" class="sim-tab" onclick="setKind('Giao diện',this)">Giao diện</button>
+    <button type="button" class="sim-tab" onclick="setKind('Từ khóa',this)">Từ khóa</button>
+    <button type="button" class="sim-tab" onclick="setKind('Mẫu TK',this)">Mẫu &amp; nguyên lý</button>
+  </div>
+  <div class="mut"><b>Lọc theo bài:</b></div>
+  <div class="chips" id="lfilter">
+    <button type="button" class="chip on" onclick="setLes('all',this)">Tất cả bài</button>
+    ${Object.keys(LNAME).map(id => `<button type="button" class="chip" onclick="setLes('${id}',this)">${LNAME[id]}</button>`).join('')}
+  </div>
+  <div id="ref-list" class="chips"></div></section>
+  <section id="ref-detail"></section>`;
+}
+function setKind(k, btn) {
+  refKind = k;
+  document.querySelectorAll('#kinds .sim-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRef();
+}
+window.setKind = setKind;
+function setLes(id, btn) {
+  refLes = id;
+  document.querySelectorAll('#lfilter .chip').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderRef();
+}
+window.setLes = setLes;
+function renderRef() {
+  const q = ($('q').value || '').trim().toLowerCase();
+  const kc = KC;
+  const hits = REF.filter(r => (refKind === 'all' || r.k === refKind) && (refLes === 'all' || r.l === refLes) &&
+    (!q || r.n.toLowerCase().includes(q) || r.m.some(m => m[0].toLowerCase().includes(q))));
+  $('ref-list').innerHTML = hits.length ? hits.map(r => {
+    const mh = q && !r.n.toLowerCase().includes(q) ? r.m.find(m => m[0].toLowerCase().includes(q)) : null;
+    return `<button type="button" class="chip big${refCur === r.n ? ' on' : ''}" onclick="showRef('${r.n}')">${r.n} <span class="k ${kc[r.k]}">${r.k}</span>${mh ? `<small>${esc(mh[0])}</small>` : ''}</button>`;
+  }).join('') : '<p class="mut">Không có mục nào khớp.</p>';
+  if (refCur === null || !hits.some(r => r.n === refCur)) {
+    if (!q && refCur === null) $('ref-detail').innerHTML = '<h2>Chọn một lệnh ở trên</h2><p class="mut">Thông tin chi tiết sẽ hiện ở đây.</p>';
+  }
+}
+window.renderRef = renderRef;
+function showRef(n) {
+  const r = REF[REFIDX[n]]; if (!r) return;
+  refCur = n;
+  const kc = KC;
+  const q = ($('q').value || '').trim().toLowerCase();
+  $('ref-detail').innerHTML = `<h2>${r.n} <span class="k ${kc[r.k]}">${r.k}</span></h2>
+  <p>${r.d}</p>
+  <p class="mut">Học ở: <button type="button" class="chip" onclick="goLesson('${r.l}')">${LNAME[r.l]}</button></p>
+  <h3>Cú pháp / khởi tạo</h3>${pre(r.s)}
+  <h3>Hàm con và thành phần</h3>
+  ${tb(['Cú pháp','Tác dụng'], r.m.map(m => [`<code>${esc(m[0])}</code>`.replace(/&amp;lt;/g,'&lt;').replace(/&amp;gt;/g,'&gt;'), m[1]]))}
+  ${r.x ? `<h3>Ví dụ</h3>${pre(r.x)}` : ''}
+  ${r.r.length ? `<h3>Liên quan</h3><div class="chips">${r.r.map(x => `<button type="button" class="chip big" onclick="jumpRef('${x}')">${x}</button>`).join('')}</div>` : ''}`;
+  renderRef();
+  buildTOC();
+  $('ref-detail').scrollIntoView({behavior:'smooth', block:'start'});
+}
+window.showRef = showRef;
+function setSel(id) { const s = $('lesson-select'); s.value = id; if (s._syncCustomUI) s._syncCustomUI(); }
+function openRef(n) { navStack.push(curState()); setSel('ref'); loadLesson('ref', n, true); }
+window.openRef = openRef;
+function goLesson(id) { navStack.push(curState()); setSel(id); loadLesson(id, undefined, true); }
+window.goLesson = goLesson;
+
+const TH = {
+'2': () => sec('Lý thuyết chi tiết',
+`<h3>1. Lớp và đối tượng</h3>
+<p><b>Lớp</b> (class) là bản thiết kế: mô tả đối tượng có những thuộc tính gì và làm được những việc gì. <b>Đối tượng</b> (object) là sản phẩm được tạo ra từ bản thiết kế đó. Một lớp có thể tạo ra nhiều đối tượng, mỗi đối tượng giữ dữ liệu riêng.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> lớp <code>GradeBook</code> giống bản vẽ một căn nhà; <code>new GradeBook()</code> là xây ra một căn nhà thật. Từ một bản vẽ có thể xây nhiều căn, mỗi căn có đồ đạc khác nhau.')
++ `<p>Quy tắc của Java: mỗi lớp nằm trong một tệp <code>.java</code> trùng tên lớp (lớp <code>public</code> bắt buộc trùng). <code>main()</code> là điểm vào, được máy ảo JVM gọi tự động.</p>
+<h3>2. Tham chiếu: biến đối tượng không chứa đối tượng</h3>
+<p>Khi viết <code>MyDate a = new MyDate(1, 1, 2000);</code>, đối tượng được tạo trong vùng nhớ <b>Heap</b>, còn biến <code>a</code> (nằm ở <b>Stack</b>) chỉ lưu "địa chỉ" của đối tượng đó. Vì vậy <b>phép gán không sao chép đối tượng</b>.</p>`
++ pre(J`
+MyDate a = new MyDate(1, 1, 2000);
+MyDate b = a;          // b và a cùng trỏ MỘT đối tượng
+b.setYear(1999);
+System.out.println(a.getYear());   // 1999, vì a và b là một
+MyDate c = new MyDate(a);          // copy constructor: đối tượng mới, độc lập`)
++ box('analogy','<b>Ví dụ ẩn dụ:</b> biến tham chiếu là tờ giấy ghi địa chỉ nhà. <code>b = a</code> là chép tờ giấy: hai tờ cùng chỉ một căn nhà. <code>a == b</code> hỏi "hai tờ giấy có cùng địa chỉ không?"; <code>a.equals(b)</code> hỏi "hai căn nhà có giống nhau không?" (cần tự định nghĩa thế nào là giống).')
++ `<h3>3. Đóng gói và phạm vi truy cập</h3>
+<p>Thuộc tính nên để <code>private</code> và chỉ cho truy cập qua getter/setter. Lý do: lớp kiểm soát được dữ liệu của mình (ví dụ <code>setMonth</code> có thể từ chối tháng 13) và sau này đổi cách lưu bên trong mà không làm hỏng mã bên ngoài.</p>`
++ tb(['Mức','Cùng lớp','Cùng gói','Lớp con','Nơi khác'],[
+ ['<code>private</code>','Có','Không','Không','Không'],
+ ['(mặc định)','Có','Có','Chỉ cùng gói','Không'],
+ ['<code>protected</code>','Có','Có','Có','Không'],
+ ['<code>public</code>','Có','Có','Có','Có']])
++ `<h3>4. Constructor: đối tượng hợp lệ ngay khi sinh ra</h3>
+<p>Dữ liệu chưa khởi tạo là nguồn lỗi phổ biến, nên Java cho phép đặt mã khởi tạo trong constructor, chạy tự động ngay sau <code>new</code>. Hai điểm dễ nhầm:</p>`
++ ul(['Nếu bạn <b>không viết</b> constructor nào, Java tự thêm constructor rỗng.','Nếu bạn đã viết constructor <b>có tham số</b> mà không viết constructor rỗng, thì <code>new MyDate()</code> sẽ báo lỗi (constructor mặc định biến mất).'])
++ `<h3>5. Truyền tham số: Java luôn truyền giá trị</h3>
+<p>Với kiểu nguyên thủy, giá trị được sao chép. Với đối tượng, thứ được sao chép là <b>tờ giấy địa chỉ</b>. Hệ quả: trong hàm bạn có thể sửa đối tượng thật qua địa chỉ, nhưng việc gán lại biến tham số không ảnh hưởng bên ngoài.</p>`
++ pre(J`
+void reset(MyDate d) {
+    d.setYear(1900);     // sửa đối tượng thật: bên ngoài THẤY thay đổi
+    d = new MyDate();    // chỉ đổi tờ giấy cục bộ: bên ngoài KHÔNG đổi
+}`)
++ `<h3>6. static: của cả lớp, không của riêng đối tượng nào</h3>
+<p>Thuộc tính <code>static</code> chỉ có một bản, dùng chung cho mọi đối tượng (ví dụ biến đếm số đối tượng đã tạo). Phương thức <code>static</code> gọi qua tên lớp và <b>không có <code>this</code></b>, nên không biết "đối tượng nào" để truy cập thuộc tính thường; đó là lý do nó không dùng được thành phần non-static.</p>
+<h3>7. Thu hồi bộ nhớ (Garbage Collection)</h3>
+<p>Java không bắt bạn tự giải phóng đối tượng. JVM đếm số tham chiếu đang trỏ tới mỗi đối tượng; khi bằng 0, đối tượng được thu hồi. Bạn không thể chắc chắn <code>finalize()</code> chạy lúc nào, nên đừng dựa vào nó để dọn dẹp quan trọng.</p>`),
+
+'3': () => sec('Lý thuyết chi tiết',
+`<h3>1. Khi nào dùng kế thừa, khi nào dùng chứa (has-a)?</h3>
+<p>Câu hỏi kiểm tra: <b>"X có phải là một loại Y không?"</b> Nếu đúng thì dùng kế thừa (<b>is-a</b>), ngược lại nếu X chỉ <i>sở hữu</i> Y thì dùng thuộc tính (<b>has-a</b>).</p>`
++ box('analogy','<b>Ví dụ:</b> Nhân viên <b>là một</b> Người → <code>Employee extends Person</code>. Xe <b>có một</b> Động cơ → <code>Car</code> chứa thuộc tính <code>Engine</code>, không kế thừa.')
++ `<p>Lợi ích của kế thừa: dùng lại mã của lớp cha, chỉ viết thêm phần riêng. Lớp con vừa có mọi thành phần non-private của cha, vừa thêm thuộc tính, phương thức mới, hoặc <b>ghi đè</b> (overriding) hành vi cũ.</p>
+<h3>2. Ai truy cập được gì khi có kế thừa</h3>`
++ tb(['Mức','Cùng lớp','Cùng gói','Lớp con (khác gói)','Nơi khác'],[
+ ['<code>public</code>','Có','Có','Có','Có'],
+ ['<code>protected</code>','Có','Có','Có','Không'],
+ ['(mặc định)','Có','Có','Không','Không'],
+ ['<code>private</code>','Có','Không','Không','Không']])
++ `<p><b>private không biến mất:</b> đối tượng con vẫn chứa dữ liệu <code>private</code> của cha trong bộ nhớ, chỉ là mã lớp con không gọi trực tiếp được. Muốn dùng thì đi qua phương thức <code>public</code>/<code>protected</code> của cha (ví dụ <code>getName()</code>).</p>
+<h3>3. Constructor và thứ tự khởi tạo</h3>
+<p>Constructor <b>không được kế thừa</b>. Khi tạo đối tượng con, constructor của cha luôn chạy <b>trước</b>, rồi mới đến phần của con. Nếu cha không có constructor không tham số thì con phải gọi <code>super(...)</code> tường minh ở dòng đầu.</p>`
++ pre(J`
+class Point  { Point()  { System.out.println("Point constructor"); } }
+class Circle extends Point { Circle() { System.out.println("Circle constructor"); } }
+new Circle();
+// Point constructor
+// Circle constructor`)
++ `<h3>4. Overriding khác overloading</h3>`
++ tb(['','Overriding (ghi đè)','Overloading (nạp chồng)'],[
+ ['Ở đâu','Lớp con ghi lại phương thức của cha','Trong cùng một lớp (hoặc cả lớp con)'],
+ ['Tham số','Giống hệt','Khác nhau'],
+ ['Chọn bản nào','Lúc chạy, theo đối tượng thật','Lúc biên dịch, theo kiểu tham số'],
+ ['Truy cập','Không được chặt hơn cha','Tự do']])
++ `<h3>5. Đa hình và liên kết động</h3>
+<p>Một tham chiếu kiểu cha có thể trỏ tới đối tượng kiểu con: <code>Animal a = new Dog();</code>. Khi gọi <code>a.makeNoise()</code>, Java <b>chọn bản của lớp thật (Dog) lúc chạy</b> chứ không phải bản của kiểu khai báo (Animal). Đây là <b>liên kết động</b>.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> chiếc điều khiển có nút "kêu". Bạn chỉ biết đó là "điều khiển động vật", bấm nút thì con vật thật (chó, mèo, sư tử) tự kêu theo loài của nó. Mã của bạn không cần biết con vật là gì.')
++ `<p>Hai giai đoạn cần phân biệt:</p>`
++ ul(['<b>Biên dịch:</b> chỉ cho gọi những phương thức có trong <b>kiểu khai báo</b>. <code>Person p = new Employee(); p.setSalary(...)</code> bị lỗi vì <code>Person</code> không có <code>setSalary</code>.','<b>Chạy:</b> bản được thực thi là của <b>đối tượng thật</b>.'])
++ `<p>Ngoại lệ là phương thức <code>private</code>, <code>final</code>, <code>static</code>: không ghi đè được nên dùng <b>liên kết tĩnh</b> (quyết định lúc biên dịch).</p>
+<h3>6. Ép kiểu</h3>
+<p><b>Upcasting</b> (con → cha) luôn an toàn, có thể ngầm định. <b>Downcasting</b> (cha → con) phải ép tường minh và chỉ đúng khi đối tượng thật là kiểu con, nếu không sẽ có <code>ClassCastException</code>; hãy kiểm tra bằng <code>instanceof</code> trước.</p>`),
+
+'4': () => sec('Lý thuyết chi tiết',
+`<h3>1. Lớp trừu tượng và phương thức khuôn mẫu</h3>
+<p>Có những lớp chỉ có ý nghĩa như một khái niệm chung: không có vật nào là "Hình" hay "Động vật" nói chung, chỉ có hình tròn, con chó. Khai báo chúng <code>abstract</code> để cấm tạo đối tượng và ép lớp con hoàn thiện phần còn thiếu.</p>`
++ box('analogy','<b>Template method giống công thức nấu ăn:</b> trình tự cố định (chuẩn bị → nấu → bày món), nhưng bước "nấu" mỗi món một khác. Lớp cha viết trình tự (<code>moveTo</code>: xóa → đổi tọa độ → vẽ lại), lớp con cài đặt từng bước (<code>erase</code>, <code>draw</code>).')
++ `<h3>2. Interface: hợp đồng về hành vi</h3>
+<p>Interface chỉ nói "<b>làm được gì</b>", không nói "<b>làm thế nào</b>". Lớp nào <code>implements</code> interface là cam kết cài đặt đủ các phương thức đó. Nhờ vậy nơi dùng chỉ cần biết hợp đồng, không cần biết lớp cụ thể.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> ổ cắm điện là một interface. Máy sấy, sạc điện thoại đều "cắm vừa" ổ cắm, và ổ cắm không cần biết đang cấp điện cho thiết bị nào.')
++ tb(['','abstract class','interface'],[
+ ['Quan hệ','<b>is-a</b> (Circle là một Shape)','<b>behaves-like</b> (Hero biết bay)'],
+ ['Kế thừa nhiều','Chỉ một lớp cha','Cài đặt nhiều interface'],
+ ['Thuộc tính','Có thuộc tính thường','Chỉ hằng số (public static final)'],
+ ['Phương thức','Có cả thường và trừu tượng','Mặc định abstract và public'],
+ ['Khi nào dùng','Chia sẻ mã và trạng thái chung','Quy định khả năng, tách rời cài đặt']])
++ `<h3>3. Lập trình tổng quát (Generics): vì sao cần?</h3>
+<p>Trước generics, một danh sách chứa <code>Object</code>, nhận gì cũng được và lấy ra phải ép kiểu: lỗi chỉ lộ ra lúc chạy. Generics đẩy lỗi lên lúc biên dịch.</p>`
++ pre(J`
+List ds = new ArrayList();
+ds.add("a"); ds.add(5);
+String s = (String) ds.get(1);        // ClassCastException khi chạy
+
+List<String> ds2 = new ArrayList<>();
+ds2.add(5);                            // lỗi ngay lúc biên dịch`)
++ box('analogy','<b>Ví dụ ẩn dụ:</b> <code>Box&lt;T&gt;</code> là chiếc hộp dán nhãn. <code>Box&lt;Integer&gt;</code> là hộp nhãn "Số nguyên": ai cũng biết bên trong chỉ có số nguyên và không thể nhét xâu vào.')
++ `<p>Ba loại tổng quát: lớp (<code>class Pair&lt;K, V&gt;</code>), interface (<code>interface GenericDao&lt;T&gt;</code>) và phương thức (<code>&lt;T&gt; T first(List&lt;T&gt; l)</code>).</p>
+<h3>4. Vì sao không <code>new T()</code>, <code>new T[5]</code>, <code>instanceof</code>?</h3>
+<p>Java xóa thông tin kiểu tổng quát sau khi biên dịch (type erasure), nên lúc chạy JVM không biết <code>T</code> là gì để tạo hay kiểm tra. Cách vòng: dùng reflection (<code>newInstance()</code>), hoặc truyền vào đối tượng/mảng đã có.</p>
+<h3>5. Wildcard: nên dùng <code>extends</code> hay <code>super</code>?</h3>
+<p>Quy tắc dễ nhớ: <b>đọc ra thì <code>extends</code>, ghi vào thì <code>super</code></b>. <code>List&lt;? extends Number&gt;</code> đọc được ra <code>Number</code> nhưng không thêm phần tử vào được (vì không biết chính xác là List của kiểu nào). <code>List&lt;? super Integer&gt;</code> thêm được <code>Integer</code>.</p>`),
+
+'5a': () => sec('Lý thuyết chi tiết',
+`<h3>1. Bức tranh tổng thể</h3>
+<p>Java cung cấp sẵn nhiều "cấu trúc dữ liệu" để bạn khỏi tự viết. Có hai nhánh lớn: <b>Collection</b> (tập các phần tử: List, Set, Queue) và <b>Map</b> (tập các cặp khóa–giá trị). Chúng đều dùng generic và đều chỉ chứa <b>đối tượng</b>.</p>
+<h3>2. Lớp wrapper và đóng/mở hộp</h3>
+<p>Vì collection chỉ chứa đối tượng, kiểu nguyên thủy phải được bọc: <code>int</code> → <code>Integer</code>. Java tự đổi qua lại (autoboxing): <code>list.add(5)</code> bọc thành <code>Integer</code>, còn <code>int x = list.get(0)</code> mở hộp ra.</p>
+<h3>3. String, StringBuffer, StringBuilder</h3>
+<p><code>String</code> <b>bất biến</b>: <code>s = s + "x"</code> không sửa <code>s</code> mà tạo một xâu mới. Nối trong vòng lặp lớn sẽ sinh ra rất nhiều xâu rác, khi đó dùng <code>StringBuffer</code> sửa tại chỗ.</p>`
++ tb(['','String','StringBuffer','StringBuilder'],[
+ ['Sửa được','Không','Có','Có'],
+ ['An toàn đa luồng','Có (vì bất biến)','Có (đồng bộ)','Không'],
+ ['Tốc độ','Chậm khi nối nhiều','Chậm hơn Builder','Nhanh nhất'],
+ ['Dùng khi','Nội dung cố định','Sửa nhiều, nhiều luồng','Sửa nhiều, một luồng']])
++ `<h3>4. Mảng hay ArrayList?</h3>`
++ tb(['','Mảng','ArrayList'],[
+ ['Kích thước','Cố định khi tạo','Tự co giãn'],
+ ['Chứa','Nguyên thủy hoặc đối tượng','Chỉ đối tượng'],
+ ['Truy cập','<code>a[i]</code>, <code>a.length</code>','<code>get(i)</code>, <code>size()</code>'],
+ ['Tiện ích','Lớp <code>Arrays</code>','add, remove, contains, indexOf...']])
++ `<h3>5. Chọn cấu trúc dữ liệu nào?</h3>
+<p>Hãy hỏi: tôi thường làm thao tác gì nhiều nhất?</p>`
++ ul(['<b>Truy cập theo chỉ số, thêm cuối:</b> <code>ArrayList</code> (bên trong là mảng động, <code>get(i)</code> rất nhanh, chèn giữa phải dịch phần tử).','<b>Thêm/xóa ở hai đầu, làm hàng đợi:</b> <code>LinkedList</code> / <code>Deque</code>.','<b>Vào sau ra trước:</b> <code>Stack</code> (ví dụ: tin mới nhất đọc trước). <b>Vào trước ra trước:</b> <code>Queue</code> (ví dụ: đơn hàng xử lý theo thứ tự đến).','<b>Tìm theo khóa:</b> <code>HashMap</code>. Với ArrayList phải duyệt từng cuốn sách để so ISBN (chậm khi hàng triệu phần tử), còn HashMap nhảy thẳng tới phần tử cần tìm.'])
++ `<h3>6. Vì sao cần Iterator?</h3>
+<p>Xóa phần tử khỏi danh sách trong lúc đang duyệt bằng for-each sẽ ném <code>ConcurrentModificationException</code>. Iterator có <code>remove()</code> được thiết kế riêng để xóa an toàn trong lúc duyệt.</p>`),
+
+'5b': () => sec('Lý thuyết chi tiết',
+`<h3>1. Ngoại lệ là gì?</h3>
+<p>Ngoại lệ là sự kiện xảy ra lúc chạy làm phá vỡ luồng hoạt động mong đợi (mở tệp không tồn tại, chia cho 0...).</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> kế hoạch đi picnic (luồng mong đợi) bị trời mưa (ngoại lệ). Bạn có thể có phương án dự phòng (catch), và dù đi được hay không vẫn phải dọn đồ (finally).')
++ tb(['Loại','Nguyên nhân','Có bắt buộc xử lý?','Ví dụ'],[
+ ['<b>Checked</b>','Tình huống chương trình dự đoán được','Có: bắt hoặc khai báo <code>throws</code>','<code>FileNotFoundException</code>, <code>IOException</code>'],
+ ['<b>Runtime</b> (unchecked)','Lỗi lập trình, dùng sai API','Không','<code>NullPointerException</code>, <code>ArrayIndexOutOfBoundsException</code>'],
+ ['<b>Error</b>','Sự cố hệ thống ngoài tầm kiểm soát','Không','<code>OutOfMemoryError</code>, <code>IOError</code>']])
++ `<h3>2. Vì sao dùng try-catch thay vì if kiểm tra lỗi?</h3>
+<p>Cách truyền thống (kiểm tra mã lỗi sau mỗi bước) khiến mã thuật toán lẫn lộn với mã xử lý lỗi, rất khó đọc, không chuyển được lỗi cho nơi khác xử lý, và dễ bị quên. <code>try-catch</code> tách hai việc ra: thuật toán nằm trong <code>try</code>, xử lý lỗi nằm trong <code>catch</code>.</p>
+<h3>3. Ngoại lệ đi đâu khi được ném?</h3>
+<p>Giả sử <code>main</code> gọi <code>a()</code>, <code>a()</code> gọi <code>b()</code> và <code>b()</code> ném ngoại lệ. JRE tạo đối tượng ngoại lệ, rồi tìm trình xử lý (<code>catch</code> khớp kiểu) <b>ngược lên theo call stack</b>: <code>b</code> → <code>a</code> → <code>main</code>. Nơi nào bắt được thì xử lý ở đó; lên tới tận <code>main</code> mà không ai bắt thì chương trình dừng và in ra vết ngăn xếp.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> nhân viên gặp sự cố mà không đủ thẩm quyền thì báo lên cấp trên (<code>throws</code>), người nào có thẩm quyền xử lý sẽ nhận (<code>catch</code>).')
++ tb(['','throw','throws'],[
+ ['Là gì','Câu lệnh ném một đối tượng ngoại lệ','Khai báo ngoại lệ phương thức có thể ném'],
+ ['Vị trí','Trong thân phương thức','Sau danh sách tham số, trước <code>{</code>'],
+ ['Ví dụ','<code>throw new Exception();</code>','<code>void f() throws IOException</code>']])
++ `<h3>4. finally luôn chạy</h3>
+<p>Khối <code>finally</code> chạy dù có ngoại lệ hay không, kể cả khi trong <code>try</code> có <code>return</code>. Vì thế nó là chỗ đúng để đóng tệp, nhả khóa, giải phóng tài nguyên.</p>
+<h3>5. Luồng vào–ra (I/O)</h3>
+<p>Chương trình đọc/ghi dữ liệu qua <b>luồng</b> (stream): dòng dữ liệu đi từ nguồn (tệp, bàn phím, mạng) tới chương trình hoặc ngược lại, giống đường ống nước.</p>`
++ ul(['<b>Luồng byte</b> (<code>InputStream</code>/<code>OutputStream</code>): dữ liệu nhị phân.','<b>Luồng ký tự</b> (<code>Reader</code>/<code>Writer</code>): văn bản Unicode.','<b>Bộ đệm</b> (<code>BufferedReader</code>...): đọc/ghi theo khối, giảm số lần chạm vào đĩa nên nhanh hơn nhiều.','Các luồng được <b>lồng vào nhau</b> như lớp áo: <code>new BufferedReader(new FileReader("a.txt"))</code> (mỗi lớp thêm một khả năng).','<b>Chuỗi hóa</b>: ghi nguyên đối tượng cần <code>implements Serializable</code> (giao diện đánh dấu, không có phương thức), và các thuộc tính của nó cũng phải chuỗi hóa được.'])
++ box('warn','<b>Bẫy:</b> phân biệt <code>File</code> (chỉ là thông tin về tệp/thư mục) với <code>Stream</code> (luồng để đọc ghi nội dung).')),
+
+'6': () => sec('Lý thuyết chi tiết',
+`<h3>1. Mẫu thiết kế là gì và học thế nào?</h3>
+<p>Mẫu thiết kế là lời giải đã được nhiều người kiểm chứng cho một vấn đề lặp đi lặp lại khi viết phần mềm. Nó <b>không phải thư viện để gọi</b>, mà là cách tổ chức lớp và đối tượng. Cách học hiệu quả nhất: <b>nhận ra "mùi" (smell) trước, rồi mới chọn mẫu</b>.</p>`
++ tb(['Nhóm','Quan tâm đến','Mẫu trong bài'],[
+ ['Khởi tạo (creational)','Cách tạo đối tượng','Singleton, Factory Method, Abstract Factory'],
+ ['Cấu trúc (structural)','Cách ghép lớp và đối tượng','Adapter, Composite, Decorator, Proxy'],
+ ['Hành vi (behavioral)','Cách phân chia trách nhiệm','(ngoài phạm vi các slide này)']])
++ `<h3>2. Từng mẫu giải quyết vấn đề gì?</h3>`
++ box('analogy','<b>Singleton</b> giống chức hiệu trưởng của một trường: chỉ có một người đảm nhiệm, ai cần cũng hỏi "hiệu trưởng là ai" (<code>getInstance()</code>) và nhận về cùng một người. Dùng cho kết nối CSDL, trình quản lý cửa sổ. Lưu ý đa luồng: hai luồng cùng thấy <code>instance == null</code> có thể tạo hai đối tượng, nên cần <code>synchronized</code> hoặc cách khởi tạo an toàn.')
++ box('analogy','<b>Factory Method:</b> khung ứng dụng cần tạo <code>Document</code> nhưng chưa biết loại tài liệu cụ thể (người dùng khung tự viết). Giải pháp: lớp cha khai báo phương thức tạo (<code>createDocument()</code>) và dùng nó, còn lớp con quyết định tạo ra loại nào. Mùi cần dùng: <code>switch</code>/<code>if-else</code> dài chọn lớp để <code>new</code>.')
++ box('analogy','<b>Abstract Factory</b> giống cửa hàng nội thất theo bộ: chọn phong cách "hiện đại" thì bàn, ghế, tủ đều hiện đại; không bao giờ lẫn ghế cổ điển vào. Mỗi factory tạo ra cả một "dòng" sản phẩm đi cùng nhau (nút và thanh cuộn kiểu Windows hoặc kiểu Mac).')
++ box('analogy','<b>Adapter</b> giống đầu chuyển ổ cắm khi du lịch: thiết bị của bạn (lớp có sẵn <code>MyMathLib.quicksort()</code>) không đổi, ổ cắm (giao diện <code>IMath.sort()</code>) không đổi, chỉ thêm một bộ chuyển ở giữa.')
++ box('analogy','<b>Composite</b> là hộp lồng hộp: thư mục chứa tệp và thư mục khác. Cho tệp và thư mục chung một interface thì duyệt cả cây chỉ cần gọi <code>print()</code>, không cần <code>instanceof</code> để hỏi "là tệp hay thư mục".')
++ box('analogy','<b>Decorator</b> giống topping trà sữa: trà là lõi, bạn thêm trân châu, thêm kem, thêm thạch theo nhu cầu, mỗi lớp thêm một thứ. Thay vì tạo lớp con cho mọi tổ hợp (mùi: số lớp bùng nổ), bạn lồng các đối tượng cùng interface vào nhau lúc chạy.')
++ box('analogy','<b>Proxy</b> giống lễ tân của tòa nhà: khách làm việc qua lễ tân (cùng "giao diện" với người cần gặp), lễ tân kiểm tra quyền rồi mới cho gặp.')
++ `<h3>3. Nguyên lý thiết kế: vì sao OOP chưa đủ?</h3>
+<p>Dùng lớp, kế thừa, đa hình không tự động cho ra mã tốt. Các nguyên lý dưới đây giúp mã <b>dễ bảo trì, tái sử dụng, mở rộng</b>:</p>`
++ ul(['<b>DRY</b> (Don’t Repeat Yourself): mỗi ý tưởng chỉ viết ở một nơi; chép dán mã nghĩa là sửa lỗi phải sửa nhiều chỗ.','<b>KISS</b> (Keep It Simple, Stupid): ưu tiên lời giải đơn giản nhất chạy đúng.','<b>YAGNI</b> (You Aren’t Gonna Need It): đừng viết tính năng "phòng khi cần".'])
++ `<p><b>SOLID</b> gồm năm nguyên lý. Mẹo nhớ: mỗi nguyên lý trả lời một câu hỏi.</p>`
++ ul(['<b>S – Single Responsibility:</b> lớp này có mấy lý do để thay đổi? Phải đúng một. <code>Person</code> vừa lưu dữ liệu vừa định dạng JSON/XML là hai trách nhiệm.','<b>O – Open/Closed:</b> thêm tính năng mới có phải sửa mã cũ không? Nên là "mở rộng bằng cách thêm lớp mới", không phải sửa (ví dụ thêm <code>Triangle</code> không đụng tới <code>Diagram</code>).','<b>L – Liskov Substitution:</b> thay lớp cha bằng lớp con chương trình còn đúng không? Con không được vi phạm hợp đồng của cha (ví dụ ném ngoại lệ rộng hơn).','<b>I – Interface Segregation:</b> client có bị ép cài phương thức không dùng không? <code>Bike</code> không cần <code>startEngine()</code>, hãy tách interface nhỏ.','<b>D – Dependency Inversion:</b> mô-đun cấp cao phụ thuộc interface hay lớp cụ thể? <code>MediaPlayer</code> nên giữ interface và được truyền vào, không tự <code>new AudioPlayer()</code>.'])),
+
+'7': () => sec('Lý thuyết chi tiết',
+`<h3>1. Vì sao cần đa luồng?</h3>
+<p>Một chương trình chạy tuần tự thì thao tác chờ (đọc tệp, mạng) làm CPU ngồi rảnh. Chia công việc thành các phần chạy song song giúp tận dụng CPU và giữ chương trình phản hồi nhanh.</p>`
++ pre(J`
+Tuần tự:    đọc A (5s) -> xử lý A (2s) -> đọc B (5s) -> xử lý B (2s) = 14s
+Đa luồng:   đọc A (5s) | đọc B (5s) song song, rồi xử lý A và B  ~ 12s`)
++ `<p>Ba đơn vị của tính đồng thời: <b>đa xử lý</b> (nhiều CPU), <b>đa nhiệm</b> (nhiều tiến trình trên một CPU, hệ điều hành chuyển qua lại liên tục), <b>đa luồng</b> (nhiều phần của cùng một chương trình).</p>
+<h3>2. Process và thread</h3>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> process là một nhà hàng, thread là các đầu bếp trong đó. Mỗi đầu bếp có thớt riêng (call stack riêng) nhưng <b>dùng chung nhà kho</b> (dữ liệu chung). Nhiều đầu bếp làm nhanh hơn, nhưng cùng lấy một túi muối cuối cùng thì xảy ra tranh chấp.')
++ `<h3>3. Tăng tốc được bao nhiêu? Định luật Amdahl</h3>
+<p>Phần không thể song song hóa (B) giới hạn mức tăng tốc. Với N bộ xử lý: tăng tốc tối đa = <code>1 / (B + (1 − B) / N)</code>. Ví dụ B = 0,2 (20% bắt buộc tuần tự) và N = 4 cho <code>1 / (0,2 + 0,8/4) = 2,5</code> lần, không phải 4 lần.</p>
+<h3>4. Rủi ro: race condition và visibility</h3>
+<p><code>count++</code> trông như một lệnh nhưng thực chất gồm 3 bước: <b>đọc</b> → <b>cộng 1</b> → <b>ghi</b>. Hai thread xen kẽ có thể cùng đọc giá trị 5, cùng ghi 6, mất một lần tăng. Kết quả: chạy 1000 lần tăng mà in ra 985, 999, 997 (mỗi lần một khác). Đó là <b>race condition</b>.</p>
+<p><b>Visibility:</b> thread A sửa biến nhưng giá trị còn nằm trong bộ nhớ đệm của CPU nên thread B không thấy; cần <code>volatile</code> hoặc đồng bộ để thay đổi được "nhìn thấy" (quan hệ <i>happens-before</i>).</p>
+<h3>5. Vòng đời của thread</h3>`
++ tb(['Trạng thái','Ý nghĩa'],[
+ ['NEW','Đã tạo, chưa <code>start()</code>'],
+ ['RUNNABLE','Đang chạy hoặc sẵn sàng chạy'],
+ ['BLOCKED','Chờ khóa (<code>synchronized</code>) đang do thread khác giữ'],
+ ['WAITING / TIMED_WAITING','Chờ thread khác (<code>join</code>) hoặc ngủ có thời hạn (<code>sleep</code>)'],
+ ['TERMINATED','Đã kết thúc']])
++ `<h3>6. Runnable, Callable và thread pool</h3>
+<p>Tạo thread mới là thao tác tốn kém (gọi hệ điều hành). <b>Thread pool</b> tạo sẵn một nhóm thread rồi tái sử dụng: tác vụ được đưa vào hàng đợi, thread rảnh sẽ lấy ra chạy. Bạn chỉ cần "nộp việc" qua <code>ExecutorService</code>, không quản lý thread thủ công.</p>`
++ tb(['','Runnable','Callable'],[
+ ['Phương thức','<code>void run()</code>','<code>V call() throws Exception</code>'],
+ ['Kết quả','Không có','Trả về qua <code>Future</code>'],
+ ['Ném checked exception','Không','Có']])
++ `<h3>7. Đồng bộ hóa</h3>
+<p>Mỗi đối tượng Java có một <b>khóa nội tại</b> (monitor). <code>synchronized</code> bắt thread phải lấy khóa mới được vào, thread khác phải chờ.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> phòng vệ sinh có khóa: ai vào trước khóa cửa, những người sau xếp hàng đến khi người trước mở khóa. <code>ReentrantLock</code> là bản linh hoạt hơn: có thể hỏi "phòng trống không?" (<code>tryLock</code>) thay vì đứng chờ.')
++ `<p><code>ReadWriteLock</code> cho phép nhiều thread <b>đọc cùng lúc</b> nhưng ghi thì độc quyền, hợp khi đọc nhiều hơn ghi.</p>
+<h3>8. Virtual Thread</h3>`
++ tb(['','Thread thường (platform)','Virtual thread (Java 21+)'],[
+ ['Do ai quản lý','Hệ điều hành (kernel thread)','JVM'],
+ ['Chi phí tạo','Cao (system call)','Rất thấp'],
+ ['Số lượng khả thi','Hàng nghìn','Hàng triệu'],
+ ['API','Giống nhau','Giống nhau']])
++ `<p>Virtual thread chạy "gắn" lên một kernel thread (carrier) khi cần, nên hầu như không tốn chi phí chuyển ngữ cảnh của hệ điều hành.</p>`)
+};
+
+function buildTOC() {
+  const tocContainer = $('toc-links');
+  if (!tocContainer) return;
+  let html = '', idx = 0;
+  document.querySelectorAll('#app-content h2, #app-content h3').forEach(el => {
+    const title = el.textContent.trim();
+    const isSub = el.tagName === 'H3';
+    const target = isSub ? el : (el.closest('section') || el);
+    if (!target.id) target.id = 'sec-' + (idx++);
+    html += `<a href="#${target.id}" class="${isSub ? 'sub' : 'grp'}">${title}</a>`;
+  });
+  tocContainer.innerHTML = html;
+}
+
+function upgradeCustomSelects(root = document) {
+  root.querySelectorAll('select').forEach(sel => {
+    if (sel.dataset.customized === 'true') {
+      if (sel._syncCustomUI) sel._syncCustomUI();
+      return;
+    }
+    sel.dataset.customized = 'true';
+    sel.classList.add('native-select-hidden');
+
+    const wrap = document.createElement('div');
+    wrap.className = 'csel-wrap';
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'csel-trigger';
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'csel-label';
+
+    const arrowBox = document.createElement('span');
+    arrowBox.className = 'csel-arrow';
+
+    trigger.appendChild(labelSpan);
+    trigger.appendChild(arrowBox);
+
+    const menu = document.createElement('div');
+    menu.className = 'csel-menu';
+
+    const syncUI = () => {
+      const selectedOpt = sel.options[sel.selectedIndex] || sel.options[0];
+      labelSpan.textContent = selectedOpt ? selectedOpt.textContent : '';
+      menu.querySelectorAll('.csel-opt').forEach((item, idx) => {
+        item.classList.toggle('selected', idx === sel.selectedIndex);
+      });
+    };
+    sel._syncCustomUI = syncUI;
+
+    Array.from(sel.options).forEach((opt, idx) => {
+      const item = document.createElement('div');
+      item.className = 'csel-opt' + (idx === sel.selectedIndex ? ' selected' : '');
+      item.textContent = opt.textContent;
+      item.onclick = (e) => {
+        e.stopPropagation();
+        sel.selectedIndex = idx;
+        sel.value = opt.value;
+        syncUI();
+        wrap.classList.remove('open');
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      };
+      menu.appendChild(item);
+    });
+
+    syncUI();
+
+    trigger.onclick = (e) => {
+      e.stopPropagation();
+      const isOpen = wrap.classList.contains('open');
+      document.querySelectorAll('.csel-wrap.open').forEach(w => w.classList.remove('open'));
+      if (!isOpen) wrap.classList.add('open');
+    };
+
+    wrap.appendChild(trigger);
+    wrap.appendChild(menu);
+    sel.insertAdjacentElement('afterend', wrap);
+  });
+}
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.csel-wrap.open').forEach(w => w.classList.remove('open'));
+});
+
+
+function loadLesson(id, refName, keep) {
+  if (!keep) navStack = [];
+  const mainEl = $('app-content');
+  if (id === 'ref') {
+    refCur = null; refKind = 'all'; refLes = 'all';
+    mainEl.innerHTML = refPage();
+    renderRef();
+    if (refName) showRef(refName);
+  } else {
+    const L = LES[id] || LES['2'];
+    mainEl.innerHTML = `<header><span class="k ${L.b}">UET.CS2043 · ${L.n}</span><h1>${L.t}</h1><p class="mut">${L.d}</p></header>` + (TH[id] ? TH[id]() : '') + L.body();
+  }
+  upgradeCustomSelects(document);
+  buildTOC();
+  history.replaceState(null, '', '#' + (id === 'ref' ? 'tra-cuu' : id));
+  if (!refName) window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateBack();
+}
+window.loadLesson = loadLesson;
+
+/* Khởi chạy ứng dụng & cài đặt đóng/mở menu góc trái */
+(function initApp() {
+  const btn = $('mb'), nav = $('mn');
+  const setOpen = open => {
+    nav.hidden = !open;
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Đóng menu' : 'Mở menu chọn bài và mục lục');
+  };
+  btn.onclick = () => setOpen(nav.hidden);
+  nav.onclick = e => {
+    if (e.target.closest('a')) setOpen(false);
+  };
+  document.addEventListener('click', e => {
+    if (!nav.hidden && !nav.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !nav.hidden) {
+      setOpen(false);
+      btn.focus();
+    }
+  });
+
+  // Mặc định mở Bài 1 khi tải trang
+  const h = (location.hash || '').slice(1);
+  const id = (h === 'tra-cuu' || h === 'ref') ? 'ref' : (LES[h] ? h : '2');
+  setSel(id);
+  loadLesson(id);
+})();
+</script>
+</body>
+</html>
