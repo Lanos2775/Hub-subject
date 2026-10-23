@@ -243,7 +243,7 @@ label.f input,label.f select,label.f textarea{border:1px solid var(--g);border-r
  {
   "id": "ban-dan",
   "title": "Vật lý bán dẫn và linh kiện",
-  "icon": "🔬",
+  "icon": "",
   "code": "ENP2209",
   "desc": "Cấu trúc tinh thể, cơ học lượng tử, vùng năng lượng, bán dẫn ở trạng thái cân bằng (Buổi 1–5).",
   "status": "Đang học",
@@ -253,12 +253,32 @@ label.f input,label.f select,label.f textarea{border:1px solid var(--g);border-r
  {
   "id": "toan-roi-rac",
   "title": "Toán rời rạc",
-  "icon": "🧮",
+  "icon": "",
   "code": "",
   "desc": "Logic, vị từ và lượng từ, phương pháp chứng minh, đại số Bool, Big-O, Euclid, RSA (Bài 1–6).",
   "status": "Đang học",
   "color": "#7a4fd6",
   "src": "mon/toan-roi-rac.html"
+ },
+ {
+  "id": "lap-trinh-nang-cao",
+  "title": "Lập trình nâng cao",
+  "icon": "",
+  "code": "",
+  "desc": "",
+  "status": "Đang học",
+  "color": "#E3163C",
+  "src": "mon/lap-trinh-nang-cao.html"
+ },
+ {
+  "id": "tin-hieu",
+  "title": "Tín hiệu",
+  "icon": "",
+  "code": "",
+  "desc": "",
+  "status": "Đang học",
+  "color": "#F3E5BD",
+  "src": "mon/tin-hieu.html"
  }
 ]</script>
 <script>
@@ -290,7 +310,7 @@ const dbDel=async id=>{if(db)await rp(store("readwrite").delete(id));else mem.de
 const getRem=()=>{try{return JSON.parse(localStorage.getItem(REM)||"[]")}catch(e){return[]}};
 const addRem=id=>{try{const r=getRem();if(!r.includes(id))r.push(id);localStorage.setItem(REM,JSON.stringify(r))}catch(e){}};
 
-function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),2800)}
+function toast(t,ms){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),ms||2800)}
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const kb=s=>{const n=new Blob([s]).size;return n>=1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB"};
 const slug=s=>(s||"mon-hoc").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"mon-hoc";
@@ -361,6 +381,7 @@ function openSubject(id){
   freeUrl(curUrl);
   curUrl=urlFor(s);
   mountFrame(curUrl);
+  if(s.src&&!s.html)fetch(s.src,{method:"HEAD",cache:"no-store"}).then(r=>{if(r.status===404)toast("Không tìm thấy file “"+s.src+"”. Kiểm tra tên file trong thư mục mon và đường dẫn src (phân biệt chữ hoa/thường).",7000)}).catch(()=>{});
   $("#vTitle").textContent=s.title;
   renderSwitch();
   setMenu(false);
@@ -440,6 +461,7 @@ $("#fm").addEventListener("submit",async e=>{
   const html=f?await f.text():null;
   const title=$("#fName").value.trim()||(html&&titleOf(html))||s.title;
   const color=(document.querySelector('input[name="fc"]:checked')||{}).value||s.color;
+  s.edited=true;
   Object.assign(s,{title,icon:$("#fIcon").value.trim()||"📘",code:$("#fCode").value.trim(),desc:$("#fDesc").value.trim(),status:$("#fStatus").value,color});
   if(html!==null){s.prevHtml=s.html;s.html=html}
   await persist(s);
@@ -768,7 +790,7 @@ function cpQuickAdd(){
   const id=cpNewId(),name=w.label||("Vị trí "+(cpOf(sid).length+1));
   (cpData[sid]=cpData[sid]||[]).push({id,name,note:"",a:w.a,y:w.y,t:Date.now()});
   cpCursor={sid,id,y:w.y};
-  cpSave();cpRender();toast("Đã thêm “"+name+"”. Bấm 🔖 → ✎ để thêm ghi chú.");
+  cpSave();cpRender();toast("Đã thêm “"+name+"”.");
 }
 /* Chuyển tới checkpoint trước (-1) / sau (+1) */
 function cpStep(dir){
@@ -901,11 +923,17 @@ window.addEventListener("keydown",e=>{
   if(!db)toast("Trình duyệt không cho lưu lâu dài: chỉnh sửa trong hub sẽ mất khi đóng trang.");
   await load();
   let seed=[];
-  try{seed=JSON.parse($("#seed").textContent||"[]")}catch(e){}
+  try{seed=JSON.parse($("#seed").textContent||"[]")}catch(e){toast("Danh sách môn trong index.html bị lỗi cú pháp (thiếu dấu { } hoặc dấu phẩy): "+e.message)}
   const rem=getRem();
   for(const sd of seed){
     const ex=get(sd.id);
-    if(ex){if(!ex.src&&sd.src){ex.src=sd.src;await dbPut(ex)}continue}
+    if(ex){
+      let ch=false;
+      if(sd.src&&ex.src!==sd.src){ex.src=sd.src;ch=true}
+      if(!ex.edited)for(const k of ["title","icon","code","desc","status","color"]){if(sd[k]!==undefined&&ex[k]!==sd[k]){ex[k]=sd[k];ch=true}}
+      if(ch)await dbPut(ex);
+      continue;
+    }
     if(rem.includes(sd.id))continue;
     const o=Object.assign({html:"",prevHtml:"",order:subjects.length,updated:Date.now()},sd);
     await dbPut(o);subjects.push(o);
