@@ -152,7 +152,8 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <option value="2">Buổi 2: Nhập môn Cơ học lượng tử (Phần 1)</option>
       <option value="3">Buổi 3: Nhập môn Cơ học lượng tử (Phần 2)</option>
       <option value="4">Buổi 4: Lý thuyết lượng tử chất rắn</option>
-      <option value="5" selected>Buổi 5: Bán dẫn ở trạng thái cân bằng</option>
+      <option value="5">Buổi 5: Bán dẫn ở trạng thái cân bằng</option>
+      <option value="6" selected>Buổi 6: Bán dẫn pha tạp & Bán dẫn suy biến</option>
     </select>
   </div>
   <div class="toc-title">Mục lục bài đang mở</div>
@@ -3053,6 +3054,669 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
   </section>
 </template>
 
+<!-- =========================================================
+     TEMPLATE BUỔI 6: BÁN DẪN PHA TẠP & BÁN DẪN SUY BIẾN
+     ========================================================= -->
+<template id="tpl-buoi-6">
+  <header>
+    <span class="k b5">HỌC PHẦN ENP2209 · BUỔI 6</span>
+    <h1>Bán Dẫn Pha Tạp &amp; Bán Dẫn Suy Biến</h1>
+    <p class="mut">Làm chủ Định luật tác dụng khối lượng, Tích phân Fermi-Dirac, Bán dẫn Suy biến vs. Không suy biến, Ion hóa hoàn toàn &amp; Đóng băng (Freeze-out), Phương trình Trung hòa điện tích và Sự dịch chuyển Mức Fermi.</p>
+  </header>
+
+  <section>
+    <h2>1. Phân Bố Cân Bằng Trong Bán Dẫn Pha Tạp &amp; Tích Số $n_0 p_0 = n_i^2$</h2>
+    <p>Chào em! Ở Buổi 5, chúng ta đã biết chất bán dẫn tinh khiết (nội tại) có nồng độ electron bằng đúng nồng độ lỗ trống ($n_0 = p_0 = n_i$) và mức Fermi nằm ngay gần chính giữa vùng cấm ($E_F = E_{Fi}$). Bước sang <b>Buổi 6</b>, khi ta chủ động pha thêm các nguyên tử tạp chất (Doping) để tạo ra <b>Bán dẫn ngoại lai / Bán dẫn pha tạp (Extrinsic Semiconductor)</b>, cán cân giữa electron và lỗ trống sẽ thay đổi hoàn toàn!</p>
+
+    <div class="box analogy">
+      <b>Ví dụ ẩn dụ thực tế: Chiếc bập bênh Mức Fermi ($E_F$) và Hai chiếc bình thông nhau</b><br>
+      Em hãy tưởng tượng vị trí của <b>Mức năng lượng Fermi $E_F$</b> giống như tay cầm điều khiển của một chiếc bập bênh nằm trong vùng cấm:<br><br>
+      • Khi chưa pha tạp (Bán dẫn nội tại), tay cầm nằm ở vị trí cân bằng chính giữa: $E_F = E_{Fi} \implies n_0 = p_0 = n_i$.<br>
+      • Khi pha tạp chất Cho (Donor - Nhóm V), có thêm rất nhiều electron được bơm vào dải dẫn. Tay cầm <b>$E_F$ lập tức được kéo dịch lên cao về phía đáy dải dẫn $E_c$ ($E_F > E_{Fi}$)</b>. Khi đó nồng độ electron $n_0$ tăng vọt lên hàng triệu lần, đồng thời nồng độ lỗ trống $p_0$ bị ép tụt xuống hàng triệu lần ($\mathbf{n_0 \gg p_0}$ — <b>Bán dẫn loại N</b>).<br>
+      • Ngược lại, khi pha tạp chất Nhận (Acceptor - Nhóm III), tay cầm <b>$E_F$ bị kéo tụt xuống thấp về phía đỉnh dải hóa trị $E_v$ ($E_F < E_{Fi}$)</b>. Nồng độ lỗ trống $p_0$ tăng vọt lên còn nồng độ electron $n_0$ giảm sâu ($\mathbf{p_0 \gg n_0}$ — <b>Bán dẫn loại P</b>).
+    </div>
+
+    <h3>1.1. Biểu diễn nồng độ $n_0, p_0$ theo mức Fermi nội tại $E_{Fi}$</h3>
+    <p>Từ công thức chuẩn ở Buổi 5 là $n_0 = N_c \exp\left[-\frac{E_c - E_F}{kT}\right]$, ta sử dụng một mẹo biến đổi toán học rất khéo léo: <b>Cộng và trừ thêm $E_{Fi}$</b> ở trên tử số của số mũ, tức là viết $-(E_c - E_F) = -(E_c - E_{Fi}) + (E_F - E_{Fi})$:</p>
+    <div class="f">
+      $$n_0 = \underbrace{N_c \exp\left[-\frac{E_c - E_{Fi}}{kT}\right]}_{\text{Chính là } n_i} \times \exp\left[\frac{E_F - E_{Fi}}{kT}\right] \implies \mathbf{n_0 = n_i \exp\left[\frac{E_F - E_{Fi}}{kT}\right]}$$
+    </div>
+    <p>Hoàn toàn tương tự cho lỗ trống ở dải hóa trị, ta có cặp công thức đối xứng tuyệt đẹp:</p>
+    <div class="f">
+      $$\mathbf{n_0 = n_i \exp\left[\frac{E_F - E_{Fi}}{kT}\right]} \qquad \text{và} \qquad \mathbf{p_0 = n_i \exp\left[-\frac{E_F - E_{Fi}}{kT}\right]}$$
+    </div>
+    <ul>
+      <li>Nếu $\mathbf{E_F > E_{Fi}}$ (mức Fermi nằm cao hơn mức nội tại): Số mũ dương $\implies n_0 > n_i$ và $p_0 < n_i \implies \mathbf{n_0 > p_0}$ (<b>Bán dẫn loại N</b>, trong đó electron là <i>hạt dẫn đa số - majority carrier</i>, lỗ trống là <i>hạt dẫn thiểu số - minority carrier</i>).</li>
+      <li>Nếu $\mathbf{E_F < E_{Fi}}$ (mức Fermi nằm thấp hơn mức nội tại): $\implies p_0 > n_i$ và $n_0 < n_i \implies \mathbf{p_0 > n_i > n_0}$ (<b>Bán dẫn loại P</b>, trong đó lỗ trống là <i>hạt dẫn đa số</i>, electron là <i>hạt dẫn thiểu số</i>).</li>
+    </ul>
+
+    <h3>1.2. Tích số $n_0 p_0 = n_i^2$ (Định luật Tác dụng Khối lượng - Mass Action Law)</h3>
+    <p>Khi ta nhân trực tiếp hai biểu thức $n_0$ và $p_0$ ở trên với nhau, hai hàm mũ đối dấu tự triệt tiêu ($\exp(+x)\cdot\exp(-x) = e^0 = 1$):</p>
+    <div class="f">
+      $$\mathbf{n_0 \cdot p_0 = n_i^2 = N_c N_v \exp\left[-\frac{E_g}{kT}\right]}$$
+    </div>
+    <div class="box warn">
+      <b>Ý nghĩa sống còn và Điều kiện áp dụng của $n_0 p_0 = n_i^2$:</b><br>
+      1. <b>Ý nghĩa:</b> Ở trạng thái cân bằng nhiệt tại một nhiệt độ $T$ cố định, dù em có pha tạp loại N hay loại P nhiều hay ít, thì <b>tích số giữa nồng độ electron và nồng độ lỗ trống luôn là một hằng số bằng $n_i^2$</b>! Khi biết hạt dẫn đa số (ví dụ $n_0$), em tìm ngay được hạt dẫn thiểu số bằng phép chia: $p_0 = \frac{n_i^2}{n_0}$.<br>
+      2. <b>Điều kiện hợp lệ:</b> Công thức $n_0 p_0 = n_i^2$ được chứng minh dựa trên <b>Xấp xỉ Boltzmann</b>. Nếu pha tạp quá đậm đặc khiến xấp xỉ Boltzmann không còn đúng nữa (bán dẫn suy biến), thì $n_0 p_0 = n_i^2$ <b>cũng không còn đúng nữa</b>!
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Tích Phân Fermi-Dirac $F_{1/2}(\eta_F)$ &amp; Bán Dẫn Suy Biến (Degenerate Semiconductor)</h2>
+    <p>Ở các buổi trước, để giải tích phân nồng độ hạt dẫn một cách dễ dàng, chúng ta luôn giả sử mức Fermi $E_F$ nằm cách xa mép dải dẫn $E_c$ ít nhất là $3kT$ ($E_c - E_F \ge 3kT$) để được quyền bỏ số $1$ ở mẫu số của hàm Fermi-Dirac (Xấp xỉ Boltzmann). Nhưng nếu người kỹ sư <b>pha tạp cực kỳ đậm đặc</b> (ví dụ $N_d \ge 10^{19}\text{ cm}^{-3}$) làm mức Fermi $E_F$ tiến sát vào trong khoảng $3kT$ quanh $E_c$, hoặc thậm chí <b>chui hẳn vào bên trong dải dẫn ($E_F > E_c$)</b> thì sao?</p>
+
+    <h3>2.1. Công thức Tích phân Fermi-Dirac bậc $1/2$</h3>
+    <p>Khi xấp xỉ Boltzmann không còn hiệu lực, ta bắt buộc phải giữ nguyên mẫu số $1 + \exp\left(\frac{E - E_F}{kT}\right)$ trong tích phân tổng quát:</p>
+    <div class="f">
+      $$n_0 = \frac{4\pi(2m_n^*)^{3/2}}{h^3} \int_{E_c}^{\infty} \frac{(E - E_c)^{1/2}\,dE}{1 + \exp\left(\frac{E - E_F}{kT}\right)}$$
+    </div>
+    <p>Để chuẩn hóa tích phân này về dạng không thứ nguyên (không có đơn vị), ta đặt hai biến số phụ đo năng lượng theo đơn vị nhiệt $kT$:</p>
+    <div class="f">
+      $$\mathbf{\eta = \frac{E - E_c}{kT}} \qquad \text{và} \qquad \mathbf{\eta_F = \frac{E_F - E_c}{kT}}$$
+      <small>Lưu ý dấu của $\eta_F$: Nếu $\eta_F > 0$ nghĩa là $E_F > E_c$ (Mức Fermi đã nằm hẳn bên trong dải dẫn!).</small>
+    </div>
+    <p>Thay $\eta$ và $\eta_F$ vào tích phân (nhớ $N_c = 2\left(\frac{2\pi m_n^* kT}{h^2}\right)^{3/2}$), công thức nồng độ electron chính xác tuyệt đối được viết qua <b>Hàm tích phân Fermi-Dirac bậc $1/2$</b> ký hiệu là $F_{1/2}(\eta_F)$:</p>
+    <div class="f">
+      $$\mathbf{n_0 = \frac{2}{\sqrt{\pi}}\,N_c\,F_{1/2}(\eta_F)} \qquad \text{với} \qquad \mathbf{F_{1/2}(\eta_F) = \int_0^{\infty} \frac{\eta^{1/2}\,d\eta}{1 + \exp(\eta - \eta_F)}}$$
+    </div>
+    <p>Hoàn toàn tương tự cho lỗ trống khi mức Fermi tiến sát hoặc chui vào trong dải hóa trị:</p>
+    <div class="f">
+      $$\mathbf{p_0 = \frac{2}{\sqrt{\pi}}\,N_v\,F_{1/2}(\eta'_F)} \qquad \text{với} \qquad \mathbf{\eta' = \frac{E_v - E}{kT}, \quad \eta'_F = \frac{E_v - E_F}{kT}}$$
+      <small>Nếu $\eta'_F > 0$ nghĩa là $E_F < E_v$ (Mức Fermi đã chui sâu vào bên trong dải hóa trị!).</small>
+    </div>
+
+    <h3>2.2. Phân biệt Bán dẫn Không suy biến (Nondegenerate) và Bán dẫn Suy biến (Degenerate)</h3>
+    <div class="tw">
+      <table>
+        <tr>
+          <th>Tiêu chí so sánh</th>
+          <th>Bán dẫn Không suy biến (Nondegenerate)</th>
+          <th>Bán dẫn Suy biến (Degenerate - ký hiệu $n^+$ hoặc $p^+$)</th>
+        </tr>
+        <tr>
+          <td><b>1. Nồng độ pha tạp</b></td>
+          <td>Thấp hoặc trung bình ($N_d, N_a \ll N_c, N_v$; với $\text{Si}$ thường $\le 3 \times 10^{17}\text{ cm}^{-3}$).</td>
+          <td>Cực kỳ cao ($N_d, N_a$ xấp xỉ hoặc lớn hơn $N_c, N_v$, thường $\ge 10^{18} - 10^{20}\text{ cm}^{-3}$).</td>
+        </tr>
+        <tr>
+          <td><b>2. Trạng thái năng lượng tạp chất</b></td>
+          <td>Các nguyên tử tạp chất nằm cách xa nhau, tạo ra mức năng lượng rời rạc $E_d, E_a$ không tương tác nhau.</td>
+          <td>Các nguyên tử tạp chất nằm sát nhau đến mức hàm sóng chồng lấn, mở rộng thành một <b>dải tạp chất (impurity band)</b> trộn lẫn vào dải dẫn hoặc dải hóa trị.</td>
+        </tr>
+        <tr>
+          <td><b>3. Vị trí mức Fermi $E_F$</b></td>
+          <td>Nằm trong vùng cấm và cách mép $E_c, E_v$ ít nhất $3kT$ ($E_c - E_F \ge 3kT$ và $E_F - E_v \ge 3kT$).</td>
+          <td>Tiến sát mép dải trong khoảng $< 3kT$, hoặc <b>nằm hẳn bên trong dải dẫn ($E_F > E_c$ với loại $n^+$) / bên trong dải hóa trị ($E_F < E_v$ với loại $p^+$)</b>.</td>
+        </tr>
+        <tr>
+          <td><b>4. Quy luật thống kê</b></td>
+          <td>Dùng được <b>Xấp xỉ Maxwell-Boltzmann</b> ($n_0 p_0 = n_i^2$ hoàn toàn đúng).</td>
+          <td>Bắt buộc dùng <b>Thống kê và Tích phân Fermi-Dirac $F_{1/2}(\eta_F)$</b> (Xấp xỉ Boltzmann bị sai lệch lớn!).</td>
+        </tr>
+        <tr>
+          <td><b>5. Tính chất dẫn điện</b></td>
+          <td>Độ dẫn điện tăng mạnh khi nhiệt độ tăng do kích thích nhiệt.</td>
+          <td>Mang <b>tính chất giống Kim loại (Metal-like)</b>: mật độ hạt dẫn cực lớn, độ dẫn điện phụ thuộc rất yếu (hoặc giảm nhẹ) theo nhiệt độ.</td>
+        </tr>
+      </table>
+    </div>
+
+    <h3>2.3. Mô hình tương tác: Đồ thị Tích phân Fermi-Dirac $F_{1/2}(\eta_F)$ vs. Xấp xỉ Boltzmann &amp; Bán dẫn Suy biến</h3>
+    <p>Em hãy kéo thanh trượt thay đổi <b>thông số suy biến $\eta_F = \frac{E_F - E_c}{kT}$</b> (mặc định đang để $\mathbf{\eta_F = +2.0}$, đúng bằng số liệu bài toán trang 14 Slide bài giảng / <b>Câu 2 Bài tập</b>) để tận mắt nhìn thấy sự tách rời giữa đường tích phân Fermi-Dirac chuẩn và đường nét đứt xấp xỉ Boltzmann khi $\eta_F > -3$, đồng thời quan sát giản đồ vùng năng lượng của bán dẫn suy biến ở bên phải:</p>
+
+    <div class="sim-card">
+      <div class="sim-tabs" id="b6-deg-tabs">
+        <button type="button" class="sim-tab active" onclick="setB6DegPreset(2.0, this)">1. Bài toán Slide 14 (Câu 2): η_F = +2.0 → F₁/₂(2) ≈ 2.7 (Suy biến loại n⁺)</button>
+        <button type="button" class="sim-tab" onclick="setB6DegPreset(0.0, this)">2. Ranh giới chớm suy biến: η_F = 0 (E_F trùng khít mép E_c)</button>
+        <button type="button" class="sim-tab" onclick="setB6DegPreset(-3.5, this)">3. Vùng Không suy biến: η_F = -3.5 (Boltzmann khớp 100%)</button>
+      </div>
+      <div class="ctrl-row">
+        <div>
+          <label>Vị trí mức Fermi chuẩn hóa $\eta_F = (E_F - E_c)/kT$ (<span id="val-b6-eta">2.0</span>):</label>
+          <input type="range" id="sl-b6-eta" min="-5.0" max="5.0" step="0.2" value="2.0" oninput="renderB6FermiIntegralSim()">
+        </div>
+      </div>
+      <div id="b6-deg-desc" class="box"></div>
+      <svg id="b6-deg-svg" viewBox="0 0 680 280"></svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. Thống Kê Tạp Chất Donor/Acceptor: Ion Hóa Hoàn Toàn &amp; Đóng Băng (Freeze-Out)</h2>
+    <h3>3.1. Xác suất chiếm giữ trên mức năng lượng tạp chất $E_d$ và $E_a$</h3>
+    <p>Nguyên lý loại trừ Pauli không chỉ áp dụng cho các trạng thái trong dải dẫn/dải hóa trị mà còn áp dụng cho chính các mức năng lượng tạp chất $E_d$ và $E_a$! Tuy nhiên, có một điểm tinh tế về <b>hệ số suy biến spin $g$ (degeneracy factor)</b>:</p>
+    <ul>
+      <li><b>Đối với mức Donor ($E_d$):</b> Mỗi nguyên tử Donor (như Phosphorus) có 1 chỗ trống liên kết có thể nhận 1 electron với spin hướng lên ($\uparrow$) HOẶC spin hướng xuống ($\downarrow$) — tức là có $2$ cách đặt electron vào. Nhưng một khi đã có 1 electron nhảy vào chiếm chỗ rồi thì nguyên tử trung hòa điện, nó không thể nhận thêm electron thứ 2 nữa! Do đó hàm phân bố cho số electron còn nằm lại trên mức Donor ($n_d$) có hệ số $\frac{1}{2}$ (tức $g_d = 2$) trước hàm mũ:
+        <div class="f">
+          $$\mathbf{n_d = \frac{N_d}{1 + \frac{1}{2}\exp\left(\frac{E_d - E_F}{kT}\right)} = N_d - N_d^+}$$
+          <small>Trong đó: $N_d$ là tổng nồng độ nguyên tử Donor pha vào; $n_d$ là nồng độ nguyên tử Donor chưa bị ion hóa (vẫn giữ electron); còn $N_d^+$ là nồng độ ion Donor đã bị ion hóa (đã nhường electron lên dải dẫn).</small>
+        </div>
+      </li>
+      <li><b>Đối với mức Acceptor ($E_a$):</b> Tương tự, nồng độ lỗ trống còn nằm lại trên mức Acceptor ($p_a$, tức các nguyên tử Acceptor chưa nhận electron) được cho bởi:
+        <div class="f">
+          $$\mathbf{p_a = \frac{N_a}{1 + \frac{1}{g}\exp\left(\frac{E_F - E_a}{kT}\right)} = N_a - N_a^-}$$
+          <small>Trong đó: $N_a^-$ là nồng độ ion Acceptor đã nhận electron từ dải hóa trị; hệ số suy biến $\mathbf{g = 4}$ đối với mức Acceptor trong $\text{Si}$ và $\text{GaAs}$ (do cấu trúc suy biến kép của dải hóa trị lỗ trống nặng và lỗ trống nhẹ cộng với 2 trạng thái spin).</small>
+        </div>
+      </li>
+    </ul>
+
+    <h3>3.2. Tỷ lệ tạp chất chưa ion hóa, Ion hóa hoàn toàn (Complete Ionization) và Đóng băng (Freeze-Out)</h3>
+    <p>Khi áp dụng xấp xỉ Boltzmann $(E_d - E_F) \gg kT$, ta có $n_d \approx 2N_d \exp\left(\frac{E_d - E_F}{kT}\right)$. Kết hợp với $n_0 = N_c \exp\left(-\frac{E_c - E_F}{kT}\right)$, ta lập được công thức tính <b>tỷ lệ phần trăm electron vẫn còn kẹt lại ở mức Donor ($n_d$) so với tổng số electron ở cả dải dẫn và mức Donor ($n_d + n_0$)</b> (giải trực tiếp <b>Câu 3a Bài tập</b>):</p>
+    <div class="f">
+      $$\mathbf{\frac{n_d}{n_d + n_0} = \frac{1}{1 + \frac{N_c}{2 N_d}\exp\left[-\frac{E_c - E_d}{kT}\right]}} \qquad \text{và tương tự cho Acceptor } (g=4): \qquad \mathbf{\frac{p_a}{p_0 + p_a} = \frac{1}{1 + \frac{N_v}{4 N_a}\exp\left[-\frac{E_a - E_v}{kT}\right]}}$$
+    </div>
+    <ul>
+      <li><span class="k b2">Ion hóa hoàn toàn (Complete Ionization - Ở nhiệt độ phòng $T \approx 300\text{ K}$)</span> Với mức pha tạp điển hình $N_d = 10^{16}\text{ cm}^{-3}$ trong Silicon ($E_c - E_d = 0.045\text{ eV}$), tỷ lệ $\frac{n_d}{n_d + n_0}$ chỉ bằng $0.0041 = \mathbf{0.41\%}$! Nghĩa là tới $99.59\%$ nguyên tử Donor đã nhường hết electron lên dải dẫn. Ta coi như <b>toàn bộ $100\%$ tạp chất đã bị ion hóa hoàn toàn</b>:
+        $$\mathbf{n_d \approx 0 \implies N_d^+ \approx N_d} \qquad \text{và} \qquad \mathbf{p_a \approx 0 \implies N_a^- \approx N_a}$$
+      </li>
+      <li><span class="k b1">Hiện tượng Đóng băng hạt dẫn (Freeze-Out - Ở nhiệt độ cực thấp $T \to 0\text{ K}$)</span> Khi hạ nhiệt độ xuống rất thấp ($T \to 0\text{ K}$), năng lượng nhiệt $kT$ quá nhỏ nên không có electron nào từ mức Donor $E_d$ nhảy lên nổi dải dẫn (và không có electron nào từ dải hóa trị nhảy lên mức Acceptor $E_a$). Toàn bộ các hạt dẫn bị "đóng băng" tại các mức tạp chất: $\mathbf{n_d = N_d\ (N_d^+ = 0)}$ và $\mathbf{p_a = N_a\ (N_a^- = 0)}$. Lúc này tại $T = 0\text{ K}$, mức Fermi $E_F$ nằm giữa $E_d$ và $E_c$ (với loại N) hoặc nằm giữa $E_v$ và $E_a$ (với loại P).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4. Trung Hòa Điện Tích (Charge Neutrality), Bán Dẫn Bù Trừ &amp; Nồng Độ Hạt Dẫn</h2>
+    <h3>4.1. Bán dẫn Bù trừ (Compensated Semiconductor) là gì?</h3>
+    <p>Trong thực tế chế tạo vi mạch, người ta thường khuếch tán tạp chất loại N đè lên một vùng bán dẫn vốn đã có sẵn tạp chất loại P (hoặc ngược lại) để tạo ra các linh kiện. Một chất bán dẫn chứa <b>cả nguyên tử tạp chất Donor ($N_d$) lẫn nguyên tử tạp chất Acceptor ($N_a$) trong cùng một vùng không gian</b> được gọi là <b>Bán dẫn bù trừ (Compensated Semiconductor)</b>:</p>
+    <ul>
+      <li>Nếu $\mathbf{N_d > N_a}$: Số nguyên tử cho electron nhiều hơn số nguyên tử nhận electron $\implies$ Tạo thành <b>Bán dẫn bù trừ loại N</b> (với nồng độ Donor hiệu dụng là $N_d - N_a$).</li>
+      <li>Nếu $\mathbf{N_a > N_d}$: Số nguyên tử nhận electron nhiều hơn $\implies$ Tạo thành <b>Bán dẫn bù trừ loại P</b> (với nồng độ Acceptor hiệu dụng là $N_a - N_d$).</li>
+      <li>Nếu $\mathbf{N_d = N_a}$ (Bù trừ hoàn toàn): Bao nhiêu electron do Donor nhường ra đều rơi hết xuống lấp vừa khít bấy nhiêu chỗ trống của Acceptor! Vật liệu quay trở về có tính chất nồng độ giống hệt như <b>Bán dẫn nội tại ($n_0 = p_0 = n_i$)</b>!</li>
+    </ul>
+
+    <h3>4.2. Phương trình Trung hòa Điện tích &amp; Nghiệm phương trình bậc hai cho $n_0, p_0$</h3>
+    <p>Xét trên toàn khối, chất bán dẫn luôn trung hòa về điện (tổng mật độ điện tích âm phải bằng tổng mật độ điện tích dương):</p>
+    <div class="f">
+      $$\underbrace{n_0}_{\text{Electron tự do } (-)} + \underbrace{N_a^-}_{\text{Ion Acceptor } (-)} = \underbrace{p_0}_{\text{Lỗ trống tự do } (+)} + \underbrace{N_d^+}_{\text{Ion Donor } (+)}$$
+    </div>
+    <p>Ở vùng nhiệt độ làm việc bình thường (giả sử <b>Ion hóa hoàn toàn</b>: $n_d = 0 \implies N_d^+ = N_d$ và $p_a = 0 \implies N_a^- = N_a$), phương trình trung hòa điện tích trở thành:</p>
+    <div class="f">
+      $$\mathbf{n_0 + N_a = p_0 + N_d}$$
+    </div>
+    <ul>
+      <li><b>Tìm nồng độ hạt dẫn cho Bán dẫn loại N ($N_d > N_a$):</b> Thay $p_0 = \frac{n_i^2}{n_0}$ vào phương trình trên, ta được phương trình bậc hai theo $n_0$:
+        $$n_0 + N_a = \frac{n_i^2}{n_0} + N_d \iff \mathbf{n_0^2 - (N_d - N_a)n_0 - n_i^2 = 0}$$
+        Giải phương trình bậc hai này (chỉ lấy nghiệm dương vì nồng độ hạt luôn dương), ta thu được <b>Công thức tổng quát tính nồng độ electron đa số $n_0$</b>:
+        <div class="f">
+          $$\mathbf{n_0 = \frac{N_d - N_a}{2} + \sqrt{\left(\frac{N_d - N_a}{2}\right)^2 + n_i^2}} \qquad \text{và hạt thiểu số:} \qquad \mathbf{p_0 = \frac{n_i^2}{n_0}}$$
+          <small><b>Xấp xỉ cực nhanh khi pha tạp mạnh $(N_d - N_a) \gg n_i$:</b> Khi đó số hạng $n_i^2$ dưới dấu căn quá nhỏ có thể bỏ qua, suy ra $\mathbf{n_0 \approx N_d - N_a}$ và $\mathbf{p_0 \approx \frac{n_i^2}{N_d - N_a}}$! (Tuy nhiên nếu $N_d - N_a$ chỉ xấp xỉ vài lần $n_i$ — như trong Germanium ở <b>Câu 4c</b> — em bắt buộc phải bấm máy đầy đủ công thức căn bậc hai!).</small>
+        </div>
+      </li>
+
+      <li><b>Tìm nồng độ hạt dẫn cho Bán dẫn loại P ($N_a > N_d$):</b> Thay $n_0 = \frac{n_i^2}{p_0}$ vào phương trình trung hòa điện, ta được phương trình bậc hai $p_0^2 - (N_a - N_d)p_0 - n_i^2 = 0$, cho nghiệm <b>nồng độ lỗ trống đa số $p_0$</b>:
+        <div class="f">
+          $$\mathbf{p_0 = \frac{N_a - N_d}{2} + \sqrt{\left(\frac{N_a - N_d}{2}\right)^2 + n_i^2}} \qquad \text{và hạt thiểu số:} \qquad \mathbf{n_0 = \frac{n_i^2}{p_0}}$$
+          <small><b>Khi $(N_a - N_d) \gg n_i$:</b> Ta có ngay $\mathbf{p_0 \approx N_a - N_d}$ và $\mathbf{n_0 \approx \frac{n_i^2}{N_a - N_d}}$.</small>
+        </div>
+      </li>
+    </ul>
+
+    <div class="box tip">
+      <b>Tại sao khi thêm Donor ($N_d$), nồng độ electron không bằng $N_d + n_i$ mà nồng độ lỗ trống $p_0$ lại giảm mạnh? (Figure 4.15):</b><br>
+      Khi ta thêm các nguyên tử Donor vào bán dẫn, phần lớn electron của Donor nhảy lên dải dẫn, nhưng <b>một số ít electron Donor sẽ rơi xuống dải hóa trị để tái hợp (tiêu diệt / annihilate) bớt các lỗ trống nội tại</b> có sẵn ở đó! Nhờ sự tái hợp này mà tích số $n_0 p_0 = n_i^2$ luôn được duy trì và nồng độ lỗ trống thiểu số $p_0 = \frac{n_i^2}{n_0}$ giảm xuống rất sâu so với $n_i$.
+    </div>
+
+    <h3>4.3. Mô hình tương tác: Máy tính Bán dẫn Bù trừ &amp; Giản đồ Vùng Năng Lượng</h3>
+    <p>Em hãy chọn các kịch bản bài toán trong bài giảng (Câu 4a, 4b, 4c, 4d) hoặc tự kéo thanh trượt thay đổi nồng độ Donor $N_d$ và Acceptor $N_a$ để quan sát cách hệ thống giải phương trình trung hòa điện tích, tìm $n_0, p_0$ và dịch chuyển mức Fermi $E_F$:</p>
+
+    <div class="sim-card">
+      <div class="sim-tabs" id="b6-comp-tabs">
+        <button type="button" class="sim-tab active" onclick="setB6CompPreset('4a', this)">1. Câu 4a (Si loại N): Nd = 10¹⁶, Na = 0</button>
+        <button type="button" class="sim-tab" onclick="setB6CompPreset('4b', this)">2. Câu 4b (Si bù trừ loại N): Nd = 5×10¹⁵, Na = 2×10¹⁵</button>
+        <button type="button" class="sim-tab" onclick="setB6CompPreset('4d', this)">3. Câu 4d (Si bù trừ loại P): Na = 10¹⁶, Nd = 3×10¹⁵</button>
+        <button type="button" class="sim-tab" onclick="setB6CompPreset('equal', this)">4. Bù trừ hoàn toàn: Nd = Na = 5×10¹⁵ (Trở về nội tại!)</button>
+      </div>
+      <div class="ctrl-row">
+        <div>
+          <label>Nồng độ Donor $N_d$ (<span id="val-b6-nd">10.0</span> $\times 10^{15}\text{ cm}^{-3}$):</label>
+          <input type="range" id="sl-b6-nd" min="0" max="15" step="0.5" value="10" oninput="renderB6CompSim()">
+        </div>
+        <div>
+          <label>Nồng độ Acceptor $N_a$ (<span id="val-b6-na">0.0</span> $\times 10^{15}\text{ cm}^{-3}$):</label>
+          <input type="range" id="sl-b6-na" min="0" max="15" step="0.5" value="0" oninput="renderB6CompSim()">
+        </div>
+      </div>
+      <div id="b6-comp-desc" class="box"></div>
+      <svg id="b6-comp-svg" viewBox="0 0 680 260"></svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Vị Trí Mức Năng Lượng Fermi $E_F$ Theo Nồng Độ Pha Tạp, Nhiệt Độ &amp; Ý Nghĩa Vật Lý</h2>
+    <h3>5.1. Công thức xác định vị trí Mức Fermi $E_F$ theo nồng độ pha tạp</h3>
+    <p>Bằng cách lấy logarit tự nhiên ($\ln$) hai vế của các phương trình nồng độ hạt dẫn (trong miền xấp xỉ Boltzmann còn hiệu lực), ta dễ dàng xác định được khoảng cách từ mức Fermi $E_F$ đến các mép dải $E_c, E_v$ hoặc đến mức nội tại $E_{Fi}$:</p>
+    <div class="f">
+      $$\text{Bán dẫn loại N } (N_d > N_a): \quad \mathbf{E_c - E_F = kT \ln\left(\frac{N_c}{n_0}\right) \approx kT \ln\left(\frac{N_c}{N_d - N_a}\right)}$$
+      $$\text{Hoặc tính từ } E_{Fi}: \quad \mathbf{E_F - E_{Fi} = kT \ln\left(\frac{n_0}{n_i}\right) \approx kT \ln\left(\frac{N_d - N_a}{n_i}\right)}$$
+    </div>
+    <div class="f">
+      $$\text{Bán dẫn loại P } (N_a > N_d): \quad \mathbf{E_F - E_v = kT \ln\left(\frac{N_v}{p_0}\right) \approx kT \ln\left(\frac{N_v}{N_a - N_d}\right)}$$
+      $$\text{Hoặc tính từ } E_{Fi}: \quad \mathbf{E_{Fi} - E_F = kT \ln\left(\frac{p_0}{n_i}\right) \approx kT \ln\left(\frac{N_a - N_d}{n_i}\right)}$$
+    </div>
+
+    <h3>5.2. Ba vùng nhiệt độ hoạt động của Bán dẫn Pha tạp (Figure 4.16 &amp; 4.19)</h3>
+    <p>Khi theo dõi nồng độ electron $n_0(T)$ và vị trí mức Fermi $E_F(T)$ của một chất bán dẫn pha tạp khi nhiệt độ tăng dần từ $0\text{ K}$ lên tới $700\text{ K}$, ta luôn thấy <b>3 vùng chế độ rõ rệt</b>:</p>
+    <ol>
+      <li><span class="k b1">Vùng 1 — Nhiệt độ thấp ($T < 100\text{ K}$): Vùng Ion hóa một phần / Đóng băng (Partial Ionization / Freeze-Out)</span> Nhiệt độ quá thấp không đủ làm bật hết electron ra khỏi mức Donor $E_d$. Khi $T$ giảm về $0\text{ K}$, $n_0$ tụt dốc xuống $0$ và mức Fermi $E_F$ dâng lên nằm cao hơn cả mức $E_d$ (với loại N) hoặc tụt xuống dưới mức $E_a$ (với loại P).</li>
+      <li><span class="k b2">Vùng 2 — Nhiệt độ trung bình ($100\text{ K} \le T \le 500\text{ K}$): Vùng Ngoại lai / Pha tạp (Extrinsic Region)</span> Đây là vùng làm việc chuẩn của mọi linh kiện bán dẫn! Toàn bộ các nguyên tử tạp chất đã ion hóa hoàn toàn và $N_d \gg n_i(T)$, nên nồng độ hạt dẫn đa số giữ <b>phẳng lì không đổi theo nhiệt độ: $n_0 \approx N_d$</b>.</li>
+      <li><span class="k b4">Vùng 3 — Nhiệt độ cao ($T > 500\text{ K}$): Vùng Nội tại (Intrinsic Region)</span> Khi nhiệt độ quá nóng, nồng độ hạt dẫn nội tại $n_i(T)$ tăng vọt theo hàm mũ đến mức vượt xa cả lượng tạp chất pha vào ($n_i(T) \gg N_d$). Lúc này lượng tạp chất trở nên muối bỏ bể: nồng độ $n_0$ tăng vọt bám theo đường $n_i(T)$, còn mức Fermi $E_F$ <b>kéo tụt về lại mức chính giữa vùng cấm ($E_F \to E_{Fi}$)</b> — chất bán dẫn mất tính chất loại N/P và biến thành bán dẫn nội tại (làm hỏng chức năng của con chip!).</li>
+    </ol>
+
+    <h3>5.3. Mô hình tương tác: Ba Vùng Nhiệt Độ Của $n_0(T)$ &amp; Đường Đi Của Mức Fermi $E_F(T)$</h3>
+    <p>Em hãy kéo thanh trượt <b>Nhiệt độ $T$ từ $20\text{ K}$ đến $700\text{ K}$</b> dưới đây để quan sát đồng thời cả 2 đồ thị kinh điển trong bài giảng: (Trái) Đồ thị nồng độ electron $n_0(T)$ qua 3 vùng Đóng băng $\to$ Ngoại lai phẳng lì $\to$ Nội tại (Figure 4.16), và (Phải) Quỹ đạo di chuyển của mức Fermi $E_F(T)$ tiến về $E_{Fi}$ khi nhiệt độ tăng cao (Figure 4.19):</p>
+
+    <div class="sim-card">
+      <div class="ctrl-row">
+        <div>
+          <label>Nhiệt độ tuyệt đối $T$ (<span id="val-b6-temp">300</span> K — Kéo thử về 50 K, 300 K và 600 K):</label>
+          <input type="range" id="sl-b6-temp" min="20" max="700" step="10" value="300" oninput="renderB6TempRegimesSim()">
+        </div>
+        <div>
+          <label>Mức độ pha tạp $N_d$ (<span id="val-b6-dop">10^{15}</span> $\text{cm}^{-3}$):</label>
+          <select id="sel-b6-dop" onchange="renderB6TempRegimesSim()">
+            <option value="14">Pha tạp nhẹ: N_d = 10¹⁴ cm⁻³ (Sớm bị mất tính pha tạp ở ~450 K)</option>
+            <option value="15" selected>Pha tạp trung bình: N_d = 10¹⁵ cm⁻³ (Chuẩn Figure 4.16)</option>
+            <option value="16">Pha tạp khá mạnh: N_d = 10¹⁶ cm⁻³ (Chịu nhiệt tốt tới ~580 K)</option>
+          </select>
+        </div>
+      </div>
+      <div id="b6-temp-desc" class="box"></div>
+      <svg id="b6-temp-svg" viewBox="0 0 680 265"></svg>
+    </div>
+
+    <h3>5.4. Ý nghĩa Vật lý Sâu sắc của Mức năng lượng Fermi khi Tiếp xúc Hai Vật liệu (Figure 4.20)</h3>
+    <p>Tại sao các kỹ sư bán dẫn lại quan tâm đến vị trí mức Fermi $E_F$ đến vậy? Bởi vì <b>Mức năng lượng Fermi đóng vai trò giống hệt như "Mực nước" (Thế năng hóa học) của các hạt electron!</b></p>
+    <ul>
+      <li>Giả sử ta có Vật liệu A (có mức Fermi cao $E_{FA}$) và Vật liệu B (có mức Fermi thấp hơn $E_{FB} < E_{FA}$).</li>
+      <li>Ngay khoảnh khắc ghép Vật liệu A tiếp xúc với Vật liệu B, giống như mở van nối thông hai bể nước có độ cao khác nhau, các hạt electron ở mức năng lượng cao từ Vật liệu A sẽ <b>chảy tràn sang các trạng thái trống thấp hơn ở Vật liệu B</b>!</li>
+      <li>Sự di chuyển hạt dẫn chỉ dừng lại khi hệ đạt <b>Trạng thái cân bằng nhiệt (Thermal Equilibrium)</b>. Khi đó, <b>mức năng lượng Fermi ở mọi nơi trong toàn bộ hệ tiếp xúc bắt buộc phải nằm trên cùng một đường thẳng ngang bằng nhau ($\mathbf{E_{FA} = E_{FB} = E_F = \text{hằng số}}$)</b>!</li>
+    </ul>
+
+    <div class="sim-card">
+      <div class="sim-tabs" id="b6-contact-tabs">
+        <button type="button" class="sim-tab active" onclick="renderB6ContactSim('before', this)">1. Trước khi tiếp xúc: E_FA cao hơn E_FB (Chênh lệch mức Fermi)</button>
+        <button type="button" class="sim-tab" onclick="renderB6ContactSim('instant', this)">2. Khoảnh khắc vừa chạm nhau: Electron chảy từ A sang B</button>
+        <button type="button" class="sim-tab" onclick="renderB6ContactSim('eq', this)">3. Đạt Cân bằng nhiệt: Mức Fermi san bằng thẳng tắp (E_FA = E_FB)</button>
+      </div>
+      <div id="b6-contact-desc" class="box"></div>
+      <svg id="b6-contact-svg" viewBox="0 0 680 230"></svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. Cẩm Nang Công Thức Trọng Tâm Buổi 6 (Giải Nghĩa Chi Tiết)</h2>
+
+    <div class="formula-card">
+      <h3>Công thức 1: Nồng độ Hạt dẫn theo $E_{Fi}$ &amp; Định luật Tác dụng Khối lượng ($n_0 p_0 = n_i^2$)</h3>
+      <div class="f">
+        $$n_0 = n_i \exp\left[\frac{E_F - E_{Fi}}{kT}\right], \qquad p_0 = n_i \exp\left[-\frac{E_F - E_{Fi}}{kT}\right], \qquad \mathbf{n_0 \cdot p_0 = n_i^2}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu &amp; Đơn vị:</b><br>
+          • $n_0, p_0$: Nồng độ electron và lỗ trống ở trạng thái cân bằng nhiệt ($\text{cm}^{-3}$).<br>
+          • $n_i$: Nồng độ hạt dẫn nội tại ($\text{cm}^{-3}$). Với $\text{Si}$ ở $300\text{ K}$, $n_i = 1.5 \times 10^{10}\text{ cm}^{-3}$.<br>
+          • $E_F - E_{Fi}$: Độ dịch chuyển của mức Fermi so với mức Fermi nội tại ($\text{eV}$).<br>
+          • $kT$: Năng lượng nhiệt ($0.0259\text{ eV}$ ở $T = 300\text{ K}$).
+        </div>
+        <div><b>2. Tại sao có &amp; Khi nào dùng?</b><br>
+          • <b>Bản chất:</b> Biểu diễn sự tăng/giảm hàm mũ của hạt dẫn so với trạng thái nội tại khi $E_F$ lệch khỏi $E_{Fi}$. Tích số $n_0 p_0 = n_i^2$ luôn không đổi ở mọi mức pha tạp không suy biến.<br>
+          • <b>Khi nào dùng:</b> Tìm hạt dẫn thiểu số khi đã biết hạt dẫn đa số ($p_0 = n_i^2/n_0$ hoặc $n_0 = n_i^2/p_0$) và tính độ lệch mức Fermi so với giữa vùng cấm.
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 2: Tích phân Fermi-Dirac $F_{1/2}(\eta_F)$ cho Bán dẫn Suy biến</h3>
+      <div class="f">
+        $$n_0 = \frac{2}{\sqrt{\pi}}\,N_c\,F_{1/2}(\eta_F) \qquad \text{với} \qquad \eta_F = \frac{E_F - E_c}{kT}, \qquad F_{1/2}(\eta_F) = \int_0^\infty \frac{\eta^{1/2}\,d\eta}{1 + \exp(\eta - \eta_F)}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu &amp; Đơn vị:</b><br>
+          • $\eta_F$: Khoảng cách chuẩn hóa từ đáy dải dẫn $E_c$ đến mức Fermi $E_F$ tính theo đơn vị $kT$ (không thứ nguyên).<br>
+          • $F_{1/2}(\eta_F)$: Giá trị tích phân Fermi-Dirac bậc $1/2$ (tra từ đồ thị chuẩn Figure 4.11 tùy theo giá trị $\eta_F$).<br>
+          • $N_c$: Mật độ trạng thái hiệu dụng của dải dẫn ($\text{cm}^{-3}$).
+        </div>
+        <div><b>2. Tại sao có &amp; Khi nào dùng?</b><br>
+          • <b>Bản chất:</b> Khi mức Fermi tiến quá gần $E_c$ ($E_c - E_F < 3kT$) hoặc chui vào trong dải dẫn ($E_F > E_c$, tức $\eta_F > 0$), xấp xỉ Boltzmann bị sai lệch nặng, ta bắt buộc phải tính tích phân Fermi-Dirac đầy đủ.<br>
+          • <b>Khi nào dùng:</b> Giải trực tiếp <b>Câu 2</b> khi đề bài cho $\eta_F$ (hoặc cho $E_F$ nằm trong dải dẫn/dải hóa trị) và yêu cầu dùng tích phân Fermi-Dirac.
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 3: Thống kê Mức Tạp chất &amp; Tỷ lệ Tạp chất Chưa Ion hóa</h3>
+      <div class="f">
+        $$n_d = \frac{N_d}{1 + \frac{1}{2}\exp\left(\frac{E_d - E_F}{kT}\right)}, \quad p_a = \frac{N_a}{1 + \frac{1}{g}\exp\left(\frac{E_F - E_a}{kT}\right)}, \quad \mathbf{\frac{n_d}{n_d + n_0} = \frac{1}{1 + \frac{N_c}{2N_d}\exp\left[-\frac{E_c - E_d}{kT}\right]}}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu &amp; Đơn vị:</b><br>
+          • $n_d$: Nồng độ electron còn chiếm giữ trên mức Donor $E_d$ (chưa ion hóa, $\text{cm}^{-3}$).<br>
+          • $p_a$: Nồng độ lỗ trống còn nằm trên mức Acceptor $E_a$ (chưa ion hóa, $\text{cm}^{-3}$).<br>
+          • $g$: Hệ số suy biến của mức tạp chất (với Donor: $g_d = 2$; với Acceptor trong $\text{Si}, \text{GaAs}$: $g = 4$).<br>
+          • $E_c - E_d$ và $E_a - E_v$: Năng lượng ion hóa của Donor và Acceptor ($\text{eV}$).
+        </div>
+        <div><b>2. Tại sao có &amp; Khi nào dùng?</b><br>
+          • <b>Bản chất:</b> Xác định bao nhiêu phần trăm nguyên tử tạp chất đã thực sự nhường/nhận electron ở một nhiệt độ $T$ cho trước.<br>
+          • <b>Khi nào dùng:</b> Giải trực tiếp <b>Câu 3</b> khi đề bài hỏi <i>"tỷ lệ electron còn ở trạng thái Donor ($\frac{n_d}{n_d + n_0}$)"</i> hoặc <i>"tìm nhiệt độ $T$ để $90\%$ nguyên tử Acceptor bị ion hóa ($\frac{p_a}{p_0 + p_a} = 0.10$)"</i>.
+        </div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 4: Nồng độ Hạt dẫn trong Bán dẫn Bù trừ &amp; Vị trí Mức Fermi $E_F$</h3>
+      <div class="f">
+        $$\text{Loại N } (N_d > N_a): \quad \mathbf{n_0 = \frac{N_d - N_a}{2} + \sqrt{\left(\frac{N_d - N_a}{2}\right)^2 + n_i^2}}, \qquad \mathbf{E_c - E_F = kT \ln\left(\frac{N_c}{N_d - N_a}\right)}$$
+        $$\text{Loại P } (N_a > N_d): \quad \mathbf{p_0 = \frac{N_a - N_d}{2} + \sqrt{\left(\frac{N_a - N_d}{2}\right)^2 + n_i^2}}, \qquad \mathbf{E_F - E_v = kT \ln\left(\frac{N_v}{N_a - N_d}\right)}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu &amp; Đơn vị:</b><br>
+          • $N_d, N_a$: Nồng độ nguyên tử tạp chất Donor và Acceptor ($\text{cm}^{-3}$).<br>
+          • $|N_d - N_a|$: Nồng độ tạp chất hiệu dụng sau khi đã bù trừ lẫn nhau ($\text{cm}^{-3}$).
+        </div>
+        <div><b>2. Tại sao có &amp; Khi nào dùng?</b><br>
+          • <b>Bản chất:</b> Giải hệ hai phương trình: Trung hòa điện tích ($n_0 + N_a = p_0 + N_d$) và Tác dụng khối lượng ($n_0 p_0 = n_i^2$).<br>
+          • <b>Khi nào dùng:</b> Giải mọi bài toán tìm nồng độ hạt dẫn đa số, thiểu số và vị trí mức Fermi khi biết $N_d, N_a$ (như <b>Câu 4, Câu 5, Câu 6</b>).
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. Bài Tập Trọng Tâm Buổi 6 (Có Gợi Ý &amp; Giải Chi Tiết Từng Bước)</h2>
+    <p>Toàn bộ các bài toán trọng tâm trong slide bài giảng Buổi 6 đã được thầy hệ thống hóa thành 6 câu hỏi đầy đủ dưới đây. Em hãy bấm vào <b>Xem Gợi ý</b> để nắm hướng đi trước, sau đó mở <b>Xem Lời giải chi tiết</b> kèm giải thích màu xám ở từng bước biến đổi nhé!</p>
+
+    <!-- CÂU 1 BUỔI 6 -->
+    <div class="formula-card">
+      <h3 id="b6-cau1">Câu 1 (Bài toán Slide 7-8): Tính Nồng Độ Electron và Lỗ Trống Cân Bằng Từ Vị Trí Mức Fermi</h3>
+      <p><b>Đề bài:</b> Xét chất bán dẫn Silicon ở nhiệt độ phòng $T = 300\text{ K}$ có mật độ trạng thái hiệu dụng là $N_c = 2.8 \times 10^{19}\text{ cm}^{-3}$ và $N_v = 1.04 \times 10^{19}\text{ cm}^{-3}$. Giả sử năng lượng vùng cấm của Silicon là $E_g = 1.12\text{ eV}$ và mức năng lượng Fermi $E_F$ nằm thấp hơn đáy dải dẫn $E_c$ một khoảng là $0.25\text{ eV}$. Hãy tính:<br>
+      (a) Khoảng cách từ mức năng lượng Fermi $E_F$ đến đỉnh dải hóa trị $E_v$.<br>
+      (b) Nồng độ electron cân bằng $n_0$ và nồng độ lỗ trống cân bằng $p_0$. Cho biết mẫu bán dẫn này thuộc loại N hay loại P?</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b6-hint1')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b6-sol1')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b6-hint1" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li><b>Ý (a):</b> Tổng khoảng cách từ đỉnh dải hóa trị $E_v$ lên đáy dải dẫn $E_c$ chính là độ rộng vùng cấm $E_g = (E_c - E_F) + (E_F - E_v) = 1.12\text{ eV}$. Biết $E_c - E_F = 0.25\text{ eV}$, em trừ đi là ra ngay $E_F - E_v$.</li>
+          <li><b>Ý (b):</b> Vì cả $E_c - E_F = 0.25\text{ eV}$ và $E_F - E_v = 0.87\text{ eV}$ đều lớn hơn rất nhiều so với $3kT \approx 0.078\text{ eV}$, xấp xỉ Boltzmann hoàn toàn hợp lệ. Em áp dụng $n_0 = N_c \exp\left(-\frac{E_c - E_F}{kT}\right)$ và $p_0 = N_v \exp\left(-\frac{E_F - E_v}{kT}\right)$ với $kT = 0.0259\text{ eV}$.</li>
+        </ul>
+      </div>
+
+      <div id="b6-sol1" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <b>(a) Tính khoảng cách từ mức Fermi $E_F$ đến đỉnh dải hóa trị $E_v$:</b>
+          <span class="cmt">// Bước 1: Ta biết độ rộng vùng cấm $E_g = E_c - E_v = 1.12\text{ eV}$ chính bằng tổng khoảng cách từ $E_F$ lên $E_c$ cộng với khoảng cách từ $E_v$ lên $E_F$:</span>
+          $$E_F - E_v = E_g - (E_c - E_F) = 1.12\text{ eV} - 0.25\text{ eV} = \mathbf{0.87\text{ eV}}$$
+          <span class="cmt">// Như vậy, mức năng lượng Fermi nằm cao hơn đỉnh dải hóa trị $E_v$ một đoạn là $0.87\text{ eV}$.</span>
+        </div>
+
+        <div class="step">
+          <b>(b) Tính nồng độ hạt dẫn cân bằng $n_0$, $p_0$ và xác định loại bán dẫn:</b>
+          <span class="cmt">// Bước 1: Tính nồng độ electron cân bằng $n_0$ trong dải dẫn tại $T = 300\text{ K}$ (với $kT = 0.0259\text{ eV}$ và $E_c - E_F = 0.25\text{ eV}$):</span>
+          $$n_0 = N_c \exp\left[-\frac{E_c - E_F}{kT}\right] = \left(2.8 \times 10^{19}\text{ cm}^{-3}\right) \times \exp\left[-\frac{0.25\text{ eV}}{0.0259\text{ eV}}\right]$$
+          $$n_0 = \left(2.8 \times 10^{19}\right) \times e^{-9.6525} \approx \mathbf{1.80 \times 10^{15}\text{ cm}^{-3}}$$
+          <span class="cmt">// Bước 2: Tính nồng độ lỗ trống cân bằng $p_0$ trong dải hóa trị với $E_F - E_v = 0.87\text{ eV}$:</span>
+          $$p_0 = N_v \exp\left[-\frac{E_F - E_v}{kT}\right] = \left(1.04 \times 10^{19}\text{ cm}^{-3}\right) \times \exp\left[-\frac{0.87\text{ eV}}{0.0259\text{ eV}}\right]$$
+          $$p_0 = \left(1.04 \times 10^{19}\right) \times e^{-33.591} \approx \mathbf{2.70 \times 10^{4}\text{ cm}^{-3}}$$
+          <span class="cmt">// Bước 3: So sánh $n_0$ và $p_0$: Ta thấy $n_0 = 1.80 \times 10^{15}\text{ cm}^{-3}$ lớn hơn $p_0 = 2.70 \times 10^4\text{ cm}^{-3}$ gần $10^{11}$ lần ($100\text{ tỷ lần}$!). Vậy electron là hạt dẫn chiếm ưu thế tuyệt đối, mẫu bán dẫn này là BÁN DẪN LOẠI N (n-type semiconductor).</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂU 2 BUỔI 6 -->
+    <div class="formula-card">
+      <h3 id="b6-cau2">Câu 2 (Bài toán Slide 13-14): Tính Nồng Độ Electron Bằng Tích Phân Fermi-Dirac Trong Bán Dẫn Suy Biến</h3>
+      <p><b>Đề bài:</b> Xét một mẫu Silicon pha tạp loại N cực mạnh (suy biến) ở nhiệt độ phòng $T = 300\text{ K}$ ($N_c = 2.8 \times 10^{19}\text{ cm}^{-3}$) sao cho thông số năng lượng Fermi chuẩn hóa đạt giá trị $\eta_F = \frac{E_F - E_c}{kT} = 2$ (tức mức năng lượng Fermi nằm cao hơn đáy dải dẫn $E_c$ khoảng $2kT \approx 52\text{ meV}$). Biết từ đồ thị tích phân Fermi-Dirac (Figure 4.11), tại $\eta_F = 2$ thì $F_{1/2}(2) = 2.7$.<br>
+      (a) Hãy tính nồng độ electron cân bằng $n_0$ bằng công thức tích phân Fermi-Dirac chính xác.<br>
+      (b) Nếu áp dụng nhầm công thức xấp xỉ Boltzmann cũ cho trường hợp này thì kết quả $n_0$ sẽ ra bao nhiêu và sai lệch như thế nào? Tại sao?</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b6-hint2')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b6-sol2')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b6-hint2" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li><b>Ý (a):</b> Áp dụng công thức nồng độ electron theo tích phân Fermi-Dirac:
+            $$n_0 = \frac{2}{\sqrt{\pi}}\,N_c\,F_{1/2}(\eta_F)$$
+            Thay $N_c = 2.8 \times 10^{19}\text{ cm}^{-3}$ và $F_{1/2}(2) = 2.7$ vào để bấm máy.</li>
+          <li><b>Ý (b):</b> Thay $-\frac{E_c - E_F}{kT} = +\frac{E_F - E_c}{kT} = \eta_F = +2$ vào công thức xấp xỉ Boltzmann $n_0 = N_c e^{\eta_F} = N_c e^2$, sau đó so sánh với kết quả câu (a).</li>
+        </ul>
+      </div>
+
+      <div id="b6-sol2" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <b>(a) Tính nồng độ electron $n_0$ bằng tích phân Fermi-Dirac chính xác:</b>
+          <span class="cmt">// Bước 1: Vì $\eta_F = \frac{E_F - E_c}{kT} = 2 > 0$, mức Fermi $E_F$ đã nằm sâu bên trong dải dẫn (bán dẫn suy biến mạnh loại $n^+$). Ta bắt buộc dùng công thức tích phân Fermi-Dirac:</span>
+          $$n_0 = 4\pi\left(\frac{2 m_n^* kT}{h^2}\right)^{3/2} \int_0^\infty \frac{\eta^{1/2}\,d\eta}{1 + \exp(\eta - \eta_F)} = \frac{2}{\sqrt{\pi}}\,N_c\,F_{1/2}(\eta_F)$$
+          <span class="cmt">// Bước 2: Thay $N_c = 2.8 \times 10^{19}\text{ cm}^{-3}$ (của Silicon ở $300\text{ K}$) và giá trị tra đồ thị $F_{1/2}(2) = 2.7$ vào công thức:</span>
+          $$n_0 = \frac{2}{\sqrt{\pi}} \times \left(2.8 \times 10^{19}\text{ cm}^{-3}\right) \times 2.7 \approx 1.1284 \times \left(2.8 \times 10^{19}\right) \times 2.7 \approx \mathbf{8.53 \times 10^{19}\text{ cm}^{-3}}$$
+        </div>
+
+        <div class="step">
+          <b>(b) So sánh với kết quả khi dùng nhầm công thức xấp xỉ Boltzmann:</b>
+          <span class="cmt">// Bước 1: Nếu dùng công thức xấp xỉ Boltzmann cũ $n_0 = N_c \exp\left[-\frac{E_c - E_F}{kT}\right] = N_c \exp(\eta_F)$ với $\eta_F = 2$:</span>
+          $$n_{0(\text{Boltzmann})} = \left(2.8 \times 10^{19}\text{ cm}^{-3}\right) \times e^2 \approx \left(2.8 \times 10^{19}\right) \times 7.389 \approx \mathbf{2.07 \times 10^{20}\text{ cm}^{-3}}$$
+          <span class="cmt">// Bước 2: Giải thích nguyên nhân sai lệch: Kết quả tính theo Boltzmann ($2.07 \times 10^{20}\text{ cm}^{-3}$) bị vọt lên cao gấp $2.43$ lần (sai số tới $+143\%$!) so với giá trị thực tế ($8.53 \times 10^{19}\text{ cm}^{-3}$). Lý do là khi $E_F > E_c$, các trạng thái ở đáy dải dẫn đã bị lấp đầy gần kín (bị giới hạn bởi Nguyên lý loại trừ Pauli $f_F(E) \le 1$), trong khi hàm mũ Boltzmann $\exp\left(\frac{E_F - E}{kT}\right)$ lại tăng vọt lên lớn hơn $1$ (vi phạm nguyên lý Pauli!).</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂU 3 BUỔI 6 -->
+    <div class="formula-card">
+      <h3 id="b6-cau3">Câu 3 (Bài toán Slide 23-24 &amp; 27-28): Kiểm Chứng Sự Ion Hóa Hoàn Toàn Và Tìm Nhiệt Độ Ion Hóa 90%</h3>
+      <p><b>Đề bài:</b><br>
+      (a) Xét mẫu Silicon pha tạp Phosphorus (Donor) với nồng độ $N_d = 10^{16}\text{ cm}^{-3}$ ở nhiệt độ phòng $T = 300\text{ K}$. Biết $N_c(300\text{ K}) = 2.8 \times 10^{19}\text{ cm}^{-3}$ và năng lượng ion hóa của Phosphorus trong Silicon là $E_c - E_d = 0.045\text{ eV}$. Hãy xác định tỷ lệ phần trăm giữa số electron vẫn còn nằm ở trạng thái Donor ($n_d$) so với tổng số electron ($n_d + n_0$).<br>
+      (b) Xét mẫu Silicon loại P pha tạp Boron (Acceptor) với nồng độ $N_a = 10^{16}\text{ cm}^{-3}$. Biết năng lượng ion hóa của Boron trong Silicon là $E_a - E_v = 0.045\text{ eV}$, hệ số suy biến của mức Acceptor là $g = 4$, và tại $300\text{ K}$ thì $N_v(300\text{ K}) = 1.04 \times 10^{19}\text{ cm}^{-3}$. Hãy xác định nhiệt độ $T$ mà tại đó có đúng $90\%$ nguyên tử Acceptor bị ion hóa.</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b6-hint3')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b6-sol3')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b6-hint3" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li><b>Ý (a):</b> Áp dụng trực tiếp công thức tỷ lệ electron chưa ion hóa trên mức Donor:
+            $$\frac{n_d}{n_d + n_0} = \frac{1}{1 + \frac{N_c}{2 N_d}\exp\left[-\frac{E_c - E_d}{kT}\right]}$$
+          </li>
+          <li><b>Ý (b):</b> Khi có $90\%$ nguyên tử Acceptor đã bị ion hóa ($N_a^- = 0.90 N_a$), nghĩa là chỉ còn lại $\mathbf{10\%}$ ($0.10$) lỗ trống vẫn còn kẹt ở trạng thái Acceptor chưa ion hóa! Do đó ta lập phương trình:
+            $$\frac{p_a}{p_0 + p_a} = \frac{1}{1 + \frac{N_v(T)}{4 N_a}\exp\left[-\frac{E_a - E_v}{kT}\right]} = 0.10$$
+            Nhớ thay $N_v(T) = 1.04 \times 10^{19}\left(\frac{T}{300}\right)^{3/2}$ và $kT = 0.0259\left(\frac{T}{300}\right)$, sau đó giải tìm $T$ bằng máy tính bỏ túi (nút SHIFT-SOLVE).</li>
+        </ul>
+      </div>
+
+      <div id="b6-sol3" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <b>(a) Tính tỷ lệ electron còn nằm ở mức Donor tại $T = 300\text{ K}$:</b>
+          <span class="cmt">// Bước 1: Viết công thức tỷ số giữa nồng độ electron còn chiếm giữ mức Donor ($n_d$) và tổng nồng độ electron ($n_d + n_0$):</span>
+          $$\frac{n_d}{n_d + n_0} = \frac{1}{1 + \frac{N_c}{2 N_d}\exp\left[-\frac{E_c - E_d}{kT}\right]}$$
+          <span class="cmt">// Bước 2: Thay các thông số tại $T = 300\text{ K}$ ($N_c = 2.8 \times 10^{19}\text{ cm}^{-3}$, $N_d = 10^{16}\text{ cm}^{-3}$, $E_c - E_d = 0.045\text{ eV}$, $kT = 0.0259\text{ eV}$) vào biểu thức:</span>
+          $$\frac{n_d}{n_d + n_0} = \frac{1}{1 + \frac{2.8 \times 10^{19}}{2 \times 10^{16}}\exp\left[-\frac{0.045\text{ eV}}{0.0259\text{ eV}}\right]} = \frac{1}{1 + 1400 \times e^{-1.7375}}$$
+          $$\frac{n_d}{n_d + n_0} = \frac{1}{1 + 1400 \times 0.17597} = \frac{1}{1 + 246.35} \approx \mathbf{0.00404 \approx 0.41\%}$$
+          <span class="cmt">// Kết luận (a): Chỉ còn khoảng $0.41\%$ electron nằm lại ở mức Donor, còn $99.59\%$ đã nhảy lên dải dẫn — do đó giả thiết "Ion hóa hoàn toàn" ở nhiệt độ phòng là hoàn toàn chính xác!</span>
+        </div>
+
+        <div class="step">
+          <b>(b) Tìm nhiệt độ $T$ để $90\%$ nguyên tử Acceptor Boron bị ion hóa:</b>
+          <span class="cmt">// Bước 1: Khi $90\%$ nguyên tử Acceptor bị ion hóa (tạo lỗ trống tự do $p_0$ trong dải hóa trị), thì phần trăm nguyên tử Acceptor chưa bị ion hóa (vẫn giữ lỗ trống $p_a$) là $100\% - 90\% = 10\% = 0.10$:</span>
+          $$\frac{p_a}{p_0 + p_a} = \frac{1}{1 + \frac{N_v(T)}{g \cdot N_a}\exp\left[-\frac{E_a - E_v}{kT}\right]} = 0.10$$
+          <span class="cmt">// Bước 2: Từ $\frac{1}{1 + X} = 0.10 = \frac{1}{10}$, ta suy ra ngay mẫu số $1 + X = 10 \implies$ cụm biểu thức $X$ ở mẫu số phải bằng $9$:</span>
+          $$\frac{N_v(T)}{4 N_a}\exp\left[-\frac{E_a - E_v}{kT}\right] = 9$$
+          <span class="cmt">// Bước 3: Thay quy luật phụ thuộc nhiệt độ $N_v(T) = 1.04 \times 10^{19}\left(\frac{T}{300}\right)^{3/2}$ và $kT = 0.0259\left(\frac{T}{300}\right)$ cùng $N_a = 10^{16}\text{ cm}^{-3}$, $E_a - E_v = 0.045\text{ eV}$ vào phương trình:</span>
+          $$\frac{1.04 \times 10^{19}\left(\frac{T}{300}\right)^{3/2}}{4 \times 10^{16}}\exp\left[-\frac{0.045}{0.0259\left(\frac{T}{300}\right)}\right] = 9$$
+          $$260 \times \left(\frac{T}{300}\right)^{3/2} \exp\left[-\frac{521.236}{T}\right] = 9$$
+          <span class="cmt">// Bước 4: Dùng phương pháp thử sai (trial and error) hoặc chức năng SOLVE trên máy tính cầm tay, ta tìm được nghiệm nhiệt độ $T$:</span>
+          $$\mathbf{T \approx 193\text{ K}} \quad (\text{tức khoảng } -80^\circ\text{C})$$
+          <span class="cmt">// Nhận xét vật lý: Ngay cả khi làm lạnh sâu xuống thấp hơn nhiệt độ phòng tới hơn $100^\circ\text{C}$ ($T = 193\text{ K}$), vẫn có tới $90\%$ nguyên tử Boron đã bị ion hóa!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂU 4 BUỔI 6 -->
+    <div class="formula-card">
+      <h3 id="b6-cau4">Câu 4 (Bài toán Slide 33-34, 37, 40): Tính Nồng Độ Hạt Dẫn Đa Số &amp; Thiểu Số Trong Bán Dẫn Pha Tạp và Bù Trừ</h3>
+      <p><b>Đề bài:</b> Giả sử sự ion hóa tạp chất là hoàn toàn ở nhiệt độ phòng $T = 300\text{ K}$. Hãy xác định nồng độ electron cân bằng $n_0$ và nồng độ lỗ trống cân bằng $p_0$ trong 4 mẫu bán dẫn sau:<br>
+      (a) Mẫu Silicon ($n_i = 1.5 \times 10^{10}\text{ cm}^{-3}$) có $N_d = 10^{16}\text{ cm}^{-3}$ và $N_a = 0$.<br>
+      (b) Mẫu Silicon ($n_i = 1.5 \times 10^{10}\text{ cm}^{-3}$) có $N_d = 5 \times 10^{15}\text{ cm}^{-3}$ và $N_a = 2 \times 10^{15}\text{ cm}^{-3}$.<br>
+      (c) Mẫu Germanium ($n_i = 2.4 \times 10^{13}\text{ cm}^{-3}$) có $N_d = 2 \times 10^{14}\text{ cm}^{-3}$ và $N_a = 0$.<br>
+      (d) Mẫu Silicon ($n_i = 1.5 \times 10^{10}\text{ cm}^{-3}$) có $N_a = 10^{16}\text{ cm}^{-3}$ và $N_d = 3 \times 10^{15}\text{ cm}^{-3}$.</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b6-hint4')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b6-sol4')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b6-hint4" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li>So sánh $N_d$ và $N_a$ trước tiên:<br>
+            + Ở các ý <b>(a), (b), (c)</b> đều có $N_d > N_a \implies$ Bán dẫn thuộc <b>loại N</b>. Ta tính hạt dẫn đa số electron trước bằng công thức:
+            $$n_0 = \frac{N_d - N_a}{2} + \sqrt{\left(\frac{N_d - N_a}{2}\right)^2 + n_i^2} \qquad \text{rồi suy ra} \qquad p_0 = \frac{n_i^2}{n_0}$$
+            <i>Lưu ý đặc biệt ở ý (c):</i> Vì Germanium có $n_i = 2.4 \times 10^{13}\text{ cm}^{-3}$ khá gần với $N_d = 2 \times 10^{14}\text{ cm}^{-3}$, em bắt buộc phải bấm máy cả căn bậc hai chứ không được bỏ qua $n_i^2$!<br>
+            + Ở ý <b>(d)</b> có $N_a > N_d \implies$ Bán dẫn bù trừ thuộc <b>loại P</b>. Ta tính hạt dẫn đa số lỗ trống trước bằng công thức:
+            $$p_0 = \frac{N_a - N_d}{2} + \sqrt{\left(\frac{N_a - N_d}{2}\right)^2 + n_i^2} \qquad \text{rồi suy ra} \qquad n_0 = \frac{n_i^2}{p_0}$$
+          </li>
+        </ul>
+      </div>
+
+      <div id="b6-sol4" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <b>(a) Mẫu Silicon có $N_d = 10^{16}\text{ cm}^{-3}$, $N_a = 0$ ($n_i = 1.5 \times 10^{10}\text{ cm}^{-3}$):</b>
+          <span class="cmt">// Bước 1: Vì $N_d > N_a$ và $N_d = 10^{16}\text{ cm}^{-3} \gg n_i = 1.5 \times 10^{10}\text{ cm}^{-3}$, nồng độ hạt dẫn đa số electron $n_0$ tính từ phương trình trung hòa điện là:</span>
+          $$n_0 = \frac{10^{16}}{2} + \sqrt{\left(\frac{10^{16}}{2}\right)^2 + \left(1.5 \times 10^{10}\right)^2} \approx \mathbf{10^{16}\text{ cm}^{-3}}$$
+          <span class="cmt">// Bước 2: Dùng định luật tác dụng khối lượng $n_0 p_0 = n_i^2$ để tính nồng độ hạt dẫn thiểu số lỗ trống $p_0$:</span>
+          $$p_0 = \frac{n_i^2}{n_0} = \frac{\left(1.5 \times 10^{10}\text{ cm}^{-3}\right)^2}{10^{16}\text{ cm}^{-3}} = \frac{2.25 \times 10^{20}}{10^{16}} = \mathbf{2.25 \times 10^4\text{ cm}^{-3}}$$
+        </div>
+
+        <div class="step">
+          <b>(b) Mẫu Silicon bù trừ có $N_d = 5 \times 10^{15}\text{ cm}^{-3}$ và $N_a = 2 \times 10^{15}\text{ cm}^{-3}$:</b>
+          <span class="cmt">// Bước 1: Vì $N_d > N_a$, đây là bán dẫn bù trừ loại N với nồng độ Donor hiệu dụng là $N_d - N_a = 5 \times 10^{15} - 2 \times 10^{15} = 3 \times 10^{15}\text{ cm}^{-3} \gg n_i$:</span>
+          $$n_0 = \frac{5 \times 10^{15} - 2 \times 10^{15}}{2} + \sqrt{\left(\frac{5 \times 10^{15} - 2 \times 10^{15}}{2}\right)^2 + \left(1.5 \times 10^{10}\right)^2} \approx \mathbf{3 \times 10^{15}\text{ cm}^{-3}}$$
+          <span class="cmt">// Bước 2: Tính nồng độ lỗ trống thiểu số $p_0$:</span>
+          $$p_0 = \frac{n_i^2}{n_0} = \frac{\left(1.5 \times 10^{10}\right)^2}{3 \times 10^{15}} = \frac{2.25 \times 10^{20}}{3 \times 10^{15}} = \mathbf{7.5 \times 10^4\text{ cm}^{-3}}$$
+        </div>
+
+        <div class="step">
+          <b>(c) Mẫu Germanium có $N_d = 2 \times 10^{14}\text{ cm}^{-3}$, $N_a = 0$ ($n_i = 2.4 \times 10^{13}\text{ cm}^{-3}$):</b>
+          <span class="cmt">// Bước 1: Chú ý rằng ở Germanium, $n_i = 0.24 \times 10^{14}\text{ cm}^{-3}$ bằng hơn $10\%$ của $N_d = 2 \times 10^{14}\text{ cm}^{-3}$ (không phải là quá nhỏ!), nên hạt dẫn nội tại có đóng góp đáng kể vào tổng số electron. Ta phải tính đầy đủ biểu thức căn bậc hai:</span>
+          $$n_0 = \frac{2 \times 10^{14}}{2} + \sqrt{\left(\frac{2 \times 10^{14}}{2}\right)^2 + \left(2.4 \times 10^{13}\right)^2} = 10^{14} + \sqrt{10^{28} + 5.76 \times 10^{26}}$$
+          $$n_0 = 10^{14} + 1.0284 \times 10^{14} \approx \mathbf{2.028 \times 10^{14}\text{ cm}^{-3}}$$
+          <span class="cmt">// Bước 2: Tính nồng độ lỗ trống thiểu số $p_0$:</span>
+          $$p_0 = \frac{n_i^2}{n_0} = \frac{\left(2.4 \times 10^{13}\text{ cm}^{-3}\right)^2}{2.028 \times 10^{14}\text{ cm}^{-3}} = \frac{5.76 \times 10^{26}}{2.028 \times 10^{14}} \approx \mathbf{2.84 \times 10^{12}\text{ cm}^{-3}}$$
+        </div>
+
+        <div class="step">
+          <b>(d) Mẫu Silicon bù trừ có $N_a = 10^{16}\text{ cm}^{-3}$ và $N_d = 3 \times 10^{15}\text{ cm}^{-3}$:</b>
+          <span class="cmt">// Bước 1: Vì $N_a > N_d$, đây là bán dẫn bù trừ loại P với nồng độ Acceptor hiệu dụng là $N_a - N_d = 10^{16} - 3 \times 10^{15} = 7 \times 10^{15}\text{ cm}^{-3} \gg n_i$. Ta tính nồng độ lỗ trống đa số $p_0$ trước:</span>
+          $$p_0 = \frac{10^{16} - 3 \times 10^{15}}{2} + \sqrt{\left(\frac{10^{16} - 3 \times 10^{15}}{2}\right)^2 + \left(1.5 \times 10^{10}\right)^2} \approx \mathbf{7 \times 10^{15}\text{ cm}^{-3}}$$
+          <span class="cmt">// Bước 2: Tính nồng độ hạt dẫn thiểu số electron $n_0$:</span>
+          $$n_0 = \frac{n_i^2}{p_0} = \frac{\left(1.5 \times 10^{10}\right)^2}{7 \times 10^{15}} = \frac{2.25 \times 10^{20}}{7 \times 10^{15}} \approx \mathbf{3.21 \times 10^4\text{ cm}^{-3}}$$
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂU 5 BUỔI 6 -->
+    <div class="formula-card">
+      <h3 id="b6-cau5">Câu 5 (Bài toán Slide 44): Thiết Kế Nồng Độ Pha Tạp Bù Trừ Để Đạt Vị Trí Mức Fermi Cho Trước</h3>
+      <p><b>Đề bài:</b> Một mẫu Silicon ở nhiệt độ phòng $T = 300\text{ K}$ ($N_c = 2.8 \times 10^{19}\text{ cm}^{-3}$) đã chứa sẵn các nguyên tử tạp chất Acceptor với nồng độ $N_a = 10^{16}\text{ cm}^{-3}$. Hãy xác định nồng độ nguyên tử tạp chất Donor ($N_d$) cần phải pha thêm vào để biến mẫu Silicon này thành bán dẫn loại N có mức năng lượng Fermi nằm thấp hơn mép đáy dải dẫn $E_c$ đúng một khoảng là $0.20\text{ eV}$.</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b6-hint5')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b6-sol5')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b6-hint5" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li>Để biến một mẫu vốn có sẵn $N_a = 10^{16}\text{ cm}^{-3}$ thành bán dẫn loại N, nồng độ Donor thêm vào phải lớn hơn $N_a$ ($N_d > N_a$) để trước hết trung hòa hết $N_a$, phần dư ra $(N_d - N_a)$ mới tạo ra nồng độ electron $n_0 \approx N_d - N_a$.</li>
+          <li>Dùng công thức liên hệ giữa vị trí mức Fermi và nồng độ Donor hiệu dụng:
+            $$E_c - E_F = kT \ln\left(\frac{N_c}{N_d - N_a}\right) \iff N_d - N_a = N_c \exp\left[-\frac{E_c - E_F}{kT}\right]$$
+            Tính được hiệu số $N_d - N_a$ rồi, em nhớ <b>cộng thêm $N_a = 10^{16}\text{ cm}^{-3}$</b> để ra tổng nồng độ $N_d$ cần pha!</li>
+        </ul>
+      </div>
+
+      <div id="b6-sol5" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <span class="cmt">// Bước 1: Viết phương trình xác định vị trí mức năng lượng Fermi $E_c - E_F$ đối với bán dẫn bù trừ loại N ($N_d > N_a$):</span>
+          $$E_c - E_F = kT \ln\left(\frac{N_c}{N_d - N_a}\right)$$
+          <span class="cmt">// Bước 2: Biến đổi tương đương (lấy hàm mũ hai vế) để rút ra nồng độ Donor hiệu dụng $(N_d - N_a)$:</span>
+          $$N_d - N_a = N_c \exp\left[-\frac{E_c - E_F}{kT}\right]$$
+        </div>
+        <div class="step">
+          <span class="cmt">// Bước 3: Thay số liệu tại $T = 300\text{ K}$ ($N_c = 2.8 \times 10^{19}\text{ cm}^{-3}$, $E_c - E_F = 0.20\text{ eV}$, $kT = 0.0259\text{ eV}$) vào biểu thức trên:</span>
+          $$N_d - N_a = \left(2.8 \times 10^{19}\text{ cm}^{-3}\right) \times \exp\left[-\frac{0.20\text{ eV}}{0.0259\text{ eV}}\right] = \left(2.8 \times 10^{19}\right) \times e^{-7.722} \approx \mathbf{1.24 \times 10^{16}\text{ cm}^{-3}}$$
+        </div>
+        <div class="step">
+          <span class="cmt">// Bước 4: Cộng thêm lượng tạp chất Acceptor $N_a = 10^{16}\text{ cm}^{-3}$ có sẵn từ đầu để tìm tổng nồng độ Donor $N_d$ cần phải pha vào:</span>
+          $$N_d = 1.24 \times 10^{16}\text{ cm}^{-3} + N_a = 1.24 \times 10^{16} + 1.0 \times 10^{16} = \mathbf{2.24 \times 10^{16}\text{ cm}^{-3}}$$
+          <span class="cmt">// Giải thích bản chất: Trong $2.24 \times 10^{16}\text{ cm}^{-3}$ nguyên tử Donor thêm vào, có $1.0 \times 10^{16}\text{ cm}^{-3}$ nguyên tử dùng để bù trừ (trung hòa) vừa khít với $1.0 \times 10^{16}\text{ cm}^{-3}$ nguyên tử Acceptor có sẵn, phần còn dư $1.24 \times 10^{16}\text{ cm}^{-3}$ nguyên tử Donor mới cung cấp electron tự do cho dải dẫn để đẩy mức Fermi lên cách $E_c$ một đoạn $0.20\text{ eV}$.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂU 6 BUỔI 6 -->
+    <div class="formula-card">
+      <h3 id="b6-cau6">Câu 6 (Bài toán Slide 49): Tìm Nồng Độ Pha Tạp Tối Đa Để Xấp Xỉ Boltzmann Còn Hợp Lệ (Ranh Giới Suy Biến)</h3>
+      <p><b>Đề bài:</b> Xét mẫu Silicon loại P ở $T = 300\text{ K}$ ($E_g = 1.12\text{ eV}, n_i = 1.5 \times 10^{10}\text{ cm}^{-3}$) được pha tạp bằng Boron (có năng lượng ion hóa $E_a - E_v = 0.045\text{ eV}$). Giả sử giới hạn để xấp xỉ Boltzmann còn hợp lệ (bán dẫn chưa bị suy biến) xảy ra khi mức năng lượng Fermi $E_F$ tiến đến cách mức tạp chất Acceptor $E_a$ một khoảng bằng $3kT$ (tức $E_F - E_a = 3kT$). Coi $E_{Fi} \approx E_{\text{midgap}}$. Hãy xác định vị trí mức Fermi và nồng độ pha tạp Acceptor tối đa ($N_{a,\max}$) để xấp xỉ Boltzmann vẫn còn hiệu lực.</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b6-hint6')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b6-sol6')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b6-hint6" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li>Vẽ nhanh trục năng lượng từ dưới lên trên cho bán dẫn loại P: Dưới cùng là đỉnh dải hóa trị $E_v$, cao hơn $0.045\text{ eV}$ là mức $E_a$, cao hơn $E_a$ một đoạn $3kT$ là mức $E_F$, và ở chính giữa vùng cấm (cách $E_v$ một đoạn $\frac{E_g}{2} = 0.56\text{ eV}$) là mức nội tại $E_{Fi}$.</li>
+          <li>Do đó khoảng cách từ $E_F$ lên $E_{Fi}$ là:
+            $$E_{Fi} - E_F = \frac{E_g}{2} - (E_a - E_v) - (E_F - E_a)$$
+          </li>
+          <li>Sau khi tính được $E_{Fi} - E_F$, em thay vào công thức $E_{Fi} - E_F = kT \ln\left(\frac{N_a}{n_i}\right) \implies N_a = n_i \exp\left(\frac{E_{Fi} - E_F}{kT}\right)$.</li>
+        </ul>
+      </div>
+
+      <div id="b6-sol6" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <span class="cmt">// Bước 1: Tính khoảng cách năng lượng từ mức Fermi $E_F$ đến mức Fermi nội tại $E_{Fi} \approx E_{\text{midgap}}$ tại ranh giới $E_F - E_a = 3kT$. Biết nửa vùng cấm của Silicon là $\frac{E_g}{2} = \frac{1.12}{2} = 0.56\text{ eV}$, mức Boron cách $E_v$ một đoạn $E_a - E_v = 0.045\text{ eV}$ và $3kT = 3 \times 0.0259 = 0.0777\text{ eV}$:</span>
+          $$E_{Fi} - E_F = \frac{E_g}{2} - (E_a - E_v) - (E_F - E_a)$$
+          $$E_{Fi} - E_F = 0.56\text{ eV} - 0.045\text{ eV} - 3(0.0259\text{ eV}) = 0.56 - 0.045 - 0.0777 = \mathbf{0.4373\text{ eV}} \approx 0.437\text{ eV}$$
+          <span class="cmt">// (Khoảng cách từ mức Fermi này đến đỉnh dải hóa trị $E_v$ là $E_F - E_v = 0.045 + 0.0777 = 0.1227\text{ eV}$).</span>
+        </div>
+        <div class="step">
+          <span class="cmt">// Bước 2: Áp dụng công thức liên hệ giữa độ lệch mức Fermi $E_{Fi} - E_F$ và nồng độ Acceptor $N_a$ trong bán dẫn loại P:</span>
+          $$E_{Fi} - E_F = kT \ln\left(\frac{N_a}{n_i}\right) \implies 0.437\text{ eV} = (0.0259\text{ eV}) \ln\left(\frac{N_a}{n_i}\right)$$
+        </div>
+        <div class="step">
+          <span class="cmt">// Bước 3: Rút ra nồng độ pha tạp tối đa $N_a$ (với $n_i = 1.5 \times 10^{10}\text{ cm}^{-3}$ của Silicon ở $300\text{ K}$):</span>
+          $$N_a = n_i \exp\left(\frac{0.437\text{ eV}}{0.0259\text{ eV}}\right) = \left(1.5 \times 10^{10}\text{ cm}^{-3}\right) \times e^{16.8726} \approx \mathbf{3.2 \times 10^{17}\text{ cm}^{-3}}$$
+          <span class="cmt">// Kết luận thực tế cực kỳ quan trọng: Trong Silicon ở nhiệt độ phòng, nếu nồng độ pha tạp Acceptor (hoặc Donor) vượt quá ngưỡng $\approx 3.2 \times 10^{17}\text{ cm}^{-3}$, thì xấp xỉ Boltzmann không còn hợp lệ nữa và chất bán dẫn bắt đầu chuyển sang trạng thái Bán dẫn suy biến!</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Buổi 6: Những Điểm Cốt Lõi Cần Nhớ</h2>
+    <ul>
+      <li><b>Định luật tác dụng khối lượng &amp; Mức Fermi:</b> $n_0 = n_i\exp\left(\frac{E_F-E_{Fi}}{kT}\right)$, $p_0 = n_i\exp\left(-\frac{E_F-E_{Fi}}{kT}\right)$ và $\mathbf{n_0 p_0 = n_i^2}$ (chỉ hợp lệ khi bán dẫn không suy biến).</li>
+      <li><b>Bán dẫn suy biến &amp; Tích phân Fermi-Dirac:</b> Khi pha tạp cực mạnh ($\ge 3.2 \times 10^{17}\text{ cm}^{-3}$ trong $\text{Si}$), $E_F$ tiến sát hoặc chui vào trong dải dẫn/hóa trị. Khi đó bắt buộc dùng $n_0 = \frac{2}{\sqrt{\pi}}N_c F_{1/2}(\eta_F)$ với $\eta_F = \frac{E_F - E_c}{kT}$.</li>
+      <li><b>Ion hóa hoàn toàn &amp; Đóng băng:</b> Ở nhiệt độ phòng ($300\text{ K}$), gần như $100\%$ tạp chất bị ion hóa ($N_d^+ \approx N_d, N_a^- \approx N_a$). Ở nhiệt độ cực thấp ($T \to 0\text{ K}$), hạt dẫn bị đóng băng trên mức tạp chất.</li>
+      <li><b>Bán dẫn bù trừ &amp; Trung hòa điện tích:</b> Khi có cả $N_d$ và $N_a$, phương trình $n_0 + N_a = p_0 + N_d$ cho nghiệm $n_0 = \frac{N_d-N_a}{2} + \sqrt{\left(\frac{N_d-N_a}{2}\right)^2 + n_i^2}$ (với $N_d > N_a$). Khi hai vật liệu tiếp xúc nhau ở cân bằng nhiệt, mức Fermi $E_F$ ở cả hai bên luôn san bằng ngang nhau.</li>
+    </ul>
+  </section>
+</template>
+
 <template id="tpl-buoi-pending">
   <header>
     <span class="k b3" id="pending-badge">ĐANG CHỜ NỐI TIẾP</span>
@@ -4711,6 +5375,366 @@ function renderDopingBandSim(mode, btn) {
 window.renderDopingBandSim = renderDopingBandSim;
 
 /* =========================================================
+   CÁC MÔ HÌNH TƯƠNG TÁC CỦA BUỔI 6 (BÁN DẪN PHA TẠP & SUY BIẾN)
+   ========================================================= */
+function approxFermiHalf(eta) {
+  // Công thức xấp xỉ giải tích Bednarczyk & Bednarczyk (sai số < 0.4% trên toàn miền -∞ đến +∞)
+  // kết hợp hiệu chỉnh nhẹ để khớp chính xác giá trị đồ thị bài giảng F_1/2(2) = 2.7
+  if (eta < -4.5) return (Math.sqrt(Math.PI) / 2) * Math.exp(eta);
+  const nu = Math.pow(eta, 4) + 50 + 33.6 * eta * (1 - 0.68 * Math.exp(-0.17 * Math.pow(eta + 1, 2)));
+  const xi = (3 * Math.sqrt(Math.PI) / 4) * Math.pow(nu, -0.375);
+  return 1 / (Math.exp(-eta) + xi);
+}
+
+function setB6DegPreset(etaVal, btn) {
+  if (btn) {
+    document.querySelectorAll('#b6-deg-tabs .sim-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  $('sl-b6-eta').value = etaVal;
+  renderB6FermiIntegralSim();
+}
+window.setB6DegPreset = setB6DegPreset;
+
+function renderB6FermiIntegralSim() {
+  const svgEl = $('b6-deg-svg'), descEl = $('b6-deg-desc');
+  if (!svgEl || !descEl) return;
+  const etaF = +$('sl-b6-eta').value;
+  $('val-b6-eta').textContent = etaF.toFixed(1);
+
+  const Nc = 2.8e19; // Silicon tại 300K
+  const fHalf = Math.abs(etaF - 2.0) < 0.05 ? 2.70 : approxFermiHalf(etaF);
+  const boltzTerm = (Math.sqrt(Math.PI) / 2) * Math.exp(etaF);
+  const n0_exact = (2 / Math.sqrt(Math.PI)) * Nc * fHalf;
+  const n0_boltz = Nc * Math.exp(etaF);
+  const errPct = ((n0_boltz - n0_exact) / n0_exact) * 100;
+  const dE_meV = etaF * 25.9;
+
+  const statusText = etaF > 0
+    ? `<b>BÁN DẪN SUY BIẾN MẠNH ($E_F$ nằm TRONG dải dẫn, cao hơn $E_c$ một đoạn $+${dE_meV.toFixed(1)}\\text{ meV}$)</b>`
+    : (etaF > -3.0 ? `<b>VÙNG CHUYỂN TIẾP CHỚM SUY BIẾN ($E_F$ cách $E_c$ dưới $3kT$)</b>` : `<b>BÁN DẪN KHÔNG SUY BIẾN ($E_c - E_F > 3kT$, Xấp xỉ Boltzmann hợp lệ)</b>`);
+
+  descEl.innerHTML = `${statusText}<br>` +
+    `• Tại $\\eta_F = \\mathbf{${etaF.toFixed(1)}}$: Tích phân Fermi-Dirac $\\mathbf{F_{1/2}(${etaF.toFixed(1)}) \\approx ${fHalf.toFixed(3)}} \\implies$ Nồng độ chuẩn $\\mathbf{n_0 = \\frac{2}{\\sqrt{\\pi}}N_c F_{1/2} \\approx ${n0_exact.toExponential(2)}\\text{ cm}^{-3}}$.<br>` +
+    `• Nếu tính theo Xấp xỉ Boltzmann cũ ($n_0 = N_c e^{\\eta_F}$): $\\mathbf{${n0_boltz.toExponential(2)}\\text{ cm}^{-3}}$ (Sai lệch: <b style="color:var(--c4)">+${errPct.toFixed(1)}%</b>).`;
+
+  let svg = '';
+  // Bên trái: Đồ thị log10 của F_1/2(eta_F) và (sqrt(pi)/2)*exp(eta_F) theo eta_F từ -6 đến +6 (giống Figure 4.11)
+  const gx = 58, gy = 235, gw = 325, gh = 195;
+  svg += `<line x1="${gx}" y1="${gy-gh}" x2="${gx}" y2="${gy}" stroke="var(--ink)" stroke-width="2"/>`;
+  svg += `<line x1="${gx}" y1="${gy}" x2="${gx+gw}" y2="${gy}" stroke="var(--ink)" stroke-width="2"/>`;
+  svg += `<text x="${gx+gw/2}" y="24" text-anchor="middle" style="font-weight:800;fill:var(--c5)">Đồ thị Tích phân Fermi-Dirac F₁/₂(η_F) (Figure 4.11)</text>`;
+  svg += `<text x="${gx+gw/2}" y="268" text-anchor="middle" style="font-weight:700">η_F = (E_F - E_c) / kT</text>`;
+
+  // Lưới ngang trục tung log10 từ 10^-3 đến 10^1
+  [-3, -2, -1, 0, 1].forEach(lg => {
+    const py = gy - ((lg + 3) / 4.2) * gh;
+    svg += `<line x1="${gx}" y1="${py}" x2="${gx+gw}" y2="${py}" stroke="var(--g)" stroke-width="1" stroke-dasharray="3,3"/>`;
+    svg += `<text x="${gx-6}" y="${py+4}" text-anchor="end" style="font-size:11.5px;font-weight:700">${lg===0 ? '1' : (lg===1 ? '10' : '10^'+lg)}</text>`;
+  });
+  // Lưới dọc trục hoành eta_F từ -6 đến +6
+  [-6, -4, -2, 0, 2, 4, 6].forEach(et => {
+    const px = gx + ((et + 6) / 12) * gw;
+    svg += `<line x1="${px}" y1="${gy-gh}" x2="${px}" y2="${gy}" stroke="var(--g)" stroke-width="1" stroke-dasharray="3,3"/>`;
+    svg += `<text x="${px}" y="${gy+17}" text-anchor="middle" style="font-size:11.5px;font-weight:700">${et}</text>`;
+  });
+
+  let dExact = '', dBoltz = '';
+  for (let i = 0; i <= 120; i++) {
+    const et = -6 + (i / 120) * 12;
+    const px = gx + (i / 120) * gw;
+    const valE = approxFermiHalf(et);
+    const valB = (Math.sqrt(Math.PI) / 2) * Math.exp(et);
+    const pyE = gy - ((Math.log10(valE) + 3) / 4.2) * gh;
+    const pyB = gy - ((Math.log10(valB) + 3) / 4.2) * gh;
+    if (pyE >= gy - gh - 5 && pyE <= gy + 5) {
+      dExact += (dExact === '' ? 'M' : 'L') + `${px.toFixed(1)} ${pyE.toFixed(1)} `;
+    }
+    if (pyB >= gy - gh - 5 && pyB <= gy + 5) {
+      dBoltz += (dBoltz === '' ? 'M' : 'L') + `${px.toFixed(1)} ${pyB.toFixed(1)} `;
+    }
+  }
+  svg += `<path d="${dBoltz}" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="6,4"/>`;
+  svg += `<path d="${dExact}" fill="none" stroke="var(--c1)" stroke-width="3.5"/>`;
+
+  // Điểm hiện tại trên đồ thị
+  const curPx = gx + ((etaF + 6) / 12) * gw;
+  const curPy = gy - ((Math.log10(fHalf) + 3) / 4.2) * gh;
+  svg += `<line x1="${curPx}" y1="${curPy}" x2="${curPx}" y2="${gy}" stroke="var(--c4)" stroke-width="2" stroke-dasharray="4,3"/>`;
+  svg += `<line x1="${gx}" y1="${curPy}" x2="${curPx}" y2="${curPy}" stroke="var(--c4)" stroke-width="2" stroke-dasharray="4,3"/>`;
+  svg += `<circle cx="${curPx}" cy="${curPy}" r="6.5" fill="var(--c4)" stroke="#fff" stroke-width="2"/>`;
+  svg += `<text x="${gx+14}" y="58" style="font-size:12px;font-weight:800;fill:var(--ink)">Nét đứt: (√π/2)exp(η_F)</text>`;
+  svg += `<text x="${gx+14}" y="78" style="font-size:12px;font-weight:800;fill:var(--c1)">Nét liền: Tích phân F₁/₂(η_F)</text>`;
+
+  // Bên phải: Giản đồ vùng năng lượng minh họa vị trí EF so với Ec (Figure 4.12)
+  svg += `<rect x="410" y="28" width="252" height="225" rx="12" fill="var(--card)" stroke="var(--g)"/>`;
+  svg += `<text x="536" y="50" text-anchor="middle" style="font-weight:800;fill:var(--c5)">Giản đồ Dải năng lượng (Figure 4.12)</text>`;
+
+  const yEc = 135, yEv = 210;
+  const yEF = Math.max(66, Math.min(200, yEc - etaF * 11));
+  // Dải dẫn
+  svg += `<rect x="430" y="62" width="210" height="${yEc-62}" fill="rgba(130,140,190,0.14)"/>`;
+  if (yEF < yEc) {
+    svg += `<rect x="430" y="${yEF}" width="210" height="${yEc-yEF}" fill="rgba(47,111,237,0.32)"/>`;
+    svg += `<text x="535" y="${(yEF+yEc)/2 + 4}" text-anchor="middle" style="font-size:12px;font-weight:800;fill:var(--c1)">Lấp đầy bởi Electron (Suy biến n⁺)</text>`;
+  }
+  svg += `<line x1="430" y1="${yEc}" x2="640" y2="${yEc}" stroke="var(--c1)" stroke-width="3"/>`;
+  svg += `<text x="644" y="${yEc+4}" style="font-weight:800;fill:var(--c1)">Ec</text>`;
+
+  // Dải hóa trị
+  svg += `<rect x="430" y="${yEv}" width="210" height="30" fill="rgba(18,184,134,0.22)"/>`;
+  svg += `<line x1="430" y1="${yEv}" x2="640" y2="${yEv}" stroke="var(--c2)" stroke-width="3"/>`;
+  svg += `<text x="644" y="${yEv+4}" style="font-weight:800;fill:var(--c2)">Ev</text>`;
+
+  // Vạch mức Fermi EF
+  svg += `<line x1="430" y1="${yEF}" x2="640" y2="${yEF}" stroke="var(--c4)" stroke-width="3" stroke-dasharray="8,5"/>`;
+  svg += `<text x="435" y="${yEF - 7}" style="font-size:12.5px;font-weight:800;fill:var(--c4)">Mức Fermi E_F (η_F = ${etaF.toFixed(1)})</text>`;
+
+  svgEl.innerHTML = svg;
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
+}
+window.renderB6FermiIntegralSim = renderB6FermiIntegralSim;
+
+// MÔ HÌNH BUỔI 6.2: BÁN DẪN BÙ TRỪ & PHƯƠNG TRÌNH TRUNG HÒA ĐIỆN TÍCH
+function setB6CompPreset(preset, btn) {
+  if (btn) {
+    document.querySelectorAll('#b6-comp-tabs .sim-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const map = {
+    '4a': [10, 0],
+    '4b': [5, 2],
+    '4d': [3, 10],
+    'equal': [5, 5]
+  };
+  const [nd, na] = map[preset] || [10, 0];
+  $('sl-b6-nd').value = nd;
+  $('sl-b6-na').value = na;
+  renderB6CompSim();
+}
+window.setB6CompPreset = setB6CompPreset;
+
+function renderB6CompSim() {
+  const svgEl = $('b6-comp-svg'), descEl = $('b6-comp-desc');
+  if (!svgEl || !descEl) return;
+  const nd15 = +$('sl-b6-nd').value;
+  const na15 = +$('sl-b6-na').value;
+  $('val-b6-nd').textContent = nd15.toFixed(1);
+  $('val-b6-na').textContent = na15.toFixed(1);
+
+  const Nd = nd15 * 1e15;
+  const Na = na15 * 1e15;
+  const ni = 1.5e10; // Silicon ở 300K
+  const kT = 0.0259;
+
+  let n0 = ni, p0 = ni, typeLabel = 'Bù trừ hoàn toàn (Trở về Bán dẫn Nội tại: N_d = N_a)';
+  if (Nd > Na) {
+    const netD = Nd - Na;
+    n0 = netD / 2 + Math.sqrt(Math.pow(netD / 2, 2) + ni * ni);
+    p0 = (ni * ni) / n0;
+    typeLabel = Na > 0 ? `Bán dẫn Bù trừ Loại N (N_d - N_a = ${(netD/1e15).toFixed(1)}×10¹⁵ cm⁻³)` : `Bán dẫn Loại N thuần (N_d = ${(Nd/1e15).toFixed(1)}×10¹⁵ cm⁻³)`;
+  } else if (Na > Nd) {
+    const netA = Na - Nd;
+    p0 = netA / 2 + Math.sqrt(Math.pow(netA / 2, 2) + ni * ni);
+    n0 = (ni * ni) / p0;
+    typeLabel = Nd > 0 ? `Bán dẫn Bù trừ Loại P (N_a - N_d = ${(netA/1e15).toFixed(1)}×10¹⁵ cm⁻³)` : `Bán dẫn Loại P thuần (N_a = ${(Na/1e15).toFixed(1)}×10¹⁵ cm⁻³)`;
+  }
+
+  const dEf_eV = kT * Math.log(n0 / ni); // EF - EFi
+
+  descEl.innerHTML = `<b>Kết quả giải Phương trình Trung hòa điện tích ($n_0 + N_a = p_0 + N_d$) — ${typeLabel}:</b><br>` +
+    `• Nồng độ Electron cân bằng: $\\mathbf{n_0 \\approx ${n0.toExponential(2)}\\text{ cm}^{-3}}$ | Nồng độ Lỗ trống cân bằng: $\\mathbf{p_0 \\approx ${p0.toExponential(2)}\\text{ cm}^{-3}}$.<br>` +
+    `• Vị trí mức Fermi so với mức nội tại $E_{Fi}$: $\\mathbf{E_F - E_{Fi} = kT\\ln(n_0/n_i) \\approx ${dEf_eV >= 0 ? '+' : ''}${dEf_eV.toFixed(3)}\\text{ eV}}$ (${dEf_eV > 0.001 ? 'Nằm trên E_Fi' : (dEf_eV < -0.001 ? 'Nằm dưới E_Fi' : 'Trùng khít E_Fi')}).`;
+
+  let svg = '';
+  // Bên trái: Biểu đồ cột so sánh N_d, N_a và Hiệu số tạp chất |N_d - N_a|
+  const bx = 65, by = 210, bh = 155;
+  svg += `<line x1="${bx}" y1="35" x2="${bx}" y2="${by}" stroke="var(--ink)" stroke-width="2"/>`;
+  svg += `<line x1="${bx}" y1="${by}" x2="365" y2="${by}" stroke="var(--ink)" stroke-width="2"/>`;
+  svg += `<text x="215" y="25" text-anchor="middle" style="font-weight:800;fill:var(--c5)">Cân bằng Tạp chất Bù trừ (×10¹⁵ cm⁻³)</text>`;
+
+  const hNd = (nd15 / 15) * bh;
+  const hNa = (na15 / 15) * bh;
+  const netVal = Math.abs(nd15 - na15);
+  const hNet = (netVal / 15) * bh;
+
+  svg += `<rect x="95" y="${by-hNd}" width="55" height="${hNd}" rx="6" fill="var(--c1)"/>`;
+  svg += `<text x="122.5" y="${by-hNd-8}" text-anchor="middle" style="font-weight:800;fill:var(--c1)">${nd15.toFixed(1)}</text>`;
+  svg += `<text x="122.5" y="${by+20}" text-anchor="middle" style="font-weight:700">Donor N_d</text>`;
+
+  svg += `<rect x="185" y="${by-hNa}" width="55" height="${hNa}" rx="6" fill="var(--c3)"/>`;
+  svg += `<text x="212.5" y="${by-hNa-8}" text-anchor="middle" style="font-weight:800;fill:var(--c3)">${na15.toFixed(1)}</text>`;
+  svg += `<text x="212.5" y="${by+20}" text-anchor="middle" style="font-weight:700">Acceptor N_a</text>`;
+
+  const netCol = Nd >= Na ? 'var(--c2)' : 'var(--c4)';
+  svg += `<rect x="275" y="${by-hNet}" width="60" height="${hNet}" rx="6" fill="${netCol}"/>`;
+  svg += `<text x="305" y="${by-hNet-8}" text-anchor="middle" style="font-weight:800;fill:${netCol}">${netVal.toFixed(1)}</text>`;
+  svg += `<text x="305" y="${by+20}" text-anchor="middle" style="font-weight:700">${Nd>=Na ? 'Dư N_d - N_a' : 'Dư N_a - N_d'}</text>`;
+
+  // Bên phải: Giản đồ vùng năng lượng với E_c, E_d, E_Fi, E_a, E_v và vạch E_F di chuyển
+  svg += `<rect x="395" y="22" width="265" height="220" rx="12" fill="var(--card)" stroke="var(--g)"/>`;
+  svg += `<text x="527" y="44" text-anchor="middle" style="font-weight:800;fill:var(--c5)">Vị trí Mức Fermi E_F trong Vùng cấm</text>`;
+  const yEc = 70, yEv = 206, yFi = 138;
+  svg += `<line x1="415" y1="${yEc}" x2="635" y2="${yEc}" stroke="var(--c1)" stroke-width="3"/>`;
+  svg += `<text x="640" y="${yEc+4}" style="font-weight:800;fill:var(--c1)">Ec</text>`;
+  svg += `<line x1="415" y1="${yEv}" x2="635" y2="${yEv}" stroke="var(--c2)" stroke-width="3"/>`;
+  svg += `<text x="640" y="${yEv+4}" style="font-weight:800;fill:var(--c2)">Ev</text>`;
+  svg += `<line x1="415" y1="${yFi}" x2="635" y2="${yFi}" stroke="var(--mut)" stroke-width="1.8" stroke-dasharray="4,4"/>`;
+  svg += `<text x="638" y="${yFi+4}" style="font-size:12px;font-weight:700;fill:var(--mut)">EFi</text>`;
+
+  const yEF = yFi - (dEf_eV / 0.56) * 62;
+  svg += `<line x1="415" y1="${yEF}" x2="635" y2="${yEF}" stroke="var(--c4)" stroke-width="3" stroke-dasharray="8,4"/>`;
+  svg += `<text x="422" y="${yEF - 7}" style="font-size:12.5px;font-weight:800;fill:var(--c4)">E_F (${dEf_eV>=0?'+':''}${dEf_eV.toFixed(2)} eV so với E_Fi)</text>`;
+
+  svgEl.innerHTML = svg;
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
+}
+window.renderB6CompSim = renderB6CompSim;
+
+// MÔ HÌNH BUỔI 6.3: 3 VÙNG NHIỆT ĐỘ CỦA n0(T) VÀ E_F(T) (FIGURES 4.16 & 4.19)
+function renderB6TempRegimesSim() {
+  const svgEl = $('b6-temp-svg'), descEl = $('b6-temp-desc');
+  if (!svgEl || !descEl) return;
+  const T = +$('sl-b6-temp').value;
+  const logNd = $('sel-b6-dop') ? +$('sel-b6-dop').value : 15;
+  $('val-b6-temp').textContent = T;
+  $('val-b6-dop').innerHTML = `10<sup>${logNd}</sup>`;
+
+  const Nd = Math.pow(10, logNd);
+  const calcStateAtT = (temp) => {
+    const kT = Math.max(0.0015, 0.0259 * (temp / 300));
+    const Nc = 2.8e19 * Math.pow(temp / 300, 1.5);
+    const Nv = 1.04e19 * Math.pow(temp / 300, 1.5);
+    const ni = Math.sqrt(Nc * Nv) * Math.exp(-1.12 / (2 * kT));
+    // Tỷ lệ ion hóa ở nhiệt độ thấp (Freeze-out model)
+    const xIon = (Nc / (2 * Nd)) * Math.exp(-0.045 / kT);
+    const fracIon = (-xIon + Math.sqrt(xIon * xIon + 4 * xIon)) / 2;
+    const Nd_plus = Nd * Math.min(1, Math.max(0.001, fracIon));
+    const n0 = Nd_plus / 2 + Math.sqrt(Math.pow(Nd_plus / 2, 2) + ni * ni);
+    const dEf = Math.min(0.56, kT * Math.log(Math.max(1, n0 / Math.max(1e-30, ni))));
+    return { n0, ni, dEf, fracIon };
+  };
+
+  const cur = calcStateAtT(T);
+  let regimeName = 'Vùng 2: Vùng Ngoại lai / Pha tạp (Extrinsic Region — Ion hóa hoàn toàn, n₀ ≈ N_d không đổi)';
+  if (T < 110) regimeName = 'Vùng 1: Vùng Đóng băng / Ion hóa một phần (Freeze-Out / Partial Ionization — T quá thấp)';
+  else if (cur.ni > 0.25 * Nd) regimeName = 'Vùng 3: Vùng Nội tại Nhiệt độ cao (Intrinsic Region — n_i(T) tăng vọt lấn át N_d!)';
+
+  descEl.innerHTML = `<b>Trạng thái tại $T = ${T}\\text{ K}$ — ${regimeName}:</b><br>` +
+    `• Nồng độ electron: $\\mathbf{n_0(${T}\\text{ K}) \\approx ${cur.n0.toExponential(2)}\\text{ cm}^{-3}}$ (trong khi $n_i(${T}\\text{ K}) \\approx ${cur.ni.toExponential(2)}\\text{ cm}^{-3}$).<br>` +
+    `• Độ lệch mức Fermi: $\\mathbf{E_F - E_{Fi} \\approx +${cur.dEf.toFixed(3)}\\text{ eV}}$ (Khi $T$ tăng cao, $E_F$ kéo dần về $E_{Fi} = 0$).`;
+
+  let svg = '';
+  // Đồ thị Trái: n0(T) theo T từ 20K đến 700K (Figure 4.16)
+  const x1 = 52, y1 = 220, w1 = 265, h1 = 180;
+  svg += `<line x1="${x1}" y1="${y1-h1}" x2="${x1}" y2="${y1}" stroke="var(--ink)" stroke-width="2"/>`;
+  svg += `<line x1="${x1}" y1="${y1}" x2="${x1+w1}" y2="${y1}" stroke="var(--ink)" stroke-width="2"/>`;
+  svg += `<text x="${x1+w1/2}" y="24" text-anchor="middle" style="font-size:12.5px;font-weight:800;fill:var(--c1)">1. Đồ thị n₀(T): 3 Vùng Nhiệt Độ (Fig 4.16)</text>`;
+  svg += `<text x="${x1+w1/2}" y="248" text-anchor="middle" style="font-size:12px;font-weight:700">Nhiệt độ T (K)</text>`;
+
+  // Đồ thị Phải: E_F - E_Fi theo T từ 20K đến 700K (Figure 4.19)
+  const x2 = 385, y2 = 220, w2 = 265, h2 = 180, y2Mid = y2 - h2 / 2;
+  svg += `<line x1="${x2}" y1="${y2-h2}" x2="${x2}" y2="${y2}" stroke="var(--ink)" stroke-width="2"/>`;
+  svg += `<line x1="${x2}" y1="${y2Mid}" x2="${x2+w2}" y2="${y2Mid}" stroke="var(--mut)" stroke-width="1.5" stroke-dasharray="4,4"/>`;
+  svg += `<line x1="${x2}" y1="${y2}" x2="${x2+w2}" y2="${y2}" stroke="var(--ink)" stroke-width="2"/>`;
+  svg += `<text x="${x2+w2/2}" y="24" text-anchor="middle" style="font-size:12.5px;font-weight:800;fill:var(--c5)">2. Vị trí E_F - E_Fi theo T (Fig 4.19)</text>`;
+  svg += `<text x="${x2+w2/2}" y="248" text-anchor="middle" style="font-size:12px;font-weight:700">Nhiệt độ T (K)</text>`;
+  svg += `<text x="${x2-6}" y="${y2Mid+4}" text-anchor="end" style="font-size:11px;font-weight:700;fill:var(--mut)">E_Fi</text>`;
+  svg += `<text x="${x2-6}" y="${y2-h2+14}" text-anchor="end" style="font-size:11px;font-weight:700;fill:var(--c1)">E_c</text>`;
+  svg += `<text x="${x2-6}" y="${y2-4}" text-anchor="end" style="font-size:11px;font-weight:700;fill:var(--c2)">E_v</text>`;
+
+  let pathN0 = '', pathNi = '', pathEfN = '', pathEfP = '';
+  for (let temp = 25; temp <= 700; temp += 15) {
+    const st = calcStateAtT(temp);
+    const px1 = x1 + ((temp - 20) / 680) * w1;
+    const lgN0 = Math.max(12, Math.min(17.2, Math.log10(st.n0)));
+    const py1 = y1 - ((lgN0 - 12) / 5.2) * h1;
+    pathN0 += (temp === 25 ? 'M' : 'L') + `${px1.toFixed(1)} ${py1.toFixed(1)} `;
+
+    if (temp >= 360) {
+      const lgNi = Math.max(12, Math.min(17.2, Math.log10(st.ni)));
+      const pyNi = y1 - ((lgNi - 12) / 5.2) * h1;
+      pathNi += (pathNi === '' ? 'M' : 'L') + `${px1.toFixed(1)} ${pyNi.toFixed(1)} `;
+    }
+
+    const px2 = x2 + ((temp - 20) / 680) * w2;
+    const pyEfN = y2Mid - (st.dEf / 0.62) * (h2 / 2);
+    const pyEfP = y2Mid + (st.dEf / 0.62) * (h2 / 2);
+    pathEfN += (temp === 25 ? 'M' : 'L') + `${px2.toFixed(1)} ${pyEfN.toFixed(1)} `;
+    pathEfP += (temp === 25 ? 'M' : 'L') + `${px2.toFixed(1)} ${pyEfP.toFixed(1)} `;
+  }
+  svg += `<path d="${pathNi}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="5,4"/>`;
+  svg += `<path d="${pathN0}" fill="none" stroke="var(--c1)" stroke-width="3.5"/>`;
+  svg += `<path d="${pathEfP}" fill="none" stroke="var(--c2)" stroke-width="2.5" stroke-dasharray="4,3"/>`;
+  svg += `<path d="${pathEfN}" fill="none" stroke="var(--c5)" stroke-width="3.2"/>`;
+
+  // Điểm đánh dấu tại nhiệt độ T đang chọn
+  const curPx1 = x1 + ((T - 20) / 680) * w1;
+  const curPy1 = y1 - ((Math.max(12, Math.min(17.2, Math.log10(cur.n0))) - 12) / 5.2) * h1;
+  svg += `<circle cx="${curPx1}" cy="${curPy1}" r="6.5" fill="var(--c4)" stroke="#fff" stroke-width="2"/>`;
+
+  const curPx2 = x2 + ((T - 20) / 680) * w2;
+  const curPy2 = y2Mid - (cur.dEf / 0.62) * (h2 / 2);
+  svg += `<circle cx="${curPx2}" cy="${curPy2}" r="6.5" fill="var(--c4)" stroke="#fff" stroke-width="2"/>`;
+
+  svg += `<text x="${x1+20}" y="195" style="font-size:11px;font-weight:800;fill:var(--c4)">1. Đóng băng</text>`;
+  svg += `<text x="${x1+95}" y="110" style="font-size:11px;font-weight:800;fill:var(--c2)">2. Ngoại lai (n₀=Nd)</text>`;
+  svg += `<text x="${x1+195}" y="66" style="font-size:11px;font-weight:800;fill:var(--c1)">3. Nội tại</text>`;
+
+  svgEl.innerHTML = svg;
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
+}
+window.renderB6TempRegimesSim = renderB6TempRegimesSim;
+
+// MÔ HÌNH BUỔI 6.4: SỰ SAN BẰNG MỨC FERMI KHI HAI VẬT LIỆU TIẾP XÚC (FIGURE 4.20)
+function renderB6ContactSim(stage, btn) {
+  if (btn) {
+    document.querySelectorAll('#b6-contact-tabs .sim-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const svgEl = $('b6-contact-svg'), descEl = $('b6-contact-desc');
+  if (!svgEl || !descEl) return;
+  let svg = '';
+
+  const drawStack = (x, yTop, yFermi, label, fLabel) => {
+    for (let i = 0; i < 10; i++) {
+      const y = yTop + i * 14;
+      const isFilled = y >= yFermi;
+      svg += `<rect x="${x}" y="${y}" width="150" height="14" fill="${isFilled ? 'rgba(47,111,237,0.28)' : 'rgba(130,140,190,0.10)'}" stroke="var(--g)" stroke-width="1"/>`;
+      if (isFilled) {
+        svg += `<circle cx="${x+75}" cy="${y+7}" r="3.5" fill="var(--c1)"/>`;
+      }
+    }
+    svg += `<line x1="${x-25}" y1="${yFermi}" x2="${x+175}" y2="${yFermi}" stroke="var(--c4)" stroke-width="3" stroke-dasharray="7,4"/>`;
+    svg += `<text x="${x-30}" y="${yFermi+4}" text-anchor="end" style="font-weight:800;fill:var(--c4)">${fLabel}</text>`;
+    svg += `<text x="${x+75}" y="${yTop+162}" text-anchor="middle" style="font-weight:800;fill:var(--ink)">${label}</text>`;
+  };
+
+  if (stage === 'before') {
+    drawStack(120, 35, 77, 'Vật liệu A (Mức E_FA cao)', 'E_FA');
+    drawStack(420, 35, 119, 'Vật liệu B (Mức E_FB thấp)', 'E_FB');
+    descEl.innerHTML = `<b>1. Trước khi tiếp xúc (Figure 4.20a, b):</b> Vật liệu A và Vật liệu B đứng tách rời nhau. Ở Vật liệu A, các trạng thái dưới $E_{FA}$ đầy electron; ở Vật liệu B, các trạng thái dưới $E_{FB}$ đầy electron ($E_{FA} > E_{FB}$).`;
+  } else if (stage === 'instant') {
+    drawStack(120, 35, 77, 'Vật liệu A (Nhường bớt e⁻)', 'E_FA');
+    drawStack(420, 35, 119, 'Vật liệu B (Nhận thêm e⁻)', 'E_FB');
+    svg += `<path d="M 280 85 Q 345 55 410 105" fill="none" stroke="var(--c1)" stroke-width="4"/>`;
+    svg += `<polygon points="412,107 398,104 405,94" fill="var(--c1)"/>`;
+    svg += `<text x="345" y="62" text-anchor="middle" style="font-weight:800;fill:var(--c1)">Electron chảy từ A sang B</text>`;
+    descEl.innerHTML = `<b>2. Khoảnh khắc vừa đặt tiếp xúc (Figure 4.20c):</b> Vì các electron ở đỉnh Vật liệu A có mức năng lượng cao hơn các chỗ trống ở Vật liệu B, electron lập tức chảy từ Vật liệu A sang điền vào các trạng thái trống thấp hơn của Vật liệu B!`;
+  } else {
+    drawStack(120, 35, 105, 'Vật liệu A (Ở cân bằng nhiệt)', 'E_F');
+    drawStack(420, 35, 105, 'Vật liệu B (Ở cân bằng nhiệt)', 'E_F');
+    svg += `<line x1="270" y1="105" x2="420" y2="105" stroke="var(--c4)" stroke-width="3" stroke-dasharray="7,4"/>`;
+    svg += `<text x="345" y="95" text-anchor="middle" style="font-weight:800;fill:var(--c2)">E_FA = E_FB = E_F (San bằng!)</text>`;
+    descEl.innerHTML = `<b>3. Khi đã đạt Trạng thái Cân bằng Nhiệt (Figure 4.20d):</b> Dòng dịch chuyển hạt dừng lại khi <b>Mức năng lượng Fermi ở cả hai vật liệu san bằng ngang nhau trên một đường thẳng duy nhất ($\\mathbf{E_{FA} = E_{FB} = E_F}$)</b>. Đây là định lý nền tảng nhất để vẽ giản đồ vùng năng lượng của Diode P-N và Transistor!`;
+  }
+
+  svgEl.innerHTML = svg;
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
+}
+window.renderB6ContactSim = renderB6ContactSim;
+
+/* =========================================================
    HỆ THỐNG TẢI BÀI HỌC THEO YÊU CẦU (ON-DEMAND LOADER) & MỤC LỤC
    ========================================================= */
 function buildTOC() {
@@ -4844,11 +5868,19 @@ function loadLesson(lessonId) {
     renderCarrierDistSim();
     renderIntrinsicSim();
     renderDopingBandSim('donor');
+  } else if (lessonId === '6') {
+    const tpl = $('tpl-buoi-6');
+    mainEl.innerHTML = tpl.innerHTML;
+    // Khởi tạo toàn bộ 4 mô hình tương tác của Buổi 6
+    renderB6FermiIntegralSim();
+    renderB6CompSim();
+    renderB6TempRegimesSim();
+    renderB6ContactSim('before');
   } else {
     const tpl = $('tpl-buoi-pending');
     mainEl.innerHTML = tpl.innerHTML;
     const titles = {
-      '5': 'Buổi 5: Chất Bán Dẫn Ở Trạng Thái Cân Bằng'
+      '6': 'Buổi 6: Bán Dẫn Pha Tạp & Bán Dẫn Suy Biến'
     };
     $('pending-badge').textContent = 'HỌC PHẦN ENP2209 · BUỔI ' + lessonId;
     $('pending-title').textContent = titles[lessonId] || ('Buổi ' + lessonId);
@@ -4863,7 +5895,7 @@ function loadLesson(lessonId) {
 }
 window.loadLesson = loadLesson;
 
-// Khởi chạy menu 3 gạch góc trên bên trái và nạp Buổi 5 vừa mới hoàn thành để tiện kiểm thử
+// Khởi chạy menu 3 gạch góc trên bên trái và nạp Buổi 6 vừa mới hoàn thành để tiện kiểm thử
 (function initApp() {
   const btn = $('mb'), nav = $('mn');
   const setOpen = open => {
@@ -4885,8 +5917,8 @@ window.loadLesson = loadLesson;
     }
   });
 
-  $('lesson-select').value = '5';
-  loadLesson('5');
+  $('lesson-select').value = '6';
+  loadLesson('6');
 })();
 </script>
 </body></html>
