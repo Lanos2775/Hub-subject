@@ -555,8 +555,8 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
       <option value="1">Phần 1 (Bài 1 & 2): Tương đương Mệnh đề, Vị từ & Lượng từ (Tóm tắt)</option>
       <option value="2">Phần 2 (Bài 3 & 4): Lượng từ lồng nhau & Quy tắc suy luận (Tóm tắt)</option>
       <option value="3">Phần 3 (Bài 5 - Trọng tâm): Đại số Bool, Big-O & Thuật toán Euclid</option>
-      <option value="4">Phần 4 (Bài 6 - Chuyên sâu): Lý thuyết số & Mật mã hóa RSA</option>
-      <option value="5" selected>Phần 5 (Mục 3.2, 3.3, 3.4 - Mới): Quy nạp Toán học & Đệ quy</option>
+      <option value="4" selected>Phần 4 (Bài 6 - Chuyên sâu): Lý thuyết số & Mật mã hóa RSA</option>
+      <option value="5">Phần 5 (Mục 3.2, 3.3, 3.4 - Mới): Quy nạp Toán học & Đệ quy</option>
     </select>
   </div>
   <div class="toc-title">Mục lục bài đang mở</div>
@@ -1346,51 +1346,154 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
       <b>return</b> $x$ &nbsp;&nbsp;<span style="color:var(--mut)">// x chính là $b^n \bmod m$</span>
     </div>
 
-    <h3>5.1. Bảng Chạy Tay Từng Bước Ví Dụ Kinh Điển: Tính $3^{644} \bmod 645$ (Trang 34 Slide)</h3>
-    <p>Đầu tiên, đổi số mũ $n = 644$ sang nhị phân (chia liên tiếp cho 2 lấy dư từ dưới lên): $644 = (1010000100)_2$.<br>
-    Liệt kê các bit từ phải sang trái ($i = 0 \to 9$): $a_0=0, a_1=0, \mathbf{a_2=1}, a_3=0, a_4=0, a_5=0, a_6=0, \mathbf{a_7=1}, a_8=0, \mathbf{a_9=1}$.<br>
-    Khởi tạo ban đầu: $\mathbf{x = 1}$ và $\mathbf{\text{power} = 3 \bmod 645 = 3}$.</p>
+    <h3>5.1. Cầm Tay Chỉ Việc: Làm Sao Lập Được Bảng Tính $3^{644} \bmod 645$? (Trang 34 Slide)</h3>
+    <p>Rất nhiều bạn nhìn vào bảng 10 dòng của ví dụ $3^{644} \bmod 645$ trong slide mà hoang mang không hiểu số ở đâu rơi xuống. Đừng lo! Thầy sẽ tách quá trình tạo ra cái bảng này thành <b>3 bước chuẩn bị</b> cực kỳ đời thường trước khi ta điền vào từng ô của bảng:</p>
+
+    <div class="box analogy">
+      <b>Ẩn dụ "Đi siêu thị nhặt hàng vào giỏ" để hiểu 2 biến $x$ và $\text{power}$:</b><br>
+      Em cần gom đủ $3^{644}$, tức là gom tích của 3 món hàng: $\mathbf{3^4 \times 3^{128} \times 3^{512}}$ (vì $4 + 128 + 512 = 644$).<br>
+      • <b>Biến $\text{power}$ (Băng chuyền sản xuất hàng):</b> Ở mỗi bước $i$, băng chuyền này <b>luôn luôn tự bình phương rồi chia lấy dư cho $645$</b> để chế tạo ra cục lũy thừa kế tiếp ($3^1 \to 3^2 \to 3^4 \to 3^8 \to 3^{16} \dots$), bất kể bước đó bit $a_i$ bằng $0$ hay bằng $1$!<br>
+      • <b>Biến $x$ (Chiếc giỏ hàng của em — khởi đầu $x = 1$):</b> Em đứng cạnh băng chuyền và cầm tờ hóa đơn nhị phân $a_i$.<br>
+      &nbsp;&nbsp;+ Nếu thấy $\mathbf{a_i = 0}$ (Không cần mua món này): Em <b>khoanh tay đứng nhìn</b>, giỏ hàng $x$ giữ nguyên như cũ!<br>
+      &nbsp;&nbsp;+ Nếu thấy $\mathbf{a_i = 1}$ (Đúng món cần mua!): Em lập tức <b>nhặt cục $\text{power}$ hiện tại nhân vào giỏ $x$ rồi lấy dư cho $645$</b>!
+    </div>
+
+    <div class="formula-card">
+      <h3>Bước Chuẩn Bị Số 1: Làm sao đổi số mũ $n = 644$ ra dãy bit $a_0, a_1, \dots, a_9$?</h3>
+      <p>Để biết bước nào $a_i = 0$ hay $a_i = 1$, ta đổi số mũ $644$ sang hệ nhị phân (cơ số 2). Em có thể dùng <b>1 trong 2 cách</b> sau:</p>
+      <div class="formula-meta">
+        <div>
+          <b>Cách A (Tách thành tổng các lũy thừa của $2$ — Nhanh nhất!):</b><br>
+          Dãy lũy thừa của $2$ là: $2^0=1,\ 2^1=2,\ \mathbf{2^2=4},\ 2^3=8,\ 2^4=16,\ 2^5=32,\ 2^6=64,\ \mathbf{2^7=128},\ 2^8=256,\ \mathbf{2^9=512}$.<br>
+          Ta nhẩm thấy: $644 = 512 + 128 + 4 = \mathbf{1}\cdot 2^9 + \mathbf{1}\cdot 2^7 + \mathbf{1}\cdot 2^2$.<br>
+          Vậy chỉ có đúng 3 vị trí mũ là $\mathbf{i = 2, 7, 9}$ có mặt trong tổng nên nhận bit $\mathbf{1}$, còn lại tất cả các vị trí $i = 0, 1, 3, 4, 5, 6, 8$ đều không có mặt nên nhận bit $\mathbf{0}$!
+        </div>
+        <div>
+          <b>Cách B (Lấy $644$ chia đôi liên tiếp lấy số dư):</b><br>
+          • $644 : 2 = 322$ dư $\mathbf{0}$ ($\to a_0 = 0$)<br>
+          • $322 : 2 = 161$ dư $\mathbf{0}$ ($\to a_1 = 0$)<br>
+          • $161 : 2 = 80$ dư <span class="k b2">1</span> ($\to \mathbf{a_2 = 1}$)<br>
+          • $80 \to 40 \to 20 \to 10 \to 5$ đều chia chẵn cho $2$ dư $\mathbf{0}$ ($\to a_3=a_4=a_5=a_6=0$)<br>
+          • $5 : 2 = 2$ dư <span class="k b2">1</span> ($\to \mathbf{a_7 = 1}$)<br>
+          • $2 : 2 = 1$ dư $\mathbf{0}$ ($\to a_8 = 0$)<br>
+          • $1 : 2 = 0$ dư <span class="k b2">1</span> ($\to \mathbf{a_9 = 1}$).
+        </div>
+      </div>
+      <div class="box warn" style="margin-bottom:0">
+        <b>Cảnh báo cực kỳ dễ nhầm về thứ tự đọc bit:</b><br>
+        Khi viết số nhị phân $644 = (1010000100)_2$, chữ số tận cùng <b>BÊN PHẢI</b> là hàng đơn vị ($2^0$) nên ứng với bước đầu tiên $\mathbf{i = 0}$ ($a_0 = 0$), còn chữ số tận cùng <b>BÊN TRÁI</b> ứng với bước cuối cùng $\mathbf{i = 9}$ ($a_9 = 1$). Tức là khi chạy bảng từ $i = 0$ đến $i = 9$, ta đang <b>đọc dãy nhị phân từ PHẢI sang TRÁI</b>!
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Bước Chuẩn Bị Số 2: Quy tắc "3 Ô Liên Tiếp" trên mỗi dòng của bảng</h3>
+      <p>Trước khi bước vào dòng đầu tiên ($i=0$), ta đặt giá trị khởi đầu: Giỏ hàng $\mathbf{x = 1}$ và Băng chuyền $\mathbf{\text{power} = 3 \bmod 645 = 3}$. Ở mỗi dòng thứ $i$, em chỉ cần làm tuần tự từ trái sang phải theo đúng 3 động tác:</p>
+      <ol>
+        <li><b>Cột 3 ($\text{power}$ đầu bước):</b> Không cần tính gì cả! Chỉ việc <b>chép nguyên xi kết quả $\text{power}$ mới ở cột cuối cùng của dòng ngay phía trên</b> xuống!</li>
+        <li><b>Cột 4 (Cập nhật giỏ $x$):</b> Nhìn sang Cột 2 (Bit $a_i$):<br>
+        • Nếu $a_i = 0$: Viết lại nguyên xi số $x$ của dòng trên (không làm phép tính nào!).<br>
+        • Nếu $a_i = 1$: Lấy $\mathbf{(x\text{ dòng trên}) \times (\text{power ở Cột 3})}$, được bao nhiêu đem chia cho $645$ lấy phần dư!</li>
+        <li><b>Cột 5 (Tính $\text{power}$ mới cho dòng sau):</b> Lấy chính con số ở <b>Cột 3 bình phương lên ($\text{power}^2$)</b>, rồi đem chia cho $645$ lấy phần dư để truyền xuống dòng tiếp theo!</li>
+      </ol>
+      <div class="btn-group">
+        <button type="button" class="btn btn-sol" onclick="togglePanel('walkthrough-644')">Bấm vào đây để xem Giải Phẫu Chi Tiết Phép Tính Của Từng Dòng ($i = 0 \to 9$)</button>
+      </div>
+      <div id="walkthrough-644" class="panel open">
+        <b>Giải thích cặn kẽ từng con số trong bảng sinh ra như thế nào:</b>
+        <div class="step">
+          <b>• Dòng $i = 0$ (Bit $a_0 = 0$, ứng với $3^{2^0} = 3^1$):</b><br>
+          - <i>Đầu bước:</i> $x = 1$, $\text{power} = 3$.<br>
+          - <i>Xử lý $x$:</i> Vì bit $a_0 = 0$ nên ta bỏ qua, <b>giữ nguyên $x = 1$</b>.<br>
+          - <i>Bình phương $\text{power}$ cho dòng sau:</i> Lấy $3^2 = 9$. Chia $645$ được thương $0$ dư $\mathbf{9}$. Truyền số $\mathbf{9}$ này xuống đầu dòng $i=1$!
+        </div>
+        <div class="step">
+          <b>• Dòng $i = 1$ (Bit $a_1 = 0$, ứng với $3^{2^1} = 3^2$):</b><br>
+          - <i>Đầu bước:</i> Nhận $\text{power} = 9$ từ dòng trên truyền xuống.<br>
+          - <i>Xử lý $x$:</i> Vì bit $a_1 = 0$ nên tiếp tục <b>giữ nguyên $x = 1$</b>.<br>
+          - <i>Bình phương $\text{power}$ cho dòng sau:</i> Lấy $9^2 = 81$. Chia $645$ dư $\mathbf{81}$. Truyền số $\mathbf{81}$ xuống đầu dòng $i=2$!
+        </div>
+        <div class="step">
+          <b>• Dòng $i = 2$ (Bit <span class="k b2">$a_2 = 1$</span> — Lần đầu tiên nhặt hàng vào giỏ $x$!):</b><br>
+          - <i>Đầu bước:</i> Nhận $\text{power} = 81$ từ dòng trên (đây chính là $3^4 \bmod 645$).<br>
+          - <i>Xử lý $x$:</i> Vì bit $\mathbf{a_2 = 1}$, ta lấy $x$ cũ nhân với $\text{power}$ hiện tại: $x = (1 \times 81) \bmod 645 = \mathbf{81}$.<br>
+          - <i>Bình phương $\text{power}$ cho dòng sau:</i> Lấy $81^2 = 6561$. Làm sao tính $6561 \bmod 645$? Ta bấm máy $6561 : 645 \approx 10.17 \Rightarrow$ lấy phần nguyên là $10$. Tính phần dư: $6561 - 10 \times 645 = 6561 - 6450 = \mathbf{111}$. Truyền $\mathbf{111}$ xuống dòng $i=3$!
+        </div>
+        <div class="step">
+          <b>• Các dòng $i = 3, 4, 5, 6$ (Đều có bit $a_i = 0$):</b><br>
+          - Vì cả 4 dòng này bit đều bằng $0$, nên cột $x$ <b>đứng im ở số $81$ suốt 4 dòng</b>!<br>
+          - Ta chỉ việc bình phương $\text{power}$ liên tiếp rồi trừ đi bội của $645$:<br>
+          &nbsp;&nbsp;+ Tại $i=3$: $111^2 = 12321 = 19 \times 645 + \mathbf{66} \implies \text{power mới} = \mathbf{66}$.<br>
+          &nbsp;&nbsp;+ Tại $i=4$: $66^2 = 4356 = 6 \times 645 + \mathbf{486} \implies \text{power mới} = \mathbf{486}$.<br>
+          &nbsp;&nbsp;+ Tại $i=5$: $486^2 = 236196 = 366 \times 645 + \mathbf{126} \implies \text{power mới} = \mathbf{126}$.<br>
+          &nbsp;&nbsp;+ Tại $i=6$: $126^2 = 15876 = 24 \times 645 + \mathbf{396} \implies \text{power mới} = \mathbf{396}$ (truyền xuống dòng $i=7$).
+        </div>
+        <div class="step">
+          <b>• Dòng $i = 7$ (Bit <span class="k b2">$a_7 = 1$</span> — Lần thứ hai nhặt hàng vào giỏ $x$!):</b><br>
+          - <i>Đầu bước:</i> Nhận $\text{power} = 396$ (đây chính là $3^{128} \bmod 645$).<br>
+          - <i>Xử lý $x$:</i> Vì $\mathbf{a_7 = 1}$, ta lấy giỏ $x$ đang có ($81$) nhân thêm $\text{power}$ ($396$):
+          $$81 \times 396 = 32076 = 49 \times 645 + \mathbf{471} \implies \text{Cập nhật } \mathbf{x = 471}$$
+          - <i>Bình phương $\text{power}$ cho dòng sau:</i> Lấy $396^2 = 156816 = 243 \times 645 + \mathbf{81}$. Truyền $\mathbf{81}$ xuống dòng $i=8$!<br>
+          <i>(Lưu ý thú vị: Trong slide gốc tiếng Việt trang 34 bị gõ nhầm chữ "Vì $a_7 = 0$" nhưng phép tính bên cạnh vẫn lấy $81 \cdot 396 \bmod 645 = 471$ vì thực tế $\mathbf{a_7 = 1}$!).</i>
+        </div>
+        <div class="step">
+          <b>• Dòng $i = 8$ (Bit $a_8 = 0$) và Dòng cuối $i = 9$ (Bit <span class="k b2">$a_9 = 1$</span>):</b><br>
+          - Tại $i=8$: Vì $a_8 = 0$ nên $x$ giữ nguyên là $471$. Bình phương $\text{power}$: $81^2 \bmod 645 = 6561 \bmod 645 = \mathbf{111}$ (truyền xuống dòng $i=9$).<br>
+          - Tại $i=9$: Nhận $\text{power} = 111$ (chính là $3^{512} \bmod 645$). Vì bit cuối $\mathbf{a_9 = 1}$, ta nhân chốt hạ vào giỏ $x$:
+          $$x = (471 \times 111) \bmod 645 = 52281 \bmod 645 = 81 \times 645 + \mathbf{36} \implies \mathbf{x = 36}$$
+          Hết bit nhị phân $\Rightarrow$ Dừng thuật toán và kết luận ngay: $\mathbf{3^{644} \bmod 645 = 36}$!
+        </div>
+      </div>
+    </div>
 
     <div class="tw">
       <table>
         <tr>
-          <th>Bước $i$</th>
+          <th>Bước $i$ (Mũ $2^i$)</th>
           <th>Bit $a_i$</th>
-          <th>Giá trị $\text{power}$ đầu bước ($3^{2^i} \bmod 645$)</th>
-          <th>Cập nhật kết quả $x$ (Nếu $a_i = 1$ thì $x := x \cdot \text{power} \bmod 645$)</th>
-          <th>Tính $\text{power}$ mới cho bước sau ($\text{power}^2 \bmod 645$)</th>
+          <th>Cột 3: $\text{power}$ đầu bước<br><small>(Chép từ cột cuối dòng trên)</small></th>
+          <th>Cột 4: Cập nhật giỏ $x$<br><small>(Chỉ nhân khi $a_i = 1$)</small></th>
+          <th>Cột 5: $\text{power}$ mới cho bước sau<br><small>(Lấy Cột 3 bình phương $\bmod\ 645$)</small></th>
         </tr>
         <tr>
-          <td>$i = 0$</td><td>$0$</td><td>$3$</td><td>Giữ nguyên $x = 1$</td><td>$3^2 \bmod 645 = \mathbf{9}$</td>
+          <td>$i = 0\ (2^0=1)$</td><td>$0$</td><td>$\mathbf{3}$ (Khởi tạo)</td><td>Giữ nguyên $x = 1$</td><td>$3^2 \bmod 645 = \mathbf{9}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$i = 1$</td><td>$0$</td><td>$9$</td><td>Giữ nguyên $x = 1$</td><td>$9^2 \bmod 645 = \mathbf{81}$</td>
+          <td>$i = 1\ (2^1=2)$</td><td>$0$</td><td>$\searrow\ \mathbf{9}$</td><td>Giữ nguyên $x = 1$</td><td>$9^2 \bmod 645 = \mathbf{81}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$\mathbf{i = 2}$</td><td><span class="k b2">1</span></td><td>$\mathbf{81}$</td><td>$x = (1 \times 81) \bmod 645 = \mathbf{81}$</td><td>$81^2 \bmod 645 = 6561 \bmod 645 = \mathbf{111}$</td>
+          <td>$\mathbf{i = 2\ (2^2=4)}$</td><td><span class="k b2">1</span></td><td>$\searrow\ \mathbf{81}$</td><td>$x = (1 \times 81) \bmod 645 = \mathbf{81}$</td><td>$81^2 \bmod 645 = 6561 \bmod 645 = \mathbf{111}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$i = 3$</td><td>$0$</td><td>$111$</td><td>Giữ nguyên $x = 81$</td><td>$111^2 \bmod 645 = 12321 \bmod 645 = \mathbf{66}$</td>
+          <td>$i = 3\ (2^3=8)$</td><td>$0$</td><td>$\searrow\ \mathbf{111}$</td><td>Giữ nguyên $x = 81$</td><td>$111^2 \bmod 645 = 12321 \bmod 645 = \mathbf{66}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$i = 4$</td><td>$0$</td><td>$66$</td><td>Giữ nguyên $x = 81$</td><td>$66^2 \bmod 645 = 4356 \bmod 645 = \mathbf{486}$</td>
+          <td>$i = 4\ (2^4=16)$</td><td>$0$</td><td>$\searrow\ \mathbf{66}$</td><td>Giữ nguyên $x = 81$</td><td>$66^2 \bmod 645 = 4356 \bmod 645 = \mathbf{486}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$i = 5$</td><td>$0$</td><td>$486$</td><td>Giữ nguyên $x = 81$</td><td>$486^2 \bmod 645 = 236196 \bmod 645 = \mathbf{126}$</td>
+          <td>$i = 5\ (2^5=32)$</td><td>$0$</td><td>$\searrow\ \mathbf{486}$</td><td>Giữ nguyên $x = 81$</td><td>$486^2 \bmod 645 = 236196 \bmod 645 = \mathbf{126}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$i = 6$</td><td>$0$</td><td>$126$</td><td>Giữ nguyên $x = 81$</td><td>$126^2 \bmod 645 = 15876 \bmod 645 = \mathbf{396}$</td>
+          <td>$i = 6\ (2^6=64)$</td><td>$0$</td><td>$\searrow\ \mathbf{126}$</td><td>Giữ nguyên $x = 81$</td><td>$126^2 \bmod 645 = 15876 \bmod 645 = \mathbf{396}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$\mathbf{i = 7}$</td><td><span class="k b2">1</span></td><td>$\mathbf{396}$</td><td>$x = (81 \times 396) \bmod 645 = \mathbf{471}$</td><td>$396^2 \bmod 645 = 156816 \bmod 645 = \mathbf{81}$</td>
+          <td>$\mathbf{i = 7\ (2^7=128)}$</td><td><span class="k b2">1</span></td><td>$\searrow\ \mathbf{396}$</td><td>$x = (81 \times 396) \bmod 645 = \mathbf{471}$</td><td>$396^2 \bmod 645 = 156816 \bmod 645 = \mathbf{81}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$i = 8$</td><td>$0$</td><td>$81$</td><td>Giữ nguyên $x = 471$</td><td>$81^2 \bmod 645 = 6561 \bmod 645 = \mathbf{111}$</td>
+          <td>$i = 8\ (2^8=256)$</td><td>$0$</td><td>$\searrow\ \mathbf{81}$</td><td>Giữ nguyên $x = 471$</td><td>$81^2 \bmod 645 = 6561 \bmod 645 = \mathbf{111}\ \searrow$</td>
         </tr>
         <tr>
-          <td>$\mathbf{i = 9}$</td><td><span class="k b2">1</span></td><td>$\mathbf{111}$</td><td>$x = (471 \times 111) \bmod 645 = \mathbf{36}$</td><td>Kết thúc vòng lặp! Kết quả: $\mathbf{36}$</td>
+          <td>$\mathbf{i = 9\ (2^9=512)}$</td><td><span class="k b2">1</span></td><td>$\searrow\ \mathbf{111}$</td><td>$x = (471 \times 111) \bmod 645 = \mathbf{36}$</td><td>Đã hết bit nhị phân $\Rightarrow$ Đáp số $\mathbf{x = 36}$!</td>
         </tr>
       </table>
+    </div>
+
+    <div class="box tip">
+      <b>Mẹo trình bày vào bài thi tự luận khi không bắt buộc viết theo biến lập trình:</b><br>
+      Nếu đề thi chỉ yêu cầu <i>"Tính $3^{644} \bmod 645$"</i> mà không bắt chạy giả mã từng biến $x, \text{power}$, em chỉ cần trình bày 3 dòng cực gọn như sau:<br>
+      1. Phân tích số mũ: $644 = 512 + 128 + 4 = 2^9 + 2^7 + 2^2$.<br>
+      2. Bình phương liên tiếp ($\bmod\ 645$): $3^1 \equiv 3 \implies 3^2 \equiv 9 \implies \mathbf{3^4 \equiv 81} \implies 3^8 \equiv 111 \implies 3^{16} \equiv 66 \implies 3^{32} \equiv 486 \implies 3^{64} \equiv 126 \implies \mathbf{3^{128} \equiv 396} \implies 3^{256} \equiv 81 \implies \mathbf{3^{512} \equiv 111} \pmod{645}$.<br>
+      3. Ghép 3 thừa số in đậm lại: $3^{644} = 3^4 \cdot 3^{128} \cdot 3^{512} \equiv (81 \times 396) \times 111 \equiv 471 \times 111 = 52281 \equiv \mathbf{36} \pmod{645}$!<br>
+      <i>Em thấy không? Thực chất cái bảng 10 dòng ở trên chẳng qua là cách máy tính thực hiện đúng 3 bước làm tay này mà thôi!</i>
     </div>
   </section>
 
@@ -2654,9 +2757,9 @@ window.loadLesson = loadLesson;
     }
   });
 
-  // Mặc định mở Phần 5 (Bài mới: Quy nạp Toán học, Định nghĩa Đệ quy & Thuật toán Đệ quy)
-  $('lesson-select').value = '5';
-  loadLesson('5');
+  // Mặc định mở Phần 4 (Bài 6 - Lý thuyết số & Mật mã hóa RSA) để xem ngay Mục 5.1 vừa bổ sung
+  $('lesson-select').value = '4';
+  loadLesson('4');
 })();
 </script>
 </body>
