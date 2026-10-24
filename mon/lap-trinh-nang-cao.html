@@ -1605,16 +1605,51 @@ Tuần tự:    đọc A (5s) -> xử lý A (2s) -> đọc B (5s) -> xử lý B 
 + `<p>Virtual thread chạy "gắn" lên một kernel thread (carrier) khi cần, nên hầu như không tốn chi phí chuyển ngữ cảnh của hệ điều hành.</p>`)
 };
 
+const bridge = t => `<p style="border-left:3px solid #6c4ce0;padding:8px 12px;margin:12px 0;background:rgba(108,76,224,.08);border-radius:6px">🔗 ${t}</p>`;
+
 LES['8'] = {b:'b4', n:'BÀI 8', t:'JavaFX, MVC, Serialization và JDBC', d:'Xây ứng dụng giao diện đồ họa theo mô hình MVC, lưu dữ liệu bằng tuần tự hóa, SQLite và JSON.',
 body: () =>
-sec('Phần 1. Vì sao cần MVC',
-`<p>Tưởng tượng bạn viết ứng dụng quản lý danh bạ trong <b>một tệp duy nhất</b>: vừa vẽ giao diện, vừa xử lý khi bấm nút, vừa đọc ghi tệp dữ liệu. Lúc đầu rất nhanh. Khi lên vài nghìn dòng thì: đổi màu một cái nút cũng phải lội qua mã lưu trữ; ba người cùng sửa một tệp thì xung đột liên tục; muốn dùng lại phần lưu dữ liệu cho ứng dụng khác thì không tách ra được. Tóm lại ứng dụng lớn trở nên <b>khó bảo trì, khó tái sử dụng, khó làm việc nhóm</b>.</p>
+sec('Bức tranh tổng thể: ta sẽ xây gì và đi theo thứ tự nào',
+`<p>Cả bài xoay quanh <b>một ứng dụng duy nhất: sàn đấu giá trực tuyến thu nhỏ</b> (thêm sản phẩm lên sàn, xem danh sách sản phẩm gồm tên và giá khởi điểm, xóa sản phẩm). Đây là bản nhỏ của bài tập lớn: sau này bạn thêm lượt đặt giá, người dùng, và nối với Server ở Bài 9; phần giao diện bạn làm ở đây chính là phía Client. Ta không học các mảnh kiến thức rời rạc mà xây ứng dụng này từng bước, và mỗi phần giải quyết đúng vấn đề mà phần trước để lại.</p>`
++ pre(J`
+Phần 1  MVC             chia ứng dụng thành 3 vai (bản vẽ)
+   ↓
+Phần 2  JavaFX          công cụ vẽ cửa sổ, nút, danh sách
+Phần 3  FXML + CSS      viết giao diện thành tệp riêng      → vai VIEW
+Phần 4  Sự kiện         bấm nút thì chạy hàm nào            → vai CONTROLLER
+   ↓
+Phần 5  Ghép lại        Sàn đấu giá chạy được, dữ liệu trong RAM → vai MODEL
+   ↓   (tắt ứng dụng là mất dữ liệu → cần lưu lâu dài)
+Phần 6  Serialization   lưu cả đối tượng ra tệp
+Phần 7  SQLite + JDBC   lưu vào cơ sở dữ liệu, tìm kiếm được
+Phần 8  BLOB + JSON     lưu đối tượng phức tạp vào một cột
+   ↓
+Phần 9  Tổng kết        so sánh các cách lưu
+Phần 10 Lỗi hay gặp`)
++ tb(['Câu hỏi bạn sẽ có','Trả lời ở','Vai trong MVC'],[
+ ['Cửa sổ trông thế nào, đặt nút ở đâu?','Phần 2, 3','View'],
+ ['Bấm nút thì chuyện gì xảy ra?','Phần 4','Controller'],
+ ['Dữ liệu là gì và cất ở đâu cho khỏi mất?','Phần 1, 5, 6, 7, 8','Model']])
++ `<h3>Các từ sẽ gặp (đọc lướt, quay lại tra khi cần)</h3>`
++ tb(['Từ','Hiểu nôm na'],[
+ ['<b>GUI</b>','Giao diện có cửa sổ, nút, ô nhập (khác console chỉ có chữ)'],
+ ['<b>JavaFX</b>','Thư viện của Java để vẽ GUI'],
+ ['<b>Maven, dependency</b>','Công cụ tự tải về các thư viện bạn khai báo trong <code>pom.xml</code>'],
+ ['<b>FXML</b>','Tệp mô tả giao diện, vai trò như HTML của trang web'],
+ ['<b>Controller</b>','Lớp chứa các hàm chạy khi người dùng thao tác trên giao diện'],
+ ['<b>Repository</b>','Lớp lo việc thêm, xóa, đọc dữ liệu và giấu cách lưu ở bên trong'],
+ ['<b>Serialization</b>','Biến đối tượng thành dãy byte để lưu ra tệp hoặc gửi đi'],
+ ['<b>CSDL, SQL, JDBC</b>','Nơi lưu dữ liệu dạng bảng; ngôn ngữ để hỏi nó; cầu nối giữa Java và nó'],
+ ['<b>JSON</b>','Cách viết dữ liệu thành chữ dễ đọc, ngôn ngữ nào cũng hiểu']])
++ box('analogy','<b>Cách đọc bài:</b> mở đầu mỗi phần có một ô <b>🔗 Nối từ phần trước</b> cho biết vì sao ta cần phần này, cuối phần có ô nói phần sau sẽ làm gì tiếp. Nếu một đoạn khó hiểu, hãy hỏi: nó thuộc vai View, Controller hay Model?'))
++ sec('Phần 1. Vì sao cần MVC',
+`<p>Tưởng tượng bạn viết ứng dụng quản lý sàn đấu giá (sản phẩm, người dùng, lượt đặt giá) trong <b>một tệp duy nhất</b>: vừa vẽ giao diện, vừa xử lý khi bấm nút, vừa đọc ghi tệp dữ liệu. Lúc đầu rất nhanh. Khi lên vài nghìn dòng thì: đổi màu một cái nút cũng phải lội qua mã lưu trữ; ba người cùng sửa một tệp thì xung đột liên tục; muốn dùng lại phần lưu dữ liệu cho ứng dụng khác thì không tách ra được. Tóm lại ứng dụng lớn trở nên <b>khó bảo trì, khó tái sử dụng, khó làm việc nhóm</b>.</p>
 <p>Giải pháp là "chia để trị": chia ứng dụng thành ba vai, mỗi vai một việc. Đó là <b>MVC (Model – View – Controller)</b>, một trong những mô hình kiến trúc phổ biến nhất.</p>`
 + box('analogy','<b>Ví dụ ẩn dụ: nhà hàng.</b> <b>View</b> là bàn ăn và thực đơn: nơi khách nhìn và gọi món. <b>Controller</b> là bồi bàn: nhận yêu cầu của khách, chuyển vào bếp, mang món ra. <b>Model</b> là bếp và kho nguyên liệu: nơi thật sự có dữ liệu và công thức. Khách không vào bếp; bếp không cần biết khách ngồi bàn nào.')
-+ tb(['Vai','Việc của nó','Trong ứng dụng danh bạ'],[
- ['<b>Model</b>','Các lớp dữ liệu và logic lưu trữ dữ liệu','<code>Contact</code>, <code>ContactRepository</code> (thêm, xóa, lưu vào tệp hoặc CSDL)'],
- ['<b>View</b>','Hiển thị giao diện và dữ liệu cho người dùng','Tệp <code>contact.fxml</code> (ô nhập, nút, danh sách)'],
- ['<b>Controller</b>','Nhận tương tác từ View, gọi Model, cập nhật View','<code>ContactController</code>: khi bấm "Thêm" thì gọi <code>repo.add(...)</code>, rồi làm mới danh sách']])
++ tb(['Vai','Việc của nó','Trong ứng dụng đấu giá'],[
+ ['<b>Model</b>','Các lớp dữ liệu và logic lưu trữ dữ liệu','<code>Item</code> (sản phẩm), <code>ItemRepository</code> (thêm, xóa, lưu vào tệp hoặc CSDL)'],
+ ['<b>View</b>','Hiển thị giao diện và dữ liệu cho người dùng','Tệp <code>auction.fxml</code> (ô nhập tên và giá, nút, danh sách sản phẩm)'],
+ ['<b>Controller</b>','Nhận tương tác từ View, gọi Model, cập nhật View','<code>AuctionController</code>: khi bấm "Thêm" thì gọi <code>repo.add(...)</code>, rồi làm mới danh sách']])
 + pre(J`
 Người dùng bấm nút
       |
@@ -1628,30 +1663,90 @@ Người dùng bấm nút
 + pre(J`
 src/main/java/app/
     MainApp.java
-    model/        Contact.java, ContactRepository.java, InMemoryRepository.java ...
-    controller/   ContactController.java
+    model/        Item.java, ItemRepository.java, InMemoryRepository.java ...
+    controller/   AuctionController.java
 src/main/resources/app/
-    view/contact.fxml
-    style.css`))
+    view/auction.fxml
+    style.css`)
++ bridge('Tới đây ta mới có <b>bản vẽ</b>: ba vai View, Controller, Model. Hai phần tiếp theo đi mua vật liệu để dựng vai <b>View</b> (cái người dùng nhìn thấy): JavaFX cho các khối xây cửa sổ, FXML cho cách viết chúng thành tệp riêng.'))
 + sec('Phần 2. JavaFX từ con số 0',
-`<p><b>GUI</b> (giao diện đồ họa) là cửa sổ có thanh tiêu đề, ô nhập văn bản, nút bấm, checkbox, danh sách... <b>JavaFX</b> là thư viện đồ họa hướng đối tượng của Java để làm việc đó. Nó từng đi kèm Oracle JDK đến bản 10; từ sau đó phải thêm vào dự án riêng (OpenJFX). Các lựa chọn khác: Swing, SWT, Apache Pivot. Điểm mạnh của JavaFX: giao diện mô tả bằng <b>FXML</b> (giống HTML), tạo bằng kéo thả với <b>Scene Builder</b>, chỉnh vẻ ngoài bằng <b>CSS</b>, có sẵn nhiều control.</p>
-<h3>Cài đặt bằng Maven</h3>
-<p>Khai báo thư viện và plugin để chạy. (Thay số phiên bản bằng bản mới trên Maven Central; JavaFX 21 trở lên cần JDK 17+.)</p>`
+bridge('<b>Nối từ Phần 1:</b> MVC dặn View chỉ lo hiển thị. Phần này học công cụ để làm View là JavaFX: Stage, Scene, Node, bố cục và control, đủ để vẽ mọi cửa sổ của ứng dụng đấu giá.')
++ `<p><b>GUI</b> (giao diện đồ họa) là cửa sổ có thanh tiêu đề, ô nhập văn bản, nút bấm, checkbox, danh sách... <b>JavaFX</b> là thư viện đồ họa hướng đối tượng của Java để làm việc đó. Nó từng đi kèm Oracle JDK đến bản 10; từ sau đó phải thêm vào dự án riêng (OpenJFX). Các lựa chọn khác: Swing, SWT, Apache Pivot. Điểm mạnh của JavaFX: giao diện mô tả bằng <b>FXML</b> (giống HTML), tạo bằng kéo thả với <b>Scene Builder</b>, chỉnh vẻ ngoài bằng <b>CSS</b>, có sẵn nhiều control.</p>
+<h3>Dựng dự án từng bước (VS Code + Maven)</h3>
+<p><b>Maven</b> là công cụ quản lý dự án: bạn khai báo thư viện cần dùng trong một tệp tên <code>pom.xml</code>, Maven tự tải về và nối vào dự án, như đưa danh sách đi chợ cho người giao hàng. Làm lần lượt:</p>`
++ ul(['Cài <b>JDK 17 trở lên</b> và <b>Maven</b>; mở terminal gõ <code>java -version</code> và <code>mvn -v</code>, cả hai in ra số phiên bản là được. Trong VS Code cài extension <b>Extension Pack for Java</b>.','Tạo thư mục <code>auction</code>, mở nó bằng VS Code (File → Open Folder).','Trong <code>auction</code> tạo tệp <code>pom.xml</code> với nội dung ngay bên dưới.','Tạo các thư mục con đúng như sơ đồ cây bên dưới (Maven chỉ tìm mã nguồn ở đúng chỗ này).','Tạo <code>MainApp.java</code> (ví dụ HelloFX ở dưới), mở terminal tại thư mục <code>auction</code> và chạy <code>mvn javafx:run</code>. Lần đầu Maven tải thư viện nên hơi lâu.'])
++ `<h3>pom.xml đầy đủ cho cả bài</h3><p>Chép nguyên tệp này; nó đã chứa mọi thư viện của bài (JavaFX, SQLite, Gson) nên sau này không phải sửa nữa.</p>`
 + pre(J`
-<dependencies>
-  <dependency>
-    <groupId>org.openjfx</groupId><artifactId>javafx-controls</artifactId><version>21.0.5</version>
-  </dependency>
-  <dependency>
-    <groupId>org.openjfx</groupId><artifactId>javafx-fxml</artifactId><version>21.0.5</version>
-  </dependency>
-</dependencies>
-<build><plugins><plugin>
-  <groupId>org.openjfx</groupId><artifactId>javafx-maven-plugin</artifactId><version>0.0.8</version>
-  <configuration><mainClass>app.MainApp</mainClass></configuration>
-</plugin></plugins></build>
-<!-- chạy:  mvn javafx:run -->`)
-+ `<p>Nếu chạy thẳng lớp <code>main</code> bằng nút Run của IDE mà gặp "<i>JavaFX runtime components are missing</i>", đó là do thiếu cấu hình module; cách đơn giản nhất là chạy bằng <code>mvn javafx:run</code>.</p>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>app</groupId>
+  <artifactId>auction</artifactId>
+  <version>1.0</version>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.openjfx</groupId><artifactId>javafx-controls</artifactId><version>21.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId><artifactId>javafx-fxml</artifactId><version>21.0.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xerial</groupId><artifactId>sqlite-jdbc</artifactId><version>3.46.1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId><artifactId>gson</artifactId><version>2.11.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>0.0.8</version>
+        <configuration>
+          <mainClass>app.MainApp</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>`)
++ `<p>Ý nghĩa từng phần:</p>`
++ tb(['Phần của pom.xml','Ý nghĩa'],[
+ ['<code>&lt;project ...&gt;</code>','Thẻ gốc của mọi pom.xml; các dòng xmlns là khai báo chuẩn, chép nguyên, không cần hiểu sâu'],
+ ['<code>&lt;modelVersion&gt;4.0.0</code>','Phiên bản định dạng pom, luôn là 4.0.0'],
+ ['<code>&lt;groupId&gt;, &lt;artifactId&gt;, &lt;version&gt;</code>','Địa chỉ của dự án bạn: nhóm (<code>app</code>), tên (<code>auction</code>), phiên bản (<code>1.0</code>). Thư viện người khác cũng được gọi bằng đúng bộ ba này'],
+ ['<code>&lt;properties&gt;</code>','Các thiết lập chung. <code>maven.compiler.source/target</code> là bản Java dùng để biên dịch (đổi nếu JDK của bạn khác 17); <code>sourceEncoding UTF-8</code> để tiếng Việt trong mã không bị lỗi font'],
+ ['<code>&lt;dependencies&gt;</code>','Danh sách thư viện cần tải. Mỗi thư viện là một khối <code>&lt;dependency&gt;</code> có đủ groupId, artifactId, version'],
+ ['<code>javafx-controls, javafx-fxml</code>','JavaFX gồm nhiều mảnh: controls (nút, ô nhập, danh sách) và fxml (đọc tệp FXML)'],
+ ['<code>sqlite-jdbc</code>','Driver để JDBC nói chuyện với SQLite (Phần 7)'],
+ ['<code>gson</code>','Thư viện đổi qua lại đối tượng và JSON (Phần 8)'],
+ ['<code>&lt;build&gt;&lt;plugins&gt;</code>','Phần cấu hình quá trình chạy và đóng gói, không phải thư viện'],
+ ['<code>javafx-maven-plugin</code>','Bổ sung lệnh <code>mvn javafx:run</code> để chạy ứng dụng JavaFX; <code>mainClass</code> là lớp có hàm <code>main</code> (gồm cả tên package: <code>app.MainApp</code>)']])
++ `<h3>Sơ đồ thư mục</h3>`
++ pre(J`
+auction/
+ ├─ pom.xml
+ └─ src/main/
+     ├─ java/app/
+     │    ├─ MainApp.java
+     │    ├─ model/        (Item, ItemRepository, ...)
+     │    └─ controller/   (AuctionController)
+     └─ resources/app/
+          ├─ view/auction.fxml
+          └─ style.css`)
++ `<p>Quy ước: tệp <code>.java</code> nằm trong <code>src/main/java</code>; tệp không phải mã Java (FXML, CSS, ảnh) nằm trong <code>src/main/resources</code>. Tên thư mục con phải trùng khai báo <code>package</code> ở đầu mỗi tệp Java: tệp <code>MainApp.java</code> mở đầu bằng <code>package app;</code>, tệp trong <code>model/</code> mở đầu bằng <code>package app.model;</code>.</p>
+<p>Nếu chạy thẳng lớp <code>main</code> bằng nút Run của IDE mà gặp <i>JavaFX runtime components are missing</i>, đó là do thiếu cấu hình module; cách đơn giản nhất là chạy bằng <code>mvn javafx:run</code>.</p>
 <h3>Sân khấu: Stage, Scene, Node</h3>
 <p>Cách dễ nhất để nhớ cấu trúc của JavaFX là coi nó như một <b>vở kịch</b>.</p>`
 + box('analogy','<b>Stage</b> là sân khấu (chính là cửa sổ ứng dụng). <b>Scene</b> là một cảnh đang diễn trên sân khấu; một sân khấu một lúc chỉ có một cảnh (muốn đổi màn hình thì đổi Scene). <b>Node</b> là từng diễn viên và đạo cụ trong cảnh: nút bấm, ô nhập, hình tròn, ảnh...')
@@ -1720,9 +1815,11 @@ root.setPadding(new Insets(10));`)
  ['<code>TextArea</code>','Nhập nhiều dòng','<code>getText</code>, <code>appendText</code>'],
  ['<code>CheckBox</code> / <code>RadioButton</code>','Chọn bật/tắt / chọn một trong nhóm (<code>ToggleGroup</code>)','<code>isSelected</code>'],
  ['<code>ComboBox&lt;T&gt;</code>','Danh sách thả xuống','<code>getValue</code>, <code>getItems().addAll(...)</code>'],
- ['<code>ListView&lt;T&gt;</code> / <code>TableView&lt;T&gt;</code>','Danh sách / bảng','<code>setItems</code>, <code>getSelectionModel().getSelectedItem()</code>']]))
+ ['<code>ListView&lt;T&gt;</code> / <code>TableView&lt;T&gt;</code>','Danh sách / bảng','<code>setItems</code>, <code>getSelectionModel().getSelectedItem()</code>']])
++ bridge('Trong ứng dụng đấu giá ta sẽ dùng: <code>VBox</code> + <code>HBox</code> (bố cục), hai <code>TextField</code> (nhập tên sản phẩm, giá), hai <code>Button</code> (Thêm, Xóa), <code>ListView</code> (danh sách sản phẩm), <code>Label</code> (thông báo). Viết hết bằng mã Java thì dài và lẫn vào logic, nên Phần 3 tách giao diện ra tệp riêng.'))
 + sec('Phần 3. FXML, Scene Builder và CSS',
-`<p>Viết giao diện bằng mã Java (như ví dụ trên) thì dài và trộn lẫn vào logic. JavaFX cho phép mô tả giao diện bằng <b>FXML</b>, một ngôn ngữ dựa trên XML, vai trò giống HTML với trang web. Đây chính là <b>View</b> của MVC. Mỗi thẻ là một Node, thẻ lồng nhau thể hiện cây Scene Graph.</p>`
+bridge('<b>Nối từ Phần 2:</b> Phần 2 vẽ giao diện bằng mã Java. Phần này làm đúng việc đó bằng tệp FXML, và tệp này chính là <b>View</b> của MVC. Từ đây View và Controller là hai tệp riêng, nên điều quan trọng nhất là biết chúng nối với nhau thế nào.')
++ `<p>Viết giao diện bằng mã Java (như ví dụ trên) thì dài và trộn lẫn vào logic. JavaFX cho phép mô tả giao diện bằng <b>FXML</b>, một ngôn ngữ dựa trên XML, vai trò giống HTML với trang web. Đây chính là <b>View</b> của MVC. Mỗi thẻ là một Node, thẻ lồng nhau thể hiện cây Scene Graph.</p>`
 + pre(J`
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
@@ -1745,6 +1842,15 @@ public class LoginController {
 }`)
 + `<p>Hai tệp này được nối với nhau bởi ba "sợi dây" cần nhớ:</p>`
 + ul(['<code>fx:controller="app.controller.LoginController"</code>: FXML biết lớp Controller nào phụ trách nó.','<code>fx:id="message"</code> ↔ <code>@FXML private Label message;</code>: Node có <code>fx:id</code> được JavaFX gán vào trường cùng tên trong Controller, để mã Java điều khiển được nó.','<code>onAction="#onLogin"</code> ↔ phương thức <code>onLogin()</code>: dấu <code>#</code> nghĩa là "gọi phương thức của Controller khi bấm nút".'])
++ `<p>Khi gọi <code>FXMLLoader.load</code>, JavaFX làm các việc sau ở phía sau. Hiểu thứ tự này là hiểu vì sao trường <code>@FXML</code> chỉ có giá trị từ <code>initialize()</code> trở đi:</p>`
++ pre(J`
+FXMLLoader.load đọc tệp FXML rồi lần lượt:
+ 1. Tạo từng Node theo từng thẻ (VBox, TextField, Button...)
+ 2. Đọc fx:controller và tạo một đối tượng của lớp Controller đó
+ 3. Gán Node có fx:id vào trường @FXML cùng tên trong Controller
+ 4. Nối onAction=#onLogin với phương thức onLogin()
+ 5. Gọi initialize() của Controller (nếu có)
+ 6. Trả về Node gốc (root) để bỏ vào Scene`)
 + `<p>Ngoài ra Controller có thể có phương thức <code>initialize()</code> (đánh dấu <code>@FXML</code>) được gọi tự động <b>sau khi</b> các trường <code>@FXML</code> đã được gán xong; đây là chỗ nạp dữ liệu ban đầu. Đừng dùng constructor cho việc này vì lúc đó các trường vẫn còn <code>null</code>. Nạp FXML vào ứng dụng:</p>`
 + pre(J`
 Parent root = FXMLLoader.load(getClass().getResource("/app/login.fxml"));
@@ -1766,9 +1872,11 @@ scene.getStylesheets().add(getClass().getResource("/app/style.css").toExternalFo
 label.setId("title");                         // ứng với selector #title
 label.getStyleClass().add("highlight");       // ứng với selector .highlight
 btn.setStyle("-fx-background-color: red;");   // inline CSS: nhanh, gắn thẳng vào một Node`)
-+ `<p>Ba kiểu selector: <code>.tên</code> (theo style class, <code>.button</code> chọn mọi nút), <code>#tên</code> (theo id, một Node duy nhất), <code>:hover</code> (trạng thái, khi rê chuột). Inline CSS tiện cho một thay đổi nhỏ, còn giao diện nghiêm túc nên để trong tệp <code>.css</code> riêng.</p>`)
++ `<p>Ba kiểu selector: <code>.tên</code> (theo style class, <code>.button</code> chọn mọi nút), <code>#tên</code> (theo id, một Node duy nhất), <code>:hover</code> (trạng thái, khi rê chuột). Inline CSS tiện cho một thay đổi nhỏ, còn giao diện nghiêm túc nên để trong tệp <code>.css</code> riêng.</p>`
++ bridge('Giờ View đã đẹp nhưng chỉ là một bức ảnh: bấm nút chưa xảy ra gì. Phần 4 làm cho nó phản ứng, tức là vai <b>Controller</b>.'))
 + sec('Phần 4. Xử lý sự kiện (vai trò Controller)',
-`<p>Ứng dụng console chạy từ trên xuống dưới rồi dừng. Ứng dụng giao diện thì khác: nó <b>ngồi chờ</b> người dùng làm gì đó rồi mới phản ứng. Đây là lập trình hướng sự kiện (event programming).</p>
+bridge('<b>Nối từ Phần 3:</b> trong FXML ta đã viết <code>onAction="#onAdd"</code> nhưng chưa nói <code>onAdd</code> làm gì. Phần này trả lời: hàm đó chạy khi nào, chạy ở thread nào, và làm sao cập nhật danh sách trên màn hình.')
++ `<p>Ứng dụng console chạy từ trên xuống dưới rồi dừng. Ứng dụng giao diện thì khác: nó <b>ngồi chờ</b> người dùng làm gì đó rồi mới phản ứng. Đây là lập trình hướng sự kiện (event programming).</p>
 <p>Một sự kiện luôn có ba yếu tố: <b>source</b> (nguồn phát: chuột), <b>target</b> (đối tượng bị tác động: nút "Click me"), <b>type</b> (loại: click chuột). Sự kiện <b>foreground</b> do người dùng trực tiếp gây ra (bấm, gõ phím, chọn mục, cuộn); sự kiện <b>background</b> chạy ngầm (báo lỗi, bộ đếm thời gian). Các loại phổ biến: Mouse Event (click, press, release, move), Key Event (press, release), Drag and Drop Event, Window Event (show, hide).</p>
 <h3>Đăng ký bộ xử lý (event handler)</h3>
 <p>Quy tắc chung: <code>node.setOn&lt;Loại&gt;(handler)</code>, trong đó handler là một <code>EventHandler</code> nhận đối tượng sự kiện. Cùng một việc có thể viết bốn cách, kết quả như nhau:</p>`
@@ -1801,81 +1909,139 @@ btn.setOnAction(e -> {
         });
     }).start();
 });`)
++ box('warn','<b>Áp vào đấu giá:</b> thêm hay xóa sản phẩm trong RAM hoặc tệp nhỏ rất nhanh nên chạy thẳng trong handler là được. Nhưng trong hệ thống thật, giá mới do người khác đặt sẽ đến từ Server qua mạng (Bài 9) trên một thread nền; muốn hiện lên màn hình phải dùng đúng khuôn mẫu thread nền + <code>Platform.runLater</code> ở trên (kiến thức đa luồng của Bài 7).')
 + `<h3>ObservableList: danh sách tự cập nhật giao diện</h3>
 <p><code>FXCollections.observableArrayList()</code> là danh sách "có người theo dõi". Gắn nó vào <code>ListView</code>/<code>TableView</code> bằng <code>setItems</code>, mỗi lần bạn thêm hoặc xóa phần tử, giao diện tự vẽ lại; không cần gọi hàm làm mới.</p>`
 + pre(J`
-ObservableList<String> data = FXCollections.observableArrayList("An", "Bình");
+ObservableList<String> data = FXCollections.observableArrayList("Laptop", "Đồng hồ");
 listView.setItems(data);
-data.add("Chi");       // ListView hiện thêm "Chi" ngay`))
-+ sec('Phần 5. Ghép lại: ứng dụng Danh bạ theo MVC',
-`<p>Giờ ta xây một ứng dụng hoàn chỉnh. Điểm thiết kế quan trọng: Controller <b>không làm việc với một kho lưu trữ cụ thể</b> mà với interface <code>ContactRepository</code>. Nhờ vậy ở các phần sau ta thay "lưu trong RAM" bằng "lưu vào tệp" rồi "lưu vào SQLite" mà Controller và View không phải sửa dòng nào (đây chính là nguyên lý DIP của Bài 6).</p>
+data.add("Máy ảnh");   // ListView hiện thêm "Máy ảnh" ngay`)
++ bridge('Đã đủ ba mảnh: Model (Phần 1), View (Phần 3), Controller (Phần 4). Phần 5 ghép chúng thành một ứng dụng chạy được.'))
++ sec('Phần 5. Ghép lại: ứng dụng đấu giá theo MVC',
+bridge('<b>Nối từ Phần 1-4:</b> mọi thứ đã học được dùng ở đây. Sơ đồ dưới cho biết các tệp gọi nhau thế nào; hãy đối chiếu với nó khi đọc từng đoạn mã.')
++ pre(J`
+MainApp.start()
+   │  FXMLLoader nạp
+   ▼
+auction.fxml (VIEW) ── fx:controller ──▶ AuctionController (CONTROLLER)
+                                              │ chỉ giữ một biến kiểu interface
+                                              ▼
+                                     ItemRepository (MODEL: bản hợp đồng)
+                                       ▲           ▲            ▲
+                              InMemoryRepository FileRepository SqliteRepository
+                                  (Phần 5)        (Phần 6)       (Phần 7)
+Item: đối tượng dữ liệu mà Controller và Repository cùng dùng`)
++ `<h3>Bộ từ vựng Java dùng trong code bên dưới</h3><p>Đọc lướt bảng này trước, khi gặp từ lạ trong code thì quay lại tra.</p>`
++ tb(['Từ khóa','Nghĩa'],[
+ ['<code>public / private</code>','Ai được dùng: <code>public</code> mọi nơi, <code>private</code> chỉ bên trong chính lớp đó'],
+ ['<code>final</code>','Gán giá trị đúng một lần rồi không đổi nữa'],
+ ['<code>static</code>','Thuộc về lớp chứ không thuộc từng đối tượng'],
+ ['<code>class / interface</code>','<code>class</code> là bản thiết kế đối tượng; <code>interface</code> là bản hợp đồng chỉ liệt kê tên hàm, không viết thân hàm'],
+ ['<code>implements</code>','Lớp cam kết viết đủ mọi hàm mà interface liệt kê'],
+ ['<code>extends</code>','Lớp con kế thừa lớp cha (Bài 3); ở đây gặp trong <code>extends Application</code>'],
+ ['<code>@Override, @FXML</code>','Annotation là nhãn dán lên mã. <code>@Override</code>: nhờ trình biên dịch kiểm tra bạn ghi đè đúng hàm. <code>@FXML</code>: báo JavaFX rằng trường hay hàm này nối với tệp FXML'],
+ ['<code>List&amp;lt;Item&amp;gt;</code>','Generics (Bài 4): danh sách mà mỗi phần tử là một <code>Item</code>'],
+ ['<code>new Item(...)</code>','Tạo một đối tượng mới, gọi constructor'],
+ ['<code>c -&gt; c.getId() == id</code>','Lambda: một hàm nhỏ viết gọn, nghĩa là với mỗi <code>c</code> thì tính <code>c.getId() == id</code>'],
+ ['<code>try (...) { } catch</code>','Bắt lỗi. Ngoặc tròn sau <code>try</code> chứa tài nguyên (tệp, kết nối) sẽ <b>tự đóng</b> khi xong'],
+ ['<code>throws, RuntimeException</code>','<code>throws X</code>: hàm này có thể ném lỗi X ra ngoài. <code>RuntimeException</code>: loại lỗi không bắt buộc khai báo throws']])
++ `<h3>Thứ tự tự viết (chạy thử sau mỗi bước)</h3><p>Đừng chép cả đống rồi mới chạy. Viết từng mảnh, mảnh nào xong thì biên dịch được rồi mới sang mảnh sau:</p>`
++ ul(['<b>Bước 1 - Item:</b> tạo <code>model/Item.java</code> chỉ gồm 3 trường, constructor, getter. Chạy <code>mvn compile</code> để chắc không lỗi.','<b>Bước 2 - Repository:</b> tạo interface <code>ItemRepository</code>, rồi <code>InMemoryRepository</code>.','<b>Bước 3 - View:</b> tạo <code>auction.fxml</code>. Chưa có Controller thì tạm xóa <code>fx:controller</code> và các <code>onAction</code>.','<b>Bước 4 - Controller:</b> tạo <code>AuctionController</code>, khai báo các trường <code>@FXML</code> trùng <code>fx:id</code>, rồi viết lần lượt <code>initialize</code>, <code>onAdd</code>, <code>onDelete</code>; bật lại <code>fx:controller</code> trong FXML.','<b>Bước 5 - MainApp:</b> nạp FXML và <code>show()</code>.','<b>Bước 6:</b> chạy <code>mvn javafx:run</code>. Có lỗi thì đọc dòng đầu của thông báo lỗi và tra Phần 10.'])
++ `<p>Giờ ta xây một ứng dụng hoàn chỉnh. Điểm thiết kế quan trọng: Controller <b>không làm việc với một kho lưu trữ cụ thể</b> mà với interface <code>ItemRepository</code>. Nhờ vậy ở các phần sau ta thay "lưu trong RAM" bằng "lưu vào tệp" rồi "lưu vào SQLite" mà Controller và View không phải sửa dòng nào (đây chính là nguyên lý DIP của Bài 6).</p>
 <h3>Model</h3>`
 + pre(J`
-public class Contact implements java.io.Serializable {
+public class Item implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
-    private final int id; private final String name, phone;
-    public Contact(int id, String name, String phone) { this.id = id; this.name = name; this.phone = phone; }
+    private final int id; private final String name; private final double price;
+    public Item(int id, String name, double price) { this.id = id; this.name = name; this.price = price; }
     public int getId() { return id; }
     public String getName() { return name; }
-    public String getPhone() { return phone; }
-    @Override public String toString() { return name + " - " + phone; }   // ListView hiển thị chuỗi này
+    public double getPrice() { return price; }
+    @Override public String toString() { return name + " - " + price; }   // ListView hiển thị chuỗi này
 }
 
-public interface ContactRepository {
-    java.util.List<Contact> findAll();
-    void add(Contact c);
+public interface ItemRepository {
+    java.util.List<Item> findAll();
+    void add(Item c);
     void delete(int id);
 }
 
-public class InMemoryRepository implements ContactRepository {
-    private final java.util.List<Contact> list = new java.util.ArrayList<>();
+public class InMemoryRepository implements ItemRepository {
+    private final java.util.List<Item> list = new java.util.ArrayList<>();
     private int next = 1;
-    public java.util.List<Contact> findAll() { return new java.util.ArrayList<>(list); }
-    public void add(Contact c) { list.add(new Contact(next++, c.getName(), c.getPhone())); }
+    public java.util.List<Item> findAll() { return new java.util.ArrayList<>(list); }
+    public void add(Item c) { list.add(new Item(next++, c.getName(), c.getPrice())); }
     public void delete(int id) { list.removeIf(c -> c.getId() == id); }
 }`)
-+ `<h3>View (contact.fxml)</h3>`
++ `<h3>Đọc hiểu code Model</h3>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>implements java.io.Serializable</code>','Cho phép lưu đối tượng ra tệp; tạm bỏ qua, Phần 6 giải thích'],
+ ['<code>private final int id; ... price</code>','Ba thông tin của một sản phẩm. <code>private</code> để bên ngoài không sửa trực tiếp; <code>final</code> để gán một lần ở constructor'],
+ ['<code>public Item(int id, String name, double price)</code>','Constructor: chạy khi viết <code>new Item(...)</code>. <code>this.id = id</code> nghĩa là chép tham số <code>id</code> vào trường <code>id</code> của đối tượng'],
+ ['<code>getId(), getName(), getPrice()</code>','Getter: cách duy nhất để bên ngoài đọc các trường private'],
+ ['<code>toString()</code>','Chuỗi mô tả đối tượng; <code>ListView</code> gọi hàm này để biết dòng của sản phẩm hiện chữ gì'],
+ ['<code>interface ItemRepository</code>','Hợp đồng: kho lưu trữ nào cũng phải có <code>findAll</code> (lấy tất cả), <code>add</code> (thêm), <code>delete</code> (xóa theo id)'],
+ ['<code>java.util.List&lt;Item&gt;</code>','Viết đủ <code>java.util.</code> vì ví dụ không có dòng <code>import</code>; trong tệp thật bạn viết <code>import java.util.*;</code> ở đầu rồi chỉ cần <code>List</code>'],
+ ['<code>private int next = 1; ... next++</code>','<code>next</code> là bộ đếm cấp id. <code>next++</code> lấy giá trị hiện tại rồi tăng thêm 1'],
+ ['<code>new ArrayList&lt;&gt;(list)</code>','Trả về <b>bản sao</b> để bên ngoài không sửa được danh sách gốc'],
+ ['<code>list.removeIf(c -&gt; c.getId() == id)</code>','Xóa mọi phần tử có id trùng khớp. Lưu ý <code>add</code> bỏ qua id truyền vào và tự cấp id mới bằng <code>next++</code>']])
++ `<h3>View (auction.fxml)</h3>`
 + pre(J`
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="app.controller.ContactController">
+      fx:controller="app.controller.AuctionController">
     <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
     <HBox spacing="8">
-        <TextField fx:id="nameField" promptText="Tên"/>
-        <TextField fx:id="phoneField" promptText="Số điện thoại"/>
+        <TextField fx:id="nameField" promptText="Tên sản phẩm"/>
+        <TextField fx:id="priceField" promptText="Giá khởi điểm"/>
         <Button text="Thêm" onAction="#onAdd"/>
     </HBox>
     <ListView fx:id="listView" prefHeight="220"/>
     <Button text="Xóa mục đã chọn" onAction="#onDelete"/>
     <Label fx:id="status"/>
 </VBox>`)
++ `<h3>Đọc hiểu code View (FXML)</h3>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>&lt;?import javafx.scene.control.*?&gt;</code>','Giống <code>import</code> của Java: để dùng được <code>TextField</code>, <code>Button</code>, <code>ListView</code>...'],
+ ['<code>&lt;VBox ...&gt;</code>','Thẻ gốc, bố cục xếp dọc. <code>spacing=10</code>: các phần tử cách nhau 10 pixel'],
+ ['<code>xmlns, xmlns:fx</code>','Khai báo bảng thẻ của JavaFX và tiền tố <code>fx:</code>; chép nguyên, thiếu là FXML không chạy'],
+ ['<code>fx:controller="app.controller.AuctionController"</code>','Cho biết lớp Controller phụ trách tệp này (viết đủ tên package)'],
+ ['<code>&lt;padding&gt;&lt;Insets .../&gt;&lt;/padding&gt;</code>','Chừa 12 pixel viền quanh để nội dung không dính mép cửa sổ'],
+ ['<code>&lt;HBox spacing="8"&gt;</code>','Hàng ngang chứa hai ô nhập và nút Thêm'],
+ ['<code>promptText</code>','Chữ mờ gợi ý hiện trong ô còn trống'],
+ ['<code>fx:id="nameField"</code>','Đặt tên cho Node để Controller điều khiển được; tên phải trùng tên trường <code>@FXML</code>'],
+ ['<code>onAction="#onAdd"</code>','Bấm nút thì gọi hàm <code>onAdd()</code> của Controller; dấu <code>#</code> bắt buộc'],
+ ['<code>prefHeight="220"</code>','Chiều cao mong muốn của danh sách, tính bằng pixel']])
 + `<h3>Controller và lớp khởi động</h3>`
 + pre(J`
-public class ContactController {
-    @FXML private TextField nameField, phoneField;
-    @FXML private ListView<Contact> listView;
+public class AuctionController {
+    @FXML private TextField nameField, priceField;
+    @FXML private ListView<Item> listView;
     @FXML private Label status;
 
-    private final ContactRepository repo = new InMemoryRepository();   // chỉ đổi dòng này khi đổi cách lưu
-    private final ObservableList<Contact> data = FXCollections.observableArrayList();
+    private final ItemRepository repo = new InMemoryRepository();   // chỉ đổi dòng này khi đổi cách lưu
+    private final ObservableList<Item> data = FXCollections.observableArrayList();
 
     @FXML private void initialize() {
         data.setAll(repo.findAll());
         listView.setItems(data);
     }
     @FXML private void onAdd() {
-        String n = nameField.getText().trim(), p = phoneField.getText().trim();
-        if (n.isEmpty() || p.isEmpty()) { status.setText("Hãy nhập đủ tên và số điện thoại"); return; }
-        repo.add(new Contact(0, n, p));
+        String n = nameField.getText().trim(), p = priceField.getText().trim();
+        if (n.isEmpty() || p.isEmpty()) { status.setText("Hãy nhập đủ tên sản phẩm và giá khởi điểm"); return; }
+        double price;
+        try { price = Double.parseDouble(p); }
+        catch (NumberFormatException ex) { status.setText("Giá phải là một số"); return; }
+        repo.add(new Item(0, n, price));
         data.setAll(repo.findAll());
-        nameField.clear(); phoneField.clear();
+        nameField.clear(); priceField.clear();
         status.setText("Đã thêm " + n);
     }
     @FXML private void onDelete() {
-        Contact c = listView.getSelectionModel().getSelectedItem();
+        Item c = listView.getSelectionModel().getSelectedItem();
         if (c == null) { status.setText("Chưa chọn mục nào"); return; }
         repo.delete(c.getId());
         data.setAll(repo.findAll());
@@ -1884,19 +2050,41 @@ public class ContactController {
 
 public class MainApp extends Application {
     @Override public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/app/view/contact.fxml"));
-        stage.setTitle("Danh bạ");
+        Parent root = FXMLLoader.load(getClass().getResource("/app/view/auction.fxml"));
+        stage.setTitle("Đấu giá");
         stage.setScene(new Scene(root, 480, 380));
         stage.show();
     }
     public static void main(String[] args) { launch(args); }
 }`)
++ `<h3>Đọc hiểu code Controller và MainApp</h3><p>Ở đầu tệp Controller cần các dòng <code>import</code> (<code>javafx.fxml.FXML</code>, <code>javafx.scene.control.*</code>, <code>javafx.collections.*</code>). Trong VS Code, gõ tên lớp rồi nhấn <code>Ctrl + .</code> để nó tự thêm import.</p>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>@FXML private TextField nameField, priceField;</code>','Khai báo hai ô nhập. Tên trường trùng <code>fx:id</code> trong FXML nên JavaFX tự gán đối tượng thật vào, bạn không cần <code>new</code>'],
+ ['<code>ItemRepository repo = new InMemoryRepository();</code>','Biến khai báo kiểu <b>interface</b>, đối tượng thật là InMemory. Muốn đổi cách lưu chỉ đổi vế phải của dòng này'],
+ ['<code>ObservableList&lt;Item&gt; data = FXCollections.observableArrayList();</code>','Danh sách biết tự báo cho <code>ListView</code> vẽ lại khi nội dung đổi'],
+ ['<code>initialize()</code>','JavaFX tự gọi sau khi nạp FXML và gán xong các trường <code>@FXML</code>. <code>data.setAll(...)</code> thay toàn bộ nội dung danh sách; <code>listView.setItems(data)</code> gắn danh sách vào <code>ListView</code>'],
+ ['<code>nameField.getText().trim()</code>','Lấy chữ người dùng gõ và cắt khoảng trắng thừa hai đầu'],
+ ['<code>n.isEmpty()</code>','<code>true</code> nếu chuỗi rỗng. <code>return;</code> thoát khỏi hàm ngay, các dòng sau không chạy'],
+ ['<code>Double.parseDouble(p)</code>','Đổi chuỗi như 5000000 thành số. Nếu người dùng gõ chữ thì ném <code>NumberFormatException</code>; ta bắt lại bằng <code>catch</code> và báo lỗi trên <code>status</code>'],
+ ['<code>repo.add(new Item(0, n, price))</code>','Số 0 là id tạm, repo sẽ cấp id thật'],
+ ['<code>listView.getSelectionModel().getSelectedItem()</code>','Lấy mục đang chọn; trả <code>null</code> nếu chưa chọn mục nào, nên phải kiểm tra <code>c == null</code>'],
+ ['<code>nameField.clear(); status.setText(...)</code>','Xóa ô nhập; đổi chữ của <code>Label</code>'],
+ ['<code>MainApp extends Application</code>','Lớp khởi động của JavaFX (đã giải thích ở HelloFX). <code>throws IOException</code> vì <code>FXMLLoader.load</code> có thể ném lỗi khi không đọc được tệp'],
+ ['<code>getClass().getResource("/app/view/auction.fxml")</code>','Tìm tệp trong thư mục <code>resources</code>, dấu <code>/</code> đầu nghĩa là tính từ gốc <code>resources</code>'],
+ ['<code>new Scene(root, 480, 380)</code>','Tạo cảnh từ Node gốc với kích thước rộng 480, cao 380 pixel']])
++ `<h3>Lần theo một lần bấm nút Thêm</h3>
+<p>Đây là cả MVC trong một vòng chạy: View → Controller → Model → Controller → View.</p>`
++ ul(['<b>View:</b> bạn gõ tên sản phẩm và giá khởi điểm vào hai <code>TextField</code> rồi bấm nút. FXML đã nối nút này với <code>#onAdd</code>.','<b>Controller:</b> <code>onAdd()</code> chạy trên thread giao diện, lấy chữ từ <code>nameField</code> và <code>priceField</code>, kiểm tra không rỗng và giá là một số.','<b>Model:</b> Controller gọi <code>repo.add(...)</code>. Nó không biết repo lưu ở RAM, tệp hay CSDL.','<b>Controller:</b> gọi <code>repo.findAll()</code> lấy danh sách mới, đưa vào <code>data.setAll(...)</code>.','<b>View:</b> vì <code>data</code> là <code>ObservableList</code> đã gắn với <code>ListView</code>, danh sách tự vẽ lại; Controller xóa ô nhập và ghi thông báo vào <code>status</code>.'])
 + `<p>Chạy thử sẽ thấy ứng dụng hoạt động, nhưng tắt đi là mất sạch dữ liệu vì mọi thứ chỉ nằm trong RAM. Hai phần tiếp theo giải quyết đúng chuyện đó. (Nếu bạn dùng <code>module-info.java</code>, nhớ thêm <code>opens app.controller to javafx.fxml;</code> để FXML truy cập được các trường <code>@FXML</code>.)</p>`)
 + sec('Phần 6. Serialization: lưu cả đối tượng vào tệp',
-`<h3>Bài toán</h3>
+bridge('<b>Nối từ Phần 5:</b> Ứng dụng đấu giá mất sạch sản phẩm khi tắt vì <code>InMemoryRepository</code> chỉ giữ danh sách trong RAM. Ta giữ nguyên View và Controller, chỉ viết thêm một Repository khác cất dữ liệu ra ổ đĩa. Cách đơn giản nhất của Java là tuần tự hóa.')
++ `<h3>Bài toán</h3>
 <p>Lưu thông tin một người dùng vào tệp văn bản thì dễ: mỗi dòng <code>id,email,name</code>. Nhưng nếu đối tượng chứa danh sách đối tượng khác, đối tượng lồng nhau, ngày tháng...? Bạn phải tự viết mã chuyển qua lại, rất dễ sai (dấu phẩy trong tên, quên một trường, đọc sai thứ tự).</p>
 <p><b>Serialization (tuần tự hóa)</b> là quá trình biến một đối tượng Java thành <b>chuỗi byte</b> để lưu hoặc truyền đi; <b>deserialization</b> là chiều ngược lại, dựng lại đối tượng từ chuỗi byte.</p>`
 + box('analogy','<b>Ví dụ ẩn dụ:</b> chuyển nhà với đồ nội thất lắp ghép. Bạn tháo tủ thành các tấm ván đóng gói (serialization), chở đi hoặc cất kho, đến nơi lắp lại đúng như cũ (deserialization). Bản hướng dẫn lắp ráp chính là <b>định nghĩa lớp</b>; không có nó, đống ván chỉ là gỗ.')
++ pre(J`
+GHI :  Item(1, Laptop, 5000000)  ──writeObject──▶  dãy byte  ──▶  tệp items.dat
+ĐỌC :  Item(1, Laptop, 5000000)  ◀──readObject───  dãy byte  ◀──  tệp items.dat`)
 + `<p>Dùng để: lưu trạng thái đối tượng, truyền dữ liệu qua mạng (Bài 9), chia sẻ dữ liệu giữa các ứng dụng, và RMI (gọi phương thức từ xa). Java làm việc này gần như tự động, bạn chỉ cần "đánh dấu" lớp.</p>
 <h3>Cách làm</h3>
 <p>Lớp <code>implements java.io.Serializable</code>. Interface này <b>không có phương thức nào</b>, chỉ là nhãn nói rằng "lớp này cho phép tuần tự hóa". Rồi ghi/đọc bằng <code>ObjectOutputStream</code>/<code>ObjectInputStream</code> (đã gặp ở Bài 5.2).</p>`
@@ -1916,16 +2104,25 @@ try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("acc.dat")
     Account a = (Account) in.readObject();
     System.out.println(a);                 // an / null   (password là transient nên bị bỏ)
 }`)
++ `<h3>Đọc hiểu code ghi và đọc tệp</h3>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>private transient String password;</code>','Trường bị loại khỏi dữ liệu lưu, đọc lại sẽ là <code>null</code>'],
+ ['<code>new FileOutputStream("acc.dat")</code>','Mở tệp <code>acc.dat</code> để ghi byte (tự tạo nếu chưa có)'],
+ ['<code>new ObjectOutputStream(...)</code>','Bọc ngoài <code>FileOutputStream</code>: nó biết đổi đối tượng thành byte. Giống bọc quà: lớp trong lo tệp, lớp ngoài lo đối tượng'],
+ ['<code>try ( ... ) { }</code>','Ngoặc tròn khai báo luồng, khi khối xong (kể cả có lỗi) luồng <b>tự đóng</b>. Quên đóng thì dữ liệu có thể chưa ghi hết xuống tệp'],
+ ['<code>out.writeObject(obj)</code>','Ghi đối tượng ra tệp'],
+ ['<code>(Account) in.readObject()</code>','<code>readObject</code> trả kiểu <code>Object</code> chung nên phải ép kiểu về <code>Account</code> bằng <code>(Account)</code>'],
+ ['<code>throws IOException, ClassNotFoundException</code>','Các lệnh trên có thể ném lỗi; hàm chứa chúng phải khai báo <code>throws</code> hoặc bao trong <code>try-catch</code>']])
 + `<h3>serialVersionUID: số phiên bản của bản thiết kế</h3>
 <p>Khi ghi, Java đóng kèm <code>serialVersionUID</code> của lớp vào dữ liệu. Khi đọc, nó so với UID của lớp hiện tại: <b>khác nhau thì ném <code>InvalidClassException</code></b>. Tình huống thật: hôm nay bạn lưu tệp, tuần sau thêm một trường vào <code>Account</code> rồi mở lại tệp cũ. Nếu bạn <b>không khai báo</b> UID, trình biên dịch tự tính từ nội dung lớp, nên UID đổi theo và mở tệp cũ sẽ lỗi. Nếu bạn khai báo cố định (<code>= 1L</code>), tệp cũ vẫn đọc được và trường mới nhận giá trị mặc định (<code>null</code>, <code>0</code>). Vì vậy hãy luôn tự khai báo; chỉ tăng số này khi chủ ý làm dữ liệu cũ không dùng được nữa.</p>
 <h3>Quy tắc về các trường</h3>`
-+ ul(['<b>Mọi trường phải tuần tự hóa được.</b> Kiểu nguyên thủy, <code>String</code>, <code>ArrayList</code>, <code>HashMap</code>... đều được. Trường kiểu lớp do bạn viết thì lớp đó cũng phải <code>implements Serializable</code>, nếu không sẽ có <code>NotSerializableException</code>.','Java lưu <b>cả đồ thị đối tượng</b>: ghi một <code>Contact</code> thì các đối tượng nó trỏ tới cũng được ghi theo, và một đối tượng được tham chiếu nhiều nơi chỉ được ghi một lần.','<code>transient</code> loại một trường khỏi dữ liệu: dùng cho mật khẩu, kết nối mạng/CSDL, bộ nhớ đệm, giá trị tính lại được. Sau khi đọc, trường <code>transient</code> có giá trị mặc định (<code>null</code>/<code>0</code>/<code>false</code>).','Trường <code>static</code> thuộc về lớp chứ không thuộc đối tượng, nên không được lưu.'])
-+ `<h3>Kho lưu trữ bằng tệp cho ứng dụng Danh bạ</h3>
-<p>Viết <code>FileRepository</code> cài cùng interface <code>ContactRepository</code>: mỗi lần thay đổi thì ghi cả danh sách ra tệp, và khi khởi động thì đọc lại.</p>`
++ ul(['<b>Mọi trường phải tuần tự hóa được.</b> Kiểu nguyên thủy, <code>String</code>, <code>ArrayList</code>, <code>HashMap</code>... đều được. Trường kiểu lớp do bạn viết thì lớp đó cũng phải <code>implements Serializable</code>, nếu không sẽ có <code>NotSerializableException</code>.','Java lưu <b>cả đồ thị đối tượng</b>: ghi một <code>Item</code> thì các đối tượng nó trỏ tới cũng được ghi theo, và một đối tượng được tham chiếu nhiều nơi chỉ được ghi một lần.','<code>transient</code> loại một trường khỏi dữ liệu: dùng cho mật khẩu, kết nối mạng/CSDL, bộ nhớ đệm, giá trị tính lại được. Sau khi đọc, trường <code>transient</code> có giá trị mặc định (<code>null</code>/<code>0</code>/<code>false</code>).','Trường <code>static</code> thuộc về lớp chứ không thuộc đối tượng, nên không được lưu.'])
++ `<h3>Kho lưu trữ bằng tệp cho ứng dụng đấu giá</h3>
+<p>Viết <code>FileRepository</code> cài cùng interface <code>ItemRepository</code>: mỗi lần thay đổi thì ghi cả danh sách ra tệp, và khi khởi động thì đọc lại.</p>`
 + pre(J`
-public class FileRepository implements ContactRepository {
+public class FileRepository implements ItemRepository {
     private final File file;
-    private List<Contact> list = new ArrayList<>();
+    private List<Item> list = new ArrayList<>();
     private int next = 1;
 
     public FileRepository(String path) { file = new File(path); load(); }
@@ -1934,8 +2131,8 @@ public class FileRepository implements ContactRepository {
     private void load() {
         if (!file.exists()) return;
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-            list = (ArrayList<Contact>) in.readObject();
-            for (Contact c : list) next = Math.max(next, c.getId() + 1);
+            list = (ArrayList<Item>) in.readObject();
+            for (Item c : list) next = Math.max(next, c.getId() + 1);
         } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
     }
     private void save() {
@@ -1943,38 +2140,56 @@ public class FileRepository implements ContactRepository {
             out.writeObject(list);
         } catch (IOException e) { throw new RuntimeException(e); }
     }
-    public List<Contact> findAll() { return new ArrayList<>(list); }
-    public void add(Contact c) { list.add(new Contact(next++, c.getName(), c.getPhone())); save(); }
+    public List<Item> findAll() { return new ArrayList<>(list); }
+    public void add(Item c) { list.add(new Item(next++, c.getName(), c.getPrice())); save(); }
     public void delete(int id) { list.removeIf(c -> c.getId() == id); save(); }
 }
-// Trong ContactController đổi một dòng:
-// private final ContactRepository repo = new FileRepository("contacts.dat");`)
-+ `<p>Chạy lại, thêm vài liên hệ, tắt ứng dụng và mở lại: dữ liệu còn nguyên. Controller không hề biết nguồn dữ liệu đã đổi.</p>
+// Trong AuctionController đổi một dòng:
+// private final ItemRepository repo = new FileRepository("items.dat");`)
++ `<h3>Đọc hiểu FileRepository</h3>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>private final File file;</code>','Đối tượng đại diện cho đường dẫn tệp dữ liệu; constructor nhận đường dẫn và gọi <code>load()</code> ngay'],
+ ['<code>if (!file.exists()) return;</code>','Lần chạy đầu chưa có tệp thì bỏ qua, danh sách để rỗng'],
+ ['<code>(ArrayList&lt;Item&gt;) in.readObject()</code>','Ép kiểu kết quả đọc về danh sách sản phẩm'],
+ ['<code>@SuppressWarnings("unchecked")</code>','Tắt cảnh báo của trình biên dịch về phép ép kiểu trên (nó không kiểm tra được kiểu phần tử). Ta biết tệp do chính mình ghi nên an toàn'],
+ ['<code>catch (IOException | ClassNotFoundException e)</code>','Một khối <code>catch</code> bắt được cả hai loại lỗi, ngăn cách bằng <code>|</code>'],
+ ['<code>throw new RuntimeException(e)</code>','Gói lỗi vào <code>RuntimeException</code> để hàm <code>findAll/add/delete</code> không phải khai báo <code>throws</code> (interface không cho phép)'],
+ ['<code>next = Math.max(next, c.getId() + 1)</code>','Đặt bộ đếm id lớn hơn id lớn nhất đã lưu, tránh cấp trùng id sau khi mở lại tệp'],
+ ['<code>save() sau mỗi add/delete</code>','Mỗi thay đổi ghi lại cả danh sách ra tệp, nên tắt đột ngột cũng không mất']])
++ `<p>Chạy lại, thêm vài sản phẩm, tắt ứng dụng và mở lại: dữ liệu còn nguyên. Controller không hề biết nguồn dữ liệu đã đổi.</p>
 <h3>Điểm yếu của tuần tự hóa gốc của Java</h3>`
-+ ul(['Dữ liệu là nhị phân, <b>chỉ Java đọc được</b>, mở bằng Notepad không hiểu gì.','Phụ thuộc chặt vào định nghĩa lớp và <code>serialVersionUID</code>: đổi cấu trúc lớp là rắc rối.','Mỗi lần lưu ghi lại toàn bộ; không truy vấn được ("tìm người tên An") mà phải đọc cả tệp.','<b>Bảo mật:</b> không bao giờ deserialize dữ liệu từ nguồn không tin cậy, vì dữ liệu được dựng có thể kích hoạt mã độc khi đọc.'])
++ ul(['Dữ liệu là nhị phân, <b>chỉ Java đọc được</b>, mở bằng Notepad không hiểu gì.','Phụ thuộc chặt vào định nghĩa lớp và <code>serialVersionUID</code>: đổi cấu trúc lớp là rắc rối.','Mỗi lần lưu ghi lại toàn bộ; không truy vấn được ("tìm sản phẩm giá dưới 5 triệu") mà phải đọc cả tệp.','<b>Bảo mật:</b> không bao giờ deserialize dữ liệu từ nguồn không tin cậy, vì dữ liệu được dựng có thể kích hoạt mã độc khi đọc.'])
 + `<p>Hai điểm đầu dẫn tới hai hướng thay thế mà ta sẽ gặp: cơ sở dữ liệu (để truy vấn) và JSON (để đọc được bằng mắt và đa ngôn ngữ).</p>`)
 + sec('Phần 7. Cơ sở dữ liệu SQLite và JDBC',
-`<h3>Cơ sở dữ liệu là gì</h3>
+bridge('<b>Nối từ Phần 6:</b> tệp tuần tự hóa không hỏi được kiểu "sản phẩm nào giá dưới 5 triệu?" mà phải đọc cả tệp, và chỉ Java đọc được. CSDL sinh ra để lưu và truy vấn dữ liệu hiệu quả. Phần này có hai nửa: (1) SQL, ngôn ngữ nói chuyện với CSDL; (2) JDBC, cách chương trình Java gửi câu SQL đi.')
++ `<h3>Cơ sở dữ liệu là gì</h3>
 <p>Cơ sở dữ liệu (CSDL) là hệ thống lưu dữ liệu có cấu trúc, đảm bảo dữ liệu được tổ chức rõ ràng và nhiều người, nhiều thiết bị cùng truy cập được. Các hệ quản trị phổ biến: MySQL, SQL Server, SQLite, MongoDB. Trong CSDL quan hệ, dữ liệu nằm trong các <b>bảng</b>: mỗi bảng có các <b>cột</b> (trường: <code>id</code>, <code>name</code>, <code>email</code>) và mỗi <b>hàng</b> (bản ghi) là một đối tượng.</p>`
 + box('analogy','<b>Ví dụ ẩn dụ:</b> một bảng giống một trang Excel có luật: mỗi cột có kiểu dữ liệu riêng, có cột không được để trống, có cột không được trùng. Hệ quản trị CSDL là người thủ thư bảo đảm các luật đó và tìm dữ liệu cực nhanh.')
 + `<p><b>SQLite</b> là CSDL quan hệ <b>gọn nhẹ nhất</b>: không có máy chủ riêng, không cần cài đặt hay cấu hình, toàn bộ CSDL nằm trong <b>một tệp</b> (ví dụ <code>data.db</code>), chạy tốt trên nhiều thiết bị. Rất hợp với ứng dụng desktop và mobile nhỏ.</p>
 <h3>SQL tối thiểu để làm việc</h3>
 <p>SQL là ngôn ngữ nói chuyện với CSDL. Bạn có thể thử trực tiếp bằng lệnh <code>sqlite3 data.db</code> trong terminal (hoặc phần mềm DB Browser for SQLite).</p>`
 + pre(J`
-CREATE TABLE contacts (
+CREATE TABLE items (
     id    INTEGER PRIMARY KEY AUTOINCREMENT,   -- khóa chính, tự tăng 1,2,3...
     name  VARCHAR(255) NOT NULL,               -- bắt buộc phải có
-    phone VARCHAR(50)  UNIQUE                  -- không được trùng
+    price REAL         NOT NULL                -- giá khởi điểm, bắt buộc
 );
-INSERT INTO contacts (name, phone) VALUES ('An', '0901');          -- thêm
-SELECT name, phone FROM contacts WHERE id = 1;                      -- đọc
-SELECT * FROM contacts WHERE name LIKE 'A%' ORDER BY name;          -- lọc + sắp xếp
-UPDATE contacts SET phone = '0999' WHERE id = 1;                    -- sửa
-DELETE FROM contacts WHERE id = 1;                                  -- xóa`)
+INSERT INTO items (name, price) VALUES ('Laptop', 5000000);          -- thêm
+SELECT name, price FROM items WHERE id = 1;                      -- đọc
+SELECT * FROM items WHERE name LIKE 'L%' ORDER BY price;          -- lọc + sắp xếp
+UPDATE items SET price = 5500000 WHERE id = 1;                    -- sửa
+DELETE FROM items WHERE id = 1;                                  -- xóa`)
 + box('warn','<b>Cẩn thận:</b> <code>UPDATE</code> hoặc <code>DELETE</code> quên mệnh đề <code>WHERE</code> sẽ tác động lên <b>toàn bộ bảng</b>. <b>Khóa chính</b> (<code>PRIMARY KEY</code>) là cột định danh duy nhất mỗi hàng, như số căn cước.')
 + `<h3>JDBC: một chuẩn nối Java với mọi CSDL</h3>
 <p>MySQL, SQLite, SQL Server mỗi hệ nói "giọng" riêng. <b>JDBC (Java Database Connectivity)</b> là bộ API chuẩn của Java để mã của bạn nói chuyện với CSDL theo một cách thống nhất. Cấu trúc: ứng dụng gọi <b>JDBC API</b>, <b>DriverManager</b> chọn <b>driver</b> phù hợp, driver nói chuyện với CSDL. Đổi từ SQLite sang MySQL chỉ cần đổi driver và URL, mã gọi hầu như giữ nguyên.</p>`
 + box('analogy','<b>Ví dụ ẩn dụ:</b> JDBC là chuẩn ổ cắm; driver là bộ chuyển đổi cho từng nhãn hiệu thiết bị.')
++ pre(J`
+Controller → ItemRepository (interface)
+              └ SqliteRepository        viết câu SQL bằng PreparedStatement
+                  └ JDBC API            Connection, PreparedStatement, ResultSet
+                      └ sqlite-jdbc     driver, tải bằng Maven
+                          └ data.db     một tệp SQLite`)
++ `<p>Thư viện driver SQLite đã có trong <code>pom.xml</code> ở Phần 2; đoạn dưới chỉ cho bạn thấy nó nằm ở đâu:</p>`
 + pre(J`
 <dependency>
     <groupId>org.xerial</groupId><artifactId>sqlite-jdbc</artifactId><version>3.46.1.3</version>
@@ -1986,12 +2201,12 @@ DELETE FROM contacts WHERE id = 1;                                  -- xóa`)
 String url = "jdbc:sqlite:data.db";
 try (Connection conn = DriverManager.getConnection(url);                       // 1. kết nối
      Statement st = conn.createStatement()) {                                  // 2. tạo câu lệnh
-    st.execute("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT,"
-             + " name TEXT NOT NULL, phone TEXT)");                            // 3. thực thi
-    st.executeUpdate("INSERT INTO contacts (name, phone) VALUES ('An', '0901')");
-    try (ResultSet rs = st.executeQuery("SELECT id, name, phone FROM contacts")) {
+    st.execute("CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+             + " name TEXT NOT NULL, price REAL)");                            // 3. thực thi
+    st.executeUpdate("INSERT INTO items (name, price) VALUES ('Laptop', 5000000)");
+    try (ResultSet rs = st.executeQuery("SELECT id, name, price FROM items")) {
         while (rs.next()) {                                                    // 4. đọc từng hàng
-            System.out.println(rs.getInt("id") + " " + rs.getString("name") + " " + rs.getString("phone"));
+            System.out.println(rs.getInt("id") + " " + rs.getString("name") + " " + rs.getDouble("price"));
         }
     }
 } catch (SQLException e) { e.printStackTrace(); }                              // 5. try-with-resources tự đóng`)
@@ -2004,10 +2219,10 @@ String sql = "SELECT * FROM users WHERE name = '" + input + "'";
 // câu lệnh thực tế: SELECT * FROM users WHERE name = '' OR '1'='1'   --> lấy ra TẤT CẢ người dùng`)
 + `<p><code>PreparedStatement</code> giải quyết bằng cách viết câu lệnh với chỗ trống <code>?</code> và truyền giá trị riêng. Giá trị luôn được coi là <b>dữ liệu</b>, không bao giờ bị hiểu là <b>lệnh</b>. Câu lệnh còn được biên dịch trước nên chạy lặp lại nhanh hơn.</p>`
 + pre(J`
-String sql = "INSERT INTO contacts (name, phone) VALUES (?, ?)";
+String sql = "INSERT INTO items (name, price) VALUES (?, ?)";
 try (PreparedStatement ps = conn.prepareStatement(sql)) {
-    ps.setString(1, "An");        // chú ý: chỉ số ? bắt đầu từ 1, không phải 0
-    ps.setString(2, "0901");
+    ps.setString(1, "Laptop");        // chú ý: chỉ số ? bắt đầu từ 1, không phải 0
+    ps.setDouble(2, 5000000);
     ps.executeUpdate();
 }`)
 + `<h3>Singleton cho kết nối</h3>
@@ -2017,7 +2232,7 @@ public class Database {
     private static Database instance;
     private final Connection conn;
     private Database() {
-        try { conn = DriverManager.getConnection("jdbc:sqlite:contacts.db"); }
+        try { conn = DriverManager.getConnection("jdbc:sqlite:auction.db"); }
         catch (SQLException e) { throw new RuntimeException(e); }
     }
     public static synchronized Database getInstance() {
@@ -2026,41 +2241,57 @@ public class Database {
     }
     public Connection getConnection() { return conn; }
 }`)
++ `<h3>Đọc hiểu code Singleton</h3>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>private static Database instance;</code>','Biến <code>static</code> giữ thể hiện duy nhất của cả chương trình, ban đầu là <code>null</code>'],
+ ['<code>private Database() { ... }</code>','Constructor <code>private</code>: bên ngoài không thể <code>new Database()</code>, chỉ lớp này tự tạo được'],
+ ['<code>getInstance()</code>','Lần đầu thì tạo, các lần sau trả lại đối tượng cũ. <code>synchronized</code> để hai thread không cùng tạo (Bài 7)'],
+ ['<code>Database.getInstance().getConnection()</code>','Cách mọi nơi khác lấy chung một kết nối']])
 + box('warn','<b>Hệ quả cần nhớ:</b> vì kết nối được dùng chung, trong các hàm truy vấn chỉ đưa <code>PreparedStatement</code> và <code>ResultSet</code> vào <code>try-with-resources</code>; <b>không</b> đưa <code>Connection</code> vào đó, nếu không kết nối sẽ bị đóng sau lần dùng đầu tiên.')
-+ `<h3>Kho lưu trữ SQLite cho ứng dụng Danh bạ</h3>`
++ `<h3>Kho lưu trữ SQLite cho ứng dụng đấu giá</h3>`
 + pre(J`
-public class SqliteRepository implements ContactRepository {
+public class SqliteRepository implements ItemRepository {
     private final Connection conn = Database.getInstance().getConnection();
 
     public SqliteRepository() {
         try (Statement st = conn.createStatement()) {
-            st.execute("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                     + " name TEXT NOT NULL, phone TEXT NOT NULL)");
+            st.execute("CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                     + " name TEXT NOT NULL, price REAL NOT NULL)");
         } catch (SQLException e) { throw new RuntimeException(e); }
     }
-    public List<Contact> findAll() {
-        List<Contact> result = new ArrayList<>();
-        try (PreparedStatement ps = conn.prepareStatement("SELECT id, name, phone FROM contacts");
+    public List<Item> findAll() {
+        List<Item> result = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT id, name, price FROM items");
              ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) result.add(new Contact(rs.getInt("id"), rs.getString("name"), rs.getString("phone")));
+            while (rs.next()) result.add(new Item(rs.getInt("id"), rs.getString("name"), rs.getDouble("price")));
         } catch (SQLException e) { throw new RuntimeException(e); }
         return result;
     }
-    public void add(Contact c) {
-        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contacts (name, phone) VALUES (?, ?)")) {
-            ps.setString(1, c.getName()); ps.setString(2, c.getPhone()); ps.executeUpdate();
+    public void add(Item c) {
+        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO items (name, price) VALUES (?, ?)")) {
+            ps.setString(1, c.getName()); ps.setDouble(2, c.getPrice()); ps.executeUpdate();
         } catch (SQLException e) { throw new RuntimeException(e); }
     }
     public void delete(int id) {
-        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contacts WHERE id = ?")) {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM items WHERE id = ?")) {
             ps.setInt(1, id); ps.executeUpdate();
         } catch (SQLException e) { throw new RuntimeException(e); }
     }
 }
-// Controller: private final ContactRepository repo = new SqliteRepository();`)
+// Controller: private final ItemRepository repo = new SqliteRepository();`)
++ `<h3>Đọc hiểu SqliteRepository</h3>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>Connection conn = Database.getInstance().getConnection();</code>','Lấy kết nối dùng chung, giữ trong trường của lớp'],
+ ['<code>CREATE TABLE IF NOT EXISTS items ...</code>','Mỗi lần khởi động tạo bảng nếu chưa có; có rồi thì bỏ qua, không lỗi'],
+ ['<code>List&lt;Item&gt; result = new ArrayList&lt;&gt;();</code>','Tạo danh sách rỗng để lát nữa bỏ kết quả vào'],
+ ['<code>while (rs.next()) result.add(new Item(...))</code>','Mỗi vòng lặp là một hàng của bảng; <code>rs.getInt("id")</code>, <code>rs.getString("name")</code>, <code>rs.getDouble("price")</code> lấy từng cột rồi dựng thành <code>Item</code>'],
+ ['<code>ps.setString(1, c.getName()); ps.setDouble(2, ...)</code>','Điền vào dấu <code>?</code> thứ 1 và thứ 2 (đếm từ 1). Cột <code>id</code> không điền vì <code>AUTOINCREMENT</code> tự cấp'],
+ ['<code>ps.executeUpdate()</code>','Chạy lệnh <code>INSERT/DELETE</code>'],
+ ['<code>catch (SQLException e) { throw new RuntimeException(e); }</code>','Cùng lý do như FileRepository: đổi lỗi thành unchecked để khớp interface'],
+ ['<code>Phần try (...)</code>','Chỉ <code>PreparedStatement</code> và <code>ResultSet</code> nằm trong ngoặc, nên chúng tự đóng; <code>conn</code> không bị đóng']])
 + `<p>Lại chỉ đổi đúng một dòng trong Controller. Đó là sức mạnh của việc tách Model khỏi Controller.</p>
 <h3>Giao dịch (transaction)</h3>
-<p>Khi nhiều lệnh phải "thành công cả nhóm hoặc không gì cả" (ví dụ chuyển tiền: trừ tài khoản A và cộng tài khoản B), tắt tự động lưu rồi tự quyết định lúc lưu:</p>`
+<p>Khi nhiều lệnh phải "thành công cả nhóm hoặc không gì cả" (ví dụ đặt giá: vừa cập nhật giá hiện tại của sản phẩm, vừa ghi một dòng vào bảng lịch sử đặt giá), tắt tự động lưu rồi tự quyết định lúc lưu:</p>`
 + pre(J`
 conn.setAutoCommit(false);
 try {
@@ -2068,9 +2299,11 @@ try {
     conn.commit();          // xác nhận tất cả
 } catch (SQLException e) {
     conn.rollback();        // hủy tất cả
-} finally { conn.setAutoCommit(true); }`))
+} finally { conn.setAutoCommit(true); }`)
++ bridge('Mỗi ô của bảng SQLite chỉ chứa một giá trị đơn giản. Nếu đối tượng chứa cả danh sách đối tượng khác thì sao? Phần 8 trả lời.'))
 + sec('Phần 8. Lưu đối tượng phức hợp vào CSDL: BLOB và JSON',
-`<p>Một đối tượng như <code>Student</code> chứa <code>List&lt;Course&gt;</code> không vừa vào một cột. Cách chuẩn là tách thành nhiều bảng có liên kết (kiến thức CSDL sâu hơn). Có hai lối tắt hay dùng khi bạn muốn nhét cả đối tượng vào một cột:</p>
+bridge('<b>Nối từ Phần 6 và 7:</b> Phần này ghép hai thứ vừa học: tuần tự hóa (Phần 6) để biến đối tượng thành dữ liệu, rồi nhét vào một cột của bảng SQLite (Phần 7).')
++ `<p>Một đối tượng như <code>Auction</code> (một phiên đấu giá) chứa <code>List&lt;Bid&gt;</code> (các lượt đặt giá) không vừa vào một cột. Cách chuẩn là tách thành nhiều bảng có liên kết (kiến thức CSDL sâu hơn). Có hai lối tắt hay dùng khi bạn muốn nhét cả đối tượng vào một cột:</p>
 <h3>Cách 1: BLOB (Binary Large Object) + Serialization</h3>
 <p>Tuần tự hóa đối tượng ra mảng <code>byte[]</code> rồi lưu vào cột kiểu <code>BLOB</code>.</p>`
 + pre(J`
@@ -2083,6 +2316,12 @@ static Object fromBytes(byte[] data) throws IOException, ClassNotFoundException 
     try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) { return ois.readObject(); }
 }
 // ghi:  ps.setBytes(1, toBytes(student));        đọc:  fromBytes(rs.getBytes("data"))`)
++ `<h3>Đọc hiểu code BLOB</h3>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>Serializable obj</code>','Tham số nhận mọi đối tượng đã <code>implements Serializable</code>'],
+ ['<code>new ByteArrayOutputStream()</code>','Luồng ghi <b>vào bộ nhớ</b> thay vì vào tệp; <code>bos.toByteArray()</code> lấy ra dãy byte đã ghi'],
+ ['<code>new ByteArrayInputStream(data)</code>','Luồng đọc ngược từ dãy byte trong bộ nhớ'],
+ ['<code>ps.setBytes(1, ...) / rs.getBytes("data")</code>','Đưa vào và lấy ra <code>byte[]</code> của cột kiểu <code>BLOB</code>']])
 + `<h3>Cách 2: JSON</h3>
 <p><b>JSON</b> (JavaScript Object Notation) là định dạng văn bản mô tả đối tượng bằng cặp tên–giá trị; ngôn ngữ nào cũng đọc được. Bạn lưu chuỗi JSON vào cột <code>TEXT</code>. Dùng thư viện Gson (thêm vào Maven: <code>com.google.code.gson:gson</code>):</p>`
 + pre(J`
@@ -2091,6 +2330,12 @@ String json = gson.toJson(new Account("an", "123456"));
 // {"username":"an","password":"123456"}
 Account back = gson.fromJson(json, Account.class);
 List<Account> list = gson.fromJson(jsonArray, new TypeToken<List<Account>>(){}.getType());`)
++ `<h3>Đọc hiểu code Gson</h3>`
++ tb(['Dòng / từ khóa','Nghĩa và tác dụng'],[
+ ['<code>new Gson()</code>','Đối tượng làm nhiệm vụ chuyển đổi; thư viện đã có trong <code>pom.xml</code>'],
+ ['<code>gson.toJson(obj)</code>','Đổi đối tượng thành chuỗi JSON'],
+ ['<code>gson.fromJson(json, Account.class)</code>','Dựng lại đối tượng từ chuỗi JSON; <code>Account.class</code> cho Gson biết cần dựng kiểu nào'],
+ ['<code>new TypeToken&lt;List&lt;Account&gt;&gt;(){}.getType()</code>','Cách nói với Gson rằng cần <code>List&lt;Account&gt;</code> (generics bị xóa lúc chạy nên phải khai báo thế này). Cú pháp lạ, cứ chép nguyên và đổi <code>Account</code> thành kiểu của bạn']])
 + tb(['','BLOB + Serialization','JSON'],[
  ['Dạng dữ liệu','Nhị phân','Văn bản thuần, đọc được bằng mắt'],
  ['Ngôn ngữ khác đọc','Không (chỉ Java)','Có (Python, JavaScript...)'],
@@ -2098,8 +2343,26 @@ List<Account> list = gson.fromJson(jsonArray, new TypeToken<List<Account>>(){}.g
  ['Kích thước','Thường lớn hơn','Gọn hơn với dữ liệu đơn giản'],
  ['Hợp khi','Lưu nhanh, chỉ trong Java','Lưu lâu dài, trao đổi, và là định dạng của REST API (Bài 9)']])
 + `<p>Gson cũng bỏ qua trường <code>transient</code>, giống tuần tự hóa gốc. Lưu ý <code>TypeToken</code> khi đọc danh sách, vì kiểu tổng quát bị xóa lúc chạy (đã học ở Bài 4).</p>`)
-+ sec('Phần 9. Các lỗi hay gặp khi tự làm',
-tb(['Triệu chứng','Nguyên nhân thường gặp','Cách xử lý'],[
++ sec('Phần 9. Tổng kết: bốn cách lưu và vì sao Controller không phải sửa',
+`<p>Cả bài đi theo một mạch: MVC chia vai, JavaFX và FXML dựng View, sự kiện làm Controller sống, rồi Model được nâng cấp dần từ RAM lên tệp, lên CSDL. Bảng dưới gom lại để bạn chọn cách lưu phù hợp.</p>`
++ tb(['Cách lưu','Dữ liệu nằm ở','Tắt máy','Tìm kiếm','Ngôn ngữ khác đọc','Hợp khi'],[
+ ['<code>InMemoryRepository</code> (Phần 5)','RAM','Mất','Duyệt danh sách','Không','Thử giao diện, kiểm thử'],
+ ['<code>FileRepository</code> (Phần 6)','Tệp nhị phân','Còn','Phải đọc cả tệp','Không','Ứng dụng nhỏ, chỉ Java'],
+ ['<code>SqliteRepository</code> (Phần 7)','Tệp CSDL','Còn','Có, bằng SQL','Có (qua SQL)','Dữ liệu nhiều, cần lọc và tìm'],
+ ['JSON (Phần 8)','Tệp hoặc cột văn bản','Còn','Hạn chế','Có','Trao đổi dữ liệu, REST API (Bài 9)']])
++ pre(J`
+Controller chỉ biết ItemRepository (hợp đồng: findAll, add, delete).
+Đổi nơi lưu = đổi đúng một dòng:
+   repo = new InMemoryRepository();   // Phần 5
+   repo = new FileRepository(...);    // Phần 6
+   repo = new SqliteRepository();     // Phần 7`)
++ `<p>Đó là điều MVC hứa ở Phần 1: vì Model không biết View và Controller, còn Controller chỉ làm việc với interface, nên thay Model không đụng tới phần còn lại.</p>\n<h3>Tự kiểm tra</h3>`
++ ul(['Nói được vai của Model, View, Controller bằng một câu mỗi vai, và vì sao Model không được <code>import javafx</code>?','Ba sợi dây nối FXML với Controller là gì (<code>fx:controller</code>, <code>fx:id</code>, <code>onAction</code>)?','Vì sao sửa giao diện từ thread nền gây lỗi, và chữa bằng gì?','<code>serialVersionUID</code> để làm gì, <code>transient</code> dùng khi nào?','<code>Statement</code> khác <code>PreparedStatement</code> ở đâu; SQL injection là gì?','Khi nào chọn tệp tuần tự hóa, SQLite, hay JSON?'])
++ `<h3>Thứ tự tự thực hành</h3>`
++ ul(['Chạy lại HelloFX (Phần 2), rồi làm ứng dụng Login nhỏ bằng FXML + Controller (Phần 3).','Dựng ứng dụng đấu giá với <code>InMemoryRepository</code> cho chạy được (Phần 5).','Viết <code>FileRepository</code>, tắt mở lại để kiểm tra dữ liệu còn (Phần 6).','Viết <code>SqliteRepository</code>, thêm ô tìm kiếm dùng <code>WHERE name LIKE ?</code> (Phần 7).','Làm lớp <code>Auction</code> chứa <code>List&lt;Bid&gt;</code> rồi lưu bằng Gson (Phần 8).','<b>Mở rộng cho bài tập lớn:</b> thêm lớp <code>Bid</code> và nút Đặt giá (cập nhật giá hiện tại và ghi lịch sử trong một transaction), rồi nối với Server ở Bài 9.']))
++ sec('Phần 10. Các lỗi hay gặp khi tự làm',
+`<p>Mỗi lỗi thuộc về một phần của bài: lỗi JavaFX và FXML ở Phần 2-4, tuần tự hóa ở Phần 6, JDBC ở Phần 7. Gặp lỗi nào thì quay lại phần tương ứng.</p>`
++ tb(['Triệu chứng','Nguyên nhân thường gặp','Cách xử lý'],[
  ['<code>Location is not set</code> / NPE khi <code>FXMLLoader.load</code>','Sai đường dẫn tệp FXML','Để FXML trong <code>resources</code>, đường dẫn bắt đầu bằng <code>/</code>'],
  ['<code>JavaFX runtime components are missing</code>','Chạy thiếu module JavaFX','Chạy bằng <code>mvn javafx:run</code>'],
  ['Trường <code>@FXML</code> bị <code>null</code>','<code>fx:id</code> không trùng tên trường, hoặc dùng trường trong constructor','Sửa tên cho khớp; dùng <code>initialize()</code>'],
