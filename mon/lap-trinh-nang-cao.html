@@ -518,7 +518,6 @@ pre i { font-style: normal; }
     <label for="lesson-select">Chọn bài học / chủ đề:</label>
     <!-- [THAY ĐỔI 2]: Thêm hoặc sửa danh sách các bài học của dự án mới tại đây -->
     <select id="lesson-select" onchange="loadLesson(this.value)">
-      <option value="ref">Tra cứu nhanh</option>
       <option value="2" selected>Bài 2: Thêm về Java</option>
       <option value="3">Bài 3: Thừa kế và Đa hình</option>
       <option value="4">Bài 4: Lớp trừu tượng, Giao diện, Tổng quát</option>
@@ -526,6 +525,9 @@ pre i { font-style: normal; }
       <option value="5b">Bài 5.2: Ngoại lệ và Luồng vào-ra</option>
       <option value="6">Bài 6: Mẫu thiết kế và Nguyên lý thiết kế</option>
       <option value="7">Bài 7: Đa luồng</option>
+      <option value="8">Bài 8: JavaFX, MVC, Serialization, JDBC</option>
+      <option value="9">Bài 9: Lập trình mạng</option>
+      <option value="ref">⚡ Tra cứu nhanh lệnh Java</option>
     </select>
   </div>
   <div class="toc-title">Mục lục bài đang mở</div>
@@ -1602,6 +1604,899 @@ Tuần tự:    đọc A (5s) -> xử lý A (2s) -> đọc B (5s) -> xử lý B 
  ['API','Giống nhau','Giống nhau']])
 + `<p>Virtual thread chạy "gắn" lên một kernel thread (carrier) khi cần, nên hầu như không tốn chi phí chuyển ngữ cảnh của hệ điều hành.</p>`)
 };
+
+LES['8'] = {b:'b4', n:'BÀI 8', t:'JavaFX, MVC, Serialization và JDBC', d:'Xây ứng dụng giao diện đồ họa theo mô hình MVC, lưu dữ liệu bằng tuần tự hóa, SQLite và JSON.',
+body: () =>
+sec('Phần 1. Vì sao cần MVC',
+`<p>Tưởng tượng bạn viết ứng dụng quản lý danh bạ trong <b>một tệp duy nhất</b>: vừa vẽ giao diện, vừa xử lý khi bấm nút, vừa đọc ghi tệp dữ liệu. Lúc đầu rất nhanh. Khi lên vài nghìn dòng thì: đổi màu một cái nút cũng phải lội qua mã lưu trữ; ba người cùng sửa một tệp thì xung đột liên tục; muốn dùng lại phần lưu dữ liệu cho ứng dụng khác thì không tách ra được. Tóm lại ứng dụng lớn trở nên <b>khó bảo trì, khó tái sử dụng, khó làm việc nhóm</b>.</p>
+<p>Giải pháp là "chia để trị": chia ứng dụng thành ba vai, mỗi vai một việc. Đó là <b>MVC (Model – View – Controller)</b>, một trong những mô hình kiến trúc phổ biến nhất.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ: nhà hàng.</b> <b>View</b> là bàn ăn và thực đơn: nơi khách nhìn và gọi món. <b>Controller</b> là bồi bàn: nhận yêu cầu của khách, chuyển vào bếp, mang món ra. <b>Model</b> là bếp và kho nguyên liệu: nơi thật sự có dữ liệu và công thức. Khách không vào bếp; bếp không cần biết khách ngồi bàn nào.')
++ tb(['Vai','Việc của nó','Trong ứng dụng danh bạ'],[
+ ['<b>Model</b>','Các lớp dữ liệu và logic lưu trữ dữ liệu','<code>Contact</code>, <code>ContactRepository</code> (thêm, xóa, lưu vào tệp hoặc CSDL)'],
+ ['<b>View</b>','Hiển thị giao diện và dữ liệu cho người dùng','Tệp <code>contact.fxml</code> (ô nhập, nút, danh sách)'],
+ ['<b>Controller</b>','Nhận tương tác từ View, gọi Model, cập nhật View','<code>ContactController</code>: khi bấm "Thêm" thì gọi <code>repo.add(...)</code>, rồi làm mới danh sách']])
++ pre(J`
+Người dùng bấm nút
+      |
+      v
+   VIEW (FXML) --gọi hàm xử lý--> CONTROLLER --đọc/ghi--> MODEL (dữ liệu + lưu trữ)
+      ^                               |                         |
+      +---- cập nhật hiển thị --------+<------ trả dữ liệu ------+`)
++ `<p>Ba luật giữ cho MVC không bị "rối lại":</p>`
++ ul(['<b>View không chứa nghiệp vụ.</b> Nó chỉ hiển thị, còn quyết định "bấm nút thì làm gì" thuộc Controller.','<b>Model không biết View và Controller tồn tại.</b> Trong Model không có <code>import javafx...</code>. Nhờ đó cùng một Model dùng được cho giao diện JavaFX, ứng dụng web, hay chạy kiểm thử không cần giao diện.','<b>Controller mỏng.</b> Nó là cầu nối: lấy dữ liệu từ View, ra lệnh cho Model, đẩy kết quả lên View.'])
++ `<p>Lợi ích thực tế: đổi giao diện không đụng tới Model; hai người làm song song (một người View, một người Model); Model được tái sử dụng. Cấu trúc thư mục gợi ý:</p>`
++ pre(J`
+src/main/java/app/
+    MainApp.java
+    model/        Contact.java, ContactRepository.java, InMemoryRepository.java ...
+    controller/   ContactController.java
+src/main/resources/app/
+    view/contact.fxml
+    style.css`))
++ sec('Phần 2. JavaFX từ con số 0',
+`<p><b>GUI</b> (giao diện đồ họa) là cửa sổ có thanh tiêu đề, ô nhập văn bản, nút bấm, checkbox, danh sách... <b>JavaFX</b> là thư viện đồ họa hướng đối tượng của Java để làm việc đó. Nó từng đi kèm Oracle JDK đến bản 10; từ sau đó phải thêm vào dự án riêng (OpenJFX). Các lựa chọn khác: Swing, SWT, Apache Pivot. Điểm mạnh của JavaFX: giao diện mô tả bằng <b>FXML</b> (giống HTML), tạo bằng kéo thả với <b>Scene Builder</b>, chỉnh vẻ ngoài bằng <b>CSS</b>, có sẵn nhiều control.</p>
+<h3>Cài đặt bằng Maven</h3>
+<p>Khai báo thư viện và plugin để chạy. (Thay số phiên bản bằng bản mới trên Maven Central; JavaFX 21 trở lên cần JDK 17+.)</p>`
++ pre(J`
+<dependencies>
+  <dependency>
+    <groupId>org.openjfx</groupId><artifactId>javafx-controls</artifactId><version>21.0.5</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjfx</groupId><artifactId>javafx-fxml</artifactId><version>21.0.5</version>
+  </dependency>
+</dependencies>
+<build><plugins><plugin>
+  <groupId>org.openjfx</groupId><artifactId>javafx-maven-plugin</artifactId><version>0.0.8</version>
+  <configuration><mainClass>app.MainApp</mainClass></configuration>
+</plugin></plugins></build>
+<!-- chạy:  mvn javafx:run -->`)
++ `<p>Nếu chạy thẳng lớp <code>main</code> bằng nút Run của IDE mà gặp "<i>JavaFX runtime components are missing</i>", đó là do thiếu cấu hình module; cách đơn giản nhất là chạy bằng <code>mvn javafx:run</code>.</p>
+<h3>Sân khấu: Stage, Scene, Node</h3>
+<p>Cách dễ nhất để nhớ cấu trúc của JavaFX là coi nó như một <b>vở kịch</b>.</p>`
++ box('analogy','<b>Stage</b> là sân khấu (chính là cửa sổ ứng dụng). <b>Scene</b> là một cảnh đang diễn trên sân khấu; một sân khấu một lúc chỉ có một cảnh (muốn đổi màn hình thì đổi Scene). <b>Node</b> là từng diễn viên và đạo cụ trong cảnh: nút bấm, ô nhập, hình tròn, ảnh...')
++ pre(J`
+Stage                      (cửa sổ)
+ └─ Scene                  (một màn hình)
+     └─ VBox               (bố cục, cũng là Node)
+         ├─ Label
+         ├─ TextField
+         └─ HBox
+             ├─ Button
+             └─ Button`)
++ `<p>Các Node tạo thành một <b>cây phân cấp</b> gọi là <b>Scene Graph</b>. Mọi thứ nhìn thấy được đều kế thừa <code>javafx.scene.Node</code>: hình học 2D/3D (<code>Circle</code>, <code>Rectangle</code>), phần tử tương tác (<code>Button</code>, <code>CheckBox</code>, <code>TextArea</code>), đa phương tiện (<code>Image</code>, <code>MediaView</code>).</p>
+<h3>Ứng dụng JavaFX đầu tiên</h3>`
++ pre(J`
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+
+public class HelloFX extends Application {
+    @Override
+    public void start(Stage stage) {
+        Button btn = new Button("Click me");
+        btn.setOnAction(e -> btn.setText("Đã bấm!"));
+        StackPane root = new StackPane(btn);
+        stage.setTitle("Xin chào");
+        stage.setScene(new Scene(root, 320, 200));
+        stage.show();
+    }
+    public static void main(String[] args) { launch(args); }
+}`)
++ `<p>Đọc từng bước: lớp phải <code>extends Application</code> và ghi đè <code>start(Stage)</code>; trong <code>start</code> ta tạo các Node, gói vào một bố cục gốc (<code>root</code>), tạo <code>Scene</code> từ <code>root</code> với kích thước 320×200, gắn Scene vào Stage rồi <code>stage.show()</code> thì cửa sổ mới hiện ra. <code>launch(args)</code> khởi động cả hệ thống.</p>
+<h3>Vòng đời của ứng dụng</h3>
+<p>Khi gọi <code>launch()</code>, JavaFX làm tuần tự: (1) tạo một đối tượng của lớp bạn; (2) gọi <code>init()</code>; (3) gọi <code>start(stage)</code>; ứng dụng chạy; (4) khi đóng cửa sổ cuối cùng hoặc gọi <code>Platform.exit()</code> thì gọi <code>stop()</code> để bạn dọn dẹp (đóng tệp, đóng kết nối). Hai lưu ý:</p>`
++ ul(['Thoát bằng <code>Platform.exit()</code>, không dùng <code>System.exit()</code>, vì <code>System.exit</code> giết JVM ngay mà không để JavaFX kịp chạy <code>stop()</code>.','<code>init()</code> chạy ở thread khác với thread giao diện, nên <b>đừng tạo Stage/Scene trong <code>init()</code></b>, hãy tạo trong <code>start()</code>.'])
++ `<h3>Năm kiểu cửa sổ (StageStyle)</h3>`
++ tb(['Kiểu','Ý nghĩa'],[
+ ['<code>DECORATED</code>','Mặc định: có thanh tiêu đề và viền của hệ điều hành'],
+ ['<code>UNDECORATED</code>','Không có thanh tiêu đề, không viền'],
+ ['<code>TRANSPARENT</code>','Không viền và nền trong suốt (làm cửa sổ bo tròn, splash screen)'],
+ ['<code>UNIFIED</code>','Viền hòa vào nền Scene (có hiệu lực ở một số hệ điều hành)'],
+ ['<code>UTILITY</code>','Cửa sổ tiện ích: thanh tiêu đề tối giản']])
++ pre(J`stage.initStyle(StageStyle.UNDECORATED);   // phải gọi trước show()`)
++ `<h3>Bố cục: sắp xếp Node trên màn hình</h3>
+<p>Bạn không đặt từng nút bằng tọa độ (hỏng khi đổi kích thước cửa sổ). Thay vào đó đặt Node vào một <b>Pane</b> (bố cục) và Pane tự sắp xếp.</p>`
++ tb(['Bố cục','Cách sắp xếp','Dùng khi'],[
+ ['<code>VBox</code> / <code>HBox</code>','Xếp dọc / ngang, cách nhau <code>spacing</code>','Form, hàng nút'],
+ ['<code>BorderPane</code>','5 vùng: top, bottom, left, right, center','Khung ứng dụng (thanh trên, danh sách giữa)'],
+ ['<code>GridPane</code>','Lưới hàng–cột','Form nhiều ô nhãn + ô nhập'],
+ ['<code>StackPane</code>','Chồng lên nhau, mặc định căn giữa','Chữ đè lên ảnh, màn hình loading'],
+ ['<code>FlowPane</code>','Xếp liên tiếp và tự xuống dòng','Thư viện ảnh thu nhỏ'],
+ ['<code>AnchorPane</code>','Neo vào cạnh với khoảng cách cố định','Giao diện cần đặt chính xác']])
++ pre(J`
+BorderPane root = new BorderPane();
+root.setTop(new HBox(8, new Label("Tên:"), new TextField(), new Button("Tìm")));
+root.setCenter(new ListView<String>());
+root.setBottom(new Label("Sẵn sàng"));
+root.setPadding(new Insets(10));`)
++ `<h3>Các control thường dùng</h3>`
++ tb(['Control','Dùng để','Hàm chính'],[
+ ['<code>Label</code>','Hiển thị chữ','<code>setText</code>, <code>getText</code>'],
+ ['<code>Button</code>','Nút bấm','<code>setOnAction</code>, <code>setDisable</code>'],
+ ['<code>TextField</code> / <code>PasswordField</code>','Nhập một dòng','<code>getText</code>, <code>setText</code>, <code>clear</code>, <code>setPromptText</code>'],
+ ['<code>TextArea</code>','Nhập nhiều dòng','<code>getText</code>, <code>appendText</code>'],
+ ['<code>CheckBox</code> / <code>RadioButton</code>','Chọn bật/tắt / chọn một trong nhóm (<code>ToggleGroup</code>)','<code>isSelected</code>'],
+ ['<code>ComboBox&lt;T&gt;</code>','Danh sách thả xuống','<code>getValue</code>, <code>getItems().addAll(...)</code>'],
+ ['<code>ListView&lt;T&gt;</code> / <code>TableView&lt;T&gt;</code>','Danh sách / bảng','<code>setItems</code>, <code>getSelectionModel().getSelectedItem()</code>']]))
++ sec('Phần 3. FXML, Scene Builder và CSS',
+`<p>Viết giao diện bằng mã Java (như ví dụ trên) thì dài và trộn lẫn vào logic. JavaFX cho phép mô tả giao diện bằng <b>FXML</b>, một ngôn ngữ dựa trên XML, vai trò giống HTML với trang web. Đây chính là <b>View</b> của MVC. Mỗi thẻ là một Node, thẻ lồng nhau thể hiện cây Scene Graph.</p>`
++ pre(J`
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="app.controller.LoginController">
+    <TextField fx:id="userField" promptText="Tên đăng nhập"/>
+    <Button text="Đăng nhập" onAction="#onLogin"/>
+    <Label fx:id="message"/>
+</VBox>`)
++ pre(J`
+public class LoginController {
+    @FXML private TextField userField;
+    @FXML private Label message;
+
+    @FXML
+    private void onLogin() {
+        message.setText("Xin chào, " + userField.getText());
+    }
+}`)
++ `<p>Hai tệp này được nối với nhau bởi ba "sợi dây" cần nhớ:</p>`
++ ul(['<code>fx:controller="app.controller.LoginController"</code>: FXML biết lớp Controller nào phụ trách nó.','<code>fx:id="message"</code> ↔ <code>@FXML private Label message;</code>: Node có <code>fx:id</code> được JavaFX gán vào trường cùng tên trong Controller, để mã Java điều khiển được nó.','<code>onAction="#onLogin"</code> ↔ phương thức <code>onLogin()</code>: dấu <code>#</code> nghĩa là "gọi phương thức của Controller khi bấm nút".'])
++ `<p>Ngoài ra Controller có thể có phương thức <code>initialize()</code> (đánh dấu <code>@FXML</code>) được gọi tự động <b>sau khi</b> các trường <code>@FXML</code> đã được gán xong; đây là chỗ nạp dữ liệu ban đầu. Đừng dùng constructor cho việc này vì lúc đó các trường vẫn còn <code>null</code>. Nạp FXML vào ứng dụng:</p>`
++ pre(J`
+Parent root = FXMLLoader.load(getClass().getResource("/app/login.fxml"));
+stage.setScene(new Scene(root));`)
++ box('warn','<b>Lỗi hay gặp:</b> <code>Location is not set</code> hoặc <code>NullPointerException</code> ở dòng trên nghĩa là <code>getResource</code> không tìm thấy tệp. Đường dẫn bắt đầu bằng <code>/</code> tính từ gốc thư mục <code>resources</code>; tệp FXML phải nằm trong <code>src/main/resources</code>, không phải <code>src/main/java</code>.')
++ `<h3>Scene Builder</h3>
+<p>Viết XML bằng tay hơi mệt, nên có <b>Scene Builder</b> (của Gluon), công cụ kéo thả: bạn kéo Button vào khung xem trước, và công cụ <b>tự sinh ra tệp FXML</b>. Nó chỉ là trình soạn thảo cho tệp <code>.fxml</code>, không có gì "ma thuật" thêm. Bốn khu vực chính: danh sách thành phần (bên trái), cấu trúc cây (bên trái dưới), vùng xem trước (giữa), bảng thuộc tính (bên phải). Quy trình làm việc:</p>`
++ ul(['Cài Scene Builder, mở tệp <code>.fxml</code> từ IDE (IntelliJ, NetBeans, VS Code đều cho gắn đường dẫn Scene Builder).','Kéo thả các control, chọn bố cục gốc.','Mục <b>Code</b> bên phải: điền <b>fx:id</b> cho Node cần điều khiển, điền tên hàm vào <b>On Action</b> (ví dụ <code>onLogin</code>), và ở góc dưới trái điền <b>Controller class</b>.','Lưu, rồi tự viết lớp Controller có các trường/phương thức trùng tên.'])
++ `<h3>CSS: trang điểm cho giao diện</h3>
+<p>JavaFX CSS dựa trên CSS của web: gồm <b>selector</b> (chọn Node nào) và <b>khối khai báo</b> (đổi thuộc tính nào). Khác biệt: tên thuộc tính có tiền tố <code>-fx-</code>.</p>`
++ pre(J`
+/* style.css */
+.root       { -fx-font-family: "Segoe UI"; -fx-background-color: #f4f6fb; }
+.button     { -fx-background-color: #6c4ce0; -fx-text-fill: white; -fx-background-radius: 8; }
+.button:hover { -fx-background-color: #5438c4; }
+#title      { -fx-font-size: 22px; -fx-font-weight: bold; }`)
++ pre(J`
+scene.getStylesheets().add(getClass().getResource("/app/style.css").toExternalForm());
+label.setId("title");                         // ứng với selector #title
+label.getStyleClass().add("highlight");       // ứng với selector .highlight
+btn.setStyle("-fx-background-color: red;");   // inline CSS: nhanh, gắn thẳng vào một Node`)
++ `<p>Ba kiểu selector: <code>.tên</code> (theo style class, <code>.button</code> chọn mọi nút), <code>#tên</code> (theo id, một Node duy nhất), <code>:hover</code> (trạng thái, khi rê chuột). Inline CSS tiện cho một thay đổi nhỏ, còn giao diện nghiêm túc nên để trong tệp <code>.css</code> riêng.</p>`)
++ sec('Phần 4. Xử lý sự kiện (vai trò Controller)',
+`<p>Ứng dụng console chạy từ trên xuống dưới rồi dừng. Ứng dụng giao diện thì khác: nó <b>ngồi chờ</b> người dùng làm gì đó rồi mới phản ứng. Đây là lập trình hướng sự kiện (event programming).</p>
+<p>Một sự kiện luôn có ba yếu tố: <b>source</b> (nguồn phát: chuột), <b>target</b> (đối tượng bị tác động: nút "Click me"), <b>type</b> (loại: click chuột). Sự kiện <b>foreground</b> do người dùng trực tiếp gây ra (bấm, gõ phím, chọn mục, cuộn); sự kiện <b>background</b> chạy ngầm (báo lỗi, bộ đếm thời gian). Các loại phổ biến: Mouse Event (click, press, release, move), Key Event (press, release), Drag and Drop Event, Window Event (show, hide).</p>
+<h3>Đăng ký bộ xử lý (event handler)</h3>
+<p>Quy tắc chung: <code>node.setOn&lt;Loại&gt;(handler)</code>, trong đó handler là một <code>EventHandler</code> nhận đối tượng sự kiện. Cùng một việc có thể viết bốn cách, kết quả như nhau:</p>`
++ pre(J`
+// 1. Lớp ẩn danh (cách cũ, dài)
+btn.setOnAction(new EventHandler<ActionEvent>() {
+    @Override public void handle(ActionEvent e) { label.setText("Xong"); }
+});
+// 2. Lambda (gọn, phổ biến nhất)
+btn.setOnAction(e -> label.setText("Xong"));
+// 3. Tham chiếu phương thức
+btn.setOnAction(this::onSave);
+// 4. Trong FXML:  <Button onAction="#onSave"/>
+
+pane.setOnMouseClicked(e -> System.out.println(e.getX() + "," + e.getY()));
+input.setOnKeyPressed(e -> { if (e.getCode() == KeyCode.ENTER) onSave(); });`)
++ `<p>Tham số <code>e</code> mang thông tin sự kiện: <code>e.getSource()</code> là Node phát ra; với chuột có <code>getX()</code>, <code>getButton()</code>; với phím có <code>getCode()</code>, <code>getText()</code>. Gọi <code>e.consume()</code> để chặn sự kiện không lan lên Node cha.</p>
+<h3>Luật quan trọng: chỉ thread giao diện mới được sửa giao diện</h3>
+<p>Mọi handler chạy trên một thread đặc biệt gọi là <b>JavaFX Application Thread</b>, thread này vừa vẽ màn hình vừa chạy handler. Hệ quả hai chiều:</p>`
++ ul(['Nếu handler làm việc chậm (tải mạng, truy vấn CSDL lớn, <code>sleep</code>), cửa sổ <b>đứng hình</b> vì thread vẽ đang bận.','Nếu thread khác sửa Node trực tiếp sẽ bị lỗi <code>Not on FX application thread</code>.'])
++ `<p>Cách làm đúng: việc nặng chạy ở thread nền, khi xong dùng <code>Platform.runLater</code> để "gửi" việc cập nhật giao diện về thread giao diện.</p>`
++ pre(J`
+btn.setOnAction(e -> {
+    btn.setDisable(true);
+    new Thread(() -> {
+        String result = slowWork();                        // thread nền
+        Platform.runLater(() -> {                          // quay lại thread giao diện
+            label.setText(result);
+            btn.setDisable(false);
+        });
+    }).start();
+});`)
++ `<h3>ObservableList: danh sách tự cập nhật giao diện</h3>
+<p><code>FXCollections.observableArrayList()</code> là danh sách "có người theo dõi". Gắn nó vào <code>ListView</code>/<code>TableView</code> bằng <code>setItems</code>, mỗi lần bạn thêm hoặc xóa phần tử, giao diện tự vẽ lại; không cần gọi hàm làm mới.</p>`
++ pre(J`
+ObservableList<String> data = FXCollections.observableArrayList("An", "Bình");
+listView.setItems(data);
+data.add("Chi");       // ListView hiện thêm "Chi" ngay`))
++ sec('Phần 5. Ghép lại: ứng dụng Danh bạ theo MVC',
+`<p>Giờ ta xây một ứng dụng hoàn chỉnh. Điểm thiết kế quan trọng: Controller <b>không làm việc với một kho lưu trữ cụ thể</b> mà với interface <code>ContactRepository</code>. Nhờ vậy ở các phần sau ta thay "lưu trong RAM" bằng "lưu vào tệp" rồi "lưu vào SQLite" mà Controller và View không phải sửa dòng nào (đây chính là nguyên lý DIP của Bài 6).</p>
+<h3>Model</h3>`
++ pre(J`
+public class Contact implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
+    private final int id; private final String name, phone;
+    public Contact(int id, String name, String phone) { this.id = id; this.name = name; this.phone = phone; }
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getPhone() { return phone; }
+    @Override public String toString() { return name + " - " + phone; }   // ListView hiển thị chuỗi này
+}
+
+public interface ContactRepository {
+    java.util.List<Contact> findAll();
+    void add(Contact c);
+    void delete(int id);
+}
+
+public class InMemoryRepository implements ContactRepository {
+    private final java.util.List<Contact> list = new java.util.ArrayList<>();
+    private int next = 1;
+    public java.util.List<Contact> findAll() { return new java.util.ArrayList<>(list); }
+    public void add(Contact c) { list.add(new Contact(next++, c.getName(), c.getPhone())); }
+    public void delete(int id) { list.removeIf(c -> c.getId() == id); }
+}`)
++ `<h3>View (contact.fxml)</h3>`
++ pre(J`
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="app.controller.ContactController">
+    <padding><Insets top="12" right="12" bottom="12" left="12"/></padding>
+    <HBox spacing="8">
+        <TextField fx:id="nameField" promptText="Tên"/>
+        <TextField fx:id="phoneField" promptText="Số điện thoại"/>
+        <Button text="Thêm" onAction="#onAdd"/>
+    </HBox>
+    <ListView fx:id="listView" prefHeight="220"/>
+    <Button text="Xóa mục đã chọn" onAction="#onDelete"/>
+    <Label fx:id="status"/>
+</VBox>`)
++ `<h3>Controller và lớp khởi động</h3>`
++ pre(J`
+public class ContactController {
+    @FXML private TextField nameField, phoneField;
+    @FXML private ListView<Contact> listView;
+    @FXML private Label status;
+
+    private final ContactRepository repo = new InMemoryRepository();   // chỉ đổi dòng này khi đổi cách lưu
+    private final ObservableList<Contact> data = FXCollections.observableArrayList();
+
+    @FXML private void initialize() {
+        data.setAll(repo.findAll());
+        listView.setItems(data);
+    }
+    @FXML private void onAdd() {
+        String n = nameField.getText().trim(), p = phoneField.getText().trim();
+        if (n.isEmpty() || p.isEmpty()) { status.setText("Hãy nhập đủ tên và số điện thoại"); return; }
+        repo.add(new Contact(0, n, p));
+        data.setAll(repo.findAll());
+        nameField.clear(); phoneField.clear();
+        status.setText("Đã thêm " + n);
+    }
+    @FXML private void onDelete() {
+        Contact c = listView.getSelectionModel().getSelectedItem();
+        if (c == null) { status.setText("Chưa chọn mục nào"); return; }
+        repo.delete(c.getId());
+        data.setAll(repo.findAll());
+    }
+}
+
+public class MainApp extends Application {
+    @Override public void start(Stage stage) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/app/view/contact.fxml"));
+        stage.setTitle("Danh bạ");
+        stage.setScene(new Scene(root, 480, 380));
+        stage.show();
+    }
+    public static void main(String[] args) { launch(args); }
+}`)
++ `<p>Chạy thử sẽ thấy ứng dụng hoạt động, nhưng tắt đi là mất sạch dữ liệu vì mọi thứ chỉ nằm trong RAM. Hai phần tiếp theo giải quyết đúng chuyện đó. (Nếu bạn dùng <code>module-info.java</code>, nhớ thêm <code>opens app.controller to javafx.fxml;</code> để FXML truy cập được các trường <code>@FXML</code>.)</p>`)
++ sec('Phần 6. Serialization: lưu cả đối tượng vào tệp',
+`<h3>Bài toán</h3>
+<p>Lưu thông tin một người dùng vào tệp văn bản thì dễ: mỗi dòng <code>id,email,name</code>. Nhưng nếu đối tượng chứa danh sách đối tượng khác, đối tượng lồng nhau, ngày tháng...? Bạn phải tự viết mã chuyển qua lại, rất dễ sai (dấu phẩy trong tên, quên một trường, đọc sai thứ tự).</p>
+<p><b>Serialization (tuần tự hóa)</b> là quá trình biến một đối tượng Java thành <b>chuỗi byte</b> để lưu hoặc truyền đi; <b>deserialization</b> là chiều ngược lại, dựng lại đối tượng từ chuỗi byte.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> chuyển nhà với đồ nội thất lắp ghép. Bạn tháo tủ thành các tấm ván đóng gói (serialization), chở đi hoặc cất kho, đến nơi lắp lại đúng như cũ (deserialization). Bản hướng dẫn lắp ráp chính là <b>định nghĩa lớp</b>; không có nó, đống ván chỉ là gỗ.')
++ `<p>Dùng để: lưu trạng thái đối tượng, truyền dữ liệu qua mạng (Bài 9), chia sẻ dữ liệu giữa các ứng dụng, và RMI (gọi phương thức từ xa). Java làm việc này gần như tự động, bạn chỉ cần "đánh dấu" lớp.</p>
+<h3>Cách làm</h3>
+<p>Lớp <code>implements java.io.Serializable</code>. Interface này <b>không có phương thức nào</b>, chỉ là nhãn nói rằng "lớp này cho phép tuần tự hóa". Rồi ghi/đọc bằng <code>ObjectOutputStream</code>/<code>ObjectInputStream</code> (đã gặp ở Bài 5.2).</p>`
++ pre(J`
+public class Account implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String username;
+    private transient String password;     // không lưu
+    public Account(String u, String p) { username = u; password = p; }
+    @Override public String toString() { return username + " / " + password; }
+}
+
+try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("acc.dat"))) {
+    out.writeObject(new Account("an", "123456"));
+}
+try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("acc.dat"))) {
+    Account a = (Account) in.readObject();
+    System.out.println(a);                 // an / null   (password là transient nên bị bỏ)
+}`)
++ `<h3>serialVersionUID: số phiên bản của bản thiết kế</h3>
+<p>Khi ghi, Java đóng kèm <code>serialVersionUID</code> của lớp vào dữ liệu. Khi đọc, nó so với UID của lớp hiện tại: <b>khác nhau thì ném <code>InvalidClassException</code></b>. Tình huống thật: hôm nay bạn lưu tệp, tuần sau thêm một trường vào <code>Account</code> rồi mở lại tệp cũ. Nếu bạn <b>không khai báo</b> UID, trình biên dịch tự tính từ nội dung lớp, nên UID đổi theo và mở tệp cũ sẽ lỗi. Nếu bạn khai báo cố định (<code>= 1L</code>), tệp cũ vẫn đọc được và trường mới nhận giá trị mặc định (<code>null</code>, <code>0</code>). Vì vậy hãy luôn tự khai báo; chỉ tăng số này khi chủ ý làm dữ liệu cũ không dùng được nữa.</p>
+<h3>Quy tắc về các trường</h3>`
++ ul(['<b>Mọi trường phải tuần tự hóa được.</b> Kiểu nguyên thủy, <code>String</code>, <code>ArrayList</code>, <code>HashMap</code>... đều được. Trường kiểu lớp do bạn viết thì lớp đó cũng phải <code>implements Serializable</code>, nếu không sẽ có <code>NotSerializableException</code>.','Java lưu <b>cả đồ thị đối tượng</b>: ghi một <code>Contact</code> thì các đối tượng nó trỏ tới cũng được ghi theo, và một đối tượng được tham chiếu nhiều nơi chỉ được ghi một lần.','<code>transient</code> loại một trường khỏi dữ liệu: dùng cho mật khẩu, kết nối mạng/CSDL, bộ nhớ đệm, giá trị tính lại được. Sau khi đọc, trường <code>transient</code> có giá trị mặc định (<code>null</code>/<code>0</code>/<code>false</code>).','Trường <code>static</code> thuộc về lớp chứ không thuộc đối tượng, nên không được lưu.'])
++ `<h3>Kho lưu trữ bằng tệp cho ứng dụng Danh bạ</h3>
+<p>Viết <code>FileRepository</code> cài cùng interface <code>ContactRepository</code>: mỗi lần thay đổi thì ghi cả danh sách ra tệp, và khi khởi động thì đọc lại.</p>`
++ pre(J`
+public class FileRepository implements ContactRepository {
+    private final File file;
+    private List<Contact> list = new ArrayList<>();
+    private int next = 1;
+
+    public FileRepository(String path) { file = new File(path); load(); }
+
+    @SuppressWarnings("unchecked")
+    private void load() {
+        if (!file.exists()) return;
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            list = (ArrayList<Contact>) in.readObject();
+            for (Contact c : list) next = Math.max(next, c.getId() + 1);
+        } catch (IOException | ClassNotFoundException e) { throw new RuntimeException(e); }
+    }
+    private void save() {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+            out.writeObject(list);
+        } catch (IOException e) { throw new RuntimeException(e); }
+    }
+    public List<Contact> findAll() { return new ArrayList<>(list); }
+    public void add(Contact c) { list.add(new Contact(next++, c.getName(), c.getPhone())); save(); }
+    public void delete(int id) { list.removeIf(c -> c.getId() == id); save(); }
+}
+// Trong ContactController đổi một dòng:
+// private final ContactRepository repo = new FileRepository("contacts.dat");`)
++ `<p>Chạy lại, thêm vài liên hệ, tắt ứng dụng và mở lại: dữ liệu còn nguyên. Controller không hề biết nguồn dữ liệu đã đổi.</p>
+<h3>Điểm yếu của tuần tự hóa gốc của Java</h3>`
++ ul(['Dữ liệu là nhị phân, <b>chỉ Java đọc được</b>, mở bằng Notepad không hiểu gì.','Phụ thuộc chặt vào định nghĩa lớp và <code>serialVersionUID</code>: đổi cấu trúc lớp là rắc rối.','Mỗi lần lưu ghi lại toàn bộ; không truy vấn được ("tìm người tên An") mà phải đọc cả tệp.','<b>Bảo mật:</b> không bao giờ deserialize dữ liệu từ nguồn không tin cậy, vì dữ liệu được dựng có thể kích hoạt mã độc khi đọc.'])
++ `<p>Hai điểm đầu dẫn tới hai hướng thay thế mà ta sẽ gặp: cơ sở dữ liệu (để truy vấn) và JSON (để đọc được bằng mắt và đa ngôn ngữ).</p>`)
++ sec('Phần 7. Cơ sở dữ liệu SQLite và JDBC',
+`<h3>Cơ sở dữ liệu là gì</h3>
+<p>Cơ sở dữ liệu (CSDL) là hệ thống lưu dữ liệu có cấu trúc, đảm bảo dữ liệu được tổ chức rõ ràng và nhiều người, nhiều thiết bị cùng truy cập được. Các hệ quản trị phổ biến: MySQL, SQL Server, SQLite, MongoDB. Trong CSDL quan hệ, dữ liệu nằm trong các <b>bảng</b>: mỗi bảng có các <b>cột</b> (trường: <code>id</code>, <code>name</code>, <code>email</code>) và mỗi <b>hàng</b> (bản ghi) là một đối tượng.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> một bảng giống một trang Excel có luật: mỗi cột có kiểu dữ liệu riêng, có cột không được để trống, có cột không được trùng. Hệ quản trị CSDL là người thủ thư bảo đảm các luật đó và tìm dữ liệu cực nhanh.')
++ `<p><b>SQLite</b> là CSDL quan hệ <b>gọn nhẹ nhất</b>: không có máy chủ riêng, không cần cài đặt hay cấu hình, toàn bộ CSDL nằm trong <b>một tệp</b> (ví dụ <code>data.db</code>), chạy tốt trên nhiều thiết bị. Rất hợp với ứng dụng desktop và mobile nhỏ.</p>
+<h3>SQL tối thiểu để làm việc</h3>
+<p>SQL là ngôn ngữ nói chuyện với CSDL. Bạn có thể thử trực tiếp bằng lệnh <code>sqlite3 data.db</code> trong terminal (hoặc phần mềm DB Browser for SQLite).</p>`
++ pre(J`
+CREATE TABLE contacts (
+    id    INTEGER PRIMARY KEY AUTOINCREMENT,   -- khóa chính, tự tăng 1,2,3...
+    name  VARCHAR(255) NOT NULL,               -- bắt buộc phải có
+    phone VARCHAR(50)  UNIQUE                  -- không được trùng
+);
+INSERT INTO contacts (name, phone) VALUES ('An', '0901');          -- thêm
+SELECT name, phone FROM contacts WHERE id = 1;                      -- đọc
+SELECT * FROM contacts WHERE name LIKE 'A%' ORDER BY name;          -- lọc + sắp xếp
+UPDATE contacts SET phone = '0999' WHERE id = 1;                    -- sửa
+DELETE FROM contacts WHERE id = 1;                                  -- xóa`)
++ box('warn','<b>Cẩn thận:</b> <code>UPDATE</code> hoặc <code>DELETE</code> quên mệnh đề <code>WHERE</code> sẽ tác động lên <b>toàn bộ bảng</b>. <b>Khóa chính</b> (<code>PRIMARY KEY</code>) là cột định danh duy nhất mỗi hàng, như số căn cước.')
++ `<h3>JDBC: một chuẩn nối Java với mọi CSDL</h3>
+<p>MySQL, SQLite, SQL Server mỗi hệ nói "giọng" riêng. <b>JDBC (Java Database Connectivity)</b> là bộ API chuẩn của Java để mã của bạn nói chuyện với CSDL theo một cách thống nhất. Cấu trúc: ứng dụng gọi <b>JDBC API</b>, <b>DriverManager</b> chọn <b>driver</b> phù hợp, driver nói chuyện với CSDL. Đổi từ SQLite sang MySQL chỉ cần đổi driver và URL, mã gọi hầu như giữ nguyên.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> JDBC là chuẩn ổ cắm; driver là bộ chuyển đổi cho từng nhãn hiệu thiết bị.')
++ pre(J`
+<dependency>
+    <groupId>org.xerial</groupId><artifactId>sqlite-jdbc</artifactId><version>3.46.1.3</version>
+</dependency>`)
++ `<p>URL kết nối có dạng <code>jdbc:&lt;driver&gt;:&lt;tệp CSDL&gt;</code>, với SQLite là <code>jdbc:sqlite:data.db</code>. Nếu tệp chưa tồn tại, SQLite tự tạo mới. (Slide gốc viết nhầm thành "jbdc"; đúng là <b>jdbc</b>.)</p>
+<h3>Năm bước của mọi chương trình JDBC</h3>
+<p>Kết nối → tạo câu lệnh → thực thi → đọc kết quả → đóng. Thứ tự cố định.</p>`
++ pre(J`
+String url = "jdbc:sqlite:data.db";
+try (Connection conn = DriverManager.getConnection(url);                       // 1. kết nối
+     Statement st = conn.createStatement()) {                                  // 2. tạo câu lệnh
+    st.execute("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+             + " name TEXT NOT NULL, phone TEXT)");                            // 3. thực thi
+    st.executeUpdate("INSERT INTO contacts (name, phone) VALUES ('An', '0901')");
+    try (ResultSet rs = st.executeQuery("SELECT id, name, phone FROM contacts")) {
+        while (rs.next()) {                                                    // 4. đọc từng hàng
+            System.out.println(rs.getInt("id") + " " + rs.getString("name") + " " + rs.getString("phone"));
+        }
+    }
+} catch (SQLException e) { e.printStackTrace(); }                              // 5. try-with-resources tự đóng`)
++ ul(['<code>execute(sql)</code>: chạy lệnh bất kỳ (thường dùng cho <code>CREATE</code>).','<code>executeUpdate(sql)</code>: chạy <code>INSERT/UPDATE/DELETE</code>, trả về số hàng bị tác động.','<code>executeQuery(sql)</code>: chạy <code>SELECT</code>, trả về <code>ResultSet</code> như một con trỏ; mỗi lần <code>rs.next()</code> nhảy sang hàng kế tiếp và trả <code>false</code> khi hết.'])
++ `<h3>PreparedStatement: luôn dùng khi có dữ liệu người dùng</h3>
+<p>Nếu ghép chuỗi SQL bằng tay sẽ mở cửa cho <b>SQL injection</b>, một lỗ hổng bảo mật rất nổi tiếng:</p>`
++ pre(J`
+String sql = "SELECT * FROM users WHERE name = '" + input + "'";
+// người dùng nhập:  ' OR '1'='1
+// câu lệnh thực tế: SELECT * FROM users WHERE name = '' OR '1'='1'   --> lấy ra TẤT CẢ người dùng`)
++ `<p><code>PreparedStatement</code> giải quyết bằng cách viết câu lệnh với chỗ trống <code>?</code> và truyền giá trị riêng. Giá trị luôn được coi là <b>dữ liệu</b>, không bao giờ bị hiểu là <b>lệnh</b>. Câu lệnh còn được biên dịch trước nên chạy lặp lại nhanh hơn.</p>`
++ pre(J`
+String sql = "INSERT INTO contacts (name, phone) VALUES (?, ?)";
+try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    ps.setString(1, "An");        // chú ý: chỉ số ? bắt đầu từ 1, không phải 0
+    ps.setString(2, "0901");
+    ps.executeUpdate();
+}`)
++ `<h3>Singleton cho kết nối</h3>
+<p>Mở kết nối là việc tốn kém, và nhiều đối tượng cùng mở kết nối tới một tệp SQLite dễ gây xung đột. Ta dùng mẫu <b>Singleton</b> (Bài 6) để cả chương trình chỉ có <b>một</b> đối tượng giữ kết nối.</p>`
++ pre(J`
+public class Database {
+    private static Database instance;
+    private final Connection conn;
+    private Database() {
+        try { conn = DriverManager.getConnection("jdbc:sqlite:contacts.db"); }
+        catch (SQLException e) { throw new RuntimeException(e); }
+    }
+    public static synchronized Database getInstance() {
+        if (instance == null) instance = new Database();
+        return instance;
+    }
+    public Connection getConnection() { return conn; }
+}`)
++ box('warn','<b>Hệ quả cần nhớ:</b> vì kết nối được dùng chung, trong các hàm truy vấn chỉ đưa <code>PreparedStatement</code> và <code>ResultSet</code> vào <code>try-with-resources</code>; <b>không</b> đưa <code>Connection</code> vào đó, nếu không kết nối sẽ bị đóng sau lần dùng đầu tiên.')
++ `<h3>Kho lưu trữ SQLite cho ứng dụng Danh bạ</h3>`
++ pre(J`
+public class SqliteRepository implements ContactRepository {
+    private final Connection conn = Database.getInstance().getConnection();
+
+    public SqliteRepository() {
+        try (Statement st = conn.createStatement()) {
+            st.execute("CREATE TABLE IF NOT EXISTS contacts (id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                     + " name TEXT NOT NULL, phone TEXT NOT NULL)");
+        } catch (SQLException e) { throw new RuntimeException(e); }
+    }
+    public List<Contact> findAll() {
+        List<Contact> result = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT id, name, phone FROM contacts");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) result.add(new Contact(rs.getInt("id"), rs.getString("name"), rs.getString("phone")));
+        } catch (SQLException e) { throw new RuntimeException(e); }
+        return result;
+    }
+    public void add(Contact c) {
+        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contacts (name, phone) VALUES (?, ?)")) {
+            ps.setString(1, c.getName()); ps.setString(2, c.getPhone()); ps.executeUpdate();
+        } catch (SQLException e) { throw new RuntimeException(e); }
+    }
+    public void delete(int id) {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contacts WHERE id = ?")) {
+            ps.setInt(1, id); ps.executeUpdate();
+        } catch (SQLException e) { throw new RuntimeException(e); }
+    }
+}
+// Controller: private final ContactRepository repo = new SqliteRepository();`)
++ `<p>Lại chỉ đổi đúng một dòng trong Controller. Đó là sức mạnh của việc tách Model khỏi Controller.</p>
+<h3>Giao dịch (transaction)</h3>
+<p>Khi nhiều lệnh phải "thành công cả nhóm hoặc không gì cả" (ví dụ chuyển tiền: trừ tài khoản A và cộng tài khoản B), tắt tự động lưu rồi tự quyết định lúc lưu:</p>`
++ pre(J`
+conn.setAutoCommit(false);
+try {
+    // ... nhiều lệnh executeUpdate ...
+    conn.commit();          // xác nhận tất cả
+} catch (SQLException e) {
+    conn.rollback();        // hủy tất cả
+} finally { conn.setAutoCommit(true); }`))
++ sec('Phần 8. Lưu đối tượng phức hợp vào CSDL: BLOB và JSON',
+`<p>Một đối tượng như <code>Student</code> chứa <code>List&lt;Course&gt;</code> không vừa vào một cột. Cách chuẩn là tách thành nhiều bảng có liên kết (kiến thức CSDL sâu hơn). Có hai lối tắt hay dùng khi bạn muốn nhét cả đối tượng vào một cột:</p>
+<h3>Cách 1: BLOB (Binary Large Object) + Serialization</h3>
+<p>Tuần tự hóa đối tượng ra mảng <code>byte[]</code> rồi lưu vào cột kiểu <code>BLOB</code>.</p>`
++ pre(J`
+static byte[] toBytes(Serializable obj) throws IOException {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    try (ObjectOutputStream oos = new ObjectOutputStream(bos)) { oos.writeObject(obj); }
+    return bos.toByteArray();
+}
+static Object fromBytes(byte[] data) throws IOException, ClassNotFoundException {
+    try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) { return ois.readObject(); }
+}
+// ghi:  ps.setBytes(1, toBytes(student));        đọc:  fromBytes(rs.getBytes("data"))`)
++ `<h3>Cách 2: JSON</h3>
+<p><b>JSON</b> (JavaScript Object Notation) là định dạng văn bản mô tả đối tượng bằng cặp tên–giá trị; ngôn ngữ nào cũng đọc được. Bạn lưu chuỗi JSON vào cột <code>TEXT</code>. Dùng thư viện Gson (thêm vào Maven: <code>com.google.code.gson:gson</code>):</p>`
++ pre(J`
+Gson gson = new Gson();
+String json = gson.toJson(new Account("an", "123456"));
+// {"username":"an","password":"123456"}
+Account back = gson.fromJson(json, Account.class);
+List<Account> list = gson.fromJson(jsonArray, new TypeToken<List<Account>>(){}.getType());`)
++ tb(['','BLOB + Serialization','JSON'],[
+ ['Dạng dữ liệu','Nhị phân','Văn bản thuần, đọc được bằng mắt'],
+ ['Ngôn ngữ khác đọc','Không (chỉ Java)','Có (Python, JavaScript...)'],
+ ['Phụ thuộc <code>serialVersionUID</code>','Có, đổi lớp là dễ lỗi','Không, dựa vào tên trường'],
+ ['Kích thước','Thường lớn hơn','Gọn hơn với dữ liệu đơn giản'],
+ ['Hợp khi','Lưu nhanh, chỉ trong Java','Lưu lâu dài, trao đổi, và là định dạng của REST API (Bài 9)']])
++ `<p>Gson cũng bỏ qua trường <code>transient</code>, giống tuần tự hóa gốc. Lưu ý <code>TypeToken</code> khi đọc danh sách, vì kiểu tổng quát bị xóa lúc chạy (đã học ở Bài 4).</p>`)
++ sec('Phần 9. Các lỗi hay gặp khi tự làm',
+tb(['Triệu chứng','Nguyên nhân thường gặp','Cách xử lý'],[
+ ['<code>Location is not set</code> / NPE khi <code>FXMLLoader.load</code>','Sai đường dẫn tệp FXML','Để FXML trong <code>resources</code>, đường dẫn bắt đầu bằng <code>/</code>'],
+ ['<code>JavaFX runtime components are missing</code>','Chạy thiếu module JavaFX','Chạy bằng <code>mvn javafx:run</code>'],
+ ['Trường <code>@FXML</code> bị <code>null</code>','<code>fx:id</code> không trùng tên trường, hoặc dùng trường trong constructor','Sửa tên cho khớp; dùng <code>initialize()</code>'],
+ ['<code>Not on FX application thread</code>','Sửa giao diện từ thread nền','Bọc trong <code>Platform.runLater</code>'],
+ ['<code>NotSerializableException</code>','Có trường thuộc lớp không <code>Serializable</code>','Cho lớp đó <code>implements Serializable</code> hoặc đánh <code>transient</code>'],
+ ['<code>InvalidClassException</code>','<code>serialVersionUID</code> hoặc cấu trúc lớp đã đổi','Khai báo UID cố định; xóa tệp dữ liệu cũ khi cố ý đổi'],
+ ['<code>No suitable driver found</code>','Thiếu sqlite-jdbc hoặc sai URL','Thêm dependency; URL <code>jdbc:sqlite:...</code>'],
+ ['Kết nối tự đóng, lần sau lỗi','Đưa <code>Connection</code> dùng chung vào try-with-resources','Chỉ đóng Statement/ResultSet']]))
+};
+
+LES['9'] = {b:'b5', n:'BÀI 9', t:'Lập trình mạng', d:'IP, port, TCP/UDP, mô hình Client–Server, Socket, đa luồng cho server, và REST API.',
+body: () =>
+sec('Phần 1. Hai máy nói chuyện với nhau bằng cách nào?',
+`<p>Mục tiêu của cả bài: tự viết một <b>ứng dụng chat nội bộ</b> từ con số 0. Gần như mọi ứng dụng hiện đại đều là ứng dụng mạng: trang web, app điện thoại, game online, các dịch vụ trong hệ thống lớn nói chuyện với nhau, thiết bị IoT báo dữ liệu về máy chủ. Hiểu lập trình mạng nghĩa là hiểu những thứ đó vận hành bên dưới.</p>
+<p>Để máy A gửi một tin cho máy B, ta phải trả lời ba câu hỏi, y như gửi thư:</p>`
++ tb(['Câu hỏi','Trong thế giới thư tín','Trong mạng máy tính'],[
+ ['Gửi tới <b>máy</b> nào?','Địa chỉ tòa nhà','Địa chỉ <b>IP</b>'],
+ ['Tới <b>chương trình</b> nào trên máy đó?','Số căn hộ trong tòa nhà','Số hiệu cổng (<b>port</b>)'],
+ ['Gửi theo <b>quy tắc</b> nào?','Thư thường hay chuyển phát bảo đảm','<b>Giao thức</b> (TCP, UDP, HTTP...)']])
++ `<p>Vấn đề đầu tiên: máy khách (<b>Client</b>) muốn nói chuyện với máy chủ (<b>Server</b>) nhưng làm sao biết Server ở đâu? Cần một địa chỉ.</p>
+<h3>Địa chỉ IP</h3>
+<p><b>IP (Internet Protocol)</b> giống địa chỉ nhà của một thiết bị trong mạng. Có hai loại về phạm vi và hai định dạng.</p>`
++ tb(['','Public IP','Private IP'],[
+ ['Ai cấp','Nhà mạng (ISP)','Router hoặc thiết bị quản lý mạng nội bộ'],
+ ['Phạm vi','Duy nhất trên toàn Internet','Chỉ có nghĩa trong mạng nội bộ, không dùng được trên Internet'],
+ ['Dải thường gặp','Phần còn lại','<code>192.168.x.x</code>, <code>10.x.x.x</code>, <code>172.16–31.x.x</code>']])
++ ul(['<b>IPv4</b>: 32 bit (4 byte), viết thành 4 số từ 0 đến 255 cách nhau dấu chấm, ví dụ <code>104.25.221.55</code> (mỗi số là một byte: <code>01101000.00011001.11011101.00110111</code>). Chỉ có khoảng 4,3 tỉ địa chỉ, đã gần cạn.','<b>IPv6</b>: 128 bit (16 byte), 8 nhóm 16 bit viết dạng hex, ví dụ <code>2342:0415:2CA1:0000:0000:0566:5671:23b4</code>. Đủ dùng gần như vô hạn.','<b>127.0.0.1</b> (tên <code>localhost</code>) là "chính máy này". Khi tập viết Client và Server trên cùng một máy, bạn dùng địa chỉ này.'])
++ `<p>Thực tế bạn ít khi gõ IP mà gõ tên như <code>google.com</code>; hệ thống <b>DNS</b> đổi tên thành IP giúp bạn. Trong Java:</p>`
++ pre(J`
+InetAddress ip = InetAddress.getByName("google.com");
+System.out.println(ip.getHostAddress());                 // ví dụ 142.250.x.x
+System.out.println(InetAddress.getLocalHost());          // tên và IP máy mình`)
++ box('analogy','<b>Vì sao cả nhà bạn chỉ có một public IP?</b> Router nhà bạn giữ một public IP và phát cho các thiết bị private IP bên trong (kỹ thuật NAT). Từ Internet nhìn vào chỉ thấy router. Hệ quả: muốn người ngoài Internet kết nối vào server chạy ở máy nhà bạn, phải cấu hình chuyển tiếp cổng (port forwarding) trên router. Trong LAN (cùng WiFi) thì dùng private IP là đủ.')
++ `<h3>Port (số hiệu cổng)</h3>
+<p>Một máy có một IP nhưng chạy nhiều chương trình mạng cùng lúc (trình duyệt, game, CSDL). <b>Port</b> là số từ <b>0 đến 65535</b> để phân biệt chương trình nào nhận dữ liệu, như số căn hộ trong tòa nhà. Các port nổi tiếng: 80 (HTTP), 443 (HTTPS), 22 (SSH), 3306 (MySQL). Dải 0–1023 dành cho dịch vụ hệ thống, ứng dụng của bạn nên chọn từ 1024 trở lên (bài này dùng 5000). Hai chương trình không thể cùng lắng nghe một port; làm vậy sẽ gặp <code>BindException: Address already in use</code>.</p>
+<h3>Socket = IP + Port</h3>
+<p><b>Socket</b> là một đầu của kênh liên lạc, gồm <b>địa chỉ IP + port</b>: cái "ổ cắm" để ứng dụng cắm vào đường ống mạng. Một kết nối TCP có hai đầu: socket của Client và socket của Server. Điều thú vị: nhiều Client cùng kết nối tới port 5000 của Server được, vì mỗi Client dùng một port tạm khác nhau ở phía nó, và mỗi kết nối được nhận diện bởi bộ bốn (IP Client, port Client, IP Server, port Server).</p>`)
++ sec('Phần 2. Giao thức TCP, UDP và mô hình TCP/IP',
+`<p><b>Giao thức</b> là bộ quy tắc hai bên cùng tuân theo. Ở tầng vận chuyển có hai giao thức chính:</p>`
++ tb(['','TCP (Transmission Control Protocol)','UDP (User Datagram Protocol)'],[
+ ['Kiểu','Hướng kết nối: phải "bắt tay" trước','Không kết nối: gửi thẳng'],
+ ['Độ tin cậy','Đúng nơi, <b>đúng thứ tự</b>, không mất mát (mất thì gửi lại)','Có thể mất, đảo thứ tự, không báo'],
+ ['Tốc độ','Chậm hơn (tốn công kiểm soát)','Nhanh, ít chi phí'],
+ ['Ví dụ','Web, email, chat, chuyển tệp','Xem video trực tiếp, game online, gọi thoại']])
++ box('analogy','<b>TCP giống gọi điện:</b> alo, nghe rõ không, ừ nghe rõ rồi mới nói; nếu nghe không rõ thì nói lại. <b>UDP giống ném bưu thiếp vào hòm thư:</b> nhanh, nhưng không biết đã tới chưa. Chat cần tin nhắn tới đủ và đúng thứ tự, nên chọn <b>TCP</b>. Video call thì mất vài khung hình không sao nhưng không được giật trễ, nên hợp UDP.')
++ `<h3>Bắt tay ba bước (3-way handshake)</h3>
+<p>Trước khi truyền dữ liệu, TCP thiết lập kết nối bằng ba bước để hai bên đồng bộ và chắc chắn bên kia đang nghe:</p>`
++ pre(J`
+Client                              Server
+  | ---- SYN  ("tôi muốn kết nối") --> |
+  | <--- SYN-ACK ("ok, tôi sẵn sàng") -|
+  | ---- ACK  ("tốt, bắt đầu nhé") --> |
+  |         ... trao đổi dữ liệu ...   |`)
++ `<p>Trong Java bạn <b>không</b> phải tự làm việc này: hàm <code>new Socket(ip, port)</code> thực hiện bắt tay giúp bạn.</p>
+<div class="box warn"><b>TCP là một dòng byte, không có "ranh giới tin nhắn".</b> Nếu bạn gửi "Hello" rồi "World", bên kia có thể nhận "HelloWorld" gộp lại, hoặc nhận lẻ "Hel" rồi "loWorld". Vì vậy phải tự quy ước cách phân tách tin nhắn. Trong bài này quy ước đơn giản nhất: <b>mỗi tin nhắn là một dòng, kết thúc bằng ký tự xuống dòng</b> (và đọc bằng <code>readLine</code>).</div>
+<h3>Bốn tầng của mô hình TCP/IP</h3>
+<p>Việc gửi dữ liệu được chia thành bốn tầng, mỗi tầng lo một việc và chỉ nói chuyện với tầng liền kề.</p>`
++ tb(['Tầng','Nhiệm vụ','Ví dụ'],[
+ ['<b>Application</b> (ứng dụng)','Gần người dùng nhất; nơi trình duyệt, app, chương trình của bạn dùng mạng','HTTP, FTP, SMTP, và giao thức chat của bạn'],
+ ['<b>Transport</b> (vận chuyển)','Bảo đảm gửi đúng cách; dùng port để chọn chương trình','TCP, UDP'],
+ ['<b>Internet</b>','Dùng địa chỉ IP xác định thiết bị, tính đường đi tốt nhất cho gói tin','IP, router'],
+ ['<b>Network access</b> (liên kết)','Tín hiệu vật lý được gửi và nhận','WiFi, Ethernet, card mạng']])
++ box('analogy','<b>Ví dụ ẩn dụ:</b> gửi một món quà. Bạn viết thiệp (Application), bỏ vào hộp ghi số căn hộ người nhận (Transport), dán nhãn địa chỉ tòa nhà (Internet), rồi xe chuyên chở đưa đi trên đường (Network access). Mỗi tầng "bọc thêm một lớp" ngoài dữ liệu; bên nhận bóc từng lớp ngược lại. Khi dùng <code>Socket</code> trong Java, bạn đang làm việc ở ranh giới Application/Transport: chọn TCP, chọn IP và port, còn lại hệ điều hành lo.')
+)
++ sec('Phần 3. Mô hình Client–Server',
+`<p>Hầu hết ứng dụng mạng chia thành hai vai:</p>`
++ ul(['<b>Server</b>: cung cấp tài nguyên hoặc dịch vụ, <b>luôn ở trạng thái chờ</b>.','<b>Client</b>: dùng dịch vụ, <b>chủ động</b> gửi yêu cầu.'])
++ box('analogy','<b>Ví dụ ẩn dụ:</b> Server là cửa tiệm: mở cửa sẵn, ai tới thì phục vụ. Client là khách hàng, tự đi tới tiệm. Muốn vào được, khách phải biết địa chỉ tiệm (IP) và số cửa (port).')
++ pre(J`
+SERVER                                CLIENT
+1. Binding   : mở cổng 5000
+2. Listening : lắng nghe
+3. Accepting : chờ khách  <---------- 1. Xác định IP + port của Server
+                         <---------- 2. Connect (bắt tay TCP)
+   accept() trả về Socket riêng
+4. Serving   : đọc / ghi   <========> 3. Read / Write
+                                      4. Close`)
++ `<h3>Hai lớp Java cốt lõi</h3>`
++ tb(['Lớp','Vai trò','Hàm chính'],[
+ ['<code>ServerSocket</code>','Của Server: mở cổng và lắng nghe','<code>new ServerSocket(5000)</code>; <code>accept()</code> chờ một Client và trả về <code>Socket</code> riêng cho kết nối đó; <code>close()</code>'],
+ ['<code>Socket</code>','Một đầu kết nối (cả Client và phía Server sau <code>accept</code>)','<code>new Socket(ip, port)</code> (Client); <code>getInputStream()</code>, <code>getOutputStream()</code>; <code>getInetAddress()</code>; <code>close()</code>']])
++ `<h3>Stream: ống dẫn dữ liệu</h3>
+<p>Khi đã có <code>Socket</code>, bạn nói chuyện qua hai luồng: <b>InputStream</b> (dữ liệu từ mạng đi vào ứng dụng) và <b>OutputStream</b> (dữ liệu từ ứng dụng đi ra mạng). Nhưng luồng gốc chỉ chở <b>byte</b>, khó dùng. Ta <b>bọc</b> chúng (đã học ở Bài 5.2 và nhận ra đây là mẫu Decorator) để làm việc với văn bản theo dòng:</p>`
++ pre(J`
+BufferedReader in = new BufferedReader(
+        new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));   // byte -> ký tự -> đọc theo dòng
+PrintWriter out = new PrintWriter(
+        new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);   // ghi chữ, true = autoflush`)
++ ul(['<code>InputStreamReader</code> đổi byte thành ký tự; <b>luôn chỉ rõ UTF-8</b> để tiếng Việt không bị lỗi font.','<code>BufferedReader.readLine()</code> đọc tới ký tự xuống dòng thì trả về một chuỗi; <b>nó chặn (block)</b> cho tới khi có đủ một dòng, và trả <code>null</code> khi bên kia đã đóng kết nối.','<code>true</code> trong <code>PrintWriter</code> là <b>autoflush</b>: mỗi lần <code>println</code> đẩy dữ liệu đi ngay. Nếu thiếu, dữ liệu nằm chờ trong bộ đệm và bên kia đợi mãi: bug rất hay gặp.'])
+)
++ sec('Phần 4. Ứng dụng đầu tiên: Echo',
+`<p>Client gửi "Hello", Server trả lại "Echo: Hello". Đơn giản nhưng chứa đủ mọi thành phần của ứng dụng mạng. Trước hết là Server:</p>`
++ pre(J`
+import java.io.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+
+public class EchoServer {
+    public static void main(String[] args) throws IOException {
+        try (ServerSocket server = new ServerSocket(5000)) {                  // B1: mở cửa tiệm ở cổng 5000
+            System.out.println("Server đang chờ ở cổng 5000...");
+            try (Socket client = server.accept();                              // B2: chờ khách (BLOCK ở đây)
+                 BufferedReader in = new BufferedReader(
+                         new InputStreamReader(client.getInputStream(), StandardCharsets.UTF_8));
+                 PrintWriter out = new PrintWriter(
+                         new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8), true)) {
+                System.out.println("Có khách: " + client.getInetAddress());
+                String line;
+                while ((line = in.readLine()) != null) {                      // B3: đọc tới khi client ngắt
+                    System.out.println("Client nói: " + line);
+                    out.println("Echo: " + line);                              // trả lời
+                }
+            }                                                                  // tự đóng socket
+        }
+    }
+}`)
++ `<p>Đọc kỹ ba chỗ "chặn": <code>accept()</code> dừng chương trình cho tới khi có Client tới; <code>readLine()</code> dừng tới khi có dòng mới; vòng <code>while</code> kết thúc khi <code>readLine()</code> trả <code>null</code> tức Client đã đóng. Giờ tới Client:</p>`
++ pre(J`
+public class EchoClient {
+    public static void main(String[] args) throws IOException {
+        try (Socket socket = new Socket("127.0.0.1", 5000);                   // kết nối (bắt tay TCP)
+             BufferedReader netIn = new BufferedReader(
+                     new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+             PrintWriter netOut = new PrintWriter(
+                     new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+             BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in))) {
+            String text;
+            while ((text = keyboard.readLine()) != null) {                    // đọc từ bàn phím
+                netOut.println(text);                                          // gửi lên server
+                System.out.println(netIn.readLine());                          // chờ và in phản hồi
+            }
+        }
+    }
+}`)
++ `<p><b>Chạy thử:</b> mở hai cửa sổ terminal. Cửa sổ 1 chạy <code>EchoServer</code> (nó sẽ đứng chờ, đó là bình thường). Cửa sổ 2 chạy <code>EchoClient</code>, gõ "Hello" rồi Enter và sẽ thấy <code>Echo: Hello</code>. Bạn cũng có thể thay Client bằng <code>telnet 127.0.0.1 5000</code> (hoặc <code>nc 127.0.0.1 5000</code>) để thấy Server chẳng cần biết Client viết bằng ngôn ngữ nào.</p>`
++ tb(['Lỗi bạn sẽ gặp','Nghĩa là'],[
+ ['<code>ConnectException: Connection refused</code>','Chưa chạy Server, hoặc sai IP/port'],
+ ['<code>BindException: Address already in use</code>','Port 5000 đã có chương trình khác (hoặc Server cũ chưa tắt) giữ'],
+ ['<code>SocketException: Connection reset</code>','Bên kia đóng đột ngột'],
+ ['Client gửi rồi đứng im mãi','Thiếu xuống dòng hoặc thiếu autoflush nên bên kia chưa nhận được dòng hoàn chỉnh']]))
++ sec('Phần 5. Nhiều Client cùng lúc: vì sao Server của bạn "đứng hình"',
+`<p>Yêu cầu mới: nhiều người cùng chat. Thử: bật Server, bật Client A (chat bình thường), bật Client B: <b>B đứng hình, không được phản hồi</b>. Vì sao?</p>
+<p>Hãy nhìn luồng chạy của Server: sau <code>accept()</code> lấy được Client A, chương trình bước vào vòng <code>while (readLine...)</code> và <b>kẹt ở đó</b> phục vụ A cho tới khi A ngắt. Nó không bao giờ quay lại gọi <code>accept()</code> lần nữa. Client B thực ra vẫn "kết nối được" (hệ điều hành xếp B vào hàng đợi), nhưng không ai đọc và trả lời.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> một nhân viên vừa đón khách vừa phục vụ bàn. Anh ta đang kẹt ở bàn đầu tiên, khách thứ hai đứng ngoài cửa mãi. Giải pháp: <b>thuê thêm nhân viên</b>. Một người chuyên đón khách ở cửa; mỗi khách vào là giao cho một nhân viên riêng phục vụ.')
++ `<p>Trong Java, "nhân viên" chính là <b>Thread</b> (Bài 7). Việc phục vụ một khách gói vào một lớp <code>Runnable</code>; vòng <code>accept()</code> ở thread chính chỉ lo đón khách:</p>`
++ pre(J`
+public class ClientHandler implements Runnable {          // phục vụ MỘT khách
+    private final Socket socket;
+    public ClientHandler(Socket socket) { this.socket = socket; }
+
+    @Override
+    public void run() {
+        try (Socket s = socket;
+             BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
+             PrintWriter out = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), StandardCharsets.UTF_8), true)) {
+            String line;
+            while ((line = in.readLine()) != null) out.println("Echo: " + line);
+        } catch (IOException e) {
+            System.out.println("Client rời đi: " + e.getMessage());
+        }
+    }
+}
+
+public class MultiServer {
+    public static void main(String[] args) throws IOException {
+        try (ServerSocket server = new ServerSocket(5000)) {
+            while (true) {
+                Socket client = server.accept();                        // chỉ đón khách
+                System.out.println("Client mới: " + client.getInetAddress());
+                new Thread(new ClientHandler(client)).start();         // giao cho nhân viên riêng
+            }
+        }
+    }
+}`)
++ `<p>Giờ thread chính chạy vòng <code>accept()</code> không bao giờ kẹt, mỗi Client có một thread riêng chạy độc lập. Bật nhiều Client cùng lúc đều được phản hồi.</p>`)
++ sec('Phần 6. Nâng cấp thành phòng chat',
+`<p>Echo chỉ trả lời lại cho chính người gửi. Phòng chat thì tin của một người phải được <b>phát cho mọi người</b> (broadcast). Server cần một danh sách các Client đang online:</p>`
++ pre(J`
+public class ChatServer {
+    private static final List<PrintWriter> clients = new CopyOnWriteArrayList<>();   // danh sách dùng chung
+
+    public static void main(String[] args) throws IOException {
+        try (ServerSocket server = new ServerSocket(5000)) {
+            while (true) {
+                Socket s = server.accept();
+                new Thread(() -> handle(s)).start();
+            }
+        }
+    }
+    private static void handle(Socket s) {
+        try (s;
+             BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
+             PrintWriter out = new PrintWriter(new OutputStreamWriter(s.getOutputStream(), StandardCharsets.UTF_8), true)) {
+            clients.add(out);                                           // vào phòng
+            broadcast("[" + s.getInetAddress() + " đã vào phòng]");
+            String line;
+            while ((line = in.readLine()) != null) broadcast(s.getInetAddress() + ": " + line);
+        } catch (IOException ignored) {
+        } finally {
+            // lưu ý: out đã đóng ở đây; cần out để gỡ khỏi danh sách nên khai báo ngoài try nếu muốn dọn kỹ hơn
+        }
+    }
+    private static void broadcast(String msg) {
+        for (PrintWriter w : clients) w.println(msg);                  // gửi cho tất cả
+    }
+}`)
++ `<p>Có hai điều đáng chú ý. Thứ nhất, nhiều thread cùng sửa và duyệt <code>clients</code> nên cần cấu trúc an toàn đa luồng (nếu dùng <code>ArrayList</code> thường sẽ có race condition như Bài 7); <code>CopyOnWriteArrayList</code> cho phép duyệt trong khi thêm/xóa mà không lỗi. Thứ hai, các hàm ghi của <code>PrintWriter</code> tự đồng bộ nên hai thread cùng ghi vào một Client không xen lẫn nửa dòng. (Bản đầy đủ nên gỡ <code>out</code> khỏi danh sách khi Client rời đi; bạn có thể tự luyện tập bằng cách khai báo <code>out</code> trước khối <code>try</code> rồi gọi <code>clients.remove(out)</code> trong <code>finally</code>.)</p>
+<h3>Client của phòng chat cần hai thread</h3>
+<p>Client phải đồng thời <b>gõ phím</b> (chờ bàn phím) và <b>nhận tin</b> từ Server (chờ mạng). Hai thao tác đều chặn nên không thể làm trong cùng một vòng lặp, ta tách ra: một thread chỉ đọc từ Server và in ra, thread chính đọc bàn phím và gửi.</p>`
++ pre(J`
+public class ChatClient {
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("127.0.0.1", 5000);
+        BufferedReader netIn = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+        PrintWriter netOut = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+
+        Thread reader = new Thread(() -> {                              // thread chuyên nghe Server
+            try {
+                String msg;
+                while ((msg = netIn.readLine()) != null) System.out.println(msg);
+            } catch (IOException ignored) { }
+        });
+        reader.setDaemon(true);                                         // thread nền: chương trình tắt thì nó tắt theo
+        reader.start();
+
+        BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+        String text;
+        while ((text = keyboard.readLine()) != null) netOut.println(text);   // thread chính: gõ và gửi
+        socket.close();
+    }
+}`))
++ sec('Phần 7. Khi có một triệu người gọi tới',
+`<p>Cách "một Client, một Thread" rất dễ hiểu nhưng có giới hạn. Mỗi thread thường tốn cỡ <b>1 MB</b> bộ nhớ cho ngăn xếp riêng, cộng thêm chi phí hệ điều hành chuyển qua lại giữa các thread. Một triệu thread sẽ làm tràn RAM. Ba hướng nâng cấp theo thứ tự tăng dần:</p>`
++ tb(['Hướng','Ý tưởng','Ghi chú'],[
+ ['<b>Thread pool</b>','Giới hạn số thread (ví dụ 50) và dùng lại; khách tới nhiều hơn thì xếp hàng đợi','Dễ nhất, vẫn dùng mã blocking quen thuộc'],
+ ['<b>Virtual thread</b> (Java 21+)','Thread siêu nhẹ do JVM quản lý, tạo cả triệu cái; hợp vì phần lớn thời gian server chỉ chờ I/O','Đổi đúng một dòng so với mã dùng pool'],
+ ['<b>I/O không chặn</b> (NIO, Netty)','Một thread theo dõi nhiều kết nối cùng lúc','Hiệu năng cao nhất, mã phức tạp hơn nhiều']])
++ pre(J`
+ExecutorService pool = Executors.newFixedThreadPool(50);        // tối đa 50 Client phục vụ cùng lúc
+// ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor();   // Java 21+
+try (ServerSocket server = new ServerSocket(5000)) {
+    while (true) {
+        Socket client = server.accept();
+        pool.execute(new ClientHandler(client));                    // thay cho new Thread(...).start()
+    }
+}`)
++ `<p>Với pool cố định 50, Client thứ 51 phải chờ có thread rảnh. Đó là đánh đổi có chủ ý: server không bị sập vì quá tải.</p>`)
++ sec('Phần 8. REST API: nói chuyện qua HTTP',
+`<p>Socket cho bạn toàn quyền nhưng bạn phải tự thiết kế giao thức (ví dụ "mỗi dòng là một tin"). Với phần lớn ứng dụng web và mobile, người ta dùng một giao thức đã có sẵn là <b>HTTP</b> và một phong cách thiết kế gọi là <b>REST API (Representational State Transfer)</b>.</p>
+<p>HTTP thật ra cũng chỉ là <b>văn bản chạy trên socket TCP</b> (thường port 80/443), thuộc tầng Application. Một yêu cầu và phản hồi trông như sau:</p>`
++ pre(J`
+GET /api/users/42 HTTP/1.1            <-- yêu cầu: phương thức, đường dẫn
+Host: example.com
+
+HTTP/1.1 200 OK                       <-- phản hồi: mã trạng thái
+Content-Type: application/json
+
+{"id": 42, "name": "An", "email": "an@example.com"}   <-- dữ liệu dạng JSON`)
++ `<p>REST dựa trên bốn phương thức chuẩn, ứng với bốn thao tác dữ liệu, và <b>địa chỉ (URL) mô tả tài nguyên</b>:</p>`
++ tb(['Phương thức','Ý nghĩa','Ví dụ'],[
+ ['<code>GET</code>','Lấy dữ liệu','<code>GET /api/users</code> (danh sách), <code>GET /api/users/42</code> (một người)'],
+ ['<code>POST</code>','Tạo mới','<code>POST /api/users</code> kèm JSON của người mới'],
+ ['<code>PUT</code>','Cập nhật','<code>PUT /api/users/42</code> kèm JSON mới'],
+ ['<code>DELETE</code>','Xóa','<code>DELETE /api/users/42</code>']])
++ tb(['Mã trạng thái','Nghĩa'],[
+ ['<code>200 OK</code> / <code>201 Created</code>','Thành công / đã tạo xong'],
+ ['<code>400 Bad Request</code>','Yêu cầu sai dữ liệu'],
+ ['<code>401</code> / <code>403</code>','Chưa đăng nhập / không đủ quyền'],
+ ['<code>404 Not Found</code>','Không có tài nguyên này'],
+ ['<code>500 Internal Server Error</code>','Server bị lỗi']])
++ `<p>Điểm đặc trưng thứ hai là <b>stateless</b> (phi trạng thái): mỗi yêu cầu tự mang đủ thông tin để Server xử lý (ví dụ kèm token đăng nhập), Server không phải "nhớ" bạn giữa hai yêu cầu và không cần giữ kết nối mở. Nhờ vậy dễ mở rộng bằng cách thêm nhiều server.</p>
+<h3>Gọi REST API từ Java (HttpClient, Java 11+)</h3>`
++ pre(J`
+HttpClient client = HttpClient.newHttpClient();
+
+HttpRequest get = HttpRequest.newBuilder(URI.create("https://example.com/api/users/42")).GET().build();
+HttpResponse<String> res = client.send(get, HttpResponse.BodyHandlers.ofString());
+System.out.println(res.statusCode() + " " + res.body());
+
+HttpRequest post = HttpRequest.newBuilder(URI.create("https://example.com/api/users"))
+        .header("Content-Type", "application/json")
+        .POST(HttpRequest.BodyPublishers.ofString("{\"name\":\"An\"}")).build();
+client.send(post, HttpResponse.BodyHandlers.ofString());`)
++ `<p>Phần thân JSON thì dùng Gson ở Bài 8 để chuyển qua lại giữa đối tượng và chuỗi. Để thử phía Server mà không cần cài thêm gì, JDK có sẵn một máy chủ HTTP rất nhỏ:</p>`
++ pre(J`
+HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);   // com.sun.net.httpserver
+server.createContext("/api/hello", exchange -> {
+    byte[] body = "{\"message\":\"Xin chào\"}".getBytes(StandardCharsets.UTF_8);
+    exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+    exchange.sendResponseHeaders(200, body.length);
+    try (OutputStream os = exchange.getResponseBody()) { os.write(body); }
+});
+server.start();      // mở trình duyệt: http://localhost:8080/api/hello`)
++ `<h3>Khi nào dùng Socket, khi nào dùng REST?</h3>`
++ tb(['','Socket','REST API'],[
+ ['Kiểu kết nối','Duy trì liên tục, hai chiều','Mỗi yêu cầu độc lập (stateless)'],
+ ['Độ trễ','Cực thấp, thời gian thực','Cao hơn một chút (mỗi lần hỏi là một vòng yêu cầu–phản hồi)'],
+ ['Server chủ động gửi','Được (như phòng chat)','Không; Client phải hỏi (polling)'],
+ ['Độ khó','Tự thiết kế giao thức và xử lý nhiều Client','Dễ triển khai, mọi nền tảng (web, mobile) đều hiểu'],
+ ['Hợp với','Game online, chat, IoT truyền dữ liệu liên tục','Web thông thường, mạng xã hội (đọc tin, đăng bài), hệ thống quản lý']])
++ `<p>Thực tế hai thứ hay đi cùng nhau: đăng nhập, lấy danh sách bạn bè bằng REST; còn nhắn tin thời gian thực dùng kết nối duy trì liên tục (với web gọi là WebSocket).</p>`)
++ sec('Phần 9. Nối với JavaFX: Client chat có giao diện',
+`<p>Ghép Bài 8 với bài này: một Client chat có cửa sổ. Quy tắc vàng của JavaFX (chỉ thread giao diện được sửa giao diện) kết hợp với việc đọc mạng bị chặn, cho ra khuôn mẫu: <b>đọc mạng ở thread nền, mỗi tin nhận được thì <code>Platform.runLater</code> để thêm vào giao diện</b>; gửi tin trong handler của nút (<code>println</code> rất nhanh nên không làm đứng hình).</p>`
++ pre(J`
+public class ChatController {
+    @FXML private TextArea chatArea;
+    @FXML private TextField inputField;
+    private PrintWriter out;
+
+    @FXML private void initialize() throws IOException {
+        Socket socket = new Socket("127.0.0.1", 5000);
+        out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+        Thread t = new Thread(() -> {
+            try {
+                String msg;
+                while ((msg = in.readLine()) != null) {
+                    String m = msg;
+                    Platform.runLater(() -> chatArea.appendText(m + "\n"));   // cập nhật giao diện đúng thread
+                }
+            } catch (IOException ignored) { }
+        });
+        t.setDaemon(true);
+        t.start();
+    }
+    @FXML private void onSend() {
+        out.println(inputField.getText());
+        inputField.clear();
+    }
+}`)
++ `<p>Đây cũng là lúc tuần tự hóa (Bài 8) phát huy: thay vì gửi chuỗi, Client và Server có thể gửi cả đối tượng <code>Message</code> (<code>implements Serializable</code>) qua <code>ObjectOutputStream</code>/<code>ObjectInputStream</code> bọc trên socket, hoặc gửi đối tượng đã đổi thành JSON mỗi dòng một tin. Giao thức đơn giản nhưng đã đủ để xây ứng dụng thật.</p>`)
+};
+
+REF.push(
+E('Application','Lớp','8','Lớp cha của mọi ứng dụng JavaFX; bạn kế thừa và ghi đè <code>start</code>.',
+ J`public class MainApp extends Application {
+    @Override public void start(Stage stage) { stage.show(); }
+    public static void main(String[] a) { launch(a); }
+}`,
+ [['launch(args)','Khởi động: tạo đối tượng → init() → start()'],['init()','Chạy trước start, ở thread khác (đừng tạo Stage ở đây)'],['start(Stage)','Dựng giao diện, bắt buộc ghi đè'],['stop()','Gọi khi thoát, dọn dẹp tài nguyên'],['Platform.exit()','Thoát ứng dụng đúng cách'],['Platform.runLater(r)','Chạy mã trên thread giao diện']],
+ ['Stage / Scene','FXMLLoader']),
+E('Stage / Scene','Lớp','8','<code>Stage</code> là cửa sổ, <code>Scene</code> là nội dung (cây Node) đang hiển thị trong cửa sổ.',
+ J`Scene scene = new Scene(root, 480, 360);
+stage.setScene(scene);
+stage.setTitle("Tiêu đề");
+stage.show();`,
+ [['stage.setScene(scene)','Gắn Scene vào cửa sổ (đổi Scene = đổi màn hình)'],['stage.setTitle(String)','Đặt tiêu đề'],['stage.show() / close()','Hiện / đóng cửa sổ'],['stage.initStyle(StageStyle.X)','DECORATED, UNDECORATED, TRANSPARENT, UNIFIED, UTILITY'],['scene.getStylesheets().add(css)','Gắn tệp CSS']],
+ ['Application','FXMLLoader']),
+E('FXMLLoader','Lớp','8','Đọc tệp FXML, tạo cây Node và nối với Controller.',
+ J`Parent root = FXMLLoader.load(getClass().getResource("/app/view/main.fxml"));`,
+ [['FXMLLoader.load(url)','Nạp FXML, trả Node gốc'],['@FXML','Gắn trường/phương thức của Controller với FXML'],['fx:id','Tên để gắn Node vào trường @FXML'],['onAction="#hàm"','Gọi phương thức Controller khi bấm'],['initialize()','Chạy sau khi các trường @FXML được gán']],
+ ['Stage / Scene','Application']),
+E('Serializable','Giao diện','8','Nhãn đánh dấu lớp cho phép tuần tự hóa (không có phương thức). Tuần tự hóa: đối tượng ↔ chuỗi byte.',
+ J`public class Account implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private String user;
+    private transient String password;   // không được lưu
+}`,
+ [['serialVersionUID','Số phiên bản; khác nhau → InvalidClassException'],['transient','Loại trường khỏi dữ liệu tuần tự hóa'],['writeObject(o) / readObject()','Ghi / đọc qua ObjectOutputStream / ObjectInputStream'],['NotSerializableException','Có trường không Serializable'],['static','Không được tuần tự hóa']],
+ ['ObjectOutputStream','Connection']),
+E('Connection','Giao diện','8','Một kết nối JDBC tới CSDL. Lấy bằng <code>DriverManager</code>.',
+ J`Connection conn = DriverManager.getConnection("jdbc:sqlite:data.db");`,
+ [['createStatement()','Tạo Statement chạy SQL tĩnh'],['prepareStatement(sql)','Tạo PreparedStatement (có ?)'],['setAutoCommit(false)','Bắt đầu giao dịch thủ công'],['commit() / rollback()','Xác nhận / hủy giao dịch'],['close()','Đóng kết nối']],
+ ['PreparedStatement','ResultSet']),
+E('PreparedStatement','Giao diện','8','Câu lệnh SQL biên dịch trước, truyền tham số bằng <code>?</code>; chống SQL injection.',
+ J`PreparedStatement ps = conn.prepareStatement("SELECT * FROM contacts WHERE name = ?");
+ps.setString(1, "An");
+ResultSet rs = ps.executeQuery();`,
+ [['setString(i, v) / setInt(i, v)','Gán tham số (i bắt đầu từ 1)'],['setBytes(i, byte[])','Gán dữ liệu BLOB'],['executeQuery()','Chạy SELECT, trả ResultSet'],['executeUpdate()','Chạy INSERT/UPDATE/DELETE, trả số hàng'],['execute()','Chạy lệnh bất kỳ']],
+ ['Connection','ResultSet']),
+E('ResultSet','Giao diện','8','Kết quả của <code>SELECT</code>, như con trỏ duyệt từng hàng.',
+ J`while (rs.next()) {
+    int id = rs.getInt("id");
+    String name = rs.getString("name");
+}`,
+ [['next()','Sang hàng kế tiếp; false khi hết'],['getInt(col) / getString(col)','Lấy giá trị theo tên cột (hoặc số thứ tự từ 1)'],['getDouble / getBoolean / getBytes','Các kiểu khác']],
+ ['PreparedStatement']),
+E('ServerSocket','Lớp','9','Của Server: mở cổng và chờ Client kết nối.',
+ J`ServerSocket server = new ServerSocket(5000);
+Socket client = server.accept();   // chờ (block)`,
+ [['accept()','Chặn tới khi có Client, trả Socket riêng'],['close()','Đóng, ngừng lắng nghe'],['BindException','Port đã bị chương trình khác dùng']],
+ ['Socket','ExecutorService']),
+E('Socket','Lớp','9','Một đầu kết nối TCP = IP + port. Client tạo bằng <code>new Socket</code>; Server nhận từ <code>accept()</code>.',
+ J`Socket socket = new Socket("127.0.0.1", 5000);
+BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);`,
+ [['getInputStream()','Luồng nhận dữ liệu từ mạng'],['getOutputStream()','Luồng gửi dữ liệu ra mạng'],['getInetAddress()','IP bên kia'],['close()','Đóng kết nối'],['readLine() = null','Bên kia đã đóng'],['ConnectException','Server chưa chạy / sai IP, port']],
+ ['ServerSocket','BufferedReader','PrintWriter']),
+E('HttpClient','Lớp','9','Gọi REST API (HTTP) từ Java 11+.',
+ J`HttpClient c = HttpClient.newHttpClient();
+HttpRequest r = HttpRequest.newBuilder(URI.create("https://example.com/api")).GET().build();
+HttpResponse<String> res = c.send(r, HttpResponse.BodyHandlers.ofString());`,
+ [['GET() / POST(body) / PUT(body) / DELETE()','Phương thức HTTP'],['header(k, v)','Thêm header (vd Content-Type)'],['send(req, handler)','Gửi và chờ phản hồi'],['res.statusCode() / res.body()','Mã trạng thái / nội dung']],
+ ['Socket'])
+);
+LNAME['8'] = 'Bài 8'; LNAME['9'] = 'Bài 9';
+REF.forEach((r,i) => REFIDX[r.n] = i);
 
 function buildTOC() {
   const tocContainer = $('toc-links');
