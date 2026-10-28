@@ -52,8 +52,8 @@ input[type=range]{width:100%;accent-color:var(--c5);cursor:pointer}
 .btn:active{transform:translateY(0) scale(0.97)}
 .btn-hint{background:var(--tint);color:var(--ink);border-color:var(--c3);box-shadow:0 4px 14px rgba(245,159,0,.18)}
 .btn-hint::before{background:var(--c3);box-shadow:0 0 8px var(--c3)}
-.btn-hint:hover{background:linear-gradient(135deg,#fff3bf,#ffe066);color:#1d2350;box-shadow:0 8px 22px rgba(245,159,0,.32)}
-.btn-sol{background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;box-shadow:0 6px 18px rgba(112,72,232,.32)}
+.btn-hint:hover{background:var(--c3);color:#1d2350;box-shadow:0 8px 22px rgba(245,159,0,.32)}
+.btn-sol{background:var(--c5);color:#fff;box-shadow:0 6px 18px rgba(112,72,232,.32)}
 .btn-sol::before{background:#fff;box-shadow:0 0 8px #fff}
 .btn-sol:hover{box-shadow:0 10px 26px rgba(112,72,232,.48)}
 
@@ -75,7 +75,7 @@ input[type=range]{width:100%;accent-color:var(--c5);cursor:pointer}
 .sim-tab:hover{border-color:var(--c5);color:var(--c5);transform:translateY(-2px);box-shadow:0 6px 16px rgba(112,72,232,.14)}
 .sim-tab:hover::before{border-color:var(--c5);transform:scale(1.1)}
 .sim-tab:active{transform:translateY(0) scale(0.98)}
-.sim-tab.active{background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(112,72,232,.36);transform:translateY(-1px);font-weight:700}
+.sim-tab.active{background:var(--c5);color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(112,72,232,.36);transform:translateY(-1px);font-weight:700}
 .sim-tab.active::before{border-color:#fff;background:#fff;box-shadow:inset 0 0 0 3.5px var(--c5)}
 
 .ctrl-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;align-items:center;margin:14px 0;background:var(--tint);padding:16px 18px;border-radius:16px;border:1.5px solid var(--g)}
@@ -86,7 +86,7 @@ select.native-select-hidden{position:absolute!important;width:1px!important;heig
 .csel-wrap{position:relative;width:100%;user-select:none;font:600 14.5px/1.45 "Be Vietnam Pro",system-ui,sans-serif;z-index:5}
 .csel-wrap.open{z-index:45}
 .csel-trigger{appearance:none;-webkit-appearance:none;width:100%;padding:13px 46px 13px 18px;border-radius:14px;border:2px solid var(--c5);background:var(--card);color:var(--ink);font:600 14.5px/1.45 "Be Vietnam Pro",system-ui,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .22s ease;box-shadow:0 4px 12px rgba(112,72,232,.1);position:relative;text-align:left}
-.csel-trigger::before{content:"";flex:0 0 10px;width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--c1),var(--c5));margin-right:12px;box-shadow:0 0 0 3px var(--tint)}
+.csel-trigger::before{content:"";flex:0 0 10px;width:10px;height:10px;border-radius:50%;background:var(--c5);margin-right:12px;box-shadow:0 0 0 3px var(--tint)}
 .csel-label{flex:1;overflow:hidden;text-overflow:ellipsis}
 .csel-trigger:hover{border-color:var(--c1);background:var(--tint);transform:translateY(-1px);box-shadow:0 6px 16px rgba(112,72,232,.18)}
 .csel-wrap.open .csel-trigger{border-color:var(--c1);background:var(--card);box-shadow:0 0 0 4px rgba(112,72,232,.22)}
@@ -100,21 +100,21 @@ select.native-select-hidden{position:absolute!important;width:1px!important;heig
 .csel-opt::before{content:"";flex:0 0 14px;width:14px;height:14px;border-radius:50%;border:2px solid var(--g);transition:all .16s ease}
 .csel-opt:hover{background:var(--tint);color:var(--c5);padding-left:18px}
 .csel-opt:hover::before{border-color:var(--c5)}
-.csel-opt.selected{background:linear-gradient(135deg,var(--c1),var(--c5));color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(112,72,232,.3)}
+.csel-opt.selected{background:var(--c5);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(112,72,232,.3)}
 .csel-opt.selected::before{border-color:#fff;background:#fff;box-shadow:inset 0 0 0 3px var(--c5)}
 .menu-selector-wrap .csel-trigger{border:2px solid var(--c5);background:var(--tint);font-size:15px;font-weight:700}
 
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:999px;background:var(--g);outline:none;margin:6px 0}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--c1),var(--c5));border:3px solid var(--card);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;transition:transform .15s}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--c5);border:3px solid var(--card);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;transition:transform .15s}
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.12)}
-input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--c1),var(--c5));border:3px solid var(--card);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;transition:transform .15s}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--c5);border:3px solid var(--card);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;transition:transform .15s}
 
 /* Thanh cuộn dọc & ngang tùy chỉnh đồng bộ phong cách giao diện */
 *{scrollbar-width:thin;scrollbar-color:var(--c5) var(--tint)}
 ::-webkit-scrollbar{width:9px;height:9px}
 ::-webkit-scrollbar-track{background:var(--tint);border-radius:999px;margin:4px}
-::-webkit-scrollbar-thumb{background:linear-gradient(135deg,var(--c1),var(--c5));border-radius:999px;border:2px solid var(--tint);transition:background .2s}
-::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg,var(--c5),var(--c4))}
+::-webkit-scrollbar-thumb{background:var(--c5);border-radius:999px;border:2px solid var(--tint);transition:background .2s}
+::-webkit-scrollbar-thumb:hover{background:var(--c4)}
 ::-webkit-scrollbar-corner{background:transparent}
 .f::-webkit-scrollbar,.tw::-webkit-scrollbar,#mn::-webkit-scrollbar{height:6px;width:6px}
 .f::-webkit-scrollbar-thumb,.tw::-webkit-scrollbar-thumb,#mn::-webkit-scrollbar-thumb{border-width:1px}
@@ -135,6 +135,28 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 #toc-links a.sub{padding-left:24px;font-size:13.5px;color:var(--mut)}
 #toc-links a.grp{font-weight:600;margin-top:4px}
 section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
+
+/* ===== Bố cục mới: dẫn dắt, phải nhớ, chế độ xem ===== */
+.bridge,.next{border-radius:12px;padding:12px 18px;margin:0 0 18px;background:var(--tint);border-left:5px solid var(--c5);font-size:16px;line-height:1.8}
+.next{border-color:var(--c2);margin:26px 0 0}
+.why{border-left:5px solid var(--c2)}
+.key{border:2px solid var(--c4);background:var(--card);position:relative;padding-top:32px}
+.key::before{content:"★ PHẢI NHỚ";position:absolute;top:-2px;left:16px;background:var(--c4);color:#fff;font:800 12px/1 "Be Vietnam Pro",sans-serif;padding:6px 10px;border-radius:0 0 8px 8px}
+.key ul,.key ol{margin:8px 0}.key li{margin:8px 0}
+.roadmap{background:var(--tint);border-radius:16px;padding:6px 22px;margin:16px 0;border:1px solid var(--g)}
+.roadmap ol{padding-left:22px}
+.ans{background:var(--card);border:2px solid var(--c2);border-radius:12px;padding:10px 16px;margin:12px 0 2px}
+.vs{display:flex;gap:4px;padding:4px;background:var(--tint);border:1.5px solid var(--g);border-radius:12px;margin-bottom:12px}
+.vs b{font-size:11px;color:var(--mut);padding:0 6px;align-self:center;text-transform:uppercase}
+.vb{flex:1;border:0;border-radius:9px;padding:8px;background:transparent;color:var(--ink);font:700 12.5px "Be Vietnam Pro",sans-serif;cursor:pointer}
+.vb[aria-pressed=true]{background:var(--c5);color:#fff}
+html[data-view=desktop] body{font-size:18px}
+html[data-view=desktop] main{max-width:none;padding:26px clamp(18px,2.6vw,60px) 90px}
+html[data-view=desktop] section{display:flow-root;padding:34px clamp(24px,2.8vw,58px)}
+html[data-view=desktop] p,html[data-view=desktop] li{max-width:150ch}
+html[data-view=desktop] table{min-width:0}
+html[data-view=desktop] .formula-meta{grid-template-columns:1fr 1fr}
+html[data-view=desktop] .sim-card svg{max-height:640px}
 </style>
 </head><body>
 
@@ -145,6 +167,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
 <!-- Menu điều hướng chứa bộ chọn bài học (On-demand loader) và mục lục bài đang mở -->
 <nav id="mn" hidden aria-label="Menu bài học và mục lục">
+  <div class="vs" role="group" aria-label="Chế độ xem"><b>Chế độ xem</b><button type="button" id="vm" class="vb" aria-pressed="true">Điện thoại</button><button type="button" id="vd" class="vb" aria-pressed="false">Máy tính</button></div>
   <div class="menu-selector-wrap">
     <label for="lesson-select">Chọn buổi học cần tải:</label>
     <select id="lesson-select" onchange="loadLesson(this.value)">
@@ -168,10 +191,20 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
     <span class="k b5">HỌC PHẦN ENP2209 · BUỔI 1</span>
     <h1>Cấu Trúc Tinh Thể Của Chất Rắn</h1>
     <p class="mut">Tài liệu tự học từ con số 0 dành cho sinh viên mất gốc Toán - Lý. Học qua mô hình tương tác trực quan, ví dụ ẩn dụ thực tế và giải bài tập từng bước không nhảy cóc.</p>
+  
+    <div class="roadmap"><p><b>Bản đồ Buổi 1 — đi từ đâu đến đâu?</b></p><ol>
+      <li><b>Mục 1:</b> Bán dẫn là gì, và vì sao chip phải làm từ <i>đơn tinh thể</i>.</li>
+      <li><b>Mục 2:</b> Cách "nén" cả tỷ nguyên tử thành một chiếc hộp nhỏ (ô đơn vị) để đếm và tính toán.</li>
+      <li><b>Mục 3:</b> Cách gọi tên các mặt cắt của tinh thể (chỉ số Miller).</li>
+      <li><b>Mục 4:</b> Liên kết giữa các nguyên tử, tạp chất (pha tạp) và cách chế tạo tinh thể thật.</li>
+      <li><b>Mục 5–6:</b> Công thức và bài tập để rèn kỹ năng tính.</li></ol>
+      <p><b>Sau buổi này em làm được:</b> tính số nguyên tử, mật độ, khối lượng riêng của một tinh thể và gọi tên một mặt phẳng bất kỳ. Đây là nền để các buổi sau mô tả electron chạy trong tinh thể.</p></div>
   </header>
 
   <section>
     <h2>1. Bản Chất Vật Liệu Bán Dẫn & Các Loại Chất Rắn</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Mọi tính chất điện của chip (dẫn điện tốt hay kém, bật tắt được hay không) đều bắt nguồn từ <i>cách các nguyên tử xếp hàng</i>. Mục này chỉ làm một việc: giúp em biết loại vật liệu nào được dùng và vì sao.</div>
+
     <p>Chào em! Nhiều bạn khi mới học Vật lý Bán dẫn thường thắc mắc: <i>"Tại sao học về con chip điện tử, dòng điện mà buổi đầu tiên lại phải học hình học không gian, đếm từng quả cầu nguyên tử trong chiếc hộp lập phương?"</i></p>
     <div class="box analogy">
       <b>Ví dụ ẩn dụ thực tế: Quy hoạch giao thông đô thị</b><br>
@@ -200,10 +233,20 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <div id="solid-desc" class="box"></div>
       <svg id="solid-svg" viewBox="0 0 680 230"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 1 — Nhớ 3 ý</b><ul><li><b>Bán dẫn</b> nằm giữa kim loại và chất cách điện, và ta <i>điều khiển</i> được độ dẫn điện bằng nhiệt độ, ánh sáng hoặc pha tạp.</li><li><b>Nguyên tố:</b> Si, Ge (Nhóm IV). <b>Hợp chất:</b> GaAs (Nhóm III + Nhóm V).</li><li><b>Ba loại chất rắn:</b> vô định hình (không trật tự) → đa tinh thể (trật tự từng mảng nhỏ) → <b>đơn tinh thể</b> (trật tự toàn khối). Chip dùng đơn tinh thể.</li></ul></div>
+
+    <div class="box why"><b>Vì sao chip cần đơn tinh thể?</b> Vì chỉ khi các nguyên tử lặp lại <i>đều đặn</i> ta mới tính được electron chuyển động thế nào. Đây là lý do Buổi 4 có thể giải bài toán electron trong tinh thể.</div>
+
+    <div class="next"><b>Tiếp theo:</b> Biết tinh thể là một "bàn cờ" nguyên tử lặp lại, ta cần cách mô tả nó gọn gàng. Mục 2 làm việc đó bằng <b>ô đơn vị</b>.</div>
+</section>
 
   <section>
     <h2>2. Lưới Không Gian, Ô Đơn Vị & Các Cấu Trúc Lập Phương</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Tinh thể đơn là sự lặp lại đều đặn. Vậy ta chỉ cần mô tả <i>một mảnh nhỏ</i> rồi "sao chép" ra.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Có ô đơn vị thì mới <i>đếm</i> được số nguyên tử, tính mật độ, khối lượng riêng (Câu 1, 3, 4, 5). Mật độ nguyên tử cũng là mốc để so với mật độ tạp chất ở các buổi sau.</div>
+
     <p>Một tinh thể Silicon thực tế chứa hàng tỷ tỷ nguyên tử lặp đi lặp lại tuần hoàn trong không gian (gọi là <b>mạng tinh thể - lattice</b>). Thay vì vẽ cả tỷ nguyên tử, ta đại diện vị trí mỗi nguyên tử bằng một dấu chấm gọi là <b>điểm nút mạng (lattice point)</b> và chỉ cắt ra một "chiếc hộp mẫu" nhỏ gọi là <b>Ô đơn vị (Unit cell)</b>.</p>
     <ul>
       <li><b>Ô đơn vị (Unit cell):</b> Thể tích nhỏ của tinh thể mà khi ta dịch chuyển (copy - paste) lặp đi lặp lại theo 3 chiều không gian sẽ xây dựng lại được toàn bộ tinh thể.</li>
@@ -246,7 +289,11 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <li><span class="k b4">Nguyên tử nằm Trong ruột (Body / Interior)</span> Nằm hoàn toàn bên trong căn phòng, không chia sẻ cho ai. Ô đơn vị sở hữu trọn vẹn <b>$1$ nguyên tử</b>.</li>
     </ul>
 
-    <h3>2.3. Mô hình 3D xoay được: 5 Cấu trúc Tinh thể Quan trọng</h3>
+    
+    <div class="box analogy"><b>Ví dụ đếm nhanh cho mạng FCC (tâm mặt):</b><br>
+      Có 8 đỉnh, mỗi đỉnh tính $\frac18$: $8\times\frac18=1$ nguyên tử. Có 6 mặt, mỗi tâm mặt tính $\frac12$: $6\times\frac12=3$ nguyên tử. Cộng lại: $1+3=\mathbf{4}$ nguyên tử. <br>
+      Mạng <b>kim cương</b> của Si chính là mạng FCC (4 nguyên tử) cộng thêm <b>4 nguyên tử nằm bên trong</b>, nên $4+4=8$.</div>
+<h3>2.3. Mô hình 3D xoay được: 5 Cấu trúc Tinh thể Quan trọng</h3>
     <p>Em hãy chọn từng loại cấu trúc và <b>kéo thanh trượt góc xoay 3D</b> để quan sát rõ vị trí các nguyên tử cũng như các đường chéo tiếp xúc:</p>
 
     <div class="sim-card">
@@ -270,10 +317,18 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <div class="box" id="crystal-info"></div>
       <svg id="crystal-svg" viewBox="0 0 680 320"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul><li>Nguyên tử ở <b>đỉnh</b> tính $\frac18$, ở <b>tâm mặt</b> tính $\frac12$, ở <b>bên trong</b> tính $1$.</li><li>Số nguyên tử trong 1 ô: <b>SC = 1, BCC = 2, FCC = 4, Kim cương (Si, Ge) = 8</b>.</li><li><b>Đổi đơn vị:</b> $1\text{ Å}=10^{-8}\text{ cm}$. Diện tích nhân $10^{-16}$, thể tích nhân $10^{-24}$.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Ô đơn vị cho ta hình 3D của tinh thể. Nhưng chip chỉ dùng một <i>lát cắt</i> (wafer), nên Mục 3 học cách gọi tên từng mặt cắt.</div>
+</section>
 
   <section>
     <h2>3. Mặt Phẳng Tinh Thể, Chỉ Số Miller $(hkl)$ & Phương Hướng $[hkl]$</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Ta đã có ô đơn vị 3D. Giờ cắt nó bằng một mặt phẳng và cần một cái "tên" cho mặt đó.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Mỗi mặt cắt có số nguyên tử trên 1 cm² khác nhau, nên tính chất bề mặt chip cũng khác nhau (ví dụ mặt $(100)$ thường dùng cho transistor MOS). Chỉ số Miller là cách gọi tên để các kỹ sư hiểu nhau.</div>
+
     <p>Trong công nghệ sản xuất chip, thỏi tinh thể Silicon được cưa thành từng lát mỏng (wafer). Bề mặt lát cắt quyết định trực tiếp đến số lượng nguyên tử lộ ra và tốc độ di chuyển của electron trên bề mặt chip. Để gọi tên chính xác từng mặt cắt và hướng trong tinh thể, người ta dùng <b>Chỉ số Miller</b>.</p>
 
     <div class="box tip">
@@ -286,7 +341,12 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       </ol>
     </div>
 
-    <h3>3.1. Mô hình tương tác: Mặt phẳng Miller $(hkl)$, Hướng $[hkl]$ & Thiết diện cắt 2D</h3>
+    
+    <div class="box analogy"><b>Hai ví dụ làm tay để hiểu quy trình:</b><br>
+      • Mặt cắt trục tại $(1,\ \infty,\ \infty)$: nghịch đảo $(1,0,0)$, đã là số nguyên, vậy mặt là $\mathbf{(100)}$.<br>
+      • Mặt cắt trục tại $(2,\ 1,\ \infty)$: nghịch đảo $\left(\frac12,1,0\right)$. Nhân cả ba với $2$ được $(1,2,0)$. Vậy mặt là $\mathbf{(120)}$.<br>
+      Lý do phải nghịch đảo: để tránh dùng ký hiệu $\infty$ cho mặt song song với trục.</div>
+<h3>3.1. Mô hình tương tác: Mặt phẳng Miller $(hkl)$, Hướng $[hkl]$ & Thiết diện cắt 2D</h3>
     <p>Nhiều bạn khi tính <b>mật độ nguyên tử trên bề mặt (surface density)</b> rất hay nhầm lẫn vì không tưởng tượng được khi lấy con dao cắt theo mặt $(100)$, $(110)$ hay $(111)$ thì mặt cắt trông như thế nào và cắt qua mấy phần nguyên tử. Hãy bấm vào các nút dưới đây để nhìn cả <b>Khối 3D bên trái</b> lẫn <b>Mặt cắt phẳng 2D bên phải</b>:</p>
 
     <div class="sim-card">
@@ -309,10 +369,19 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <div id="miller-desc" class="box"></div>
       <svg id="miller-svg" viewBox="0 0 680 280"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul><li><b>Miller $(hkl)$</b>: lấy điểm cắt theo $a$ → <b>nghịch đảo</b> → quy đồng về số nguyên nhỏ nhất.</li><li>Mặt song song với trục thì điểm cắt là $\infty$, nghịch đảo bằng $0$.</li><li>$(hkl)$ là <b>mặt phẳng</b>, $[hkl]$ là <b>hướng</b> (vuông góc với mặt $(hkl)$ trong mạng lập phương).</li><li>$d_{hkl}=\dfrac{a}{\sqrt{h^2+k^2+l^2}}$ là khoảng cách giữa hai mặt song song gần nhất.</li></ul></div>
+
+    
+    <div class="next"><b>Tiếp theo:</b> Đến đây ta xem tinh thể như hoàn hảo. Mục 4 xem nó thật sự được giữ bởi liên kết nào, và điều gì xảy ra khi <i>cố ý</i> thêm tạp chất.</div>
+</section>
 
   <section>
     <h2>4. Liên Kết Nguyên Tử, Khuyết Tật Mạng, Pha Tạp & Nuôi Tinh Thể</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Các mục trước coi nguyên tử là những quả cầu đứng yên trên mạng. Mục này hỏi: cái gì giữ chúng lại, và nếu thay một nguyên tử bằng nguyên tử khác thì sao?</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Đây là mục <b>quan trọng nhất của Buổi 1</b> với bán dẫn. <i>Pha tạp</i> là cách biến Si từ gần như cách điện thành vật liệu làm diode, transistor. Toàn bộ các buổi sau đều xoay quanh nó.</div>
+
     <h3>4.1. Bốn loại liên kết nguyên tử trong chất rắn</h3>
     <ul>
       <li><b>Liên kết Ion (Ionic bond):</b> Giữa nguyên tử Nhóm I (dễ nhường 1 electron thành ion dương, như $\text{Na}^+$) và Nhóm VII (dễ nhận 1 electron thành ion âm, như $\text{Cl}^-$). Hai ion trái dấu hút nhau bằng lực tĩnh điện Coulomb tạo thành muối ăn $\text{NaCl}$.</li>
@@ -355,15 +424,27 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       </div>
       <svg id="cz-svg" viewBox="0 0 680 260"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul><li>Si có <b>4 electron hóa trị</b>, liên kết <b>cộng hóa trị</b> với 4 nguyên tử lân cận (mỗi cặp dùng chung 2 electron).</li><li>Pha <b>P (Nhóm V)</b>: dư 1 electron → <b>bán dẫn loại n</b>. Pha <b>B (Nhóm III)</b>: thiếu 1 electron, tạo <b>lỗ trống</b> → <b>bán dẫn loại p</b>.</li><li>Tinh thể chip phải rất sạch (dưới 1 nguyên tử lạ trên $10^{10}$ nguyên tử Si), nên người ta nuôi bằng phương pháp <b>Czochralski</b>.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Bốn mục trên toàn là hình và khái niệm. Mục 5 gom thành các <b>công thức</b> để tính được con số cụ thể.</div>
+</section>
 
   <section>
     <h2>5. Cẩm Nang Công Thức Trọng Tâm (Giải Nghĩa Chi Tiết)</h2>
+    <div class="bridge"><b>Nối từ Mục 1–4:</b> Em đã biết ô đơn vị, mặt phẳng và vật liệu. Giờ biến chúng thành con số.</div>
+
+    <div class="tw"><table><tr><th>Đề bài hỏi gì?</th><th>Dùng công thức</th></tr>
+      <tr><td>Số nguyên tử trong $1\text{ cm}^3$</td><td>Công thức 1: $N=\dfrac{n_{\text{cell}}}{a^3}$</td></tr>
+      <tr><td>Khối lượng riêng ($\text{g/cm}^3$)</td><td>Công thức 2: $\rho=\dfrac{N\,M_A}{N_A}$</td></tr>
+      <tr><td>Cho $r$, cần $a$ (hoặc ngược lại)</td><td>Công thức 3</td></tr>
+      <tr><td>Số nguyên tử trên $1\text{ cm}^2$ của một mặt cắt, khoảng cách giữa các mặt</td><td>Công thức 4</td></tr></table></div>
+    <p class="mut">Thứ tự thường dùng: Công thức 3 (tìm $a$) → Công thức 1 (tìm $N$) → Công thức 2 (tìm $\rho$).</p>
     <p>Dưới đây là toàn bộ các công thức của Buổi 1 được giải thích rõ từng ký hiệu, đơn vị, bản chất vật lý và dấu hiệu nhận biết khi làm bài tập:</p>
 
     <div class="formula-card">
       <h3>Công thức 1: Mật độ nguyên tử theo thể tích ($N$ hoặc Volume Density)</h3>
-      <div class="f">
+      <div class="f key">
         $$N = \frac{n_{\text{cell}}}{V_{\text{cell}}} = \frac{n_{\text{cell}}}{a^3}$$
       </div>
       <div class="formula-meta">
@@ -385,7 +466,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
     <div class="formula-card">
       <h3>Công thức 2: Khối lượng riêng của tinh thể ($\rho$ hoặc Mass Density)</h3>
-      <div class="f">
+      <div class="f key">
         $$\rho = \frac{N \cdot M_A}{N_A} = \frac{n_{\text{cell}} \cdot M_A}{a^3 \cdot N_A}$$
       </div>
       <div class="formula-meta">
@@ -404,7 +485,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
     <div class="formula-card">
       <h3>Công thức 3: Quan hệ giữa Bán kính nguyên tử ($r$), Khoảng cách gần nhất ($d_{\text{min}}$) và Hằng số mạng ($a$)</h3>
-      <div class="f">
+      <div class="f key">
         $$\text{SC: } a = 2r \quad \big| \quad \text{BCC: } a\sqrt{3} = 4r \quad \big| \quad \text{FCC: } a\sqrt{2} = 4r \quad \big| \quad \text{Kim cương (Si): } d_{\text{min}} = \frac{a\sqrt{3}}{4} = 2r$$
       </div>
       <div class="formula-meta">
@@ -423,7 +504,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
     <div class="formula-card">
       <h3>Công thức 4: Mật độ nguyên tử trên bề mặt ($N_s$) & Khoảng cách giữa các mặt phẳng ($d_{hkl}$)</h3>
-      <div class="f">
+      <div class="f key">
         $$N_s = \frac{n_{\text{plane}}}{S_{\text{plane}}} \qquad \text{và} \qquad d_{hkl} = \frac{a}{\sqrt{h^2 + k^2 + l^2}}$$
       </div>
       <div class="formula-meta">
@@ -445,6 +526,17 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
   <section>
     <h2>6. Bài Tập Trọng Tâm Buổi 1 (Có Gợi Ý & Giải Chi Tiết Từng Bước)</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> Mỗi câu dưới đây luyện đúng một nhóm công thức ở trên.</div>
+
+    <div class="tw"><table><tr><th>Câu</th><th>Luyện kỹ năng</th><th>Công thức</th></tr>
+      <tr><td>1</td><td>Khoảng cách, mật độ, khối lượng riêng của Si</td><td>3, 1, 2</td></tr>
+      <tr><td>2</td><td>Tìm chỉ số Miller</td><td>Quy trình 4 bước</td></tr>
+      <tr><td>3</td><td>Mạng FCC: mật độ khối, mật độ mặt, khoảng cách mặt</td><td>3, 1, 4</td></tr>
+      <tr><td>4</td><td>Mật độ electron hóa trị (nối với Buổi 5–6)</td><td>1</td></tr>
+      <tr><td>5</td><td>Tạp chất cách nhau bao xa? (nối với pha tạp ở Mục 4)</td><td>$d=N^{-1/3}$</td></tr></table></div>
+    <div class="box key"><b>Cách làm mọi bài tập Buổi 1</b><ol>
+      <li><b>Đổi đơn vị</b> hết sang cm.</li><li><b>Xác định cấu trúc</b> (SC/BCC/FCC/kim cương) để biết $n_{\text{cell}}$.</li>
+      <li><b>Chọn công thức</b> theo bảng ở Mục 5.</li><li><b>Kiểm tra bậc lớn:</b> mật độ nguyên tử chất rắn thường cỡ $10^{22}\text{ cm}^{-3}$.</li></ol></div>
     <p>Em hãy đọc kỹ đề bài, bấm vào <b>Xem Gợi ý</b> để tự nháp trước, sau đó mở <b>Xem Lời giải chi tiết</b>. Ở mỗi bước biến đổi, thầy đều viết ghi chú màu xám giải thích rõ lý do tại sao lại làm như vậy.</p>
 
     <!-- CÂU 1 -->
@@ -634,7 +726,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
       <div class="btn-group">
         <button type="button" class="btn btn-hint" onclick="togglePanel('hint4')">Xem Gợi ý</button>
-        <button type="button" class="btn btn-sol" onclick="togglePanel('hint4');togglePanel('sol4')">Xem Lời giải chi tiết</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('sol4')">Xem Lời giải chi tiết</button>
       </div>
 
       <div id="hint4" class="panel">
@@ -709,7 +801,9 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <li><b>Quan hệ bán kính nguyên tử $r$ và hằng số mạng $a$:</b> SC ($a=2r$), BCC ($a\sqrt{3}=4r$), FCC ($a\sqrt{2}=4r$), Kim cương ($d_{\text{min}} = \frac{a\sqrt{3}}{4}$).</li>
       <li><b>Chỉ số Miller $(hkl)$:</b> Tìm điểm cắt theo $a$ $\rightarrow$ Lấy nghịch đảo $\rightarrow$ Quy đồng khử mẫu $\rightarrow$ Đặt trong ngoặc tròn $(hkl)$.</li>
     </ul>
-  </section>
+  
+    <div class="next"><b>Sang Buổi 2:</b> Buổi 1 cho ta "ngôi nhà" nguyên tử đứng yên. Muốn biết electron di chuyển trong ngôi nhà đó thế nào, cơ học Newton không đủ vì electron quá nhỏ. Buổi 2 giới thiệu <b>cơ học lượng tử</b>.</div>
+</section>
 </template>
 
 <!-- =========================================================
@@ -720,10 +814,19 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
     <span class="k b1">HỌC PHẦN ENP2209 · BUỔI 2</span>
     <h1>Nhập Môn Cơ Học Lượng Tử (Phần 1)</h1>
     <p class="mut">Hiểu rõ bản chất Lượng tử năng lượng, Lưỡng tính sóng - hạt, Nguyên lý bất định Heisenberg và Phương trình sóng Schrödinger từ con số 0 qua các mô hình tương tác trực quan.</p>
+  
+    <div class="roadmap"><p><b>Bản đồ Buổi 2 — một chuỗi lập luận</b></p><ol>
+      <li><b>Mục 1:</b> Năng lượng đến theo từng "gói" (photon), không liên tục.</li>
+      <li><b>Mục 2:</b> Vì vậy sóng cũng có tính hạt, và ngược lại hạt (electron) có tính sóng.</li>
+      <li><b>Mục 3:</b> Hệ quả: không thể biết chính xác đồng thời vị trí và động lượng.</li>
+      <li><b>Mục 4:</b> Nên ta dùng <b>hàm sóng</b> và phương trình Schrödinger để tính <i>xác suất</i> tìm thấy electron.</li></ol>
+      <p><b>Vì sao học?</b> Đây là bộ công cụ để Buổi 3 giải electron trong giếng thế và nguyên tử, rồi Buổi 4 giải electron trong tinh thể (vùng năng lượng).</p></div>
   </header>
 
   <section>
     <h2>1. Lượng Tử Năng Lượng & Hiệu Ứng Quang Điện</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Đây là bằng chứng đầu tiên cho thấy thế giới nhỏ <i>không</i> chạy theo vật lý cổ điển. Nó cũng cho em công thức đổi giữa bước sóng và năng lượng (eV) dùng ở phần bandgap sau này.</div>
+
     <p>Ở Buổi 1, chúng ta đã xây xong "ngôi nhà tinh thể" gồm các nguyên tử đứng ở nút mạng. Bây giờ, để hiểu làm sao dòng điện chạy qua ngôi nhà đó, ta phải theo dõi chuyển động của các hạt <b>electron</b>. Tuy nhiên, vì electron quá nhỏ bé (nặng chỉ khoảng $9.11 \times 10^{-31}\text{ kg}$), các định luật cơ học cổ điển của Newton hoàn toàn bất lực! Chúng ta phải bước vào thế giới của <b>Cơ học Lượng tử (Quantum Mechanics)</b>.</p>
 
     <div class="box analogy">
@@ -734,7 +837,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
     <h3>1.1. Giả thuyết Planck và Hạt ánh sáng (Photon)</h3>
     <p>Năm 1901, khi nghiên cứu bức xạ vật đen (Black-body radiation), Max Planck khẳng định năng lượng chỉ được phát ra hoặc hấp thụ thành từng gói rời rạc tỉ lệ thuận với tần số $\nu$ của sóng ánh sáng:</p>
-    <div class="f">
+    <div class="f key">
       $$E = h\nu = \frac{hc}{\lambda} \qquad \left(\text{Mẹo tính nhanh: } E\text{ [eV]} \approx \frac{1240}{\lambda\text{ [nm]}} = \frac{12400}{\lambda\text{ [Å]}}\right)$$
       <small>Trong đó: $h = 6.625 \times 10^{-34}\text{ J}\cdot\text{s}$ là hằng số Planck; $c = 3 \times 10^8\text{ m/s}$ là vận tốc ánh sáng; $\lambda$ là bước sóng.</small>
     </div>
@@ -747,7 +850,9 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       • Từ $\text{J}$ đổi sang $\text{eV}$: <b>Chia cho $1.6 \times 10^{-19}$</b>.
     </div>
 
-    <h3>1.2. Hiệu ứng Quang điện (Photoelectric Effect)</h3>
+    
+    <div class="box analogy"><b>Ví dụ kiểm tra nhanh:</b> Chiếu ánh sáng $\lambda=620\text{ nm}$ vào Natri ($\Phi=2.3\text{ eV}$). Năng lượng photon $E\approx\frac{1240}{620}=2.0\text{ eV}$. Vì $2.0\lt2.3$ nên <b>không có electron thoát ra</b>, kể cả khi tăng cường độ sáng. Chiếu $\lambda=400\text{ nm}$ thì $E=3.1\text{ eV}$, electron thoát ra với $T_{\max}=3.1-2.3=0.8\text{ eV}$.</div>
+<h3>1.2. Hiệu ứng Quang điện (Photoelectric Effect)</h3>
     <p>Khi chiếu ánh sáng đơn sắc vào một tấm kim loại đặt trong chân không, các hạt electron có thể bị đánh bật ra khỏi bề mặt kim loại (gọi là <b>quang electron - photoelectrons</b>). Để bứt ra khỏi lực giữ của kim loại, mỗi electron phải tốn một mức "phí xuất cảnh" tối thiểu gọi là <b>Công thoát $\Phi$ (Work function)</b>:</p>
     <ul>
       <li>Nếu 1 hạt photon lao vào có năng lượng $h\nu < \Phi$ (tức tần số $\nu < \nu_0 = \frac{\Phi}{h}$): Dù em có bật hàng triệu bóng đèn (tăng cường độ sáng cực mạnh), cũng <b>không có bất kỳ electron nào thoát ra</b>! (Giống như vé qua trạm thu phí là $50\text{ nghìn}$, dù có $1000$ người nhưng mỗi người chỉ cầm tờ $20\text{ nghìn}$ và quy định không được góp tiền chung thì không ai qua được trạm).</li>
@@ -773,10 +878,18 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <div id="pe-desc" class="box"></div>
       <svg id="pe-svg" viewBox="0 0 680 260"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul><li>$E=h\nu=\dfrac{hc}{\lambda}$, mẹo nhanh: $E[\text{eV}]\approx\dfrac{1240}{\lambda[\text{nm}]}$.</li><li>$1\text{ eV}=1.6\times10^{-19}\text{ J}$ (eV → J: nhân; J → eV: chia).</li><li>Quang điện: $T_{\max}=h\nu-\Phi$. Nếu $h\nu\lt\Phi$ thì <b>không có electron</b>, dù sáng mạnh đến đâu.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Photon có năng lượng và cả động lượng như một hạt. Vậy hạt thật như electron có hành xử như sóng không? Mục 2 trả lời.</div>
+</section>
 
   <section>
     <h2>2. Lưỡng Tính Sóng - Hạt (Wave-Particle Duality)</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Ánh sáng (vốn là sóng) lại đến theo từng gói như hạt. Mục này đảo chiều: hạt cũng có tính sóng.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Nếu electron là sóng thì nó chịu các quy luật của sóng (nhiễu xạ, giao thoa, sóng đứng). Đó là gốc của các mức năng lượng rời rạc và vùng năng lượng trong tinh thể.</div>
+
     <p>Suốt hàng trăm năm, các nhà vật lý tranh cãi xem ánh sáng là Sóng (Huygens) hay là Hạt (Newton). Cơ học lượng tử kết luận: <b>Mọi thực thể vi mô đều vừa là Sóng, vừa là Hạt!</b></p>
 
     <h3>2.1. Sóng hành xử như Hạt: Hiệu ứng tán xạ Compton (1924)</h3>
@@ -793,7 +906,9 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
     </div>
     <p>Năm 1927, <b>Davisson và Germer</b> đã bắn chùm tia electron (được gia tốc ở điện áp $54\text{ V}$) vào bề mặt tinh thể Niken ($\text{Ni}$). Thay vì nảy ra lộn xộn như các viên bi, các hạt electron lại giao thoa với nhau tạo thành một đỉnh cực đại sắc nét ở góc tán xạ $\theta = 50^\circ$ (hoặc $45^\circ$ trên giản đồ cực), tuân theo đúng định luật nhiễu xạ sóng Bragg!</p>
 
-    <h3>2.3. Mô hình tương tác: Tán xạ Compton & Sóng de Broglie của Electron</h3>
+    
+    <div class="box analogy"><b>Ví dụ:</b> Electron $1\text{ eV}$ có $\lambda=\dfrac{h}{\sqrt{2mE}}\approx12.3\text{ Å}$. Một quả bóng thì bước sóng nhỏ đến mức không thể thấy được, còn electron thì <b>gần bằng khoảng cách giữa các nguyên tử</b>. Đây là lý do cơ học cổ điển hỏng ở thang nguyên tử.</div>
+<h3>2.3. Mô hình tương tác: Tán xạ Compton & Sóng de Broglie của Electron</h3>
     <p>Em hãy chuyển qua lại giữa hai tab dưới đây để trải nghiệm: (1) Va chạm bi-a giữa Photon và Electron trong hiệu ứng Compton, và (2) Gia tốc Electron bằng hiệu điện thế $V$ để xem bước sóng de Broglie của nó co ngắn lại như thế nào (áp dụng trực tiếp cho <b>Câu 1 Bài tập</b>):</p>
 
     <div class="sim-card">
@@ -816,10 +931,18 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <div id="duality-desc" class="box"></div>
       <svg id="duality-svg" viewBox="0 0 680 250"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul><li>Photon: $p=\dfrac{h}{\lambda}$. Hạt vật chất (de Broglie): $\lambda=\dfrac{h}{p}$, với $p=\sqrt{2mE}$.</li><li>Mẹo: electron có năng lượng $E$ (eV) thì $\lambda\approx\dfrac{12.3}{\sqrt{E}}\ \text{Å}$.</li><li>Bước sóng này <b>cỡ hằng số mạng</b> của Si ($5.43\text{ Å}$), nên electron "thấy" được mạng tinh thể như sóng nhiễu xạ.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Sóng thì không có vị trí duy nhất tại một điểm. Mục 3 chỉ ra điều này dẫn tới giới hạn khi đo electron.</div>
+</section>
 
   <section>
     <h2>3. Nguyên Lý Bất Định Heisenberg (1927)</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Một sóng thì trải rộng, không có "một điểm" cố định. Vì thế ta không thể gán cho electron đồng thời vị trí và vận tốc chính xác.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Nguyên lý này giải thích <i>vì sao</i> ta phải bỏ cách mô tả "electron ở đâu, vận tốc bao nhiêu" và chuyển sang mô tả bằng <b>xác suất</b> (Mục 4). Nó cũng cho ước lượng năng lượng cỡ eV của electron trong nguyên tử.</div>
+
     <p>Trong vật lý cổ điển, khi nhìn một chiếc ô tô chạy trên đường, em biết chính xác tuyệt đối cùng lúc cả <b>vị trí $x$</b> lẫn <b>vận tốc/động lượng $p$</b> của chiếc xe. Nhưng ở thế giới lượng tử, nhà vật lý Werner Heisenberg chứng minh rằng điều đó là bất khả thi!</p>
 
     <div class="box analogy">
@@ -830,12 +953,14 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
     </div>
 
     <p>Heisenberg gói gọn quy luật tự nhiên này vào 2 bất đẳng thức cặp biến liên hợp:</p>
-    <div class="f">
+    <div class="f key">
       $$\text{1. Vị trí - Động lượng: } \Delta p \cdot \Delta x \ge \hbar \qquad \Big| \qquad \text{2. Năng lượng - Thời gian: } \Delta E \cdot \Delta t \ge \hbar$$
       <small>Trong đó: $\hbar = \frac{h}{2\pi} \approx 1.054 \times 10^{-34}\text{ J}\cdot\text{s}$ gọi là <b>Hằng số Planck rút gọn (Reduced Planck constant)</b>.</small>
     </div>
 
-    <h3>3.1. Mô hình tương tác: Bó sóng (Wave Packet) & Sự đánh đổi $\Delta x \leftrightarrow \Delta p$</h3>
+    
+    <div class="box analogy"><b>Ví dụ ước lượng:</b> Nhốt electron trong một nguyên tử, $\Delta x\approx1\text{ Å}=10^{-10}\text{ m}$. Khi đó $\Delta p\ge\frac{\hbar}{\Delta x}\approx10^{-24}\text{ kg·m/s}$, tương ứng động năng $\frac{p^2}{2m}\approx4\text{ eV}$. Đây đúng là cỡ năng lượng trong nguyên tử.</div>
+<h3>3.1. Mô hình tương tác: Bó sóng (Wave Packet) & Sự đánh đổi $\Delta x \leftrightarrow \Delta p$</h3>
     <p>Hãy kéo thanh trượt dưới đây để thu hẹp hoặc mở rộng độ bất định vị trí $\Delta x$. Em sẽ thấy khi ta "nhốt" hạt vào vùng không gian càng hẹp ($\Delta x$ nhỏ) thì phổ độ bất định động lượng $\Delta p$ tự động phình to ra để tích số $\Delta x \cdot \Delta p \ge \hbar$ luôn được bảo toàn:</p>
 
     <div class="sim-card">
@@ -853,10 +978,18 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <b>Hệ quả quan trọng nhất đối với Bán dẫn:</b><br>
       Vì không thể biết chính xác quỹ đạo từng hạt electron, chúng ta từ bỏ việc vẽ quỹ đạo cố định và chuyển sang dùng <b>Hàm mật độ xác suất (Probability density function)</b> để biết khả năng tìm thấy electron ở vùng không gian nào là cao nhất.
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul><li>$\Delta x\cdot\Delta p\ge\hbar$ và $\Delta E\cdot\Delta t\ge\hbar$, với $\hbar=\dfrac{h}{2\pi}\approx1.054\times10^{-34}\text{ J·s}$.</li><li>Nhốt hạt vào vùng càng hẹp ($\Delta x$ nhỏ) thì $\Delta p$ càng lớn.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Nếu không nói được "ở đâu" thì nói được gì? Nói được <i>xác suất</i> ở đâu. Mục 4 xây công cụ để tính xác suất đó.</div>
+</section>
 
   <section>
     <h2>4. Phương Trình Sóng Schrödinger & Ý Nghĩa Hàm Sóng</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Ta không tính được đường đi của electron, nhưng tính được <b>hàm sóng</b>, từ đó ra xác suất.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Phương trình Schrödinger là "$F=ma$ của thế giới lượng tử". Buổi 3 và Buổi 4 chỉ làm một việc lặp đi lặp lại: <i>cho môi trường $V(x)$, giải ra $\psi(x)$</i>.</div>
+
     <p>Năm 1926, Erwin Schrödinger đã xây dựng một phương trình vi phân đóng vai trò giống như định luật $F = ma$ của Newton, nhưng dùng để tìm <b>Hàm sóng $\Psi(x, t)$</b> của hạt vi mô chuyển động trong trường thế năng $V(x)$:</p>
 
     <div class="f">
@@ -864,7 +997,14 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <small>Lưu ý ký hiệu: Trong kỹ thuật điện - bán dẫn, người ta dùng chữ $j = \sqrt{-1}$ (thay vì chữ $i$) để biểu diễn đơn vị số ảo nhằm tránh nhầm với cường độ dòng điện $i$.</small>
     </div>
 
-    <h3>4.1. Kỹ thuật Tách biến (Separation of Variables): Tách Không gian và Thời gian</h3>
+    
+    <div class="box"><b>Đọc phương trình bằng lời:</b> Em đưa vào <b>môi trường</b> $V(x)$ (năng lượng thế của electron ở từng chỗ) và <b>khối lượng</b> $m$. Phương trình trả về <b>hàm sóng</b> $\Psi$, tức "bản đồ" cho biết electron có mặt nhiều hay ít ở đâu.</div>
+    <div class="tw"><table><tr><th>Ký hiệu</th><th>Ý nghĩa</th></tr>
+      <tr><td>$\Psi(x,t)$</td><td>Hàm sóng, số phức, bản thân nó không đo được</td></tr>
+      <tr><td>$V(x)$</td><td>Thế năng, mô tả môi trường xung quanh electron</td></tr>
+      <tr><td>$E$</td><td>Tổng năng lượng của electron</td></tr>
+      <tr><td>$j$</td><td>Đơn vị ảo ($\sqrt{-1}$)</td></tr></table></div>
+<h3>4.1. Kỹ thuật Tách biến (Separation of Variables): Tách Không gian và Thời gian</h3>
     <p>Khi thế năng $V(x)$ chỉ phụ thuộc vào vị trí $x$ (không đổi theo thời gian $t$), ta có thể tách hàm sóng toàn phần $\Psi(x,t)$ thành tích của hai hàm độc lập:</p>
     <div class="f">
       $$\Psi(x,t) = \psi(x) \cdot \phi(t) = \psi(x) \cdot e^{-j(E/\hbar)t} = \psi(x) \cdot e^{-j\omega t}$$
@@ -926,14 +1066,25 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <div id="prob-desc" class="box"></div>
       <svg id="prob-svg" viewBox="0 0 680 250"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul><li>$|\psi(x)|^2$ là <b>mật độ xác suất</b>. Xác suất tìm hạt trong $[x_1,x_2]$: $P=\displaystyle\int_{x_1}^{x_2}|\psi|^2dx$ (diện tích dưới đồ thị).</li><li><b>Chuẩn hóa:</b> $\displaystyle\int_{-\infty}^{\infty}|\psi|^2dx=1$ (chắc chắn tìm thấy hạt ở đâu đó). Dùng để tìm hằng số $A$.</li><li>Phương trình không phụ thuộc thời gian: $\dfrac{d^2\psi}{dx^2}+\dfrac{2m}{\hbar^2}[E-V(x)]\psi=0$.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Đến đây ta có đủ công cụ. Buổi 3 áp dụng cho các hình dạng $V(x)$ cụ thể: hạt tự do, giếng thế, rào thế (hiệu ứng xuyên hầm) và nguyên tử hydro.</div>
+</section>
 
   <section>
     <h2>5. Cẩm Nang Công Thức Trọng Tâm Buổi 2 (Giải Nghĩa Chi Tiết)</h2>
+    <div class="bridge"><b>Nối từ Mục 1–4:</b> Gom lại các công thức đã gặp, kèm cách chọn.</div>
+
+    <div class="tw"><table><tr><th>Đề bài hỏi gì?</th><th>Dùng công thức</th></tr>
+      <tr><td>Năng lượng photon, động năng quang electron</td><td>Công thức 1</td></tr>
+      <tr><td>Bước sóng của electron / photon từ động lượng</td><td>Công thức 2</td></tr>
+      <tr><td>Độ bất định của vị trí, động lượng, năng lượng</td><td>Công thức 3</td></tr>
+      <tr><td>Hằng số $A$, xác suất tìm thấy hạt</td><td>Công thức 4</td></tr></table></div>
 
     <div class="formula-card">
       <h3>Công thức 1: Năng lượng Photon & Phương trình Quang điện Einstein</h3>
-      <div class="f">
+      <div class="f key">
         $$E_{\text{photon}} = h\nu = \frac{hc}{\lambda} \qquad \text{và} \qquad T_{\text{max}} = \frac{1}{2}mv^2 = h\nu - \Phi$$
       </div>
       <div class="formula-meta">
@@ -953,7 +1104,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
     <div class="formula-card">
       <h3>Công thức 2: Động lượng Photon & Bước sóng Vật chất de Broglie</h3>
-      <div class="f">
+      <div class="f key">
         $$\lambda = \frac{h}{p} = \frac{h}{mv} = \frac{h}{\sqrt{2mE}}$$
       </div>
       <div class="formula-meta">
@@ -972,7 +1123,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
     <div class="formula-card">
       <h3>Công thức 3: Hệ thức Bất định Heisenberg</h3>
-      <div class="f">
+      <div class="f key">
         $$\Delta p \cdot \Delta x \ge \hbar \qquad \text{và} \qquad \Delta E \cdot \Delta t \ge \hbar \qquad \left(\text{với } \hbar = \frac{h}{2\pi} \approx 1.054 \times 10^{-34}\text{ J}\cdot\text{s}\right)$$
       </div>
       <div class="formula-meta">
@@ -991,7 +1142,7 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
     <div class="formula-card">
       <h3>Công thức 4: Phương trình Schrödinger, Chuẩn hóa & Tích phân Xác suất</h3>
-      <div class="f">
+      <div class="f key">
         $$-\frac{\hbar^2}{2m}\frac{\partial^2\Psi}{\partial x^2} + V(x)\Psi = j\hbar\frac{\partial\Psi}{\partial t} \quad \Big| \quad \int_{-\infty}^{+\infty} |\Psi(x,t)|^2\,dx = 1 \quad \Big| \quad P(a \le x \le b) = \int_a^b |\psi(x)|^2\,dx$$
       </div>
       <div class="formula-meta">
@@ -1010,6 +1161,17 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 
   <section>
     <h2>6. Bài Tập Trọng Tâm Buổi 2 (Có Gợi Ý & Giải Chi Tiết Từng Bước)</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> Mỗi câu luyện một mục của bài.</div>
+
+    <div class="tw"><table><tr><th>Câu</th><th>Luyện</th><th>Công thức</th></tr>
+      <tr><td>1</td><td>Electron được tăng tốc: năng lượng, bước sóng de Broglie</td><td>1, 2</td></tr>
+      <tr><td>2</td><td>Bất định Heisenberg cho photon</td><td>3</td></tr>
+      <tr><td>3</td><td>Nguyên lý chồng chập nghiệm Schrödinger</td><td>4</td></tr>
+      <tr><td>4</td><td>Chuẩn hóa hàm sóng, tìm $A$</td><td>4</td></tr>
+      <tr><td>5</td><td>Tính xác suất từ hàm sóng</td><td>4</td></tr></table></div>
+    <div class="box key"><b>Mẹo chung Buổi 2</b><ul>
+      <li>Đổi <b>eV ↔ J</b> trước khi thế vào công thức SI.</li>
+      <li>Với xác suất: luôn kiểm tra kết quả nằm trong khoảng $0$ đến $1$.</li></ul></div>
     <p>Tất cả 5 câu hỏi trong phiếu Bài tập Trọng tâm Buổi 2 đều được giải chi tiết từng bước dưới đây. Em hãy bấm vào nút <b>Xem Gợi ý</b> để nắm chiến thuật giải trước khi mở <b>Xem Lời giải chi tiết</b> nhé!</p>
 
     <!-- CÂU 1 BUỔI 2 -->
@@ -1271,7 +1433,9 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
       <li><b>Nguyên lý Bất định Heisenberg:</b> Không thể đo chính xác đồng thời vị trí và động lượng ($\Delta p \cdot \Delta x \ge \hbar$), cũng như năng lượng và thời gian ($\Delta E \cdot \Delta t \ge \hbar$).</li>
       <li><b>Hàm sóng Schrödinger & Mật độ xác suất:</b> $|\Psi(x,t)|^2 = |\psi(x)|^2$ là mật độ xác suất tìm thấy hạt. Tổng tích phân xác suất trên toàn miền tồn tại của hạt luôn bằng $1$ (Điều kiện chuẩn hóa).</li>
     </ul>
-  </section>
+  
+    <div class="next"><b>Sang Buổi 3:</b> Em đã có phương trình Schrödinger. Buổi 3 giải nó cho từng loại $V(x)$ để thấy điều gì làm electron bị nhốt, hoặc xuyên qua rào cản.</div>
+</section>
 </template>
 
 <!-- =========================================================
@@ -5919,6 +6083,15 @@ window.loadLesson = loadLesson;
 
   $('lesson-select').value = '6';
   loadLesson('6');
+})();
+
+(function viewMode(){
+  const R=document.documentElement;
+  const st=(k,v)=>{try{return v?localStorage.setItem(k,v):localStorage.getItem(k)}catch(e){return null}};
+  const ap=v=>{R.dataset.view=v;document.getElementById('vm').setAttribute('aria-pressed',v==='mobile');document.getElementById('vd').setAttribute('aria-pressed',v==='desktop');st('ban-dan-view',v)};
+  document.getElementById('vm').onclick=()=>ap('mobile');
+  document.getElementById('vd').onclick=()=>ap('desktop');
+  ap(st('ban-dan-view')==='desktop'?'desktop':'mobile');
 })();
 </script>
 </body></html>
