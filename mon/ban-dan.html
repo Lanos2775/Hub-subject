@@ -189,8 +189,10 @@ section>svg{max-height:420px}
 .legend{border-left:5px solid var(--c1);font-size:16px}
 /* ===== Popup ghim công thức ===== */
 #mb,#mn{z-index:60}
-#fp{position:fixed;right:8px;top:8px;width:max-content;min-width:72px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);z-index:48;display:none;flex-direction:column;background:var(--card);color:var(--ink);border:1.5px solid var(--c1);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.28);font-family:"Be Vietnam Pro",sans-serif;overflow:hidden}
+#fp{position:fixed;right:8px;top:8px;width:max-content;min-width:150px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);z-index:48;display:none;flex-direction:column;background:var(--card);color:var(--ink);border:1.5px solid var(--c1);border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.28);font-family:"Be Vietnam Pro",sans-serif;overflow:hidden}
 #fp.on{display:flex}
+#fp.col .fp-l{display:none}
+#fp.col .fp-h{border-bottom:0}
 #fp *{box-sizing:border-box}
 #fp .fp-h{display:flex;align-items:center;justify-content:flex-end;gap:1px;height:18px;padding:0 2px;background:var(--tint);border-bottom:1px solid var(--g);cursor:move;user-select:none;touch-action:none;flex:none}
 #fp .fp-b{border:0;background:transparent;color:var(--ink);cursor:pointer;width:18px;height:16px;padding:0;border-radius:5px;display:flex;align-items:center;justify-content:center;font:700 12px/1 sans-serif}
@@ -6692,7 +6694,7 @@ window.loadLesson = loadLesson;
   const ICON_CLEAR='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5h11M6 4.5V3h4v1.5M4 4.5l.7 8.5h6.6l.7-8.5"/></svg>';
   const ICON_ADD='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2.5v11M2.5 8h11"/></svg>';
   const fp=document.createElement('div');fp.id='fp';fp.setAttribute('role','dialog');fp.setAttribute('aria-label','Công thức ghim');
-  fp.innerHTML=`<div class="fp-h" id="fp-h"><button class="fp-b" id="fp-clear" type="button" aria-label="Xóa ghim" title="Xóa ghim">${ICON_CLEAR}</button><button class="fp-b" id="fp-add" type="button" aria-label="Thêm ghim" title="Thêm ghim">${ICON_ADD}</button><button class="fp-b" id="fp-reset" type="button" aria-label="Về góc trên bên phải" title="Về góc trên bên phải">⟲</button><button class="fp-b fp-x" id="fp-x" type="button" aria-label="Đóng (T)" title="Đóng (T)">✕</button></div><div class="fp-l" id="fp-list"></div>`;
+  fp.innerHTML=`<div class="fp-h" id="fp-h"><button class="fp-b" id="fp-clear" type="button" aria-label="Xóa ghim mới nhất" title="Xóa ghim mới nhất">${ICON_CLEAR}</button><button class="fp-b" id="fp-add" type="button" aria-label="Thêm ghim" title="Thêm ghim">${ICON_ADD}</button><button class="fp-b" id="fp-reset" type="button" aria-label="Xóa toàn bộ ghim" title="Xóa toàn bộ ghim">⟲</button><button class="fp-b fp-x" id="fp-x" type="button" aria-label="Đóng (T)" title="Đóng (T)">✕</button></div><div class="fp-l" id="fp-list"></div>`;
   document.body.appendChild(fp);
 
   /* ----- vẽ danh sách ghim ----- */
@@ -6713,17 +6715,19 @@ window.loadLesson = loadLesson;
     if(!p){fp.style.left='';fp.style.top='';fp.style.right='';fp.style.maxWidth='';return}
     const r=fp.getBoundingClientRect();
     const x=Math.max(0,Math.min(p.x,innerWidth-Math.min(r.width,80))),y=Math.max(0,Math.min(p.y,innerHeight-24));
-    fp.style.right='auto';fp.style.left=x+'px';fp.style.top=y+'px';fp.style.maxWidth=Math.max(72,innerWidth-x-4)+'px';
+    fp.style.right='auto';fp.style.left=x+'px';fp.style.top=y+'px';fp.style.maxWidth=Math.max(150,innerWidth-x-4)+'px';
   }
   addEventListener('resize',()=>{if(fp.classList.contains('on'))applyPos(store.get('pos',null))});
   $('fp-h').addEventListener('pointerdown',e=>{
     if(e.button>0||e.target.closest('button'))return;e.preventDefault();
-    const r=fp.getBoundingClientRect(),sx=e.clientX,sy=e.clientY,x0=r.left,y0=r.top;let p=null;
-    const mv=ev=>{p={x:x0+ev.clientX-sx,y:y0+ev.clientY-sy};applyPos(p)};
-    const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);if(p)store.set('pos',p)};
+    const r=fp.getBoundingClientRect(),sx=e.clientX,sy=e.clientY,x0=r.left,y0=r.top;let p=null,moved=false;
+    const mv=ev=>{if(!moved&&Math.hypot(ev.clientX-sx,ev.clientY-sy)<4)return;moved=true;p={x:x0+ev.clientX-sx,y:y0+ev.clientY-sy};applyPos(p)};
+    const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);if(moved&&p)store.set('pos',p);else setCol(!fp.classList.contains('col'))};
     addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up);
   });
-  $('fp-reset').onclick=()=>{store.del('pos');applyPos(null)};
+  function setCol(on){fp.classList.toggle('col',on);store.set('col',on)}
+  if(store.get('col',false))fp.classList.add('col');
+  $('fp-reset').onclick=()=>{pins=[];store.set('pins2',pins);render()};
 
   /* ----- mở / đóng ----- */
   function setOpen(on){
@@ -6736,7 +6740,7 @@ window.loadLesson = loadLesson;
   const ob=$('fp-open');if(ob)ob.onclick=()=>setOpen(true);
 
   /* ----- xóa ghim ----- */
-  $('fp-clear').onclick=()=>{pins=[];store.set('pins2',pins);render()};
+  $('fp-clear').onclick=()=>{pins.pop();store.set('pins2',pins);render()};
 
   /* ----- thêm ghim: bấm nút rồi chọn vùng có công thức ----- */
   function setPick(on){
@@ -6781,7 +6785,7 @@ window.loadLesson = loadLesson;
     const h=extract(el);
     if(!h)return false;
     if(!pins.includes(h)){pins.push(h);store.set('pins2',pins)}
-    render();const L=$('fp-list');L.scrollTop=L.scrollHeight;
+    setCol(false);render();const L=$('fp-list');L.scrollTop=L.scrollHeight;
     return true;
   }
   document.addEventListener('mousemove',e=>{
