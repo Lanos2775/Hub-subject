@@ -157,6 +157,32 @@ html[data-view=desktop] p,html[data-view=desktop] li{max-width:150ch}
 html[data-view=desktop] table{min-width:0}
 html[data-view=desktop] .formula-meta{grid-template-columns:1fr 1fr}
 html[data-view=desktop] .sim-card svg{max-height:640px}
+
+/* ===== Mô hình thu nhỏ, đặt ngang hàng với chữ; bảng chỉnh nằm cạnh hình ===== */
+.sim-card{padding:16px 18px}
+.sim-card>svg{max-height:min(60vh,400px);margin:12px 0}
+section>svg{max-height:420px}
+@media(min-width:760px){
+ html[data-view=desktop] .sim-card:has(>svg){display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);column-gap:20px;align-content:start}
+ html[data-view=desktop] .sim-card:has(>svg)>svg{grid-column:1;grid-row:1/span 12;align-self:start;margin:0;max-height:480px}
+ html[data-view=desktop] .sim-card:has(>svg)>*:not(svg){grid-column:2;min-width:0}
+ html[data-view=desktop] .sim-tabs{flex-direction:column;flex-wrap:nowrap;padding:8px}
+ html[data-view=desktop] .sim-tab{flex:0 0 auto}
+ html[data-view=desktop] .ctrl-row{grid-template-columns:1fr;margin:8px 0}
+}
+@media(min-width:1200px){
+ html[data-view=desktop] .box,html[data-view=desktop] .bridge,html[data-view=desktop] .next,html[data-view=desktop] .roadmap,html[data-view=desktop] .tw,html[data-view=desktop] .formula-card,html[data-view=desktop] ul,html[data-view=desktop] ol{display:flow-root}
+}
+
+/* ===== Hình SVG minh họa đặt ngang hàng với chữ ===== */
+.sim-card{clear:both}
+.fig{margin:16px 0}
+.fig svg{margin:0;max-height:none}
+.fig figcaption{font-size:14.5px;color:var(--mut);margin-top:8px;line-height:1.7;padding:0 6px}
+@media(min-width:1200px){
+ html[data-view=desktop] .fig{width:min(40%,470px);margin:6px 0 16px 30px;float:right}
+ html[data-view=desktop] .fig.fl{float:left;margin:6px 30px 16px 0}
+}
 </style>
 </head><body>
 
@@ -215,7 +241,11 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>1.1. Phân loại vật liệu bán dẫn</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 175" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="15" y="25" width="120" height="70" rx="8" style="fill:var(--tint);stroke:var(--c4);stroke-width:2;fill-opacity:1"/><text x="75" y="55" text-anchor="middle" style="fill:var(--c4);font-size:15px;font-weight:700">Cách điện</text><text x="75" y="78" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">chặn dòng điện</text><rect x="150" y="25" width="120" height="70" rx="8" style="fill:var(--tint);stroke:var(--c5);stroke-width:3;fill-opacity:1"/><text x="210" y="55" text-anchor="middle" style="fill:var(--c5);font-size:15px;font-weight:700">Bán dẫn</text><text x="210" y="78" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">điều khiển được</text><rect x="285" y="25" width="120" height="70" rx="8" style="fill:var(--tint);stroke:var(--c2);stroke-width:2;fill-opacity:1"/><text x="345" y="55" text-anchor="middle" style="fill:var(--c2);font-size:15px;font-weight:700">Kim loại</text><text x="345" y="78" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">dẫn rất tốt</text><text x="210" y="118" text-anchor="middle" style="fill:var(--c5);font-size:12px;font-weight:400">nhiệt độ · ánh sáng · pha tạp</text><line x1="210" y1="98" x2="210" y2="106" style="stroke:var(--c5);stroke-width:2"/><line x1="20" y1="140" x2="395" y2="140" style="stroke:var(--mut);stroke-width:2" marker-end="url(#fa)"/><text x="210" y="162" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">khả năng dẫn điện tăng dần</text></svg><figcaption>Bán dẫn nằm giữa hai thái cực, và ta điều khiển được nó.</figcaption></figure>
+
     <p>Xét về khả năng dẫn điện, chất bán dẫn nằm ở ranh giới giữa <b>Kim loại</b> (dẫn điện rất tốt) và <b>Chất cách điện</b> (chặn dòng điện). Điểm kỳ diệu của bán dẫn là ta có thể điều khiển nó chuyển từ trạng thái "chặn dòng điện" sang "dẫn điện" rất dễ dàng bằng nhiệt độ, ánh sáng hoặc pha thêm tạp chất. Trong môn học này, em cần nắm vững 2 nhóm bán dẫn chính:</p>
+    
+    <figure class="fig fr"><svg viewBox="0 0 420 238" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><text x="70" y="24" text-anchor="middle" style="fill:var(--mut);font-size:13px;font-weight:700">Nhóm III</text><rect x="25" y="36" width="90" height="36" rx="8" style="fill:var(--tint);stroke:var(--c4);stroke-width:3;fill-opacity:1"/><text x="70" y="60" text-anchor="middle" style="fill:var(--c4);font-size:15px;font-weight:700">B</text><rect x="25" y="80" width="90" height="36" rx="8" style="fill:var(--card);stroke:var(--g);stroke-width:1.5;fill-opacity:1"/><text x="70" y="104" text-anchor="middle" style="fill:var(--mut);font-size:15px;font-weight:700">Al</text><rect x="25" y="124" width="90" height="36" rx="8" style="fill:var(--tint);stroke:var(--c2);stroke-width:3;fill-opacity:1"/><text x="70" y="148" text-anchor="middle" style="fill:var(--c2);font-size:15px;font-weight:700">Ga</text><text x="210" y="24" text-anchor="middle" style="fill:var(--mut);font-size:13px;font-weight:700">Nhóm IV</text><rect x="165" y="36" width="90" height="36" rx="8" style="fill:var(--card);stroke:var(--g);stroke-width:1.5;fill-opacity:1"/><text x="210" y="60" text-anchor="middle" style="fill:var(--mut);font-size:15px;font-weight:700">C</text><rect x="165" y="80" width="90" height="36" rx="8" style="fill:var(--tint);stroke:var(--c1);stroke-width:3;fill-opacity:1"/><text x="210" y="104" text-anchor="middle" style="fill:var(--c1);font-size:15px;font-weight:700">Si</text><rect x="165" y="124" width="90" height="36" rx="8" style="fill:var(--tint);stroke:var(--c1);stroke-width:3;fill-opacity:1"/><text x="210" y="148" text-anchor="middle" style="fill:var(--c1);font-size:15px;font-weight:700">Ge</text><text x="350" y="24" text-anchor="middle" style="fill:var(--mut);font-size:13px;font-weight:700">Nhóm V</text><rect x="305" y="36" width="90" height="36" rx="8" style="fill:var(--card);stroke:var(--g);stroke-width:1.5;fill-opacity:1"/><text x="350" y="60" text-anchor="middle" style="fill:var(--mut);font-size:15px;font-weight:700">N</text><rect x="305" y="80" width="90" height="36" rx="8" style="fill:var(--tint);stroke:var(--c4);stroke-width:3;fill-opacity:1"/><text x="350" y="104" text-anchor="middle" style="fill:var(--c4);font-size:15px;font-weight:700">P</text><rect x="305" y="124" width="90" height="36" rx="8" style="fill:var(--tint);stroke:var(--c2);stroke-width:3;fill-opacity:1"/><text x="350" y="148" text-anchor="middle" style="fill:var(--c2);font-size:15px;font-weight:700">As</text><text x="15" y="190" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:400">■ Si, Ge: bán dẫn nguyên tố</text><text x="15" y="208" text-anchor="start" style="fill:var(--c2);font-size:12px;font-weight:400">■ Ga + As = GaAs (hợp chất III-V)</text><text x="15" y="226" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:400">■ B, P: tạp chất pha vào Si (Mục 4)</text></svg><figcaption>Các nguyên tố hay gặp quanh Nhóm IV.</figcaption></figure>
     <ul>
       <li><span class="k b1">Bán dẫn nguyên tố (Elemental)</span> Cấu tạo từ 1 nguyên tố duy nhất thuộc <b>Nhóm IV</b> bảng tuần hoàn (có 4 electron lớp ngoài cùng): phổ biến nhất là <b>Silicon ($\text{Si}$)</b> và <b>Germanium ($\text{Ge}$)</b>.</li>
       <li><span class="k b2">Bán dẫn hợp chất (Compound)</span> Tạo thành khi ghép nguyên tố <b>Nhóm III</b> với nguyên tố <b>Nhóm V</b>:Hợp chất hai nguyên tố (nhị phân - binary) tiêu biểu nhất là <b>Gallium Arsenide ($\text{GaAs}$)</b> dùng làm đèn LED, laser và mạch cao tần. Ngoài ra còn có hợp chất ba nguyên tố (bậc ba - ternary) như $\text{Al}_x\text{Ga}_{1-x}\text{As}$.</li>
@@ -253,7 +283,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <li><b>Ô nguyên thủy (Primitive cell):</b> Là ô đơn vị có thể tích nhỏ nhất. Tuy nhiên, ô nguyên thủy thường có các cạnh xiên góc rất khó tính toán, nên các kỹ sư thích dùng <b>Ô đơn vị lập phương</b> (có 3 cạnh vuông góc bằng nhau và bằng <b>hằng số mạng $a$</b>).</li>
     </ul>
 
-    <div class="box warn">
+    
+    <figure class="fig fr"><svg viewBox="0 0 420 130" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="10" y="15" width="150" height="40" rx="8" style="fill:var(--tint);stroke:var(--c5);stroke-width:2;fill-opacity:1"/><text x="85" y="40" text-anchor="middle" style="fill:var(--c5);font-size:14px;font-weight:700">a = 5.43 Å</text><line x1="165" y1="35" x2="255" y2="35" style="stroke:var(--mut);stroke-width:2" marker-end="url(#fa)"/><text x="210" y="27" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">× 10⁻⁸</text><rect x="260" y="15" width="150" height="40" rx="8" style="fill:var(--tint);stroke:var(--c2);stroke-width:2;fill-opacity:1"/><text x="335" y="40" text-anchor="middle" style="fill:var(--c2);font-size:14px;font-weight:700">5.43×10⁻⁸ cm</text><text x="15" y="88" text-anchor="start" style="fill:var(--ink);font-size:13px;font-weight:400">Diện tích a²: nhân thêm 10⁻¹⁶  (cm²)</text><text x="15" y="112" text-anchor="start" style="fill:var(--ink);font-size:13px;font-weight:400">Thể tích a³: nhân thêm 10⁻²⁴  (cm³)</text></svg><figcaption>Luôn đổi Å sang cm trước khi tính mật độ.</figcaption></figure>
+<div class="box warn">
       <b>Cảnh báo sống còn về đổi đơn vị trước khi làm bài tập:</b><br>
       Kích thước ô mạng $a$ hay bán kính nguyên tử $r$ luôn được cho bằng đơn vị <b>Angstrom ($\text{Å}$)</b>, nhưng mật độ nguyên tử lại luôn tính trên mỗi <b>centimet khối ($\text{cm}^3$)</b> hoặc <b>centimet vuông ($\text{cm}^2$)</b>.<br>
       Công thức bắt buộc phải thuộc lòng:<br>
@@ -282,6 +314,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>2.2. Quy tắc đếm số nguyên tử hiệu dụng trong 1 Ô đơn vị</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 178" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="35" y="30" width="80" height="80" rx="4" style="fill:var(--tint);stroke:var(--g);stroke-width:2;fill-opacity:1"/><circle cx="35" cy="30" r="15" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.35"/><text x="75" y="140" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">Đỉnh</text><text x="75" y="162" text-anchor="middle" style="fill:var(--c4);font-size:14px;font-weight:700">⅛ nguyên tử</text><rect x="170" y="30" width="80" height="80" rx="4" style="fill:var(--tint);stroke:var(--g);stroke-width:2;fill-opacity:1"/><circle cx="250" cy="70.0" r="15" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.35"/><text x="210" y="140" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">Tâm mặt</text><text x="210" y="162" text-anchor="middle" style="fill:var(--c4);font-size:14px;font-weight:700">½ nguyên tử</text><rect x="305" y="30" width="80" height="80" rx="4" style="fill:var(--tint);stroke:var(--g);stroke-width:2;fill-opacity:1"/><circle cx="345.0" cy="70.0" r="15" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.35"/><text x="345" y="140" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">Trong ruột</text><text x="345" y="162" text-anchor="middle" style="fill:var(--c4);font-size:14px;font-weight:700">1 nguyên tử</text></svg><figcaption>Sơ đồ phẳng minh họa: nguyên tử nằm ở đâu thì ô đơn vị sở hữu phần tương ứng.</figcaption></figure>
+
     <p>Hãy tưởng tượng ô đơn vị lập phương là một căn phòng có 6 bức tường và 8 góc phòng. Các quả cầu nguyên tử nằm ở ranh giới sẽ bị chia sẻ với các phòng hàng xóm:</p>
     <ul>
       <li><span class="k b1">Nguyên tử ở Đỉnh góc (Corner)</span> Giao điểm của 8 căn phòng lập phương (4 phòng tầng dưới, 4 phòng tầng trên). Mỗi ô đơn vị chỉ sở hữu <b>$\frac{1}{8}$ nguyên tử</b>.</li>
@@ -331,7 +365,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <p>Trong công nghệ sản xuất chip, thỏi tinh thể Silicon được cưa thành từng lát mỏng (wafer). Bề mặt lát cắt quyết định trực tiếp đến số lượng nguyên tử lộ ra và tốc độ di chuyển của electron trên bề mặt chip. Để gọi tên chính xác từng mặt cắt và hướng trong tinh thể, người ta dùng <b>Chỉ số Miller</b>.</p>
 
-    <div class="box tip">
+    
+    <figure class="fig fr"><svg viewBox="0 0 420 222" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="15" y="10" width="390" height="40" rx="8" style="fill:var(--tint);stroke:var(--c1);stroke-width:2.5;fill-opacity:1"/><text x="38" y="36" text-anchor="middle" style="fill:var(--c1);font-size:18px;font-weight:700">①</text><text x="60" y="36" text-anchor="start" style="fill:var(--ink);font-size:13.5px;font-weight:400">Điểm cắt (tính theo a)</text><text x="392" y="36" text-anchor="end" style="fill:var(--c1);font-size:15px;font-weight:700">(2, 4, 3)</text><line x1="210" y1="51" x2="210" y2="61" style="stroke:var(--mut);stroke-width:2" marker-end="url(#fa)"/><rect x="15" y="62" width="390" height="40" rx="8" style="fill:var(--tint);stroke:var(--c5);stroke-width:2.5;fill-opacity:1"/><text x="38" y="88" text-anchor="middle" style="fill:var(--c5);font-size:18px;font-weight:700">②</text><text x="60" y="88" text-anchor="start" style="fill:var(--ink);font-size:13.5px;font-weight:400">Lấy nghịch đảo</text><text x="392" y="88" text-anchor="end" style="fill:var(--c5);font-size:15px;font-weight:700">(½, ¼, ⅓)</text><line x1="210" y1="103" x2="210" y2="113" style="stroke:var(--mut);stroke-width:2" marker-end="url(#fa)"/><rect x="15" y="114" width="390" height="40" rx="8" style="fill:var(--tint);stroke:var(--c3);stroke-width:2.5;fill-opacity:1"/><text x="38" y="140" text-anchor="middle" style="fill:var(--c3);font-size:18px;font-weight:700">③</text><text x="60" y="140" text-anchor="start" style="fill:var(--ink);font-size:13.5px;font-weight:400">Nhân BCNN = 12</text><text x="392" y="140" text-anchor="end" style="fill:var(--c3);font-size:15px;font-weight:700">(6, 3, 4)</text><line x1="210" y1="155" x2="210" y2="165" style="stroke:var(--mut);stroke-width:2" marker-end="url(#fa)"/><rect x="15" y="166" width="390" height="40" rx="8" style="fill:var(--tint);stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><text x="38" y="192" text-anchor="middle" style="fill:var(--c4);font-size:18px;font-weight:700">④</text><text x="60" y="192" text-anchor="start" style="fill:var(--ink);font-size:13.5px;font-weight:400">Viết trong ngoặc tròn</text><text x="392" y="192" text-anchor="end" style="fill:var(--c4);font-size:15px;font-weight:700">(634)</text></svg><figcaption>Ví dụ Câu 2: mặt cắt các trục tại 2a, 4a, 3a.</figcaption></figure>
+<div class="box tip">
       <b>Quy trình 4 bước tìm Chỉ số Miller $(hkl)$ cho mặt phẳng:</b>
       <ol>
         <li><b>Bước 1 (Tìm điểm cắt theo $a$):</b> Xác định mặt phẳng cắt 3 trục tọa độ tại vị trí bằng bao nhiêu lần hằng số mạng $a$: ký hiệu bộ 3 điểm cắt là $(p, q, s)$. Nếu mặt phẳng song song với trục nào thì điểm cắt với trục đó ở vô cùng ($\infty$).</li>
@@ -347,6 +383,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       • Mặt cắt trục tại $(2,\ 1,\ \infty)$: nghịch đảo $\left(\frac12,1,0\right)$. Nhân cả ba với $2$ được $(1,2,0)$. Vậy mặt là $\mathbf{(120)}$.<br>
       Lý do phải nghịch đảo: để tránh dùng ký hiệu $\infty$ cho mặt song song với trục.</div>
 <h3>3.1. Mô hình tương tác: Mặt phẳng Miller $(hkl)$, Hướng $[hkl]$ & Thiết diện cắt 2D</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 184" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="20.0" y1="140.0" x2="20.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="20.0" y1="140.0" x2="48.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="20.0" y1="140.0" x2="90.0" y2="140.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="20.0" y1="70.0" x2="48.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="20.0" y1="70.0" x2="90.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="48.0" y1="119.0" x2="48.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="48.0" y1="119.0" x2="118.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="48.0" y1="49.0" x2="118.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="90.0" y1="140.0" x2="90.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="90.0" y1="140.0" x2="118.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="90.0" y1="70.0" x2="118.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="118.0" y1="119.0" x2="118.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><polygon points="90.0,140.0 118.0,119.0 118.0,49.0 90.0,70.0" style="fill:var(--c4);stroke:var(--c4);stroke-width:2;fill-opacity:0.4"/><text x="69" y="170" text-anchor="middle" style="fill:var(--c4);font-size:14px;font-weight:700">(100)</text><line x1="155.0" y1="140.0" x2="155.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="155.0" y1="140.0" x2="183.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="155.0" y1="140.0" x2="225.0" y2="140.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="155.0" y1="70.0" x2="183.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="155.0" y1="70.0" x2="225.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="183.0" y1="119.0" x2="183.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="183.0" y1="119.0" x2="253.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="183.0" y1="49.0" x2="253.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="225.0" y1="140.0" x2="225.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="225.0" y1="140.0" x2="253.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="225.0" y1="70.0" x2="253.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="253.0" y1="119.0" x2="253.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><polygon points="225.0,140.0 183.0,119.0 183.0,49.0 225.0,70.0" style="fill:var(--c4);stroke:var(--c4);stroke-width:2;fill-opacity:0.4"/><text x="204" y="170" text-anchor="middle" style="fill:var(--c4);font-size:14px;font-weight:700">(110)</text><line x1="290.0" y1="140.0" x2="290.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="290.0" y1="140.0" x2="318.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="290.0" y1="140.0" x2="360.0" y2="140.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="290.0" y1="70.0" x2="318.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="290.0" y1="70.0" x2="360.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="318.0" y1="119.0" x2="318.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="318.0" y1="119.0" x2="388.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="318.0" y1="49.0" x2="388.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="360.0" y1="140.0" x2="360.0" y2="70.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="360.0" y1="140.0" x2="388.0" y2="119.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="360.0" y1="70.0" x2="388.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><line x1="388.0" y1="119.0" x2="388.0" y2="49.0" style="stroke:var(--g);stroke-width:1.5"/><polygon points="360.0,140.0 318.0,119.0 290.0,70.0" style="fill:var(--c4);stroke:var(--c4);stroke-width:2;fill-opacity:0.4"/><text x="339" y="170" text-anchor="middle" style="fill:var(--c4);font-size:14px;font-weight:700">(111)</text></svg><figcaption>Ba mặt cắt thường gặp của khối lập phương.</figcaption></figure>
+
     <p>Nhiều bạn khi tính <b>mật độ nguyên tử trên bề mặt (surface density)</b> rất hay nhầm lẫn vì không tưởng tượng được khi lấy con dao cắt theo mặt $(100)$, $(110)$ hay $(111)$ thì mặt cắt trông như thế nào và cắt qua mấy phần nguyên tử. Hãy bấm vào các nút dưới đây để nhìn cả <b>Khối 3D bên trái</b> lẫn <b>Mặt cắt phẳng 2D bên phải</b>:</p>
 
     <div class="sim-card">
@@ -383,6 +421,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     <div class="box why"><b>Học phần này để làm gì?</b> Đây là mục <b>quan trọng nhất của Buổi 1</b> với bán dẫn. <i>Pha tạp</i> là cách biến Si từ gần như cách điện thành vật liệu làm diode, transistor. Toàn bộ các buổi sau đều xoay quanh nó.</div>
 
     <h3>4.1. Bốn loại liên kết nguyên tử trong chất rắn</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 238" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="210" y1="115" x2="210" y2="35" style="stroke:var(--g);stroke-width:2"/><circle cx="216.0" cy="75.0" r="5" style="fill:var(--c3);stroke:var(--c3);stroke-width:1;fill-opacity:1"/><circle cx="204.0" cy="75.0" r="5" style="fill:var(--c3);stroke:var(--c3);stroke-width:1;fill-opacity:1"/><line x1="210" y1="115" x2="210" y2="195" style="stroke:var(--g);stroke-width:2"/><circle cx="204.0" cy="155.0" r="5" style="fill:var(--c3);stroke:var(--c3);stroke-width:1;fill-opacity:1"/><circle cx="216.0" cy="155.0" r="5" style="fill:var(--c3);stroke:var(--c3);stroke-width:1;fill-opacity:1"/><line x1="210" y1="115" x2="110" y2="115" style="stroke:var(--g);stroke-width:2"/><circle cx="160.0" cy="109.0" r="5" style="fill:var(--c3);stroke:var(--c3);stroke-width:1;fill-opacity:1"/><circle cx="160.0" cy="121.0" r="5" style="fill:var(--c3);stroke:var(--c3);stroke-width:1;fill-opacity:1"/><line x1="210" y1="115" x2="310" y2="115" style="stroke:var(--g);stroke-width:2"/><circle cx="260.0" cy="121.0" r="5" style="fill:var(--c3);stroke:var(--c3);stroke-width:1;fill-opacity:1"/><circle cx="260.0" cy="109.0" r="5" style="fill:var(--c3);stroke:var(--c3);stroke-width:1;fill-opacity:1"/><circle cx="210" cy="35" r="24" style="fill:var(--tint);stroke:var(--c1);stroke-width:2;fill-opacity:1"/><text x="210" y="40" text-anchor="middle" style="fill:var(--c1);font-size:14px;font-weight:700">Si</text><circle cx="210" cy="195" r="24" style="fill:var(--tint);stroke:var(--c1);stroke-width:2;fill-opacity:1"/><text x="210" y="200" text-anchor="middle" style="fill:var(--c1);font-size:14px;font-weight:700">Si</text><circle cx="110" cy="115" r="24" style="fill:var(--tint);stroke:var(--c1);stroke-width:2;fill-opacity:1"/><text x="110" y="120" text-anchor="middle" style="fill:var(--c1);font-size:14px;font-weight:700">Si</text><circle cx="310" cy="115" r="24" style="fill:var(--tint);stroke:var(--c1);stroke-width:2;fill-opacity:1"/><text x="310" y="120" text-anchor="middle" style="fill:var(--c1);font-size:14px;font-weight:700">Si</text><circle cx="210" cy="115" r="28" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.25"/><text x="210" y="120" text-anchor="middle" style="fill:var(--c1);font-size:15px;font-weight:700">Si</text><text x="210" y="226" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">● mỗi cặp chấm vàng = 2 electron dùng chung</text></svg><figcaption>Mỗi Si góp 4 electron với 4 hàng xóm, nên có đủ 8 electron quanh mình.</figcaption></figure>
+
     <ul>
       <li><b>Liên kết Ion (Ionic bond):</b> Giữa nguyên tử Nhóm I (dễ nhường 1 electron thành ion dương, như $\text{Na}^+$) và Nhóm VII (dễ nhận 1 electron thành ion âm, như $\text{Cl}^-$). Hai ion trái dấu hút nhau bằng lực tĩnh điện Coulomb tạo thành muối ăn $\text{NaCl}$.</li>
       <li><b>Liên kết Kim loại (Metallic bond):</b> Các nguyên tử kim loại góp chung electron hóa trị tạo thành một "biển electron tự do" bao quanh các ion dương đứng yên.</li>
@@ -483,7 +523,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       </div>
     </div>
 
-    <div class="formula-card">
+    
+    <figure class="fig fr"><svg viewBox="0 0 420 192" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><circle cx="38" cy="50" r="32" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.25"/><circle cx="102" cy="50" r="32" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.25"/><circle cx="38" cy="114" r="32" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.25"/><circle cx="102" cy="114" r="32" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.25"/><rect x="38" y="50" width="64" height="64" rx="0" style="fill:none;stroke:var(--mut);stroke-width:1.5;fill-opacity:1"/><text x="70" y="152" text-anchor="middle" style="fill:var(--c1);font-size:13px;font-weight:700">SC: a = 2r</text><circle cx="178" cy="50" r="22.6" style="fill:var(--c2);stroke:var(--c2);stroke-width:2;fill-opacity:0.25"/><circle cx="242" cy="50" r="22.6" style="fill:var(--c2);stroke:var(--c2);stroke-width:2;fill-opacity:0.25"/><circle cx="178" cy="114" r="22.6" style="fill:var(--c2);stroke:var(--c2);stroke-width:2;fill-opacity:0.25"/><circle cx="242" cy="114" r="22.6" style="fill:var(--c2);stroke:var(--c2);stroke-width:2;fill-opacity:0.25"/><circle cx="210" cy="82" r="22.6" style="fill:var(--c2);stroke:var(--c2);stroke-width:2;fill-opacity:0.25"/><rect x="178" y="50" width="64" height="64" rx="0" style="fill:none;stroke:var(--mut);stroke-width:1.5;fill-opacity:1"/><line x1="178" y1="50" x2="242" y2="114" style="stroke:var(--c4);stroke-width:2" stroke-dasharray="5 4"/><text x="210" y="152" text-anchor="middle" style="fill:var(--c2);font-size:13px;font-weight:700">FCC: a√2 = 4r</text><circle cx="315" cy="57" r="21.65" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.25"/><circle cx="385.7" cy="57" r="21.65" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.25"/><circle cx="315" cy="107" r="21.65" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.25"/><circle cx="385.7" cy="107" r="21.65" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.25"/><circle cx="350.35" cy="82.0" r="21.65" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.25"/><rect x="315" y="57" width="70.7" height="50" rx="0" style="fill:none;stroke:var(--mut);stroke-width:1.5;fill-opacity:1"/><line x1="315" y1="57" x2="385.7" y2="107" style="stroke:var(--c4);stroke-width:2" stroke-dasharray="5 4"/><text x="350" y="152" text-anchor="middle" style="fill:var(--c5);font-size:13px;font-weight:700">BCC: a√3 = 4r</text><text x="210" y="180" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">đường nét đứt là hướng các quả cầu chạm nhau</text></svg><figcaption>Các nguyên tử xem như quả cầu cứng chạm nhau dọc theo hướng xếp chặt nhất.</figcaption></figure>
+<div class="formula-card">
       <h3>Công thức 3: Quan hệ giữa Bán kính nguyên tử ($r$), Khoảng cách gần nhất ($d_{\text{min}}$) và Hằng số mạng ($a$)</h3>
       <div class="f key">
         $$\text{SC: } a = 2r \quad \big| \quad \text{BCC: } a\sqrt{3} = 4r \quad \big| \quad \text{FCC: } a\sqrt{2} = 4r \quad \big| \quad \text{Kim cương (Si): } d_{\text{min}} = \frac{a\sqrt{3}}{4} = 2r$$
@@ -836,6 +878,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>1.1. Giả thuyết Planck và Hạt ánh sáng (Photon)</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 175" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="25" y1="140" x2="195" y2="140" style="stroke:var(--mut);stroke-width:1.5"/><line x1="25" y1="140" x2="25" y2="25" style="stroke:var(--mut);stroke-width:1.5"/><line x1="235" y1="140" x2="405" y2="140" style="stroke:var(--mut);stroke-width:1.5"/><line x1="235" y1="140" x2="235" y2="25" style="stroke:var(--mut);stroke-width:1.5"/><line x1="25" y1="140" x2="195" y2="50" style="stroke:var(--c4);stroke-width:3"/><path d="M235,140 H275 V115 H315 V90 H355 V65 H395" style="fill:none;stroke:var(--c2);stroke-width:3;fill-opacity:1"/><text x="110" y="162" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">Cổ điển: liên tục</text><text x="320" y="162" text-anchor="middle" style="fill:var(--c2);font-size:13px;font-weight:700">Lượng tử: từng gói</text><text x="15" y="22" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">E</text><text x="225" y="22" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">E</text><text x="398" y="125" text-anchor="end" style="fill:var(--mut);font-size:11px;font-weight:400">hν</text><text x="398" y="100" text-anchor="end" style="fill:var(--mut);font-size:11px;font-weight:400">2hν</text></svg><figcaption>Năng lượng ánh sáng chỉ tăng theo từng bậc hν, không có giá trị "lưng chừng".</figcaption></figure>
+
     <p>Năm 1901, khi nghiên cứu bức xạ vật đen (Black-body radiation), Max Planck khẳng định năng lượng chỉ được phát ra hoặc hấp thụ thành từng gói rời rạc tỉ lệ thuận với tần số $\nu$ của sóng ánh sáng:</p>
     <div class="f key">
       $$E = h\nu = \frac{hc}{\lambda} \qquad \left(\text{Mẹo tính nhanh: } E\text{ [eV]} \approx \frac{1240}{\lambda\text{ [nm]}} = \frac{12400}{\lambda\text{ [Å]}}\right)$$
@@ -853,6 +897,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     
     <div class="box analogy"><b>Ví dụ kiểm tra nhanh:</b> Chiếu ánh sáng $\lambda=620\text{ nm}$ vào Natri ($\Phi=2.3\text{ eV}$). Năng lượng photon $E\approx\frac{1240}{620}=2.0\text{ eV}$. Vì $2.0\lt2.3$ nên <b>không có electron thoát ra</b>, kể cả khi tăng cường độ sáng. Chiếu $\lambda=400\text{ nm}$ thì $E=3.1\text{ eV}$, electron thoát ra với $T_{\max}=3.1-2.3=0.8\text{ eV}$.</div>
 <h3>1.2. Hiệu ứng Quang điện (Photoelectric Effect)</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 168" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><text x="20" y="20" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">Natri: Φ = 2.3 eV</text><line x1="158.0" y1="30" x2="158.0" y2="138" style="stroke:var(--c4);stroke-width:2" stroke-dasharray="5 4"/><text x="158.0" y="150" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">Φ</text><rect x="20" y="42" width="120.0" height="26" rx="4" style="fill:var(--c1);stroke:var(--c1);stroke-width:1;fill-opacity:0.5"/><text x="148.0" y="60" text-anchor="start" style="fill:var(--ink);font-size:12px;font-weight:400">hν = 2.0 eV</text><text x="20" y="86" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:400">chưa đủ → không có electron</text><rect x="20" y="102" width="138.0" height="26" rx="4" style="fill:var(--c4);stroke:var(--c4);stroke-width:1;fill-opacity:0.5"/><rect x="158.0" y="102" width="48.0" height="26" rx="4" style="fill:var(--c2);stroke:var(--c2);stroke-width:1;fill-opacity:0.7"/><text x="89.0" y="120" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">Φ</text><text x="182.0" y="120" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">T</text><text x="214.0" y="120" text-anchor="start" style="fill:var(--ink);font-size:12px;font-weight:400">hν = 3.1 eV</text></svg><figcaption>Photon trả "phí" Φ trước; phần dư thành động năng T_max = 0.8 eV.</figcaption></figure>
+
     <p>Khi chiếu ánh sáng đơn sắc vào một tấm kim loại đặt trong chân không, các hạt electron có thể bị đánh bật ra khỏi bề mặt kim loại (gọi là <b>quang electron - photoelectrons</b>). Để bứt ra khỏi lực giữ của kim loại, mỗi electron phải tốn một mức "phí xuất cảnh" tối thiểu gọi là <b>Công thoát $\Phi$ (Work function)</b>:</p>
     <ul>
       <li>Nếu 1 hạt photon lao vào có năng lượng $h\nu < \Phi$ (tức tần số $\nu < \nu_0 = \frac{\Phi}{h}$): Dù em có bật hàng triệu bóng đèn (tăng cường độ sáng cực mạnh), cũng <b>không có bất kỳ electron nào thoát ra</b>! (Giống như vé qua trạm thu phí là $50\text{ nghìn}$, dù có $1000$ người nhưng mỗi người chỉ cầm tờ $20\text{ nghìn}$ và quy định không được góp tiền chung thì không ai qua được trạm).</li>
@@ -893,6 +939,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     <p>Suốt hàng trăm năm, các nhà vật lý tranh cãi xem ánh sáng là Sóng (Huygens) hay là Hạt (Newton). Cơ học lượng tử kết luận: <b>Mọi thực thể vi mô đều vừa là Sóng, vừa là Hạt!</b></p>
 
     <h3>2.1. Sóng hành xử như Hạt: Hiệu ứng tán xạ Compton (1924)</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 196" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><circle cx="170" cy="110" r="16" style="fill:var(--c4);stroke:var(--c4);stroke-width:2;fill-opacity:0.5"/><text x="170" y="148" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:400">e⁻ đứng yên</text><path d="M15.0,110.0 L17.3,113.0 L19.6,115.2 L21.9,116.0 L24.1,115.2 L26.4,113.0 L28.7,110.0 L31.0,107.0 L33.3,104.8 L35.5,104.0 L37.8,104.8 L40.1,107.0 L42.4,110.0 L44.7,113.0 L47.0,115.2 L49.2,116.0 L51.5,115.2 L53.8,113.0 L56.1,110.0 L58.4,107.0 L60.7,104.8 L62.9,104.0 L65.2,104.8 L67.5,107.0 L69.8,110.0 L72.1,113.0 L74.4,115.2 L76.7,116.0 L78.9,115.2 L81.2,113.0 L83.5,110.0 L85.8,107.0 L88.1,104.8 L90.4,104.0 L92.6,104.8 L94.9,107.0 L97.2,110.0 L99.5,113.0 L101.8,115.2 L104.0,116.0 L106.3,115.2 L108.6,113.0 L110.9,110.0 L113.2,107.0 L115.5,104.8 L117.8,104.0 L120.0,104.8 L122.3,107.0 L124.6,110.0 L126.9,113.0 L129.2,115.2 L131.4,116.0 L133.7,115.2 L136.0,113.0 L138.3,110.0 L140.6,107.0 L142.9,104.8 L145.2,104.0 L147.4,104.8 L149.7,107.0 L152.0,110.0" style="fill:none;stroke:var(--c1);stroke-width:2.5;fill-opacity:1" marker-end="url(#fa)"/><text x="60" y="92" text-anchor="middle" style="fill:var(--c1);font-size:12px;font-weight:400">photon (λᵢ)</text><path d="M176.0,106.0 L178.8,106.2 L181.6,106.2 L184.2,106.0 L186.6,105.5 L188.8,104.5 L190.7,103.1 L192.5,101.4 L194.0,99.2 L195.4,96.8 L196.7,94.3 L198.0,91.8 L199.4,89.4 L200.9,87.3 L202.6,85.5 L204.5,84.1 L206.7,83.2 L209.1,82.6 L211.8,82.4 L214.5,82.5 L217.3,82.7 L220.2,82.8 L222.9,82.9 L225.5,82.7 L227.9,82.1 L230.1,81.2 L232.1,79.8 L233.8,78.0 L235.3,75.9 L236.7,73.5 L238.0,71.0 L239.3,68.5 L240.7,66.1 L242.2,64.0 L243.9,62.2 L245.9,60.8 L248.1,59.9 L250.5,59.3 L253.1,59.1 L255.8,59.2 L258.7,59.3 L261.5,59.5 L264.2,59.6 L266.9,59.4 L269.3,58.8 L271.5,57.9 L273.4,56.5 L275.1,54.7 L276.6,52.6 L278.0,50.2 L279.3,47.7 L280.6,45.2 L282.0,42.8 L283.5,40.6 L285.3,38.9 L287.2,37.5 L289.4,36.5 L291.8,36.0 L294.4,35.8 L297.2,35.8 L300.0,36.0" style="fill:none;stroke:var(--c5);stroke-width:2.5;fill-opacity:1" marker-end="url(#fa)"/><text x="320" y="32" text-anchor="end" style="fill:var(--c5);font-size:12px;font-weight:400">photon (λf dài hơn)</text><line x1="183" y1="118" x2="300" y2="170" style="stroke:var(--c4);stroke-width:3" marker-end="url(#fa)"/><text x="330" y="180" text-anchor="end" style="fill:var(--c4);font-size:12px;font-weight:400">e⁻ bật ra</text><path d="M215,110 A45,45 0 0 0 207,87" style="fill:none;stroke:var(--mut);stroke-width:1.5;fill-opacity:1"/><text x="228" y="100" text-anchor="middle" style="fill:var(--ink);font-size:14px;font-weight:400">θ</text></svg><figcaption>Va chạm giống hai viên bi-a: photon mất bớt năng lượng nên bước sóng dài ra.</figcaption></figure>
+
     <p>Khi Arthur Compton bắn chùm tia X (bước sóng $\lambda_i$) vào tấm bia Graphite chứa các electron đang đứng yên, ông thấy tia X bị bật lệch đi một góc $\theta$ với bước sóng dài hơn ($\lambda_f > \lambda_i$), đồng thời electron bị hất văng đi giống hệt như <b>hai viên bi-a va chạm đàn hồi</b>!</p>
     <p>Dù photon không có khối lượng nghỉ, nó vẫn mang <b>Động lượng (Momentum) $p$</b> như một viên đạn thực thụ:</p>
     <div class="f">
@@ -900,6 +948,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>2.2. Hạt hành xử như Sóng: Giả thuyết Sóng vật chất de Broglie & Thí nghiệm Davisson-Germer</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 172" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><circle cx="40" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="80" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="120" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="160" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="200" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="240" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="280" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="320" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="360" cy="125" r="8" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><line x1="40" y1="145" x2="80" y2="145" style="stroke:var(--c2);stroke-width:2"/><text x="60" y="162" text-anchor="middle" style="fill:var(--c2);font-size:12px;font-weight:700">a = 5.43 Å</text><path d="M40.0,70.0 L43.0,64.2 L46.0,58.7 L49.0,53.6 L52.0,49.3 L55.0,45.8 L58.0,43.4 L61.0,42.2 L64.0,42.1 L67.0,43.3 L70.0,45.6 L73.0,48.9 L76.0,53.2 L79.0,58.2 L82.0,63.6 L85.0,69.4 L88.0,75.2 L91.0,80.8 L94.0,85.9 L97.0,90.3 L100.0,93.9 L103.0,96.4 L106.0,97.7 L109.0,97.9 L112.0,96.9 L115.0,94.7 L118.0,91.5 L121.0,87.3 L124.0,82.4 L127.0,76.9 L130.0,71.2 L133.0,65.4 L136.0,59.8 L139.0,54.6 L142.0,50.1 L145.0,46.5 L148.0,43.8 L151.0,42.3 L154.0,42.0 L157.0,42.9 L160.0,45.0 L163.0,48.2 L166.0,52.3 L169.0,57.1 L172.0,62.5 L175.0,68.3 L178.0,74.1 L181.0,79.7 L184.0,84.9 L187.0,89.5 L190.0,93.2 L193.0,96.0 L196.0,97.6 L199.0,98.0 L202.0,97.2 L205.0,95.2 L208.0,92.2 L211.0,88.2 L214.0,83.4 L217.0,78.0 L220.0,72.3 L223.0,66.5 L226.0,60.9 L229.0,55.6 L232.0,50.9 L235.0,47.1 L238.0,44.3 L241.0,42.5 L244.0,42.0 L247.0,42.7 L250.0,44.5 L253.0,47.5 L256.0,51.4 L259.0,56.1 L262.0,61.4 L265.0,67.1 L268.0,72.9 L271.0,78.6 L274.0,83.9 L277.0,88.6 L280.0,92.5 L283.0,95.5 L286.0,97.3 L289.0,98.0 L292.0,97.5 L295.0,95.7 L298.0,92.9 L301.0,89.1 L304.0,84.4 L307.0,79.1 L310.0,73.5 L313.0,67.7 L316.0,62.0 L319.0,56.6 L322.0,51.8 L325.0,47.8 L328.0,44.8 L331.0,42.8 L334.0,42.0 L337.0,42.4 L340.0,44.0 L343.0,46.8 L346.0,50.5 L349.0,55.1 L352.0,60.3 L355.0,65.9 L358.0,71.7" style="fill:none;stroke:var(--c4);stroke-width:3;fill-opacity:1"/><line x1="40" y1="24" x2="130.6" y2="24" style="stroke:var(--c4);stroke-width:2"/><text x="85" y="16" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">λ ≈ 12.3 Å (electron 1 eV)</text></svg><figcaption>Bước sóng electron cùng cỡ khoảng cách giữa các nguyên tử.</figcaption></figure>
+
     <p>Năm 1924, Louis de Broglie đặt câu hỏi ngược lại: <i>"Nếu sóng ánh sáng có thể va chạm như hạt bi-a, vậy các hạt vật chất (như viên đạn, hạt electron) khi bay có mang tính chất sóng không?"</i> Câu trả lời là <b>CÓ!</b> Mọi vật chuyển động với động lượng $p = mv$ đều đi kèm một bước sóng gọi là <b>Bước sóng de Broglie ($\lambda_{\text{DB}}$)</b>:</p>
     <div class="f">
       $$\lambda = \frac{h}{p} = \frac{h}{mv}$$
@@ -952,7 +1002,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       • Ngược lại, nếu dùng photon bước sóng dài (nhẹ nhàng) để ít làm thay đổi động lượng electron ($\Delta p$ nhỏ), thì hình ảnh thu được lại nhòe nhoẹt không biết electron đang ở đâu ($\Delta x$ lớn)!
     </div>
 
-    <p>Heisenberg gói gọn quy luật tự nhiên này vào 2 bất đẳng thức cặp biến liên hợp:</p>
+    
+    <figure class="fig fr"><svg viewBox="0 0 420 196" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="10" y1="80" x2="200" y2="80" style="stroke:var(--mut);stroke-width:1.5"/><path d="M15.0,80.0 L18.0,80.0 L21.0,80.0 L24.0,80.0 L27.0,80.0 L30.0,80.0 L33.0,80.0 L36.0,80.0 L39.0,80.0 L42.0,80.0 L45.0,80.0 L48.0,80.0 L51.0,80.0 L54.0,80.0 L57.0,80.0 L60.0,80.0 L63.0,80.0 L66.0,80.0 L69.0,79.9 L72.0,79.8 L75.0,79.4 L78.0,78.7 L81.0,77.2 L84.0,74.5 L87.0,70.1 L90.0,63.8 L93.0,55.7 L96.0,46.7 L99.0,38.2 L102.0,32.2 L105.0,30.0 L108.0,32.2 L111.0,38.2 L114.0,46.7 L117.0,55.7 L120.0,63.8 L123.0,70.1 L126.0,74.5 L129.0,77.2 L132.0,78.7 L135.0,79.4 L138.0,79.8 L141.0,79.9 L144.0,80.0 L147.0,80.0 L150.0,80.0 L153.0,80.0 L156.0,80.0 L159.0,80.0 L162.0,80.0 L165.0,80.0 L168.0,80.0 L171.0,80.0 L174.0,80.0 L177.0,80.0 L180.0,80.0 L183.0,80.0 L186.0,80.0 L189.0,80.0 L192.0,80.0 L195.0,80.0" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><text x="105" y="97" text-anchor="middle" style="fill:var(--c1);font-size:13px;font-weight:700">Δx nhỏ</text><line x1="10" y1="170" x2="200" y2="170" style="stroke:var(--mut);stroke-width:1.5"/><path d="M15.0,169.4 L18.0,169.3 L21.0,169.0 L24.0,168.7 L27.0,168.3 L30.0,167.8 L33.0,167.2 L36.0,166.4 L39.0,165.6 L42.0,164.5 L45.0,163.2 L48.0,161.8 L51.0,160.1 L54.0,158.2 L57.0,156.1 L60.0,153.8 L63.0,151.2 L66.0,148.5 L69.0,145.7 L72.0,142.7 L75.0,139.7 L78.0,136.7 L81.0,133.7 L84.0,130.9 L87.0,128.2 L90.0,125.9 L93.0,123.8 L96.0,122.2 L99.0,121.0 L102.0,120.2 L105.0,120.0 L108.0,120.2 L111.0,121.0 L114.0,122.2 L117.0,123.8 L120.0,125.9 L123.0,128.2 L126.0,130.9 L129.0,133.7 L132.0,136.7 L135.0,139.7 L138.0,142.7 L141.0,145.7 L144.0,148.5 L147.0,151.2 L150.0,153.8 L153.0,156.1 L156.0,158.2 L159.0,160.1 L162.0,161.8 L165.0,163.2 L168.0,164.5 L171.0,165.6 L174.0,166.4 L177.0,167.2 L180.0,167.8 L183.0,168.3 L186.0,168.7 L189.0,169.0 L192.0,169.3 L195.0,169.4" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><text x="105" y="187" text-anchor="middle" style="fill:var(--c5);font-size:13px;font-weight:700">Δp lớn</text><line x1="220" y1="80" x2="410" y2="80" style="stroke:var(--mut);stroke-width:1.5"/><path d="M225.0,79.4 L228.0,79.3 L231.0,79.0 L234.0,78.7 L237.0,78.3 L240.0,77.8 L243.0,77.2 L246.0,76.4 L249.0,75.6 L252.0,74.5 L255.0,73.2 L258.0,71.8 L261.0,70.1 L264.0,68.2 L267.0,66.1 L270.0,63.8 L273.0,61.2 L276.0,58.5 L279.0,55.7 L282.0,52.7 L285.0,49.7 L288.0,46.7 L291.0,43.7 L294.0,40.9 L297.0,38.2 L300.0,35.9 L303.0,33.8 L306.0,32.2 L309.0,31.0 L312.0,30.2 L315.0,30.0 L318.0,30.2 L321.0,31.0 L324.0,32.2 L327.0,33.8 L330.0,35.9 L333.0,38.2 L336.0,40.9 L339.0,43.7 L342.0,46.7 L345.0,49.7 L348.0,52.7 L351.0,55.7 L354.0,58.5 L357.0,61.2 L360.0,63.8 L363.0,66.1 L366.0,68.2 L369.0,70.1 L372.0,71.8 L375.0,73.2 L378.0,74.5 L381.0,75.6 L384.0,76.4 L387.0,77.2 L390.0,77.8 L393.0,78.3 L396.0,78.7 L399.0,79.0 L402.0,79.3 L405.0,79.4" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><text x="315" y="97" text-anchor="middle" style="fill:var(--c1);font-size:13px;font-weight:700">Δx lớn</text><line x1="220" y1="170" x2="410" y2="170" style="stroke:var(--mut);stroke-width:1.5"/><path d="M225.0,170.0 L228.0,170.0 L231.0,170.0 L234.0,170.0 L237.0,170.0 L240.0,170.0 L243.0,170.0 L246.0,170.0 L249.0,170.0 L252.0,170.0 L255.0,170.0 L258.0,170.0 L261.0,170.0 L264.0,170.0 L267.0,170.0 L270.0,170.0 L273.0,170.0 L276.0,170.0 L279.0,169.9 L282.0,169.8 L285.0,169.4 L288.0,168.7 L291.0,167.2 L294.0,164.5 L297.0,160.1 L300.0,153.8 L303.0,145.7 L306.0,136.7 L309.0,128.2 L312.0,122.2 L315.0,120.0 L318.0,122.2 L321.0,128.2 L324.0,136.7 L327.0,145.7 L330.0,153.8 L333.0,160.1 L336.0,164.5 L339.0,167.2 L342.0,168.7 L345.0,169.4 L348.0,169.8 L351.0,169.9 L354.0,170.0 L357.0,170.0 L360.0,170.0 L363.0,170.0 L366.0,170.0 L369.0,170.0 L372.0,170.0 L375.0,170.0 L378.0,170.0 L381.0,170.0 L384.0,170.0 L387.0,170.0 L390.0,170.0 L393.0,170.0 L396.0,170.0 L399.0,170.0 L402.0,170.0 L405.0,170.0" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><text x="315" y="187" text-anchor="middle" style="fill:var(--c5);font-size:13px;font-weight:700">Δp nhỏ</text><text x="210" y="16" text-anchor="middle" style="fill:var(--c1);font-size:12px;font-weight:400">vị trí x</text><text x="210" y="106" text-anchor="middle" style="fill:var(--c5);font-size:12px;font-weight:400">động lượng p</text><line x1="210" y1="22" x2="210" y2="0" style="stroke:none;stroke-width:0"/></svg><figcaption>Bó sóng càng hẹp trong không gian thì phổ động lượng càng rộng.</figcaption></figure>
+<p>Heisenberg gói gọn quy luật tự nhiên này vào 2 bất đẳng thức cặp biến liên hợp:</p>
     <div class="f key">
       $$\text{1. Vị trí - Động lượng: } \Delta p \cdot \Delta x \ge \hbar \qquad \Big| \qquad \text{2. Năng lượng - Thời gian: } \Delta E \cdot \Delta t \ge \hbar$$
       <small>Trong đó: $\hbar = \frac{h}{2\pi} \approx 1.054 \times 10^{-34}\text{ J}\cdot\text{s}$ gọi là <b>Hằng số Planck rút gọn (Reduced Planck constant)</b>.</small>
@@ -1005,6 +1057,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <tr><td>$E$</td><td>Tổng năng lượng của electron</td></tr>
       <tr><td>$j$</td><td>Đơn vị ảo ($\sqrt{-1}$)</td></tr></table></div>
 <h3>4.1. Kỹ thuật Tách biến (Separation of Variables): Tách Không gian và Thời gian</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 162" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="5" y="30" width="90" height="80" rx="8" style="fill:var(--tint);stroke:var(--c5);stroke-width:2.5;fill-opacity:1"/><text x="50" y="76" text-anchor="middle" style="fill:var(--c5);font-size:16px;font-weight:700">Ψ(x,t)</text><text x="105" y="76" text-anchor="middle" style="fill:var(--ink);font-size:20px;font-weight:700">=</text><rect x="115" y="30" width="135" height="80" rx="8" style="fill:var(--tint);stroke:var(--c1);stroke-width:2.5;fill-opacity:1"/><path d="M125.0,70.0 L128.0,63.2 L131.0,57.1 L134.0,52.2 L137.0,49.1 L140.0,48.0 L143.0,49.1 L146.0,52.2 L149.0,57.1 L152.0,63.2 L155.0,70.0 L158.0,76.8 L161.0,82.9 L164.0,87.8 L167.0,90.9 L170.0,92.0 L173.0,90.9 L176.0,87.8 L179.0,82.9 L182.0,76.8 L185.0,70.0 L188.0,63.2 L191.0,57.1 L194.0,52.2 L197.0,49.1 L200.0,48.0 L203.0,49.1 L206.0,52.2 L209.0,57.1 L212.0,63.2 L215.0,70.0 L218.0,76.8 L221.0,82.9 L224.0,87.8 L227.0,90.9 L230.0,92.0 L233.0,90.9 L236.0,87.8 L239.0,82.9" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><text x="262" y="76" text-anchor="middle" style="fill:var(--ink);font-size:20px;font-weight:700">×</text><rect x="275" y="30" width="140" height="80" rx="8" style="fill:var(--tint);stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><circle cx="345" cy="70" r="24" style="fill:none;stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><line x1="345" y1="70" x2="362" y2="53" style="stroke:var(--c4);stroke-width:3" marker-end="url(#fa)"/><text x="182" y="130" text-anchor="middle" style="fill:var(--c1);font-size:12px;font-weight:400">ψ(x): hình dạng sóng</text><text x="345" y="130" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:400">e^(−jωt): chỉ quay pha</text><text x="210" y="150" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">Lấy |Ψ|² thì phần quay biến mất</text></svg><figcaption>Tách biến: không gian và thời gian độc lập nhau.</figcaption></figure>
+
     <p>Khi thế năng $V(x)$ chỉ phụ thuộc vào vị trí $x$ (không đổi theo thời gian $t$), ta có thể tách hàm sóng toàn phần $\Psi(x,t)$ thành tích của hai hàm độc lập:</p>
     <div class="f">
       $$\Psi(x,t) = \psi(x) \cdot \phi(t) = \psi(x) \cdot e^{-j(E/\hbar)t} = \psi(x) \cdot e^{-j\omega t}$$
@@ -1017,6 +1071,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </ul>
 
     <h3>4.2. Ý nghĩa Vật lý của Hàm sóng (Định đề Max Born)</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 184" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="40" y1="150" x2="390" y2="150" style="stroke:var(--mut);stroke-width:1.5"/><line x1="40" y1="150" x2="40" y2="20" style="stroke:var(--mut);stroke-width:1.5"/><polygon points="170.0,150.0 171.0,64.5 174.0,61.2 177.0,58.1 180.0,55.2 183.0,52.5 186.0,50.0 189.0,47.7 192.0,45.7 195.0,44.0 198.0,42.6 201.0,41.5 204.0,40.7 207.0,40.2 210.0,40.0 213.0,40.2 216.0,40.7 219.0,41.5 222.0,42.6 225.0,44.0 228.0,45.7 231.0,47.7 234.0,50.0 237.0,52.5 240.0,55.2 243.0,58.1 246.0,61.2 249.0,64.5 251.0,150.0" style="fill:var(--c2);stroke:var(--c2);stroke-width:0;fill-opacity:0.4"/><path d="M60.0,147.3 L63.0,146.9 L66.0,146.4 L69.0,145.9 L72.0,145.3 L75.0,144.6 L78.0,143.8 L81.0,143.0 L84.0,142.0 L87.0,141.0 L90.0,139.8 L93.0,138.6 L96.0,137.2 L99.0,135.6 L102.0,134.0 L105.0,132.2 L108.0,130.3 L111.0,128.2 L114.0,126.0 L117.0,123.7 L120.0,121.2 L123.0,118.5 L126.0,115.7 L129.0,112.8 L132.0,109.8 L135.0,106.6 L138.0,103.3 L141.0,99.9 L144.0,96.5 L147.0,92.9 L150.0,89.3 L153.0,85.7 L156.0,82.1 L159.0,78.4 L162.0,74.8 L165.0,71.3 L168.0,67.8 L171.0,64.5 L174.0,61.2 L177.0,58.1 L180.0,55.2 L183.0,52.5 L186.0,50.0 L189.0,47.7 L192.0,45.7 L195.0,44.0 L198.0,42.6 L201.0,41.5 L204.0,40.7 L207.0,40.2 L210.0,40.0 L213.0,40.2 L216.0,40.7 L219.0,41.5 L222.0,42.6 L225.0,44.0 L228.0,45.7 L231.0,47.7 L234.0,50.0 L237.0,52.5 L240.0,55.2 L243.0,58.1 L246.0,61.2 L249.0,64.5 L252.0,67.8 L255.0,71.3 L258.0,74.8 L261.0,78.4 L264.0,82.1 L267.0,85.7 L270.0,89.3 L273.0,92.9 L276.0,96.5 L279.0,99.9 L282.0,103.3 L285.0,106.6 L288.0,109.8 L291.0,112.8 L294.0,115.7 L297.0,118.5 L300.0,121.2 L303.0,123.7 L306.0,126.0 L309.0,128.2 L312.0,130.3 L315.0,132.2 L318.0,134.0 L321.0,135.6 L324.0,137.2 L327.0,138.6 L330.0,139.8 L333.0,141.0 L336.0,142.0 L339.0,143.0 L342.0,143.8 L345.0,144.6 L348.0,145.3 L351.0,145.9 L354.0,146.4 L357.0,146.9 L360.0,147.3" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><text x="170" y="168" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:400">x₁</text><text x="251" y="168" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:400">x₂</text><text x="48" y="18" text-anchor="start" style="fill:var(--c5);font-size:12px;font-weight:400">|ψ(x)|²</text><text x="210" y="128" text-anchor="middle" style="fill:var(--c2);font-size:16px;font-weight:700">P</text></svg><figcaption>Xác suất tìm thấy hạt trong [x₁, x₂] chính là diện tích phần tô màu.</figcaption></figure>
+
     <p>Vì hàm sóng $\Psi(x,t)$ chứa số ảo $j = \sqrt{-1}$ nên bản thân $\Psi(x,t)$ <b>không phải là đại lượng vật lý đo được trực tiếp</b>. Tuy nhiên, năm 1926, Max Born phát hiện ra rằng khi lấy <b>bình phương mô-đun</b> của hàm sóng (tức nhân hàm sóng với liên hợp phức $\Psi^*$ của nó), số ảo $e^{-j\omega t}$ sẽ triệt tiêu hoàn toàn với $e^{+j\omega t}$:</p>
     <div class="f">
       $$|\Psi(x,t)|^2 = \Psi(x,t)\cdot\Psi^*(x,t) = \big[\psi(x)e^{-j\omega t}\big]\cdot\big[\psi^*(x)e^{+j\omega t}\big] = |\psi(x)|^2$$
@@ -1446,10 +1502,14 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     <span class="k b2">HỌC PHẦN ENP2209 · BUỔI 3</span>
     <h1>Nhập Môn Cơ Học Lượng Tử (Phần 2)</h1>
     <p class="mut">Ứng dụng phương trình sóng Schrödinger cho Hạt tự do, Giếng thế vô hạn, Bậc thế năng, Hiệu ứng xuyên hầm lượng tử (Tunneling) và Cấu trúc nguyên tử 1-electron.</p>
+  
+    <div class="roadmap"><p><b>Bản đồ Buổi 3 — cùng một phương trình, bốn môi trường khác nhau</b></p><ol><li><b>Mục 1:</b> Không có lực nào ($V=0$): electron tự do.</li><li><b>Mục 2:</b> Nhốt electron giữa hai vách vô hạn: năng lượng bị <i>lượng tử hóa</i>.</li><li><b>Mục 3:</b> Vách hữu hạn: electron <i>rò</i> vào vách và có thể <i>xuyên hầm</i> qua rào mỏng.</li><li><b>Mục 4:</b> Mở sang 3 chiều: nguyên tử hydro, bốn số lượng tử và nguyên lý Pauli.</li></ol><p><b>Vì sao học?</b> Ở Buổi 2 em có phương trình Schrödinger. Buổi này chỉ làm một việc: <i>chọn $V(x)$ rồi giải ra $\psi(x)$</i>. Kết quả là các "viên gạch" để Buổi 4 xây mô hình tinh thể.</p></div>
   </header>
 
   <section>
     <h2>1. Hạt Electron Trong Không Gian Tự Do (Free Electron)</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Đây là trường hợp dễ nhất, cho ta dạng sóng $e^{jkx}$ và công thức $E(k)$. Về sau, giản đồ $E$-$k$ của Buổi 4 chính là mở rộng của công thức này.</div>
+
     <p>Ở Buổi 2, chúng ta đã làm quen với <b>Phương trình sóng Schrödinger không phụ thuộc thời gian</b>:
       $$\frac{d^2\psi(x)}{dx^2} + \frac{2m}{\hbar^2}\big[E - V(x)\big]\psi(x) = 0$$
       Bây giờ, chúng ta sẽ giải phương trình này từ trường hợp dễ nhất đến các trường hợp thú vị nhất trong linh kiện bán dẫn. Trường hợp đầu tiên là <b>Electron chuyển động trong không gian tự do (Free Space)</b> — tức là nơi không có bất kỳ lực hút hay lực đẩy nào tác dụng lên nó, nên thế năng ở mọi nơi bằng không: $V(x) = 0$.
@@ -1461,6 +1521,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>1.1. Nghiệm Sóng phẳng, Số sóng $k$ và Vận tốc pha $v_p$</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 175" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><path d="M20.0,90.0 L23.0,81.3 L26.0,73.5 L29.0,67.3 L32.0,63.4 L35.0,62.0 L38.0,63.4 L41.0,67.3 L44.0,73.5 L47.0,81.3 L50.0,90.0 L53.0,98.7 L56.0,106.5 L59.0,112.7 L62.0,116.6 L65.0,118.0 L68.0,116.6 L71.0,112.7 L74.0,106.5 L77.0,98.7 L80.0,90.0 L83.0,81.3 L86.0,73.5 L89.0,67.3 L92.0,63.4 L95.0,62.0 L98.0,63.4 L101.0,67.3 L104.0,73.5 L107.0,81.3 L110.0,90.0 L113.0,98.7 L116.0,106.5 L119.0,112.7 L122.0,116.6 L125.0,118.0 L128.0,116.6 L131.0,112.7 L134.0,106.5 L137.0,98.7 L140.0,90.0 L143.0,81.3 L146.0,73.5 L149.0,67.3 L152.0,63.4 L155.0,62.0 L158.0,63.4 L161.0,67.3 L164.0,73.5 L167.0,81.3 L170.0,90.0 L173.0,98.7 L176.0,106.5 L179.0,112.7 L182.0,116.6 L185.0,118.0 L188.0,116.6 L191.0,112.7 L194.0,106.5 L197.0,98.7 L200.0,90.0" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><line x1="20" y1="40" x2="80" y2="40" style="stroke:var(--c4);stroke-width:2"/><text x="50" y="32" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">λ</text><line x1="30" y1="135" x2="190" y2="135" style="stroke:var(--c5);stroke-width:2.5" marker-end="url(#fa)"/><text x="110" y="155" text-anchor="middle" style="fill:var(--c5);font-size:12px;font-weight:400">k = 2π/λ  (chạy về +x)</text><line x1="240" y1="140" x2="400" y2="140" style="stroke:var(--mut);stroke-width:1.5"/><line x1="320" y1="140" x2="320" y2="25" style="stroke:var(--mut);stroke-width:1.5"/><path d="M242.0,60.9 L245.0,66.9 L248.0,72.6 L251.0,78.1 L254.0,83.4 L257.0,88.4 L260.0,93.2 L263.0,97.8 L266.0,102.1 L269.0,106.2 L272.0,110.0 L275.0,113.7 L278.0,117.1 L281.0,120.2 L284.0,123.2 L287.0,125.8 L290.0,128.3 L293.0,130.5 L296.0,132.5 L299.0,134.3 L302.0,135.8 L305.0,137.1 L308.0,138.1 L311.0,138.9 L314.0,139.5 L317.0,139.9 L320.0,140.0 L323.0,139.9 L326.0,139.5 L329.0,138.9 L332.0,138.1 L335.0,137.1 L338.0,135.8 L341.0,134.3 L344.0,132.5 L347.0,130.5 L350.0,128.3 L353.0,125.8 L356.0,123.2 L359.0,120.2 L362.0,117.1 L365.0,113.7 L368.0,110.0 L371.0,106.2 L374.0,102.1 L377.0,97.8 L380.0,93.2 L383.0,88.4 L386.0,83.4 L389.0,78.1 L392.0,72.6 L395.0,66.9 L398.0,60.9" style="fill:none;stroke:var(--c2);stroke-width:3;fill-opacity:1"/><text x="325" y="22" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">E</text><text x="398" y="156" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">k</text><text x="320" y="165" text-anchor="middle" style="fill:var(--c2);font-size:12px;font-weight:400">E = ħ²k²/2m (liên tục)</text></svg><figcaption>Electron tự do: sóng phẳng và năng lượng liên tục.</figcaption></figure>
+
     <p>Khi thay $V(x) = 0$ vào phương trình Schrödinger, ta được phương trình dao động điều hòa quen thuộc:</p>
     <div class="f">
       $$\frac{d^2\psi(x)}{dx^2} + k^2\psi(x) = 0 \qquad \text{với } \mathbf{k = \frac{\sqrt{2mE}}{\hbar}} \text{ gọi là Số sóng (Wave number)}$$
@@ -1501,10 +1563,18 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="free-desc" class="box"></div>
       <svg id="free-svg" viewBox="0 0 680 230"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul><li>Nghiệm là <b>sóng phẳng</b> $\psi=Ae^{jkx}+Be^{-jkx}$. Số sóng $k=\dfrac{\sqrt{2mE}}{\hbar}$, động lượng $p=\hbar k$.</li><li>$E=\dfrac{\hbar^2k^2}{2m}$ nhận <b>mọi giá trị</b> (năng lượng liên tục, không lượng tử hóa).</li><li>$k\gt0$: sóng chạy về phía $+x$. $k\lt0$: chạy về phía $-x$.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Electron tự do có năng lượng tùy ý. Nếu ta <i>nhốt</i> nó lại thì chuyện gì thay đổi? Mục 2 trả lời.</div>
+</section>
 
   <section>
     <h2>2. Hạt Trong Giếng Thế Vô Hạn 1 Chiều (Infinite Potential Well)</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Electron tự do có thể có mọi năng lượng. Bây giờ thêm hai bức tường để nhốt nó.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Đây là lý do nguyên tử có các mức năng lượng <i>rời rạc</i>. Giếng thế cũng là hình mẫu đơn giản nhất của một electron bị giam trong nguyên tử hoặc trong lớp bán dẫn mỏng.</div>
+
     <p>Chuyện gì xảy ra nếu ta không cho electron chạy tự do nữa, mà nhốt nó vào giữa hai bức tường thế năng cao vô tận ($V = \infty$) đặt tại $x = 0$ và $x = a$, còn ở đáy giếng ($0 < x < a$) thì thế năng bằng không ($V = 0$)?</p>
 
     <div class="box analogy">
@@ -1514,6 +1584,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>2.1. Giải phương trình Schrödinger & Sự lượng tử hóa năng lượng</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 212" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="60" y1="12" x2="60" y2="175" style="stroke:var(--c4);stroke-width:4"/><line x1="360" y1="12" x2="360" y2="175" style="stroke:var(--c4);stroke-width:4"/><line x1="60" y1="175" x2="360" y2="175" style="stroke:var(--mut);stroke-width:2"/><text x="60" y="10" text-anchor="middle" style="fill:var(--c4);font-size:11px;font-weight:400">V = ∞</text><text x="360" y="10" text-anchor="middle" style="fill:var(--c4);font-size:11px;font-weight:400">V = ∞</text><line x1="60" y1="156" x2="360" y2="156" style="stroke:var(--g);stroke-width:1.5" stroke-dasharray="4 4"/><path d="M60.0,156.0 L64.0,155.5 L68.0,155.1 L72.0,154.6 L76.0,154.2 L80.0,153.7 L84.0,153.3 L88.0,152.8 L92.0,152.4 L96.0,152.0 L100.0,151.5 L104.0,151.1 L108.0,150.7 L112.0,150.3 L116.0,149.9 L120.0,149.5 L124.0,149.2 L128.0,148.8 L132.0,148.5 L136.0,148.1 L140.0,147.8 L144.0,147.5 L148.0,147.2 L152.0,147.0 L156.0,146.7 L160.0,146.5 L164.0,146.3 L168.0,146.0 L172.0,145.9 L176.0,145.7 L180.0,145.5 L184.0,145.4 L188.0,145.3 L192.0,145.2 L196.0,145.1 L200.0,145.1 L204.0,145.0 L208.0,145.0 L212.0,145.0 L216.0,145.0 L220.0,145.1 L224.0,145.1 L228.0,145.2 L232.0,145.3 L236.0,145.4 L240.0,145.5 L244.0,145.7 L248.0,145.9 L252.0,146.0 L256.0,146.3 L260.0,146.5 L264.0,146.7 L268.0,147.0 L272.0,147.2 L276.0,147.5 L280.0,147.8 L284.0,148.1 L288.0,148.5 L292.0,148.8 L296.0,149.2 L300.0,149.5 L304.0,149.9 L308.0,150.3 L312.0,150.7 L316.0,151.1 L320.0,151.5 L324.0,152.0 L328.0,152.4 L332.0,152.8 L336.0,153.3 L340.0,153.7 L344.0,154.2 L348.0,154.6 L352.0,155.1 L356.0,155.5 L360.0,156.0" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><text x="366" y="160" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:700">E₁</text><line x1="60" y1="114" x2="360" y2="114" style="stroke:var(--g);stroke-width:1.5" stroke-dasharray="4 4"/><path d="M60.0,114.0 L64.0,113.1 L68.0,112.2 L72.0,111.3 L76.0,110.4 L80.0,109.5 L84.0,108.7 L88.0,107.9 L92.0,107.2 L96.0,106.5 L100.0,105.8 L104.0,105.2 L108.0,104.7 L112.0,104.3 L116.0,103.9 L120.0,103.5 L124.0,103.3 L128.0,103.1 L132.0,103.0 L136.0,103.0 L140.0,103.1 L144.0,103.2 L148.0,103.4 L152.0,103.7 L156.0,104.0 L160.0,104.5 L164.0,105.0 L168.0,105.5 L172.0,106.1 L176.0,106.8 L180.0,107.5 L184.0,108.3 L188.0,109.1 L192.0,110.0 L196.0,110.8 L200.0,111.7 L204.0,112.6 L208.0,113.5 L212.0,114.5 L216.0,115.4 L220.0,116.3 L224.0,117.2 L228.0,118.0 L232.0,118.9 L236.0,119.7 L240.0,120.5 L244.0,121.2 L248.0,121.9 L252.0,122.5 L256.0,123.0 L260.0,123.5 L264.0,124.0 L268.0,124.3 L272.0,124.6 L276.0,124.8 L280.0,124.9 L284.0,125.0 L288.0,125.0 L292.0,124.9 L296.0,124.7 L300.0,124.5 L304.0,124.1 L308.0,123.7 L312.0,123.3 L316.0,122.8 L320.0,122.2 L324.0,121.5 L328.0,120.8 L332.0,120.1 L336.0,119.3 L340.0,118.5 L344.0,117.6 L348.0,116.7 L352.0,115.8 L356.0,114.9 L360.0,114.0" style="fill:none;stroke:var(--c2);stroke-width:3;fill-opacity:1"/><text x="366" y="118" text-anchor="start" style="fill:var(--c2);font-size:12px;font-weight:700">E₂ = 4E₁</text><line x1="60" y1="44" x2="360" y2="44" style="stroke:var(--g);stroke-width:1.5" stroke-dasharray="4 4"/><path d="M60.0,44.0 L64.0,42.6 L68.0,41.3 L72.0,40.0 L76.0,38.7 L80.0,37.5 L84.0,36.5 L88.0,35.5 L92.0,34.7 L96.0,34.0 L100.0,33.5 L104.0,33.2 L108.0,33.0 L112.0,33.0 L116.0,33.2 L120.0,33.5 L124.0,34.0 L128.0,34.7 L132.0,35.5 L136.0,36.5 L140.0,37.5 L144.0,38.7 L148.0,40.0 L152.0,41.3 L156.0,42.6 L160.0,44.0 L164.0,45.4 L168.0,46.7 L172.0,48.0 L176.0,49.3 L180.0,50.5 L184.0,51.5 L188.0,52.5 L192.0,53.3 L196.0,54.0 L200.0,54.5 L204.0,54.8 L208.0,55.0 L212.0,55.0 L216.0,54.8 L220.0,54.5 L224.0,54.0 L228.0,53.3 L232.0,52.5 L236.0,51.5 L240.0,50.5 L244.0,49.3 L248.0,48.0 L252.0,46.7 L256.0,45.4 L260.0,44.0 L264.0,42.6 L268.0,41.3 L272.0,40.0 L276.0,38.7 L280.0,37.5 L284.0,36.5 L288.0,35.5 L292.0,34.7 L296.0,34.0 L300.0,33.5 L304.0,33.2 L308.0,33.0 L312.0,33.0 L316.0,33.2 L320.0,33.5 L324.0,34.0 L328.0,34.7 L332.0,35.5 L336.0,36.5 L340.0,37.5 L344.0,38.7 L348.0,40.0 L352.0,41.3 L356.0,42.6 L360.0,44.0" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><text x="366" y="48" text-anchor="start" style="fill:var(--c5);font-size:12px;font-weight:700">E₃ = 9E₁</text><line x1="60" y1="190" x2="360" y2="190" style="stroke:var(--mut);stroke-width:1.5" marker-end="url(#fa)"/><text x="210" y="204" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">a</text></svg><figcaption>Giếng vô hạn: chỉ có sóng dừng, nên năng lượng rời rạc và tỉ lệ n².</figcaption></figure>
+
     <ul>
       <li><b>Ở Vùng I ($x \le 0$) và Vùng III ($x \ge a$):</b> Vì thế năng $V(x) = \infty$, hạt không thể tồn tại ở ngoài giếng nên $\psi(x) = 0$.</li>
       <li><b>Ở Vùng II trong giếng ($0 \le x \le a$):</b> Thế năng $V(x) = 0$, phương trình Schrödinger có nghiệm dạng lượng giác:
@@ -1534,7 +1606,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       </li>
     </ul>
 
-    <h3>2.2. Mô hình tương tác: Giếng thế vô hạn — Mức năng lượng $E_n$, Hàm sóng $\psi_n$ & Xác suất $|\psi_n|^2$</h3>
+    
+    <div class="box analogy"><b>Ví dụ số nhanh:</b> Với electron, $E_1\approx\dfrac{37.6\text{ eV·Å}^2}{a^2}$. Giếng rộng $a=10\text{ Å}$ cho $E_1\approx0.38\text{ eV}$. Giếng hẹp lại còn $a=5\text{ Å}$ thì $E_1\approx1.5\text{ eV}$, tức tăng $4$ lần (vì $E\propto1/a^2$).</div>
+<h3>2.2. Mô hình tương tác: Giếng thế vô hạn — Mức năng lượng $E_n$, Hàm sóng $\psi_n$ & Xác suất $|\psi_n|^2$</h3>
     <p>Em hãy kéo thanh trượt chọn <b>mức lượng tử $n$ (từ 1 đến 4)</b> và <b>bề rộng giếng $a$</b> (mặc định để $a = 75\text{ Å}$ đúng bằng số liệu của <b>Câu 2 Bài tập</b>) để quan sát các vạch năng lượng tỉ lệ với $n^2$, số bụng sóng và các vị trí tìm thấy hạt nhiều nhất:</p>
 
     <div class="sim-card">
@@ -1551,10 +1625,18 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="infwell-desc" class="box"></div>
       <svg id="infwell-svg" viewBox="0 0 680 270"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul><li>$E_n=\dfrac{n^2\pi^2\hbar^2}{2ma^2}$ với $n=1,2,3,\dots$ và $\psi_n=\sqrt{\dfrac2a}\sin\dfrac{n\pi x}{a}$.</li><li><b>Lý do lượng tử hóa:</b> sóng phải bằng $0$ ở hai vách nên chỉ có sóng dừng (vừa đủ nửa bước sóng) tồn tại.</li><li>Giếng càng hẹp ($a$ nhỏ) thì các mức càng cao và cách nhau càng xa. Mức thấp nhất $n=1$ vẫn lớn hơn $0$.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Vách vô hạn chỉ là lý tưởng. Thực tế vách có độ cao hữu hạn, và điều đó cho phép điều kỳ lạ ở Mục 3.</div>
+</section>
 
   <section>
     <h2>3. Bậc Thế Năng (Step Potential) & Rào Thế Xuyên Hầm (Quantum Tunneling)</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Vách giếng bây giờ chỉ cao $V_0$ hữu hạn. Một hạt có $E\lt V_0$ liệu có bị chặn hoàn toàn?</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Xuyên hầm là hiệu ứng có thật trong linh kiện: dòng rò qua lớp oxit mỏng, diode tunnel, bộ nhớ flash. Nó chỉ xảy ra vì hạt là sóng.</div>
+
     <p>Bây giờ ta xét trường hợp thực tế hơn: bức tường thế năng không cao vô cùng nữa mà chỉ có độ cao hữu hạn $V_0$. Chuyện gì xảy ra khi một hạt electron có tổng năng lượng $E$ nhỏ hơn chiều cao bức tường ($E < V_0$) bay từ trái sang phải đập vào bức tường?</p>
 
     <div class="box analogy">
@@ -1564,6 +1646,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>3.1. Bậc thế năng (Step Potential) khi $E < V_0$</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 182" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><path d="M20,150 H210 V60 H400" style="fill:none;stroke:var(--c4);stroke-width:3;fill-opacity:1"/><line x1="20" y1="100" x2="400" y2="100" style="stroke:var(--mut);stroke-width:1.5" stroke-dasharray="5 4"/><path d="M20.0,100.0 L23.0,93.9 L26.0,88.9 L29.0,85.7 L32.0,85.1 L35.0,87.0 L38.0,91.2 L41.0,96.9 L44.0,103.1 L47.0,108.8 L50.0,113.0 L53.0,114.9 L56.0,114.3 L59.0,111.1 L62.0,106.1 L65.0,100.0 L68.0,93.9 L71.0,88.9 L74.0,85.7 L77.0,85.1 L80.0,87.0 L83.0,91.2 L86.0,96.9 L89.0,103.1 L92.0,108.8 L95.0,113.0 L98.0,114.9 L101.0,114.3 L104.0,111.1 L107.0,106.1 L110.0,100.0 L113.0,93.9 L116.0,88.9 L119.0,85.7 L122.0,85.1 L125.0,87.0 L128.0,91.2 L131.0,96.9 L134.0,103.1 L137.0,108.8 L140.0,113.0 L143.0,114.9 L146.0,114.3 L149.0,111.1 L152.0,106.1 L155.0,100.0 L158.0,93.9 L161.0,88.9 L164.0,85.7 L167.0,85.1 L170.0,87.0 L173.0,91.2 L176.0,96.9 L179.0,103.1 L182.0,108.8 L185.0,113.0 L188.0,114.9 L191.0,114.3 L194.0,111.1 L197.0,106.1 L200.0,100.0 L203.0,93.9 L206.0,88.9 L209.0,85.7" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><path d="M210.0,85.0 L213.0,86.4 L216.0,87.7 L219.0,88.9 L222.0,89.9 L225.0,90.9 L228.0,91.8 L231.0,92.6 L234.0,93.3 L237.0,93.9 L240.0,94.5 L243.0,95.0 L246.0,95.5 L249.0,95.9 L252.0,96.3 L255.0,96.7 L258.0,97.0 L261.0,97.3 L264.0,97.5 L267.0,97.8 L270.0,98.0 L273.0,98.2 L276.0,98.3 L279.0,98.5 L282.0,98.6 L285.0,98.8 L288.0,98.9 L291.0,99.0 L294.0,99.1 L297.0,99.2 L300.0,99.3 L303.0,99.3 L306.0,99.4 L309.0,99.4 L312.0,99.5 L315.0,99.5 L318.0,99.6 L321.0,99.6 L324.0,99.7 L327.0,99.7 L330.0,99.7 L333.0,99.8 L336.0,99.8 L339.0,99.8 L342.0,99.8 L345.0,99.8 L348.0,99.8 L351.0,99.9 L354.0,99.9 L357.0,99.9 L360.0,99.9 L363.0,99.9 L366.0,99.9 L369.0,99.9 L372.0,99.9 L375.0,99.9 L378.0,99.9 L381.0,99.9 L384.0,100.0 L387.0,100.0 L390.0,100.0 L393.0,100.0 L396.0,100.0 L399.0,100.0" style="fill:none;stroke:var(--c2);stroke-width:3;fill-opacity:1"/><text x="15" y="96" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">E</text><text x="110" y="170" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:400">V = 0</text><text x="305" y="50" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">V₀</text><text x="305" y="125" text-anchor="middle" style="fill:var(--c2);font-size:12px;font-weight:400">ψ ∝ e^(−k₂x): suy giảm</text></svg><figcaption>Bậc thế khi E &lt; V₀: sóng không dừng đột ngột mà thấm vào vách rồi tắt dần.</figcaption></figure>
+
     <ul>
       <li><b>Vùng I ($x \le 0$, nơi $V = 0$):</b> Gồm sóng tới ($A_1$) truyền theo chiều $+x$ và sóng phản xạ ($B_1$) truyền ngược lại theo chiều $-x$:
         $$\psi_1(x) = A_1 e^{jk_1 x} + B_1 e^{-jk_1 x} \qquad \text{với } k_1 = \frac{\sqrt{2mE}}{\hbar}$$
@@ -1596,6 +1680,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>3.3. Rào thế chữ nhật bề rộng $a$ & Xác suất Xuyên hầm (Tunneling Probability $T$)</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 196" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><path d="M20,150 H150 V50 H270 V150 H400" style="fill:none;stroke:var(--c4);stroke-width:3;fill-opacity:1"/><line x1="20" y1="105" x2="400" y2="105" style="stroke:var(--mut);stroke-width:1.5" stroke-dasharray="5 4"/><path d="M20.0,105.0 L23.0,98.6 L26.0,93.7 L29.0,91.2 L32.0,91.7 L35.0,95.1 L38.0,100.7 L41.0,107.2 L44.0,113.2 L47.0,117.5 L50.0,119.0 L53.0,117.5 L56.0,113.2 L59.0,107.2 L62.0,100.7 L65.0,95.1 L68.0,91.7 L71.0,91.2 L74.0,93.7 L77.0,98.6 L80.0,105.0 L83.0,111.4 L86.0,116.3 L89.0,118.8 L92.0,118.3 L95.0,114.9 L98.0,109.3 L101.0,102.8 L104.0,96.8 L107.0,92.5 L110.0,91.0 L113.0,92.5 L116.0,96.8 L119.0,102.8 L122.0,109.3 L125.0,114.9 L128.0,118.3 L131.0,118.8 L134.0,116.3 L137.0,111.4 L140.0,105.0 L143.0,98.6 L146.0,93.7 L149.0,91.2" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><path d="M150.0,91.0 L153.0,92.0 L156.0,93.0 L159.0,93.8 L162.0,94.6 L165.0,95.4 L168.0,96.1 L171.0,96.7 L174.0,97.3 L177.0,97.9 L180.0,98.4 L183.0,98.9 L186.0,99.3 L189.0,99.7 L192.0,100.1 L195.0,100.5 L198.0,100.8 L201.0,101.1 L204.0,101.4 L207.0,101.6 L210.0,101.9 L213.0,102.1 L216.0,102.3 L219.0,102.5 L222.0,102.7 L225.0,102.9 L228.0,103.0 L231.0,103.2 L234.0,103.3 L237.0,103.4 L240.0,103.5 L243.0,103.6 L246.0,103.7 L249.0,103.8 L252.0,103.9 L255.0,104.0 L258.0,104.1 L261.0,104.1 L264.0,104.2 L267.0,104.2 L270.0,104.3" style="fill:none;stroke:var(--c2);stroke-width:3;fill-opacity:1"/><path d="M270.0,105.0 L273.0,103.2 L276.0,101.8 L279.0,101.0 L282.0,101.2 L285.0,102.2 L288.0,103.8 L291.0,105.6 L294.0,107.4 L297.0,108.6 L300.0,109.0 L303.0,108.6 L306.0,107.4 L309.0,105.6 L312.0,103.8 L315.0,102.2 L318.0,101.2 L321.0,101.0 L324.0,101.8 L327.0,103.2 L330.0,105.0 L333.0,106.8 L336.0,108.2 L339.0,109.0 L342.0,108.8 L345.0,107.8 L348.0,106.2 L351.0,104.4 L354.0,102.6 L357.0,101.4 L360.0,101.0 L363.0,101.4 L366.0,102.6 L369.0,104.4 L372.0,106.2 L375.0,107.8 L378.0,108.8 L381.0,109.0 L384.0,108.2 L387.0,106.8 L390.0,105.0 L393.0,103.2 L396.0,101.8 L399.0,101.0" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><line x1="150" y1="170" x2="270" y2="170" style="stroke:var(--mut);stroke-width:1.5" marker-end="url(#fa)"/><text x="210" y="186" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:400">a (độ dày rào)</text><text x="335" y="85" text-anchor="middle" style="fill:var(--c5);font-size:12px;font-weight:400">T: sóng yếu</text><text x="210" y="40" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">V₀</text></svg><figcaption>Rào mỏng: một phần sóng còn sót lại bên kia nên hạt xuyên hầm được.</figcaption></figure>
+
     <p>Nếu bức tường thế năng $V_0$ chỉ dày một đoạn hữu hạn từ $x = 0$ đến $x = a$ (còn phía bên kia bức tường $x > a$, thế năng lại trở về $V = 0$), thì tại mép phải $x = a$, biên độ hàm sóng vẫn còn khác không! Sóng thoát sang Vùng III ($x > a$) trở lại dạng sóng phẳng truyền đi: $\psi_3(x) = A_3 e^{jk_1 x}$ (không có sóng phản xạ $B_3 e^{-jk_1 x}$ trong Vùng III vì hạt đã vượt qua rào đi ra xa vô tận không có gì chắn để bật ngược lại).</p>
     <p>Khi $E \ll V_0$ (hoặc tích $k_2 a$ đủ lớn), <b>Hệ số truyền qua hay Xác suất xuyên hầm $T$ (Tunneling probability)</b> được tính bằng công thức xấp xỉ chuẩn:</p>
     <div class="f">
@@ -1614,10 +1700,18 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="tunnel-desc" class="box"></div>
       <svg id="tunnel-svg" viewBox="0 0 680 250"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul><li>Khi $E\lt V_0$, hàm sóng <b>không bằng $0$</b> trong vách mà <b>giảm theo hàm mũ</b>: $\psi\propto e^{-k_2x}$, với $k_2=\dfrac{\sqrt{2m(V_0-E)}}{\hbar}$. Mật độ xác suất giảm như $e^{-2k_2x}$.</li><li>Xuyên hầm qua rào dày $a$: $T\approx16\dfrac{E}{V_0}\left(1-\dfrac{E}{V_0}\right)e^{-2k_2a}$.</li><li>Rào <b>dày hơn</b> hoặc <b>cao hơn</b> thì $T$ giảm <b>cực nhanh</b> vì nằm trong số mũ.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Cả ba mục đều là 1 chiều. Mục 4 mở sang nguyên tử thật (3 chiều), nơi các mức rời rạc có tên gọi và quy tắc xếp electron.</div>
+</section>
 
   <section>
     <h2>4. Mở Rộng Cho Nguyên Tử 1-Electron (Hydro), Các Số Lượng Tử & Bảng Tuần Hoàn</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Thay vì tường nhân tạo, bây giờ electron bị giữ bởi lực hút của hạt nhân.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Giải thích vì sao Si có đúng 4 electron hóa trị (Buổi 1) và từ đó vì sao các mức rời rạc của từng nguyên tử sẽ tách thành dải ở Buổi 4.</div>
+
     <p>Trong nguyên tử Hydro, 1 hạt electron (điện tích $-e$) chuyển động trong không gian 3 chiều xung quanh 1 hạt nhân proton đứng yên (điện tích $+e$) dưới tác dụng của thế năng hút tĩnh điện Coulomb:</p>
     <div class="f">
       $$V(r) = -\frac{e^2}{4\pi\epsilon_0 r}$$
@@ -1625,6 +1719,10 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>4.1. Bốn Số Lượng Tử $(n, l, m, s)$ và Mức năng lượng Nguyên tử Hydro</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 196" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><text x="210" y="16" text-anchor="middle" style="fill:var(--ink);font-size:12.5px;font-weight:700">Cấu hình electron của Si: 1s² 2s² 2p⁶ 3s² 3p²</text><text x="40" y="69" text-anchor="end" style="fill:var(--c4);font-size:12px;font-weight:700">n=3</text><rect x="50" y="45" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><text x="67" y="67" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400">↑↓</text><text x="67" y="86" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:400"></text><rect x="130" y="45" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><text x="147" y="67" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400">↑</text><rect x="170" y="45" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><text x="187" y="67" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400">↑</text><rect x="210" y="45" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><text x="227" y="67" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400"></text><text x="40" y="119" text-anchor="end" style="fill:var(--ink);font-size:12px;font-weight:400">n=2</text><rect x="50" y="95" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--g);stroke-width:1.5;fill-opacity:1"/><text x="67" y="117" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400">↑↓</text><rect x="130" y="95" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--g);stroke-width:1.5;fill-opacity:1"/><text x="147" y="117" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400">↑↓</text><rect x="170" y="95" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--g);stroke-width:1.5;fill-opacity:1"/><text x="187" y="117" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400">↑↓</text><rect x="210" y="95" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--g);stroke-width:1.5;fill-opacity:1"/><text x="227" y="117" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400">↑↓</text><text x="40" y="169" text-anchor="end" style="fill:var(--ink);font-size:12px;font-weight:400">n=1</text><rect x="50" y="145" width="34" height="32" rx="4" style="fill:var(--card);stroke:var(--g);stroke-width:1.5;fill-opacity:1"/><text x="67" y="167" text-anchor="middle" style="fill:var(--ink);font-size:16px;font-weight:400">↑↓</text><text x="67" y="41" text-anchor="middle" style="fill:var(--mut);font-size:11px;font-weight:400">s</text><text x="170" y="41" text-anchor="middle" style="fill:var(--mut);font-size:11px;font-weight:400">p (3 ô)</text><text x="335" y="62" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">4 electron hóa trị</text><text x="335" y="82" text-anchor="middle" style="fill:var(--c4);font-size:12.5px;font-weight:400">= 3s² + 3p²</text><text x="335" y="128" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">mỗi ô tối đa</text><text x="335" y="146" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">2 electron ngược chiều</text><text x="335" y="164" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">(nguyên lý Pauli)</text></svg><figcaption>Si có 4 electron ở lớp ngoài cùng, chính là 4 electron hóa trị của Buổi 1.</figcaption></figure>
+
+        <figure class="fig fr"><svg viewBox="0 0 420 188" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="40" y1="30" x2="300" y2="30" style="stroke:var(--mut);stroke-width:1.5" stroke-dasharray="4 4"/><text x="305" y="34" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">E = 0 (tự do)</text><line x1="60" y1="170.0" x2="240" y2="170.0" style="stroke:var(--c1);stroke-width:3"/><text x="52" y="174.0" text-anchor="end" style="fill:var(--ink);font-size:12px;font-weight:400">n=1</text><text x="248" y="174.0" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:400">-13.60 eV</text><line x1="60" y1="65.0" x2="240" y2="65.0" style="stroke:var(--c1);stroke-width:3"/><text x="52" y="69.0" text-anchor="end" style="fill:var(--ink);font-size:12px;font-weight:400">n=2</text><text x="248" y="69.0" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:400">-3.40 eV</text><line x1="60" y1="45.55555555555556" x2="240" y2="45.55555555555556" style="stroke:var(--c1);stroke-width:3"/><text x="52" y="56.55555555555556" text-anchor="end" style="fill:var(--ink);font-size:12px;font-weight:400">n=3</text><text x="248" y="56.55555555555556" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:400">-1.51 eV</text><line x1="60" y1="38.75" x2="240" y2="38.75" style="stroke:var(--c1);stroke-width:3"/><text x="52" y="36.75" text-anchor="end" style="fill:var(--ink);font-size:12px;font-weight:400">n=4</text><text x="248" y="36.75" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:400">-0.85 eV</text><line x1="350" y1="60" x2="350" y2="166" style="stroke:var(--c4);stroke-width:2.5" marker-end="url(#fa)"/><text x="358" y="120" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:400">photon</text></svg><figcaption>Mức năng lượng hydro E = −13.6/n² eV: càng lên cao, các mức càng sát nhau.</figcaption></figure>
+
     <p>Vì thế năng $V(r)$ có tính đối xứng cầu, ta giải phương trình Schrödinger trong <b>hệ tọa độ cầu $(r, \theta, \phi)$</b> bằng phương pháp tách biến $\psi(r,\theta,\phi) = R(r)\cdot\Theta(\theta)\cdot\Phi(\phi)$. Điều kiện biên tuần hoàn và đơn trị của 3 hàm không gian sinh ra <b>3 số lượng tử hình học $(n, l, m)$</b>, cộng thêm tính chất tự quay nội tại của electron sinh ra <b>số lượng tử Spin $(s)$</b>:</p>
 
     <div class="box analogy">
@@ -1658,14 +1756,22 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="atom-desc" class="box"></div>
       <svg id="atom-svg" viewBox="0 0 680 250"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul><li>Mỗi trạng thái electron có <b>4 số lượng tử</b> $(n,l,m,s)$.</li><li><b>Nguyên lý Pauli:</b> không có hai electron nào cùng bộ 4 số lượng tử.</li><li>Mức năng lượng hydro $E_n=-\dfrac{13.6}{n^2}\text{ eV}$: chỉ phụ thuộc $n$, và cũng rời rạc.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Gom lại các công thức (Mục 5) rồi luyện bài tập (Mục 6).</div>
+</section>
 
   <section>
     <h2>5. Cẩm Nang Công Thức Trọng Tâm Buổi 3 (Giải Nghĩa Chi Tiết)</h2>
+    <div class="bridge"><b>Nối từ Mục 1–4:</b> Mỗi mục tương ứng một công thức.</div>
+
+    <div class="tw"><table><tr><th>Tình huống</th><th>Công thức</th></tr><tr><td>Electron tự do: sóng, $k$, $E$</td><td>Công thức 1</td></tr><tr><td>Giếng vô hạn: mức $E_n$, hàm sóng $\psi_n$</td><td>Công thức 2</td></tr><tr><td>Đâm xuyên vào bậc thế khi $E\lt V_0$</td><td>Công thức 3</td></tr><tr><td>Xuyên hầm qua rào dày $a$</td><td>Công thức 4</td></tr></table></div>
+
 
     <div class="formula-card">
       <h3>Công thức 1: Sóng phẳng của Electron tự do ($V(x) = 0$)</h3>
-      <div class="f">
+      <div class="f key">
         $$\Psi(x,t) = A\,e^{j(kx - \omega t)} \quad \Big| \quad v_p = \frac{\omega}{|k|} \quad \Big| \quad \lambda = \frac{2\pi}{|k|} \quad \Big| \quad p = \hbar k \quad \Big| \quad E = \frac{p^2}{2m} = \frac{\hbar^2 k^2}{2m}$$
       </div>
       <div class="formula-meta">
@@ -1685,7 +1791,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 2: Mức năng lượng & Hàm sóng trong Giếng thế Vô hạn 1 chiều</h3>
-      <div class="f">
+      <div class="f key">
         $$E_n = \frac{n^2 \pi^2 \hbar^2}{2 m a^2} = \frac{n^2 h^2}{8 m a^2} \qquad \text{và} \qquad \psi_n(x) = \sqrt{\frac{2}{a}}\sin\left(\frac{n\pi x}{a}\right) \quad (n = 1, 2, 3, \dots)$$
       </div>
       <div class="formula-meta">
@@ -1704,7 +1810,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 3: Độ suy giảm xác suất trong Bậc thế năng ($E < V_0$)</h3>
-      <div class="f">
+      <div class="f key">
         $$k_2 = \frac{\sqrt{2m(V_0 - E)}}{\hbar} \qquad \text{và} \qquad \frac{|\psi_2(x)|^2}{|\psi_2(0)|^2} = e^{-2k_2 x}$$
       </div>
       <div class="formula-meta">
@@ -1723,7 +1829,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 4: Xác suất Xuyên hầm (Tunneling Probability $T$) qua Rào thế hình chữ nhật</h3>
-      <div class="f">
+      <div class="f key">
         $$T \approx 16\left(\frac{E}{V_0}\right)\left(1 - \frac{E}{V_0}\right)e^{-2k_2 a} \qquad \text{với } k_2 = \frac{\sqrt{2 m^* (V_0 - E)}}{\hbar}$$
       </div>
       <div class="formula-meta">
@@ -1742,6 +1848,12 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
   <section>
     <h2>6. Bài Tập Trọng Tâm Buổi 3 (Có Gợi Ý & Giải Chi Tiết Từng Bước)</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> Mỗi câu luyện một môi trường $V(x)$.</div>
+
+    <div class="tw"><table><tr><th>Câu</th><th>Luyện</th><th>Công thức</th></tr><tr><td>1</td><td>Sóng phẳng electron tự do</td><td>1</td></tr><tr><td>2</td><td>Ba mức năng lượng đầu trong giếng vô hạn</td><td>2</td></tr><tr><td>3</td><td>Xác suất đâm xuyên vào bậc thế</td><td>3</td></tr><tr><td>4</td><td>Xuyên hầm trong GaAs và Si</td><td>4</td></tr><tr><td>5</td><td>Giếng bất đối xứng</td><td>Giải lại phương trình Schrödinger</td></tr></table></div>
+
+    <div class="box key"><b>Cách làm chung Buổi 3</b><ol><li>Xác định $V(x)$ ở từng miền.</li><li>Chọn dạng nghiệm (sóng chạy, sóng dừng, hay hàm mũ).</li><li>Đổi eV ↔ J và Å ↔ m trước khi thế số.</li><li>Kiểm tra: xác suất nằm trong khoảng $0$ đến $1$.</li></ol></div>
+
     <p>Dưới đây là toàn bộ 5 bài tập trong phiếu Bài tập Trọng tâm Buổi 3. Ở mỗi bước tính toán, thầy đều ghi chú thích màu xám giải thích rõ lý do biến đổi và cách đổi đơn vị để em tự học dễ dàng nhất.</p>
 
     <!-- CÂU 1 BUỔI 3 -->
@@ -2034,7 +2146,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <li><b>Đâm xuyên & Xuyên hầm lượng tử ($E < V_0$):</b> Hàm sóng không bằng $0$ ngay tại vách thế hữu hạn mà suy giảm theo hàm mũ $\psi_2(x) \propto e^{-k_2 x}$ (mật độ xác suất giảm theo $e^{-2k_2 x}$). Nếu rào đủ mỏng, hạt xuyên hầm qua rào với xác suất $T \approx 16\frac{E}{V_0}\left(1-\frac{E}{V_0}\right)e^{-2k_2 a}$.</li>
       <li><b>Nguyên tử 1-electron & Nguyên lý Pauli:</b> Mỗi trạng thái lượng tử được xác định bởi 4 số lượng tử $(n, l, m, s)$. Không có 2 electron nào trong cùng hệ có cùng bộ 4 số lượng tử $(n, l, m, s)$.</li>
     </ul>
-  </section>
+  
+    <div class="next"><b>Sang Buổi 4:</b> Mỗi nguyên tử riêng lẻ có mức năng lượng rời rạc. Trong tinh thể có $5\times10^{22}$ nguyên tử đặt sát nhau mỗi cm³, các mức này sẽ biến thành <b>dải năng lượng</b>.</div>
+</section>
 </template>
 
 <!-- =========================================================
@@ -2045,10 +2159,14 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     <span class="k b3">HỌC PHẦN ENP2209 · BUỔI 4</span>
     <h1>Lý Thuyết Lượng Tử Của Chất Rắn</h1>
     <p class="mut">Hiểu trọn vẹn sự hình thành Dải năng lượng (Energy Bands), Mô hình Kronig-Penney, Giản đồ E-k, Khối lượng hiệu dụng, Lỗ trống (Hole), Mật độ trạng thái g(E) và Thống kê Fermi-Dirac.</p>
+  
+    <div class="roadmap"><p><b>Bản đồ Buổi 4 — từ nguyên tử đến "chỗ ngồi" của electron</b></p><ol><li><b>Mục 1:</b> Nhiều nguyên tử đặt sát nhau → mức năng lượng tách thành <b>dải</b>, giữa các dải có <b>vùng cấm</b> (Kronig-Penney).</li><li><b>Mục 2:</b> Electron trong dải di chuyển thế nào: giản đồ $E$-$k$, khối lượng hiệu dụng, lỗ trống, phân loại vật liệu.</li><li><b>Mục 3:</b> Đếm: có bao nhiêu "chỗ ngồi" $g(E)$ và xác suất có người ngồi $f_F(E)$.</li></ol><p><b>Vì sao học?</b> Đây là buổi nền tảng. Buổi 5 và 6 chỉ nhân $g(E)\times f_F(E)$ để ra số electron và lỗ trống, từ đó tính được dòng điện.</p></div>
   </header>
 
   <section>
     <h2>1. Sự Hình Thành Dải Năng Lượng & Mô Hình Kronig-Penney</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Giải thích <i>vì sao</i> có vùng cấm $E_g$. Vùng cấm quyết định vật liệu là kim loại, bán dẫn hay cách điện.</div>
+
     <p>Ở Buổi 3, chúng ta đã biết một nguyên tử cô lập (đứng một mình) có các mức năng lượng hoàn toàn rời rạc ($1s, 2s, 2p, 3s, 3p\dots$). Nhưng trong một tinh thể Silicon thực tế (Buổi 1), có tới $5 \times 10^{22}$ nguyên tử đứng sát cạnh nhau trong mỗi $\text{cm}^3$! Khi các nguyên tử tiến lại gần nhau, điều kỳ diệu gì sẽ xảy ra với các mức năng lượng rời rạc đó?</p>
 
     <div class="box analogy">
@@ -2058,6 +2176,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>1.1. Sự tách mức năng lượng trong tinh thể Silicon</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 160" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><text x="80" y="20" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:700">1 nguyên tử</text><line x1="50" y1="55" x2="110" y2="55" style="stroke:var(--c1);stroke-width:3"/><line x1="50" y1="125" x2="110" y2="125" style="stroke:var(--c1);stroke-width:3"/><text x="210" y="20" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:700">2 nguyên tử</text><line x1="180" y1="49" x2="240" y2="49" style="stroke:var(--c1);stroke-width:3"/><line x1="180" y1="61" x2="240" y2="61" style="stroke:var(--c1);stroke-width:3"/><line x1="180" y1="119" x2="240" y2="119" style="stroke:var(--c1);stroke-width:3"/><line x1="180" y1="131" x2="240" y2="131" style="stroke:var(--c1);stroke-width:3"/><text x="340" y="20" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:700">N nguyên tử</text><rect x="310" y="39" width="60" height="32" rx="3" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.3"/><rect x="310" y="109" width="60" height="32" rx="3" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.3"/><text x="340" y="92" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">vùng cấm</text><line x1="15" y1="150" x2="15" y2="35" style="stroke:var(--mut);stroke-width:2" marker-end="url(#fa)"/><text x="12" y="28" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">E</text></svg><figcaption>Càng nhiều nguyên tử gần nhau, mỗi mức tách thành càng nhiều mức, cuối cùng thành dải.</figcaption></figure>
+
     <p>Mỗi nguyên tử Silicon ($Z=14$) có cấu hình $1s^2 2s^2 2p^6 \mathbf{3s^2 3p^2}$. Hai lớp trong cùng ($n=1, 2$) đã đầy kín. Ở lớp ngoài cùng ($n=3$): phân lớp $3s$ có $2$ chỗ ngồi (chứa 2 electron) và phân lớp $3p$ có $6$ chỗ ngồi (chỉ mới có 2 electron). Tổng cộng mỗi nguyên tử có <b>$8$ chỗ ngồi ngoài cùng nhưng chỉ có $4$ electron hóa trị</b>.</p>
     <p>Khi $N$ nguyên tử Silicon tiến lại gần nhau tới khoảng cách mạng cân bằng $r = a_0$:</p>
     <ul>
@@ -2068,6 +2188,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </ul>
 
     <h3>1.2. Mô hình Kronig-Penney & Nghiệm Đồ Thị (Trọng tâm Câu 1 & Câu 2)</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 184" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><path d="M20,130 H60 V70 H80 V130 H120 V70 H140 V130 H180 V70 H200 V130 H240 V70 H260 V130 H300 V70 H320 V130 H360 V70 H380 V130 H400" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><line x1="20" y1="155" x2="80" y2="155" style="stroke:var(--mut);stroke-width:1.5" marker-end="url(#fa)"/><text x="50" y="172" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:400">a (chu kỳ)</text><line x1="60" y1="52" x2="80" y2="52" style="stroke:var(--c4);stroke-width:1.5" marker-end="url(#fa)"/><text x="70" y="40" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">b</text><text x="10" y="75" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">V₀</text><text x="110" y="148" text-anchor="middle" style="fill:var(--mut);font-size:11px;font-weight:400">V = 0</text></svg><figcaption>Mô hình Kronig-Penney: giếng và rào lặp lại đều đặn như mạng tinh thể.</figcaption></figure>
+
     <p>Để chứng minh bằng toán học tại sao lại xuất hiện các <b>Dải cho phép (Allowed bands)</b> và <b>Dải cấm (Forbidden gaps)</b>, hai nhà vật lý Kronig và Penney (1931) đã mô hình hóa thế năng tuần hoàn của mạng tinh thể 1 chiều thành một chuỗi các <b>Giếng thế (bề rộng $a$, $V=0$)</b> xen kẽ với các <b>Rào thế (bề rộng $b$, chiều cao $V_0$)</b> lặp lại tuần hoàn với chu kỳ $a + b$.</p>
     <p>Theo <b>Định lý Bloch</b>, nghiệm hàm sóng của electron trong trường thế tuần hoàn có dạng sóng phẳng được điều biến biên độ theo chu kỳ mạng: $\psi(x) = u(x)e^{jkx}$. Khi áp dụng các điều kiện biên liên tục của $\psi$ và $\frac{d\psi}{dx}$ tại $x=0$ và $x=a$ (kết hợp lấy giới hạn rào thế hẹp $b \to 0, V_0 \to \infty$ sao cho tích $V_0 b$ hữu hạn), Kronig và Penney thu được phương trình siêu việt nổi tiếng:</p>
 
@@ -2103,15 +2225,25 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="kp-desc" class="box"></div>
       <svg id="kp-svg" viewBox="0 0 680 300"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul><li>Nhiều nguyên tử gần nhau → mỗi mức rời rạc tách thành một <b>dải gần như liên tục</b>.</li><li>Kronig-Penney: $P\'\dfrac{\sin\alpha a}{\alpha a}+\cos\alpha a=\cos ka$. Chỉ có nghiệm khi vế trái nằm trong $[-1,1]$.</li><li>Vế trái trong $[-1,1]$ → <b>dải cho phép</b>. Vượt ra ngoài → <b>dải cấm</b> $E_g$.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Đã có dải. Mục 2 hỏi: electron <i>trong</i> dải chuyển động thế nào?</div>
+</section>
 
   <section>
     <h2>2. Giản Đồ Không Gian $k$ ($E$-$k$), Khối Lượng Hiệu Dụng & Khái Niệm Lỗ Trống</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Mỗi dải có một quan hệ năng lượng - số sóng $E(k)$. Đồ thị của nó là giản đồ $E$-$k$.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Khối lượng hiệu dụng $m^*$ gói gọn tác dụng của cả mạng tinh thể, nên ta dùng $F=m^*a$ như với hạt tự do. Lỗ trống cho phép đếm dòng điện của dải gần đầy electron như một hạt dương.</div>
+
     <h3>2.1. Giản đồ $E$-$k$ Mở rộng và Rút gọn (Reduced-Zone Representation)</h3>
     <p>Đối với một electron hoàn toàn tự do trong chân không ($V=0$), mối liên hệ giữa năng lượng $E$ và số sóng $k$ là một <b>đường Parabol liên tục</b>: $E = \frac{p^2}{2m_0} = \frac{\hbar^2 k^2}{2m_0}$. Nhưng khi electron di chuyển trong mạng tinh thể tuần hoàn (Mô hình Kronig-Penney), đường Parabol liên tục này bị <b>bẻ gãy tại các biên $k = \pm\frac{\pi}{a}, \pm\frac{2\pi}{a}, \pm\frac{3\pi}{a}\dots$</b> tạo ra các khe năng lượng cấm (Forbidden gaps)!</p>
     <p>Hơn nữa, vì hàm $\cos(ka) = \cos(ka \pm 2n\pi)$ tuần hoàn theo chu kỳ $\frac{2\pi}{a}$, ta có thể dịch chuyển (tịnh tiến) tất cả các nhánh đồ thị ở xa một đoạn bội số của $\frac{2\pi}{a}$ để gom toàn bộ về nằm gọn trong khoảng trung tâm $\mathbf{-\frac{\pi}{a} \le k \le +\frac{\pi}{a}}$. Cách vẽ gom gọn này gọi là <b>Giản đồ vùng rút gọn (Reduced $k$-space diagram hay Vùng Brillouin thứ nhất)</b>.</p>
 
     <h3>2.2. Khối lượng Hiệu dụng ($m^*$) & Vận tốc Hạt dẫn trên Giản đồ $E$-$k$</h3>
+        <figure class="fig fr"><svg viewBox="0 0 420 196" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="40" y1="172" x2="400" y2="172" style="stroke:var(--mut);stroke-width:1.5"/><line x1="210" y1="20" x2="210" y2="172" style="stroke:var(--mut);stroke-width:1.5"/><path d="M39.5,40.0 L45.0,40.2 L50.4,41.0 L55.8,42.3 L61.2,44.2 L66.6,46.5 L72.0,49.3 L77.4,52.6 L82.8,56.4 L88.2,60.5 L93.7,64.9 L99.1,69.6 L104.5,74.6 L109.9,79.8 L115.3,85.2 L120.7,90.6 L126.1,96.1 L131.5,101.6 L136.9,107.0 L142.4,112.3 L147.8,117.5 L153.2,122.4 L158.6,127.0 L164.0,131.3 L169.4,135.2 L174.8,138.8 L180.2,141.9 L185.6,144.5 L191.1,146.7 L196.5,148.3 L201.9,149.4 L207.3,149.9 L212.7,149.9 L218.1,149.4 L223.5,148.3 L228.9,146.7 L234.4,144.5 L239.8,141.9 L245.2,138.8 L250.6,135.2 L256.0,131.3 L261.4,127.0 L266.8,122.4 L272.2,117.5 L277.6,112.3 L283.1,107.0 L288.5,101.6 L293.9,96.1 L299.3,90.6 L304.7,85.2 L310.1,79.8 L315.5,74.6 L320.9,69.6 L326.3,64.9 L331.8,60.5 L337.2,56.4 L342.6,52.6 L348.0,49.3 L353.4,46.5 L358.8,44.2 L364.2,42.3 L369.6,41.0 L375.0,40.2 L380.5,40.0" style="fill:none;stroke:var(--c5);stroke-width:3.5;fill-opacity:1"/><circle cx="210.0" cy="150" r="6" style="fill:var(--c2);stroke:var(--c2);stroke-width:2;fill-opacity:1"/><text x="210.0" y="188" text-anchor="middle" style="fill:var(--c2);font-size:12px;font-weight:700">đáy: m* &gt; 0</text><line x1="244.9352167814933" y1="149.92967649621704" x2="304.9352167814933" y2="79.92967649621704" style="stroke:var(--c4);stroke-width:3" marker-end="url(#fa)"/><text x="334.9352167814933" y="119.92967649621704" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:400">dốc lên: v &gt; 0</text><circle cx="380.0" cy="40" r="6" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:1"/><text x="372.0" y="30" text-anchor="end" style="fill:var(--c1);font-size:12px;font-weight:700">đỉnh: m* &lt; 0</text><text x="48" y="26" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">E</text><text x="396" y="168" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">k</text></svg><figcaption>Độ dốc cho vận tốc, độ cong cho khối lượng hiệu dụng.</figcaption></figure>
+
     <p>Trong mạng tinh thể, một hạt electron không chỉ chịu lực của điện trường ngoài ($F_{\text{ext}} = -e\mathcal{E}$) mà còn chịu hàng tỷ lực đẩy/hút nội tại ($F_{\text{int}}$) từ các ion nguyên tử nút mạng: $F_{\text{total}} = F_{\text{ext}} + F_{\text{int}} = m_0 a$. Làm sao tính được gia tốc $a$ khi không thể cộng hết hàng tỷ lực nội tại $F_{\text{int}}$?</p>
 
     <div class="box analogy">
@@ -2139,6 +2271,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>2.3. Khái niệm Lỗ trống (Hole) — Hạt mang điện tích dương $+e$</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 160" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><circle cx="50" cy="85" r="14" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="100" cy="85" r="14" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="150" cy="85" r="14" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="200" cy="85" r="14" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="250" cy="85" r="14" style="fill:none;stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><circle cx="300" cy="85" r="14" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><circle cx="350" cy="85" r="14" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><path d="M200,62 Q225,30 250,62" style="fill:none;stroke:var(--c1);stroke-width:2.5;fill-opacity:1" marker-end="url(#fa)"/><text x="225" y="28" text-anchor="middle" style="fill:var(--c1);font-size:12px;font-weight:400">electron nhảy sang phải</text><line x1="250" y1="125" x2="200" y2="125" style="stroke:var(--c4);stroke-width:2.5" marker-end="url(#fa)"/><text x="225" y="146" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">lỗ trống dịch sang trái</text><text x="250" y="68" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:400"></text><text x="250" y="110" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:400"></text></svg><figcaption>Electron di chuyển lấp chỗ trống thì "lỗ trống" dời đi theo chiều ngược lại, như hạt mang điện dương.</figcaption></figure>
+
     <p>Khi nhiệt độ $T > 0\text{ K}$, một số electron ở dải hóa trị hấp thụ năng lượng nhiệt, bứt đứt liên kết cộng hóa trị để nhảy vọt qua vùng cấm $E_g$ lên dải dẫn, để lại một <b>chỗ trống (empty state)</b> trong dải hóa trị. Khi có điện trường ngoài tác dụng, các electron hóa trị lân cận lần lượt nhảy sang lấp vào chỗ trống đó, làm cho chỗ trống di chuyển ngược chiều với electron!</p>
     <p>Đặc biệt, các trạng thái ở gần <b>đỉnh của dải hóa trị ($E_v$)</b> có dạng Parabol úp ngược ($E - E_v = -C_2 k^2$), nghĩa là electron ở đó có <b>khối lượng hiệu dụng âm ($m^* = -|m^*| < 0$)</b>. Khi đặt dưới điện trường $\mathcal{E}$, gia tốc của electron này là:
       $$a = \frac{-e\mathcal{E}}{-|m^*|} = \frac{+e\mathcal{E}}{|m^*|} = \frac{+e\mathcal{E}}{m_p^*}$$
@@ -2169,6 +2303,10 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>2.5. Phân loại Kim loại, Bán dẫn, Điện môi & Bán dẫn Vùng cấm Thẳng vs. Xiên (Minh họa Câu 5)</h3>
+        <figure class="fig fl"><svg viewBox="0 0 420 182" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><path d="M30.0,76.8 L33.0,77.6 L36.0,78.5 L39.0,79.3 L42.0,80.1 L45.0,80.8 L48.0,81.5 L51.0,82.2 L54.0,82.8 L57.0,83.4 L60.0,84.0 L63.0,84.5 L66.0,85.0 L69.0,85.4 L72.0,85.8 L75.0,86.2 L78.0,86.5 L81.0,86.8 L84.0,87.1 L87.0,87.4 L90.0,87.5 L93.0,87.7 L96.0,87.8 L99.0,87.9 L102.0,88.0 L105.0,88.0 L108.0,88.0 L111.0,87.9 L114.0,87.8 L117.0,87.7 L120.0,87.5 L123.0,87.4 L126.0,87.1 L129.0,86.8 L132.0,86.5 L135.0,86.2 L138.0,85.8 L141.0,85.4 L144.0,85.0 L147.0,84.5 L150.0,84.0 L153.0,83.4 L156.0,82.8 L159.0,82.2 L162.0,81.5 L165.0,80.8 L168.0,80.1 L171.0,79.3 L174.0,78.5 L177.0,77.6 L180.0,76.8" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><path d="M30.0,129.2 L33.0,128.4 L36.0,127.5 L39.0,126.7 L42.0,125.9 L45.0,125.2 L48.0,124.5 L51.0,123.8 L54.0,123.2 L57.0,122.6 L60.0,122.0 L63.0,121.5 L66.0,121.0 L69.0,120.6 L72.0,120.2 L75.0,119.8 L78.0,119.5 L81.0,119.2 L84.0,118.9 L87.0,118.6 L90.0,118.5 L93.0,118.3 L96.0,118.2 L99.0,118.1 L102.0,118.0 L105.0,118.0 L108.0,118.0 L111.0,118.1 L114.0,118.2 L117.0,118.3 L120.0,118.5 L123.0,118.6 L126.0,118.9 L129.0,119.2 L132.0,119.5 L135.0,119.8 L138.0,120.2 L141.0,120.6 L144.0,121.0 L147.0,121.5 L150.0,122.0 L153.0,122.6 L156.0,123.2 L159.0,123.8 L162.0,124.5 L165.0,125.2 L168.0,125.9 L171.0,126.7 L174.0,127.5 L177.0,128.4 L180.0,129.2" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><line x1="105" y1="112" x2="105" y2="94" style="stroke:var(--c4);stroke-width:2.5" marker-end="url(#fa)"/><text x="105" y="168" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">Thẳng (GaAs)</text><path d="M240.0,58.6 L243.0,59.8 L246.0,61.1 L249.0,62.3 L252.0,63.4 L255.0,64.6 L258.0,65.7 L261.0,66.8 L264.0,67.8 L267.0,68.8 L270.0,69.8 L273.0,70.8 L276.0,71.8 L279.0,72.7 L282.0,73.6 L285.0,74.5 L288.0,75.3 L291.0,76.1 L294.0,76.9 L297.0,77.7 L300.0,78.4 L303.0,79.1 L306.0,79.8 L309.0,80.4 L312.0,81.1 L315.0,81.7 L318.0,82.2 L321.0,82.8 L324.0,83.3 L327.0,83.8 L330.0,84.2 L333.0,84.7 L336.0,85.1 L339.0,85.5 L342.0,85.8 L345.0,86.2 L348.0,86.5 L351.0,86.7 L354.0,87.0 L357.0,87.2 L360.0,87.4 L363.0,87.6 L366.0,87.7 L369.0,87.8 L372.0,87.9 L375.0,88.0 L378.0,88.0 L381.0,88.0 L384.0,88.0 L387.0,87.9 L390.0,87.8" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><path d="M240.0,129.2 L243.0,128.4 L246.0,127.5 L249.0,126.7 L252.0,125.9 L255.0,125.2 L258.0,124.5 L261.0,123.8 L264.0,123.2 L267.0,122.6 L270.0,122.0 L273.0,121.5 L276.0,121.0 L279.0,120.6 L282.0,120.2 L285.0,119.8 L288.0,119.5 L291.0,119.2 L294.0,118.9 L297.0,118.6 L300.0,118.5 L303.0,118.3 L306.0,118.2 L309.0,118.1 L312.0,118.0 L315.0,118.0 L318.0,118.0 L321.0,118.1 L324.0,118.2 L327.0,118.3 L330.0,118.5 L333.0,118.6 L336.0,118.9 L339.0,119.2 L342.0,119.5 L345.0,119.8 L348.0,120.2 L351.0,120.6 L354.0,121.0 L357.0,121.5 L360.0,122.0 L363.0,122.6 L366.0,123.2 L369.0,123.8 L372.0,124.5 L375.0,125.2 L378.0,125.9 L381.0,126.7 L384.0,127.5 L387.0,128.4 L390.0,129.2" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><line x1="315" y1="112" x2="380" y2="94" style="stroke:var(--c4);stroke-width:2.5" marker-end="url(#fa)"/><text x="315" y="168" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">Xiên (Si)</text><text x="315" y="140" text-anchor="middle" style="fill:var(--c4);font-size:11px;font-weight:400">cần thêm phonon</text><text x="105" y="60" text-anchor="middle" style="fill:var(--c1);font-size:11px;font-weight:400">dải dẫn</text><text x="105" y="150" text-anchor="middle" style="fill:var(--c5);font-size:11px;font-weight:400">dải hóa trị</text></svg><figcaption>Vùng cấm thẳng: electron nhảy thẳng đứng (phát sáng dễ, dùng cho LED/laser).</figcaption></figure>
+
+    <figure class="fig fr"><svg viewBox="0 0 420 190" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="20" y="30" width="100" height="70" rx="3" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.25"/><rect x="20" y="70" width="100" height="70" rx="3" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.25"/><text x="70" y="176" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">Kim loại</text><rect x="160" y="30" width="100" height="48" rx="3" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.25"/><rect x="160" y="108" width="100" height="48" rx="3" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.25"/><text x="210" y="176" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">Bán dẫn</text><rect x="300" y="25" width="100" height="30" rx="3" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.25"/><rect x="300" y="130" width="100" height="30" rx="3" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.25"/><text x="350" y="176" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">Điện môi</text><text x="70" y="105" text-anchor="middle" style="fill:var(--c4);font-size:11px;font-weight:400">chồng lấn</text><text x="210" y="98" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">E_g ≈ 1 eV</text><text x="350" y="98" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">E_g rất lớn</text></svg><figcaption>Phân loại vật liệu theo vùng cấm.</figcaption></figure>
+
     <ul>
       <li><b>Phân loại theo cấu trúc vùng ở $T = 0\text{ K}$:</b><br>
         • <b>Chất cách điện / Điện môi (Insulator):</b> Dải hóa trị đầy kín, dải dẫn trống rỗng, vùng cấm cực lớn ($E_g \approx 3.5 - 6.0\text{ eV}$). Nhiệt độ phòng không thể kích thích electron nhảy qua nổi.<br>
@@ -2190,16 +2328,26 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="bg-desc" class="box"></div>
       <svg id="bg-svg" viewBox="0 0 680 250"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul><li>Vận tốc: $v=\dfrac1\hbar\dfrac{dE}{dk}$ (theo <b>độ dốc</b>).</li><li>Khối lượng hiệu dụng: $\dfrac1{m^*}=\dfrac1{\hbar^2}\dfrac{d^2E}{dk^2}$ (theo <b>độ cong</b>). Cong lên ($\cup$): $m^*\gt0$. Cong xuống ($\cap$): $m^*\lt0$. Parabol càng rộng thì $m^*$ càng lớn.</li><li><b>Lỗ trống:</b> chỗ trống electron ở đỉnh dải hóa trị, hành xử như hạt mang điện $+e$ và $m_p^*\gt0$.</li><li>GaAs: vùng cấm <b>thẳng</b>, $E_g=1.42\text{ eV}$. Si: vùng cấm <b>xiên</b>, $E_g=1.12\text{ eV}$.</li><li>Photon kích thích electron qua vùng cấm khi $h\nu\ge E_g$, tức $\lambda_{\max}\approx\dfrac{1240}{E_g[\text{eV}]}\text{ nm}$.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Ta biết hình dạng dải, nhưng chưa biết có <i>bao nhiêu</i> electron. Mục 3 đếm.</div>
+</section>
 
   <section>
     <h2>3. Hàm Mật Độ Trạng Thái $g(E)$ & Cơ Học Thống Kê Fermi-Dirac</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Để có dòng điện, cần biết số hạt dẫn. Mục này cho hai nguyên liệu để đếm.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Số electron trong dải dẫn = (số chỗ ngồi tại mỗi mức) × (xác suất chỗ đó có người). Hai thừa số này chính là $g(E)$ và $f_F(E)$, và Buổi 5 chỉ việc nhân chúng.</div>
+
     <p>Để tính được dòng điện chạy trong linh kiện bán dẫn, người kỹ sư bắt buộc phải đếm được có bao nhiêu hạt electron tự do trong dải dẫn và bao nhiêu lỗ trống trong dải hóa trị trên mỗi $\text{cm}^3$. Để đếm số hạt đó, ta dùng nguyên lý <b>"Rạp hát Lượng tử"</b> gồm 2 thành phần:</p>
     <div class="f">
       $$\text{Mật độ hạt tại mức năng lượng } E = \underbrace{g(E)}_{\text{Số ghế ngồi có sẵn}} \times \underbrace{f_F(E)}_{\text{Xác suất ghế có người ngồi}}$$
     </div>
 
     <h3>3.1. Xây dựng Hàm Mật độ Trạng thái $g(E)$ (Density of States)</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 194" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="210" y1="20" x2="210" y2="170" style="stroke:var(--mut);stroke-width:1.5"/><line x1="210" y1="170" x2="400" y2="170" style="stroke:var(--mut);stroke-width:1.5"/><polygon points="210.0,88.0 210.0,88.0 223.0,87.0 228.4,86.0 232.5,85.0 236.0,84.0 239.1,83.0 241.8,82.0 244.4,81.0 246.8,80.0 249.0,79.0 251.1,78.0 253.1,77.0 255.0,76.0 256.9,75.0 258.6,74.0 260.3,73.0 262.0,72.0 263.6,71.0 265.2,70.0 266.7,69.0 268.1,68.0 269.6,67.0 271.0,66.0 272.3,65.0 273.7,64.0 275.0,63.0 276.3,62.0 277.5,61.0 278.8,60.0 280.0,59.0 281.2,58.0 282.4,57.0 283.5,56.0 284.7,55.0 285.8,54.0 286.9,53.0 288.0,52.0 289.1,51.0 290.1,50.0 291.2,49.0 292.2,48.0 293.2,47.0 294.2,46.0 295.2,45.0 296.2,44.0 297.2,43.0 298.2,42.0 299.1,41.0 300.1,40.0 301.0,39.0 301.9,38.0 302.8,37.0 303.7,36.0 304.6,35.0 305.5,34.0 306.4,33.0 307.3,32.0 308.1,31.0 309.0,30.0 309.9,29.0 310.7,28.0 311.5,27.0 312.4,26.0 313.2,25.0 314.0,24.0 314.8,23.0 210.0,23.0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.25"/><path d="M210.0,88.0 L223.0,87.0 L228.4,86.0 L232.5,85.0 L236.0,84.0 L239.1,83.0 L241.8,82.0 L244.4,81.0 L246.8,80.0 L249.0,79.0 L251.1,78.0 L253.1,77.0 L255.0,76.0 L256.9,75.0 L258.6,74.0 L260.3,73.0 L262.0,72.0 L263.6,71.0 L265.2,70.0 L266.7,69.0 L268.1,68.0 L269.6,67.0 L271.0,66.0 L272.3,65.0 L273.7,64.0 L275.0,63.0 L276.3,62.0 L277.5,61.0 L278.8,60.0 L280.0,59.0 L281.2,58.0 L282.4,57.0 L283.5,56.0 L284.7,55.0 L285.8,54.0 L286.9,53.0 L288.0,52.0 L289.1,51.0 L290.1,50.0 L291.2,49.0 L292.2,48.0 L293.2,47.0 L294.2,46.0 L295.2,45.0 L296.2,44.0 L297.2,43.0 L298.2,42.0 L299.1,41.0 L300.1,40.0 L301.0,39.0 L301.9,38.0 L302.8,37.0 L303.7,36.0 L304.6,35.0 L305.5,34.0 L306.4,33.0 L307.3,32.0 L308.1,31.0 L309.0,30.0 L309.9,29.0 L310.7,28.0 L311.5,27.0 L312.4,26.0 L313.2,25.0 L314.0,24.0 L314.8,23.0" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><path d="M210.0,132.0 L223.0,133.0 L228.4,134.0 L232.5,135.0 L236.0,136.0 L239.1,137.0 L241.8,138.0 L244.4,139.0 L246.8,140.0 L249.0,141.0 L251.1,142.0 L253.1,143.0 L255.0,144.0 L256.9,145.0 L258.6,146.0 L260.3,147.0 L262.0,148.0 L263.6,149.0 L265.2,150.0 L266.7,151.0 L268.1,152.0 L269.6,153.0 L271.0,154.0 L272.3,155.0 L273.7,156.0 L275.0,157.0 L276.3,158.0 L277.5,159.0 L278.8,160.0 L280.0,161.0 L281.2,162.0 L282.4,163.0 L283.5,164.0 L284.7,165.0 L285.8,166.0 L286.9,167.0 L288.0,168.0 L289.1,169.0" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><text x="205" y="92" text-anchor="end" style="fill:var(--c1);font-size:12px;font-weight:700">Ec</text><text x="205" y="136" text-anchor="end" style="fill:var(--c5);font-size:12px;font-weight:700">Ev</text><text x="300" y="114" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:400">vùng cấm: g = 0</text><text x="395" y="185" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">g(E)</text><text x="205" y="20" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">E</text></svg><figcaption>g(E) tỉ lệ √(E − Ec): càng lên cao, chỗ ngồi càng nhiều.</figcaption></figure>
+
     <p>Bằng cách nhốt electron vào một khối lập phương giếng thế 3 chiều cạnh $a$, các số sóng bị lượng tử hóa theo $k^2 = k_x^2 + k_y^2 + k_z^2 = (n_x^2 + n_y^2 + n_z^2)\left(\frac{\pi}{a}\right)^2$. Mỗi trạng thái lượng tử chiếm một "ô thể tích nhỏ" là $\left(\frac{\pi}{a}\right)^3$ trong góc phần tám dương ($\frac{1}{8}$ hình cầu) của không gian $k$, và mỗi trạng thái chứa được $2$ electron có Spin ngược chiều nhau ($\uparrow\downarrow$). Từ đó, mật độ trạng thái trên một đơn vị thể tích và một đơn vị năng lượng (số trạng thái trên $\text{m}^{-3}\cdot\text{J}^{-1}$ hoặc $\text{cm}^{-3}\cdot\text{eV}^{-1}$) có dạng hàm căn bậc hai:</p>
     <div class="f">
       $$\text{Hạt tự do: } g(E) = \frac{4\pi(2m)^{3/2}}{h^3}\sqrt{E} \quad \Big| \quad \text{Dải dẫn: } \mathbf{g_c(E) = \frac{4\pi(2m_n^*)^{3/2}}{h^3}\sqrt{E - E_c}} \quad (E \ge E_c)$$
@@ -2207,6 +2355,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>3.2. Ba Định luật Thống kê & Hàm phân bố Xác suất Fermi-Dirac $f_F(E)$</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 180" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="40" y1="150" x2="390" y2="150" style="stroke:var(--mut);stroke-width:1.5"/><line x1="40" y1="150" x2="40" y2="30" style="stroke:var(--mut);stroke-width:1.5"/><line x1="215" y1="30" x2="215" y2="150" style="stroke:var(--g);stroke-width:1.5" stroke-dasharray="4 4"/><path d="M40,40 H215 V150 H390" style="fill:none;stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><path d="M40.0,40.0 L44.0,40.0 L48.0,40.0 L52.0,40.0 L56.0,40.0 L60.0,40.0 L64.0,40.0 L68.0,40.0 L72.0,40.0 L76.0,40.0 L80.0,40.1 L84.0,40.1 L88.0,40.1 L92.0,40.1 L96.0,40.1 L100.0,40.2 L104.0,40.2 L108.0,40.3 L112.0,40.4 L116.0,40.4 L120.0,40.6 L124.0,40.7 L128.0,40.9 L132.0,41.1 L136.0,41.3 L140.0,41.7 L144.0,42.1 L148.0,42.6 L152.0,43.2 L156.0,44.0 L160.0,44.9 L164.0,46.1 L168.0,47.5 L172.0,49.2 L176.0,51.3 L180.0,53.8 L184.0,56.7 L188.0,60.1 L192.0,64.0 L196.0,68.4 L200.0,73.3 L204.0,78.7 L208.0,84.4 L212.0,90.4 L216.0,96.5 L220.0,102.6 L224.0,108.5 L228.0,114.0 L232.0,119.2 L236.0,123.9 L240.0,128.0 L244.0,131.7 L248.0,134.8 L252.0,137.5 L256.0,139.8 L260.0,141.7 L264.0,143.2 L268.0,144.5 L272.0,145.6 L276.0,146.4 L280.0,147.1 L284.0,147.7 L288.0,148.1 L292.0,148.5 L296.0,148.8 L300.0,149.0 L304.0,149.2 L308.0,149.4 L312.0,149.5 L316.0,149.6 L320.0,149.7 L324.0,149.7 L328.0,149.8 L332.0,149.8 L336.0,149.9 L340.0,149.9 L344.0,149.9 L348.0,149.9 L352.0,149.9 L356.0,150.0 L360.0,150.0 L364.0,150.0 L368.0,150.0 L372.0,150.0 L376.0,150.0 L380.0,150.0 L384.0,150.0 L388.0,150.0" style="fill:none;stroke:var(--c5);stroke-width:3.5;fill-opacity:1"/><circle cx="215" cy="95" r="5" style="fill:var(--c2);stroke:var(--c2);stroke-width:2;fill-opacity:1"/><text x="222" y="92" text-anchor="start" style="fill:var(--c2);font-size:13px;font-weight:700">½</text><text x="215" y="168" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">E_F</text><text x="36" y="45" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">1</text><text x="36" y="154" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">0</text><text x="120" y="32" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:400">T = 0: bậc thang</text><text x="320" y="70" text-anchor="middle" style="fill:var(--c5);font-size:12px;font-weight:400">T > 0: mờ dần</text></svg><figcaption>Hàm Fermi-Dirac f(E): xác suất mức năng lượng E có electron.</figcaption></figure>
+
     <p>Trong tự nhiên có 3 quy luật phân bố hạt vào các mức năng lượng: (1) <b>Maxwell-Boltzmann</b> (dành cho các phân tử khí cổ điển phân biệt được và không giới hạn số hạt trong 1 trạng thái); (2) <b>Bose-Einstein</b> (dành cho các hạt Boson như Photon, Phonon không tuân theo nguyên lý Pauli); và (3) <b>Fermi-Dirac</b> (dành riêng cho các hạt <b>Electron</b> không phân biệt được và <b>tuân thủ nghiêm ngặt Nguyên lý loại trừ Pauli</b> — tối đa 1 hạt trên 1 trạng thái lượng tử!).</p>
     <p>Xác suất để một trạng thái lượng tử ở mức năng lượng $E$ có electron chiếm giữ được cho bởi <b>Hàm phân bố Fermi-Dirac</b>:</p>
     <div class="f">
@@ -2245,14 +2395,22 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="fd-desc" class="box"></div>
       <svg id="fd-svg" viewBox="0 0 680 250"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul><li>$g_c(E)\propto\sqrt{E-E_c}$: số <b>chỗ ngồi</b> trên mỗi mức năng lượng.</li><li>$f_F(E)=\dfrac1{1+e^{(E-E_F)/kT}}$: xác suất chỗ đó <b>có electron</b>. Bằng $\frac12$ tại $E=E_F$.</li><li>Khi $E-E_F\ge3kT$: $f_F\approx e^{-(E-E_F)/kT}$ (<b>xấp xỉ Boltzmann</b>). Ở $300\text{ K}$, $kT\approx0.0259\text{ eV}$.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Gom công thức (Mục 4) rồi luyện bài (Mục 5). Sau đó Buổi 5 nhân $g\times f$ để tính nồng độ hạt dẫn.</div>
+</section>
 
   <section>
     <h2>4. Cẩm Nang Công Thức Trọng Tâm Buổi 4 (Giải Nghĩa Chi Tiết)</h2>
+    <div class="bridge"><b>Nối từ Mục 1–3:</b> Bảng chọn công thức.</div>
+
+    <div class="tw"><table><tr><th>Đề bài hỏi gì?</th><th>Công thức</th></tr><tr><td>Dải cho phép, dải cấm theo $\alpha a$</td><td>Công thức 1</td></tr><tr><td>Vận tốc, $m^*$ từ giản đồ $E$-$k$</td><td>Công thức 2</td></tr><tr><td>Tần số tối thiểu, bước sóng tối đa của photon</td><td>Công thức 3</td></tr><tr><td>Số chỗ ngồi $g(E)$, xác suất $f_F(E)$</td><td>Công thức 4</td></tr></table></div>
+
 
     <div class="formula-card">
       <h3>Công thức 1: Phương trình Kronig-Penney & Liên hệ giữa $\alpha a$ và Năng lượng $E$</h3>
-      <div class="f">
+      <div class="f key">
         $$f(\alpha a) = P'\frac{\sin(\alpha a)}{\alpha a} + \cos(\alpha a) = \cos(ka) \qquad \text{với } \alpha = \frac{\sqrt{2mE}}{\hbar} \implies \mathbf{E = \frac{(\alpha a)^2 \hbar^2}{2 m a^2}}$$
       </div>
       <div class="formula-meta">
@@ -2272,7 +2430,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 2: Vận tốc Hạt dẫn ($v$) & Khối lượng Hiệu dụng ($m^*$) từ Giản đồ $E$-$k$</h3>
-      <div class="f">
+      <div class="f key">
         $$v = \frac{1}{\hbar}\frac{dE}{dk} \qquad \text{và} \qquad \frac{1}{m^*} = \frac{1}{\hbar^2}\frac{d^2 E}{dk^2} \implies m^* = \hbar^2 \left(\frac{d^2 E}{dk^2}\right)^{-1}$$
       </div>
       <div class="formula-meta">
@@ -2291,7 +2449,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 3: Tương tác Quang - Bán dẫn (Tần số tối thiểu $\nu_{\min}$ & Bước sóng tối đa $\lambda_{\max}$)</h3>
-      <div class="f">
+      <div class="f key">
         $$E_{\text{photon}} = h\nu = \frac{hc}{\lambda} \ge E_g \implies \mathbf{\nu_{\min} = \frac{E_g}{h}} \qquad \text{và} \qquad \mathbf{\lambda_{\max} = \frac{c}{\nu_{\min}} = \frac{hc}{E_g} \approx \frac{1.24\text{ [\mu m}\cdot\text{eV]}}{E_g\text{ [eV]}}}$$
       </div>
       <div class="formula-meta">
@@ -2309,7 +2467,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 4: Hàm Mật độ Trạng thái $g(E)$ & Hàm Phân bố Fermi-Dirac $f_F(E)$</h3>
-      <div class="f">
+      <div class="f key">
         $$g_c(E) = \frac{4\pi(2m_n^*)^{3/2}}{h^3}\sqrt{E - E_c} \quad \Big| \quad f_F(E) = \frac{1}{1 + \exp\left(\frac{E - E_F}{kT}\right)} \approx \exp\left(-\frac{E - E_F}{kT}\right)$$
       </div>
       <div class="formula-meta">
@@ -2329,6 +2487,12 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
   <section>
     <h2>5. Bài Tập Trọng Tâm Buổi 4 (Có Gợi Ý & Giải Chi Tiết Từng Bước)</h2>
+    <div class="bridge"><b>Nối từ Mục 4:</b> Mỗi câu luyện một công thức.</div>
+
+    <div class="tw"><table><tr><th>Câu</th><th>Luyện</th><th>Công thức</th></tr><tr><td>1–2</td><td>Đồ thị và độ rộng dải năng lượng cho phép (Kronig-Penney)</td><td>1</td></tr><tr><td>3</td><td>So sánh $m^*$ trên giản đồ $E$-$k$</td><td>2</td></tr><tr><td>4</td><td>Dấu của $m^*$ và chiều vận tốc tại 4 điểm</td><td>2</td></tr><tr><td>5</td><td>Tần số tối thiểu, bước sóng tối đa của photon</td><td>3</td></tr></table></div>
+
+    <div class="box key"><b>Mẹo chung Buổi 4</b><ul><li>Đọc <b>độ dốc</b> để biết vận tốc, đọc <b>độ cong</b> để biết $m^*$.</li><li>Đổi eV ↔ J khi dùng $E=h\nu$.</li></ul></div>
+
     <p>Dưới đây là toàn bộ 5 bài tập trong phiếu Bài tập Trọng tâm Buổi 4. Em hãy bấm vào <b>Xem Gợi ý</b> để nắm phương pháp trước, sau đó mở <b>Xem Lời giải chi tiết</b> với các dòng giải thích màu xám ở từng bước biến đổi.</p>
 
     <!-- CÂU 1 BUỔI 4 -->
@@ -2650,7 +2814,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <li><b>Lỗ trống (Hole) & Phân loại vùng cấm:</b> Trạng thái trống electron ở đỉnh dải hóa trị hành xử như một hạt mang điện tích dương $+e$ và khối lượng dương $m_p^*$. $\text{GaAs}$ có vùng cấm thẳng ($E_g = 1.42\text{ eV}$), còn $\text{Si}$ có vùng cấm xiên ($E_g = 1.12\text{ eV}$).</li>
       <li><b>Mật độ trạng thái $g(E)$ & Phân bố Fermi-Dirac $f_F(E)$:</b> $g_c(E) \propto \sqrt{E - E_c}$ là số chỗ ngồi lượng tử; $f_F(E) = \frac{1}{1 + \exp[(E-E_F)/kT]}$ là xác suất có electron ngồi (bằng $1/2$ tại $E = E_F$, và xấp xỉ thành $\exp[-(E-E_F)/kT]$ khi $E - E_F \ge 3kT$).</li>
     </ul>
-  </section>
+  
+    <div class="next"><b>Sang Buổi 5:</b> Em đã có $g(E)$ và $f_F(E)$. Buổi 5 nhân hai hàm này để tính <b>nồng độ electron $n_0$ và lỗ trống $p_0$</b>.</div>
+</section>
 </template>
 
 <!-- =========================================================
@@ -2661,10 +2827,14 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     <span class="k b4">HỌC PHẦN ENP2209 · BUỔI 5</span>
     <h1>Chất Bán Dẫn Ở Trạng Thái Cân Bằng</h1>
     <p class="mut">Làm chủ cách tính nồng độ Electron ($n_0$) và Lỗ trống ($p_0$) ở trạng thái cân bằng nhiệt, Nồng độ hạt dẫn nội tại ($n_i$), Vị trí mức Fermi ($E_F, E_{Fi}$), Cơ chế pha tạp Donor/Acceptor và Năng lượng ion hóa.</p>
+  
+    <div class="roadmap"><p><b>Bản đồ Buổi 5 — đếm hạt dẫn ở trạng thái cân bằng</b></p><ol><li><b>Mục 1:</b> Nhân $g(E)\times f_F(E)$ ra công thức cho $n_0$ và $p_0$.</li><li><b>Mục 2:</b> Áp dụng cho bán dẫn <b>tinh khiết</b>: nồng độ nội tại $n_i$.</li><li><b>Mục 3:</b> Bán dẫn <b>pha tạp</b>: tạp chất tạo mức $E_d$, $E_a$ và dễ ion hóa.</li></ol><p><b>Vì sao học?</b> Số hạt dẫn quyết định dòng điện. $n_i$ là "mốc" để so sánh với mức pha tạp, ra đề tài của Buổi 6.</p></div>
   </header>
 
   <section>
     <h2>1. Hạt Dẫn Điện Trong Bán Dẫn & Phương Trình Nồng Độ $n_0, p_0$</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Đây là công thức trung tâm của cả môn: biết mức Fermi $E_F$ nằm đâu thì tính được $n_0$, $p_0$.</div>
+
     <p>Chào em! Ở Buổi 4, chúng ta đã chuẩn bị sẵn hai mảnh ghép cực kỳ quan trọng: <b>Hàm mật độ trạng thái $g(E)$</b> (cho biết có bao nhiêu "chiếc ghế trống" ở mỗi mức năng lượng) và <b>Hàm xác suất Fermi-Dirac $f_F(E)$</b> (cho biết xác suất chiếc ghế đó có người ngồi). Bây giờ, bước sang <b>Buổi 5</b>, chúng ta sẽ nhân hai mảnh ghép này lại với nhau để trả lời câu hỏi quan trọng nhất của người kỹ sư bán dẫn: <i>"Trong $1\text{ cm}^3$ chất bán dẫn đang để yên ở nhiệt độ $T$ (trạng thái cân bằng nhiệt), có chính xác bao nhiêu hạt electron tự do ($n_0$) và bao nhiêu hạt lỗ trống ($p_0$)?"</i></p>
 
     <div class="box analogy">
@@ -2675,6 +2845,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>1.1. Thiết lập công thức tổng quát của $n_0$ và $p_0$</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 186" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="10" y1="150" x2="130" y2="150" style="stroke:var(--mut);stroke-width:1.5"/><line x1="10" y1="150" x2="10" y2="50" style="stroke:var(--mut);stroke-width:1.5"/><path d="M10.0,150.0 L13.0,135.1 L16.0,129.0 L19.0,124.3 L22.0,120.3 L25.0,116.8 L28.0,113.6 L31.0,110.7 L34.0,108.0 L37.0,105.4 L40.0,103.0 L43.0,100.7 L46.0,98.5 L49.0,96.4 L52.0,94.4 L55.0,92.4 L58.0,90.5 L61.0,88.7 L64.0,86.9 L67.0,85.2 L70.0,83.5 L73.0,81.9 L76.0,80.3 L79.0,78.7 L82.0,77.2 L85.0,75.7 L88.0,74.2 L91.0,72.8 L94.0,71.4 L97.0,70.0 L100.0,68.6 L103.0,67.2 L106.0,65.9 L109.0,64.6 L112.0,63.3 L115.0,62.1 L118.0,60.8 L121.0,59.6 L124.0,58.4 L127.0,57.2 L130.0,56.0" style="fill:none;stroke:var(--c1);stroke-width:3.5;fill-opacity:1"/><text x="70" y="172" text-anchor="middle" style="fill:var(--c1);font-size:13px;font-weight:700">g(E)</text><line x1="148" y1="150" x2="268" y2="150" style="stroke:var(--mut);stroke-width:1.5"/><line x1="148" y1="150" x2="148" y2="50" style="stroke:var(--mut);stroke-width:1.5"/><path d="M148.0,60.0 L151.0,68.6 L154.0,76.3 L157.0,83.3 L160.0,89.7 L163.0,95.4 L166.0,100.6 L169.0,105.3 L172.0,109.6 L175.0,113.4 L178.0,116.9 L181.0,120.0 L184.0,122.9 L187.0,125.5 L190.0,127.8 L193.0,129.9 L196.0,131.8 L199.0,133.6 L202.0,135.1 L205.0,136.5 L208.0,137.8 L211.0,139.0 L214.0,140.0 L217.0,141.0 L220.0,141.8 L223.0,142.6 L226.0,143.3 L229.0,144.0 L232.0,144.5 L235.0,145.0 L238.0,145.5 L241.0,145.9 L244.0,146.3 L247.0,146.7 L250.0,147.0 L253.0,147.3 L256.0,147.5 L259.0,147.8 L262.0,148.0 L265.0,148.2 L268.0,148.4" style="fill:none;stroke:var(--c5);stroke-width:3.5;fill-opacity:1"/><text x="208" y="172" text-anchor="middle" style="fill:var(--c5);font-size:13px;font-weight:700">f(E)</text><line x1="286" y1="150" x2="406" y2="150" style="stroke:var(--mut);stroke-width:1.5"/><line x1="286" y1="150" x2="286" y2="50" style="stroke:var(--mut);stroke-width:1.5"/><path d="M286.0,150.0 L289.0,85.4 L292.0,69.0 L295.0,62.0 L298.0,59.9 L301.0,60.6 L304.0,63.1 L307.0,66.8 L310.0,71.1 L313.0,75.8 L316.0,80.6 L319.0,85.5 L322.0,90.2 L325.0,94.8 L328.0,99.2 L331.0,103.4 L334.0,107.3 L337.0,110.9 L340.0,114.4 L343.0,117.5 L346.0,120.4 L349.0,123.1 L352.0,125.6 L355.0,127.9 L358.0,130.0 L361.0,131.9 L364.0,133.6 L367.0,135.2 L370.0,136.6 L373.0,137.9 L376.0,139.1 L379.0,140.2 L382.0,141.1 L385.0,142.0 L388.0,142.8 L391.0,143.5 L394.0,144.2 L397.0,144.8 L400.0,145.3 L403.0,145.8 L406.0,146.2" style="fill:none;stroke:var(--c2);stroke-width:3.5;fill-opacity:1"/><text x="346" y="172" text-anchor="middle" style="fill:var(--c2);font-size:13px;font-weight:700">g·f</text><text x="134" y="100" text-anchor="middle" style="fill:var(--ink);font-size:22px;font-weight:700">×</text><text x="272" y="100" text-anchor="middle" style="fill:var(--ink);font-size:22px;font-weight:700">=</text><text x="20" y="40" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">(E tăng sang phải, bắt đầu từ Ec)</text></svg><figcaption>Số electron ở mỗi mức = số chỗ ngồi × xác suất có người ngồi.</figcaption></figure>
+
     <p>Theo đúng nguyên lý nhân "Số ghế $\times$ Xác suất ngồi", sự phân bố theo năng lượng của electron trong dải dẫn $n(E)$ và của lỗ trống trong dải hóa trị $p(E)$ được viết là:</p>
     <div class="f">
       $$n(E) = g_c(E)\cdot f_F(E) \implies \mathbf{n_0 = \int_{E_c}^{\infty} g_c(E)\,f_F(E)\,dE}$$
@@ -2682,6 +2854,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>1.2. Áp dụng Xấp xỉ Boltzmann để giải tích phân ra công thức gọn đẹp</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 196" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="40" y="20" width="340" height="50" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="40" y="140" width="340" height="40" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="40" y1="70" x2="380" y2="70" style="stroke:var(--c1);stroke-width:2.5"/><line x1="40" y1="140" x2="380" y2="140" style="stroke:var(--c5);stroke-width:2.5"/><text x="44" y="65" text-anchor="start" style="fill:var(--c1);font-size:11px;font-weight:700">Ec</text><text x="44" y="154" text-anchor="start" style="fill:var(--c5);font-size:11px;font-weight:700">Ev</text><line x1="40" y1="105" x2="380" y2="105" style="stroke:var(--c4);stroke-width:2.5" stroke-dasharray="6 4"/><text x="46" y="100" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">E_F</text><line x1="300" y1="73" x2="300" y2="102" style="stroke:var(--c4);stroke-width:2" marker-end="url(#fa)"/><line x1="300" y1="102" x2="300" y2="73" style="stroke:var(--c4);stroke-width:2" marker-end="url(#fa)"/><text x="310" y="92" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:400">Ec − E_F ≥ 3kT</text></svg><figcaption>Điều kiện dùng xấp xỉ Boltzmann: E_F cách mép dải ít nhất 3kT.</figcaption></figure>
+
     <p>Nếu mức năng lượng Fermi $E_F$ nằm bên trong vùng cấm và cách mép dải dẫn $E_c$ cũng như mép dải hóa trị $E_v$ một khoảng lớn hơn $3kT$ ($E_c - E_F \ge 3kT$ và $E_F - E_v \ge 3kT$), ta được phép dùng <b>Xấp xỉ hàm mũ Maxwell-Boltzmann</b> đã học ở cuối Buổi 4:</p>
     <ul>
       <li><b>Với Electron trong dải dẫn ($E \ge E_c$):</b>
@@ -2727,11 +2901,21 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="b5-dist-desc" class="box"></div>
       <svg id="b5-dist-svg" viewBox="0 0 680 280"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul><li>$n_0=N_c\exp\left(-\dfrac{E_c-E_F}{kT}\right)$ và $p_0=N_v\exp\left(-\dfrac{E_F-E_v}{kT}\right)$.</li><li>$N_c,N_v\propto(m^*T)^{3/2}$.</li><li>$E_F$ càng gần $E_c$ thì $n_0$ càng lớn; $E_F$ càng gần $E_v$ thì $p_0$ càng lớn.</li><li>Điều kiện dùng: $E_F$ cách mép dải ít nhất $3kT$ (xấp xỉ Boltzmann).</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Áp dụng công thức vào trường hợp đơn giản nhất: bán dẫn không có tạp chất.</div>
+</section>
 
   <section>
     <h2>2. Bán Dẫn Nội Tại (Intrinsic Semiconductor): Nồng Độ $n_i$ & Mức Fermi $E_{Fi}$</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Công thức $n_0$, $p_0$ cần biết $E_F$. Với bán dẫn tinh khiết, $E_F$ được xác định bởi điều kiện $n_0=p_0$.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> $n_i$ là số hạt dẫn "tự nhiên" của vật liệu. Mọi mức pha tạp ở Buổi 6 đều được so với $n_i$ để biết ai chiếm ưu thế.</div>
+
     <h3>2.1. Khái niệm Bán dẫn Nội tại (Tinh khiết) và Nồng độ hạt dẫn nội tại $n_i$</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 196" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="40" y="20" width="340" height="50" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="40" y="140" width="340" height="40" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="40" y1="70" x2="380" y2="70" style="stroke:var(--c1);stroke-width:2.5"/><line x1="40" y1="140" x2="380" y2="140" style="stroke:var(--c5);stroke-width:2.5"/><text x="44" y="65" text-anchor="start" style="fill:var(--c1);font-size:11px;font-weight:700">Ec</text><text x="44" y="154" text-anchor="start" style="fill:var(--c5);font-size:11px;font-weight:700">Ev</text><circle cx="150" cy="45" r="9" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:1"/><text x="168" y="49" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:400">electron (n₀)</text><circle cx="150" cy="158" r="9" style="fill:none;stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><text x="168" y="162" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:400">lỗ trống (p₀)</text><line x1="110" y1="138" x2="110" y2="74" style="stroke:var(--c4);stroke-width:2.5" marker-end="url(#fa)"/><text x="100" y="108" text-anchor="end" style="fill:var(--c4);font-size:12px;font-weight:400">Năng lượng</text><text x="100" y="124" text-anchor="end" style="fill:var(--c4);font-size:12px;font-weight:700">≥ E_g</text><line x1="310" y1="73" x2="310" y2="138" style="stroke:var(--mut);stroke-width:1.5" marker-end="url(#fa)"/><line x1="310" y1="138" x2="310" y2="73" style="stroke:var(--mut);stroke-width:1.5" marker-end="url(#fa)"/><text x="322" y="108" text-anchor="start" style="fill:var(--ink);font-size:14px;font-weight:700">E_g</text></svg><figcaption>Tinh khiết: mỗi electron lên dải dẫn để lại một lỗ trống, nên n₀ = p₀ = nᵢ.</figcaption></figure>
+
     <p>Một chất bán dẫn hoàn toàn tinh khiết, không chứa bất kỳ nguyên tử tạp chất nào và không có khuyết tật mạng được gọi là <b>Bán dẫn nội tại (Intrinsic semiconductor)</b>.</p>
     <p>Ở nhiệt độ $T > 0\text{ K}$, mỗi khi một electron ở dải hóa trị nhận đủ năng lượng nhiệt để bứt khỏi liên kết cộng hóa trị nhảy lên dải dẫn, nó <b>chắc chắn để lại 1 lỗ trống tương ứng</b> trong dải hóa trị (quá trình sinh cặp electron - lỗ trống). Do đó, trong bán dẫn nội tại, nồng độ electron tự do và nồng độ lỗ trống luôn bằng nhau tuyệt đối:</p>
     <div class="f">
@@ -2793,6 +2977,10 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>2.2. Vị trí Mức năng lượng Fermi Nội tại ($E_{Fi}$)</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 176" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="40" y="20" width="340" height="40" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="40" y="120" width="340" height="40" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="40" y1="60" x2="380" y2="60" style="stroke:var(--c1);stroke-width:2.5"/><line x1="40" y1="120" x2="380" y2="120" style="stroke:var(--c5);stroke-width:2.5"/><text x="44" y="55" text-anchor="start" style="fill:var(--c1);font-size:11px;font-weight:700">Ec</text><text x="44" y="134" text-anchor="start" style="fill:var(--c5);font-size:11px;font-weight:700">Ev</text><line x1="40" y1="90" x2="380" y2="90" style="stroke:var(--mut);stroke-width:1.5" stroke-dasharray="5 4"/><text x="376" y="104" text-anchor="end" style="fill:var(--mut);font-size:11px;font-weight:400">giữa vùng cấm</text><line x1="40" y1="84" x2="380" y2="84" style="stroke:var(--c4);stroke-width:3"/><text x="46" y="78" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">E_Fi</text><text x="210" y="145" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:400">E_Fi chỉ lệch rất ít so với giữa vùng cấm</text></svg><figcaption>Bán dẫn tinh khiết: mức Fermi gần như nằm giữa vùng cấm.</figcaption></figure>
+
+    <figure class="fig fl"><svg viewBox="0 0 420 194" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="40" y1="160" x2="390" y2="160" style="stroke:var(--mut);stroke-width:1.5"/><line x1="40" y1="160" x2="40" y2="25" style="stroke:var(--mut);stroke-width:1.5"/><line x1="60" y1="35" x2="330" y2="95" style="stroke:var(--c1);stroke-width:3"/><text x="336" y="99" text-anchor="start" style="fill:var(--c1);font-size:11px;font-weight:700">Ge (E_g nhỏ)</text><line x1="60" y1="45" x2="330" y2="125" style="stroke:var(--c2);stroke-width:3"/><text x="336" y="129" text-anchor="start" style="fill:var(--c2);font-size:11px;font-weight:700">Si</text><line x1="60" y1="55" x2="330" y2="150" style="stroke:var(--c5);stroke-width:3"/><text x="336" y="154" text-anchor="start" style="fill:var(--c5);font-size:11px;font-weight:700">GaAs (E_g lớn)</text><text x="46" y="22" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">log nᵢ</text><text x="390" y="176" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">1000/T  (nhiệt độ giảm →)</text><text x="270" y="24" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:400">dốc càng lớn khi E_g càng lớn</text></svg><figcaption>nᵢ tăng rất nhanh theo nhiệt độ (đường càng dốc nếu E_g càng lớn).</figcaption></figure>
+
     <p>Trong bán dẫn nội tại, mức năng lượng Fermi được ký hiệu riêng là $E_{Fi}$ (Intrinsic Fermi level). Để tìm vị trí của $E_{Fi}$ nằm ở đâu trong vùng cấm, ta cho nồng độ electron bằng nồng độ lỗ trống ($n_0 = p_0$):</p>
     <div class="f">
       $$N_c \exp\left[-\frac{E_c - E_{Fi}}{kT}\right] = N_v \exp\left[-\frac{E_{Fi} - E_v}{kT}\right]$$
@@ -2824,10 +3012,18 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="b5-int-desc" class="box"></div>
       <svg id="b5-int-svg" viewBox="0 0 680 260"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul><li>Tinh khiết: $n_0=p_0=n_i=\sqrt{N_cN_v}\exp\left(-\dfrac{E_g}{2kT}\right)$.</li><li>$n_i$ <b>tăng rất nhanh khi $T$ tăng</b>, giảm mạnh khi $E_g$ lớn. Si ở $300\text{ K}$: $n_i\approx1.5\times10^{10}\text{ cm}^{-3}$, rất ít so với $5\times10^{22}$ nguyên tử Si.</li><li>$E_{Fi}$ nằm <b>gần giữa vùng cấm</b>, lệch một chút: $\dfrac34kT\ln\dfrac{m_p^*}{m_n^*}$.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> $n_i$ nhỏ khiến Si tinh khiết dẫn điện kém. Mục 3 cho thấy tạp chất thay đổi điều đó thế nào.</div>
+</section>
 
   <section>
     <h2>3. Bán Dẫn Pha Tạp (Extrinsic Semiconductor), Mức Năng Lượng $E_d, E_a$ & Năng Lượng Ion Hóa</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Si tinh khiết dẫn điện kém. Pha tạp (Buổi 1) là cách nâng số hạt dẫn lên hàng triệu lần.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Giải thích bằng giản đồ vùng năng lượng vì sao tạp chất cho electron hoặc lỗ trống rất dễ, từ đó dẫn tới loại n và loại p.</div>
+
     <p>Ở nhiệt độ phòng $300\text{ K}$, Silicon tinh khiết chỉ có $n_i \approx 1.5 \times 10^{10}$ hạt dẫn trong $1\text{ cm}^3$ (quá ít ỏi so với $5 \times 10^{22}$ nguyên tử $\text{Si}$, dẫn đến điện trở suất rất cao $\rho \approx 3.3 \times 10^5\text{ }\Omega\cdot\text{cm}$). Sức mạnh thực sự của bán dẫn chỉ thức tỉnh khi ta chủ động pha thêm một lượng nhỏ tạp chất (Doping) để tạo ra <b>Bán dẫn ngoại lai / Bán dẫn pha tạp (Extrinsic semiconductor)</b>.</p>
 
     <div class="box analogy">
@@ -2838,6 +3034,10 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>3.1. Tính Năng lượng Ion hóa và Bán kính quỹ đạo của Tạp chất bằng Mô hình Bohr Mở rộng</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 198" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="20" y="20" width="170" height="40" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="20" y="125" width="170" height="45" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="20" y1="60" x2="190" y2="60" style="stroke:var(--c1);stroke-width:2.5"/><line x1="20" y1="125" x2="190" y2="125" style="stroke:var(--c5);stroke-width:2.5"/><rect x="230" y="20" width="170" height="40" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="230" y="125" width="170" height="45" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="230" y1="60" x2="400" y2="60" style="stroke:var(--c1);stroke-width:2.5"/><line x1="230" y1="125" x2="400" y2="125" style="stroke:var(--c5);stroke-width:2.5"/><line x1="20" y1="72" x2="190" y2="72" style="stroke:var(--c4);stroke-width:2.5" stroke-dasharray="5 4"/><text x="25" y="86" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">E_d</text><circle cx="110" cy="72" r="6" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:1"/><line x1="110" y1="66" x2="110" y2="40" style="stroke:var(--c1);stroke-width:2" marker-end="url(#fa)"/><line x1="230" y1="113" x2="400" y2="113" style="stroke:var(--c4);stroke-width:2.5" stroke-dasharray="5 4"/><text x="235" y="108" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">E_a</text><circle cx="320" cy="125" r="6" style="fill:none;stroke:var(--c4);stroke-width:2;fill-opacity:1"/><text x="105" y="150" text-anchor="middle" style="fill:var(--c1);font-size:12px;font-weight:400">Donor: sát dưới Ec</text><text x="315" y="150" text-anchor="middle" style="fill:var(--c5);font-size:12px;font-weight:400">Acceptor: sát trên Ev</text><text x="210" y="188" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:400">ΔE ≈ 5–50 meV ≪ E_g</text></svg><figcaption>Mức tạp chất nằm rất sát mép dải nên rất dễ ion hóa.</figcaption></figure>
+
+    <figure class="fig fl"><svg viewBox="0 0 420 196" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><circle cx="35" cy="35" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="35" cy="75" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="35" cy="115" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="35" cy="155" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="85" cy="35" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="85" cy="75" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="85" cy="115" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="85" cy="155" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="135" cy="35" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="135" cy="75" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="135" cy="115" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="135" cy="155" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="185" cy="35" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="185" cy="75" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="185" cy="115" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="185" cy="155" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="235" cy="35" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="235" cy="75" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="235" cy="115" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="235" cy="155" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="285" cy="35" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="285" cy="75" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="285" cy="115" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="285" cy="155" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="335" cy="35" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="335" cy="75" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="335" cy="115" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="335" cy="155" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="385" cy="35" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="385" cy="75" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="385" cy="115" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="385" cy="155" r="3" style="fill:var(--g);stroke:var(--g);stroke-width:1;fill-opacity:1"/><circle cx="210" cy="95" r="70" style="fill:none;stroke:var(--c1);stroke-width:2.5;fill-opacity:1"/><circle cx="210" cy="95" r="11" style="fill:var(--c4);stroke:var(--c4);stroke-width:2;fill-opacity:0.5"/><text x="210" y="99" text-anchor="middle" style="fill:var(--ink);font-size:11px;font-weight:700">P⁺</text><circle cx="280" cy="95" r="6" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:1"/><text x="285" y="80" text-anchor="start" style="fill:var(--c1);font-size:12px;font-weight:700">e⁻</text><line x1="35" y1="170" x2="85" y2="170" style="stroke:var(--mut);stroke-width:1.5" marker-end="url(#fa)"/><text x="60" y="185" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:400">a</text><text x="300" y="170" text-anchor="middle" style="fill:var(--c1);font-size:12px;font-weight:400">bán kính quỹ đạo ≫ a</text></svg><figcaption>Electron donor quay quanh ion P⁺ xa hơn nhiều so với khoảng cách giữa các nguyên tử.</figcaption></figure>
+
     <p>Tại sao electron thứ 5 của Phosphorus chỉ cần năng lượng khoảng $0.0258\text{ eV} - 0.045\text{ eV}$ là bứt ra được, trong khi nguyên tử Hydro cần tới $13.6\text{ eV}$? Bởi vì electron thứ 5 này chuyển động <b>bên trong môi trường tinh thể bán dẫn</b> có hằng số điện môi tương đối lớn ($\epsilon_r = 11.7$ với $\text{Si}$ làm suy yếu lực hút Coulomb đi $11.7$ lần!) và mang <b>khối lượng hiệu dụng dẫn $m^*$ rất nhỏ</b> ($m^*/m_0 \approx 0.26$ trong $\text{Si}$).</p>
     <p>Áp dụng mô hình nguyên tử Bohr (cân bằng lực hướng tâm $\frac{e^2}{4\pi\epsilon r_n^2} = \frac{m^*v^2}{r_n}$ và lượng tử hóa moment động lượng $m^* r_n v = n\hbar$), ta rút ra hai công thức cực kỳ quan trọng (giải trực tiếp <b>Câu 4 Bài tập</b>):</p>
 
@@ -2851,6 +3051,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </p>
 
     <h3>3.2. Quy tắc Pha tạp trong Bán dẫn Hợp chất Nhóm III-V (như GaAs)</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 186" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><text x="100" y="20" text-anchor="middle" style="fill:var(--mut);font-size:12px;font-weight:700">Nút bị thay</text><text x="235" y="20" text-anchor="middle" style="fill:var(--c2);font-size:12px;font-weight:700">Donor</text><text x="350" y="20" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">Acceptor</text><rect x="15" y="32" width="170" height="44" rx="8" style="fill:var(--tint);stroke:var(--g);stroke-width:2;fill-opacity:1"/><text x="100" y="59" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:400">thay Ga (3 e)</text><rect x="190" y="32" width="110" height="44" rx="8" style="fill:var(--tint);stroke:var(--c2);stroke-width:2.5;fill-opacity:1"/><text x="245" y="59" text-anchor="middle" style="fill:var(--c2);font-size:13px;font-weight:700">Nhóm IV, VI</text><rect x="305" y="32" width="105" height="44" rx="8" style="fill:var(--tint);stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><text x="357" y="59" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">Nhóm II</text><rect x="15" y="92" width="170" height="44" rx="8" style="fill:var(--tint);stroke:var(--g);stroke-width:2;fill-opacity:1"/><text x="100" y="119" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:400">thay As (5 e)</text><rect x="190" y="92" width="110" height="44" rx="8" style="fill:var(--tint);stroke:var(--c2);stroke-width:2.5;fill-opacity:1"/><text x="245" y="119" text-anchor="middle" style="fill:var(--c2);font-size:13px;font-weight:700">Nhóm VI</text><rect x="305" y="92" width="105" height="44" rx="8" style="fill:var(--tint);stroke:var(--c4);stroke-width:2.5;fill-opacity:1"/><text x="357" y="119" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">Nhóm II, IV</text><text x="210" y="170" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:400">Nhiều electron hóa trị hơn nút cũ → donor; ít hơn → acceptor</text></svg><figcaption>Quy tắc pha tạp bán dẫn hợp chất III-V.</figcaption></figure>
+
     <p>Đối với bán dẫn hợp chất tạo bởi Nhóm III ($\text{Ga}$) và Nhóm V ($\text{As}$):</p>
     <ul>
       <li><span class="k b4">Nguyên tố Nhóm II ($\text{Be}, \text{Zn}, \text{Cd}$)</span> Khi đi vào mạng tinh thể sẽ thế chỗ cho nguyên tử Nhóm III ($\text{Ga}$). Vì Nhóm II có ít hơn Nhóm III 1 electron hóa trị, nó đóng vai trò là <b>Tạp chất nhận (Acceptor - tạo bán dẫn loại P)</b>.</li>
@@ -2870,14 +3072,22 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="b5-dop-desc" class="box"></div>
       <svg id="b5-dop-svg" viewBox="0 0 680 250"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul><li><b>Donor</b> (Nhóm V trong Si): mức $E_d$ nằm <b>sát dưới $E_c$</b>, cho electron → loại n.</li><li><b>Acceptor</b> (Nhóm III trong Si): mức $E_a$ nằm <b>sát trên $E_v$</b>, tạo lỗ trống → loại p.</li><li>Năng lượng ion hóa chỉ khoảng $5$–$50\text{ meV}\ll E_g$, nên ở nhiệt độ phòng tạp chất ion hóa dễ.</li><li>Quy tắc chung: tạp chất thay vào nút mạng mà có <b>nhiều</b> electron hóa trị hơn nguyên tử cũ → donor; <b>ít hơn</b> → acceptor.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Gom công thức (Mục 4) và luyện bài (Mục 5). Buổi 6 sẽ tính $n_0$, $p_0$ khi có tạp chất.</div>
+</section>
 
   <section>
     <h2>4. Cẩm Nang Công Thức Trọng Tâm Buổi 5 (Giải Nghĩa Chi Tiết)</h2>
+    <div class="bridge"><b>Nối từ Mục 1–3:</b> Bảng chọn công thức.</div>
+
+    <div class="tw"><table><tr><th>Đề bài hỏi gì?</th><th>Công thức</th></tr><tr><td>$n_0$, $p_0$ khi biết vị trí $E_F$</td><td>Công thức 1</td></tr><tr><td>$n_i$ theo nhiệt độ, tích $n_0p_0$</td><td>Công thức 2</td></tr><tr><td>Vị trí $E_{Fi}$ so với giữa vùng cấm</td><td>Công thức 3</td></tr><tr><td>Bán kính Bohr hiệu dụng, năng lượng ion hóa tạp chất, điện trở suất nội tại</td><td>Công thức 4</td></tr></table></div>
+
 
     <div class="formula-card">
       <h3>Công thức 1: Nồng độ Electron ($n_0$) và Lỗ trống ($p_0$) ở Trạng thái Cân bằng Nhiệt</h3>
-      <div class="f">
+      <div class="f key">
         $$n_0 = N_c \exp\left[-\frac{E_c - E_F}{kT}\right] \qquad \text{và} \qquad p_0 = N_v \exp\left[-\frac{E_F - E_v}{kT}\right]$$
         $$\text{với } N_c = 2\left(\frac{2\pi m_n^* kT}{h^2}\right)^{3/2}, \qquad N_v = 2\left(\frac{2\pi m_p^* kT}{h^2}\right)^{3/2}$$
       </div>
@@ -2898,7 +3108,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 2: Nồng độ Hạt dẫn Nội tại ($n_i$) & Định luật Tác dụng Khối lượng</h3>
-      <div class="f">
+      <div class="f key">
         $$n_i^2 = n_0 \cdot p_0 = N_c N_v \exp\left[-\frac{E_g}{kT}\right] \implies \mathbf{n_i = \sqrt{N_c N_v}\,\exp\left[-\frac{E_g}{2kT}\right]}$$
       </div>
       <div class="formula-meta">
@@ -2916,7 +3126,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 3: Vị trí Mức năng lượng Fermi Nội tại ($E_{Fi}$)</h3>
-      <div class="f">
+      <div class="f key">
         $$E_{Fi} - E_{\text{midgap}} = \frac{1}{2}kT \ln\left(\frac{N_v}{N_c}\right) = \frac{3}{4}kT \ln\left(\frac{m_p^*}{m_n^*}\right) \qquad \left(\text{với } E_{\text{midgap}} = \frac{E_c + E_v}{2}\right)$$
       </div>
       <div class="formula-meta">
@@ -2934,7 +3144,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 4: Bán kính Bohr ($r_1$), Năng lượng Ion hóa Tạp chất ($E_i$) & Điện trở suất Nội tại ($\rho_i$)</h3>
-      <div class="f">
+      <div class="f key">
         $$r_1 = a_0\,\epsilon_r\left(\frac{m_0}{m^*}\right) \quad \Big| \quad E_i = 13.58\text{ [eV]}\left(\frac{m^*}{m_0}\right)\frac{1}{\epsilon_r^2} \quad \Big| \quad \sigma_i = e\,n_i(\mu_n + \mu_p), \quad \rho_i = \frac{1}{\sigma_i}$$
       </div>
       <div class="formula-meta">
@@ -2955,6 +3165,12 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
   <section>
     <h2>5. Bài Tập Trọng Tâm Buổi 5 (Có Gợi Ý & Giải Chi Tiết Từng Bước)</h2>
+    <div class="bridge"><b>Nối từ Mục 4:</b> Mỗi câu luyện một công thức.</div>
+
+    <div class="tw"><table><tr><th>Câu</th><th>Luyện</th><th>Công thức</th></tr><tr><td>1</td><td>Xác suất chiếm, $n_0$ và $p_0$ theo $E_F$</td><td>1</td></tr><tr><td>2</td><td>$n_i$ thay đổi theo nhiệt độ</td><td>2</td></tr><tr><td>3</td><td>Vị trí $E_{Fi}$</td><td>3</td></tr><tr><td>4</td><td>Bán kính Bohr và năng lượng ion hóa donor</td><td>4</td></tr><tr><td>5</td><td>$N_c$, $N_v$, $n_i$ và điện trở suất nội tại của Si</td><td>1, 2, 4</td></tr></table></div>
+
+    <div class="box key"><b>Mẹo chung Buổi 5</b><ul><li>Kiểm tra nhanh: $kT\approx0.0259\text{ eV}$ ở $300\text{ K}$.</li><li>Trong hàm mũ, sai số nhỏ của năng lượng dẫn tới sai số rất lớn của kết quả, nên giữ đủ chữ số.</li></ul></div>
+
     <p>Dưới đây là 5 bài tập cốt lõi bao quát toàn bộ nội dung tính toán của Buổi 5 (từ các bài toán chuẩn trong bài giảng đến bài tập tổng hợp cuối slide). Em hãy bấm vào <b>Xem Gợi ý</b> để tự nháp trước, sau đó mở <b>Xem Lời giải chi tiết</b> kèm giải thích màu xám ở từng bước nhé!</p>
 
     <!-- CÂU 1 BUỔI 5 -->
@@ -3215,7 +3431,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <li><b>Vị trí mức Fermi nội tại ($E_{Fi}$):</b> Nằm rất gần tâm vùng cấm, lệch một đoạn nhỏ $E_{Fi} - E_{\text{midgap}} = \frac{3}{4}kT\ln\left(\frac{m_p^*}{m_n^*}\right)$.</li>
       <li><b>Pha tạp Donor (Nhóm V) & Acceptor (Nhóm III):</b> Tạp chất Donor tạo mức $E_d$ nằm sát dưới $E_c$ (cung cấp electron cho dải dẫn — loại N); tạp chất Acceptor tạo mức $E_a$ nằm sát trên $E_v$ (tạo lỗ trống trong dải hóa trị — loại P). Năng lượng ion hóa tạp chất rất nhỏ ($\approx 5 - 50\text{ meV} \ll E_g$).</li>
     </ul>
-  </section>
+  
+    <div class="next"><b>Sang Buổi 6:</b> Em đã biết $n_i$ và mức tạp chất. Buổi 6 tính $n_0$, $p_0$ và $E_F$ khi pha tạp, kể cả pha rất đậm (suy biến) và khi nhiệt độ thay đổi.</div>
+</section>
 </template>
 
 <!-- =========================================================
@@ -3226,10 +3444,14 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     <span class="k b5">HỌC PHẦN ENP2209 · BUỔI 6</span>
     <h1>Bán Dẫn Pha Tạp &amp; Bán Dẫn Suy Biến</h1>
     <p class="mut">Làm chủ Định luật tác dụng khối lượng, Tích phân Fermi-Dirac, Bán dẫn Suy biến vs. Không suy biến, Ion hóa hoàn toàn &amp; Đóng băng (Freeze-out), Phương trình Trung hòa điện tích và Sự dịch chuyển Mức Fermi.</p>
+  
+    <div class="roadmap"><p><b>Bản đồ Buổi 6 — bán dẫn pha tạp trong thực tế</b></p><ol><li><b>Mục 1:</b> $n_0$, $p_0$ theo $E_F$ và định luật $n_0p_0=n_i^2$.</li><li><b>Mục 2:</b> Pha tạp quá đậm: xấp xỉ Boltzmann hỏng, phải dùng tích phân Fermi-Dirac (bán dẫn suy biến).</li><li><b>Mục 3:</b> Tạp chất có ion hóa hết không? Ion hóa hoàn toàn và đóng băng.</li><li><b>Mục 4:</b> Có cả donor và acceptor: bán dẫn bù trừ, phương trình trung hòa điện tích.</li><li><b>Mục 5:</b> $E_F$ phụ thuộc pha tạp và nhiệt độ thế nào; khi hai vật liệu tiếp xúc.</li></ol><p><b>Vì sao học?</b> Đây là buổi tổng hợp: biết pha bao nhiêu tạp chất, ở nhiệt độ nào, thì tính được $n_0$, $p_0$ và $E_F$. Kết quả về $E_F$ khi tiếp xúc là nền cho các linh kiện như diode.</p></div>
   </header>
 
   <section>
     <h2>1. Phân Bố Cân Bằng Trong Bán Dẫn Pha Tạp &amp; Tích Số $n_0 p_0 = n_i^2$</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Viết $n_0$, $p_0$ theo $E_F-E_{Fi}$ cho thấy ngay bán dẫn là loại n hay p. Hệ thức $n_0p_0=n_i^2$ cho phép biết hạt thiểu số chỉ từ hạt đa số.</div>
+
     <p>Chào em! Ở Buổi 5, chúng ta đã biết chất bán dẫn tinh khiết (nội tại) có nồng độ electron bằng đúng nồng độ lỗ trống ($n_0 = p_0 = n_i$) và mức Fermi nằm ngay gần chính giữa vùng cấm ($E_F = E_{Fi}$). Bước sang <b>Buổi 6</b>, khi ta chủ động pha thêm các nguyên tử tạp chất (Doping) để tạo ra <b>Bán dẫn ngoại lai / Bán dẫn pha tạp (Extrinsic Semiconductor)</b>, cán cân giữa electron và lỗ trống sẽ thay đổi hoàn toàn!</p>
 
     <div class="box analogy">
@@ -3241,6 +3463,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>1.1. Biểu diễn nồng độ $n_0, p_0$ theo mức Fermi nội tại $E_{Fi}$</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 190" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="10" y="20" width="190" height="35" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="10" y="120" width="190" height="40" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="10" y1="55" x2="200" y2="55" style="stroke:var(--c1);stroke-width:2.5"/><line x1="10" y1="120" x2="200" y2="120" style="stroke:var(--c5);stroke-width:2.5"/><rect x="220" y="20" width="190" height="35" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="220" y="120" width="190" height="40" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="220" y1="55" x2="410" y2="55" style="stroke:var(--c1);stroke-width:2.5"/><line x1="220" y1="120" x2="410" y2="120" style="stroke:var(--c5);stroke-width:2.5"/><line x1="10" y1="88" x2="200" y2="88" style="stroke:var(--mut);stroke-width:1.5" stroke-dasharray="5 4"/><line x1="220" y1="88" x2="410" y2="88" style="stroke:var(--mut);stroke-width:1.5" stroke-dasharray="5 4"/><text x="14" y="84" text-anchor="start" style="fill:var(--mut);font-size:11px;font-weight:400">E_Fi</text><line x1="10" y1="66" x2="200" y2="66" style="stroke:var(--c4);stroke-width:3"/><text x="14" y="62" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">E_F</text><line x1="220" y1="110" x2="410" y2="110" style="stroke:var(--c4);stroke-width:3"/><text x="224" y="106" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">E_F</text><text x="105" y="178" text-anchor="middle" style="fill:var(--c1);font-size:12px;font-weight:700">E_F trên E_Fi → loại n</text><text x="315" y="178" text-anchor="middle" style="fill:var(--c5);font-size:12px;font-weight:700">E_F dưới E_Fi → loại p</text></svg><figcaption>Vị trí E_F so với E_Fi cho biết bán dẫn loại n hay loại p.</figcaption></figure>
+
     <p>Từ công thức chuẩn ở Buổi 5 là $n_0 = N_c \exp\left[-\frac{E_c - E_F}{kT}\right]$, ta sử dụng một mẹo biến đổi toán học rất khéo léo: <b>Cộng và trừ thêm $E_{Fi}$</b> ở trên tử số của số mũ, tức là viết $-(E_c - E_F) = -(E_c - E_{Fi}) + (E_F - E_{Fi})$:</p>
     <div class="f">
       $$n_0 = \underbrace{N_c \exp\left[-\frac{E_c - E_{Fi}}{kT}\right]}_{\text{Chính là } n_i} \times \exp\left[\frac{E_F - E_{Fi}}{kT}\right] \implies \mathbf{n_0 = n_i \exp\left[\frac{E_F - E_{Fi}}{kT}\right]}$$
@@ -3254,7 +3478,11 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <li>Nếu $\mathbf{E_F < E_{Fi}}$ (mức Fermi nằm thấp hơn mức nội tại): $\implies p_0 > n_i$ và $n_0 < n_i \implies \mathbf{p_0 > n_i > n_0}$ (<b>Bán dẫn loại P</b>, trong đó lỗ trống là <i>hạt dẫn đa số</i>, electron là <i>hạt dẫn thiểu số</i>).</li>
     </ul>
 
-    <h3>1.2. Tích số $n_0 p_0 = n_i^2$ (Định luật Tác dụng Khối lượng - Mass Action Law)</h3>
+    
+    <div class="box analogy"><b>Ví dụ:</b> Si loại n với $N_d=10^{16}\text{ cm}^{-3}$ (tạm coi mỗi donor cho 1 electron): $n_0\approx10^{16}$. Hạt thiểu số là $p_0=\dfrac{n_i^2}{n_0}=\dfrac{(1.5\times10^{10})^2}{10^{16}}\approx2.3\times10^{4}\text{ cm}^{-3}$. Hạt đa số nhiều hơn hạt thiểu số khoảng $10^{12}$ lần.</div>
+<h3>1.2. Tích số $n_0 p_0 = n_i^2$ (Định luật Tác dụng Khối lượng - Mass Action Law)</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 188" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="20" y1="140" x2="400" y2="140" style="stroke:var(--mut);stroke-width:1.5"/><text x="210" y="18" text-anchor="middle" style="fill:var(--c4);font-size:13px;font-weight:700">n₀ · p₀ = nᵢ² luôn không đổi</text><rect x="44" y="120" width="32" height="20" rx="2" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><rect x="84" y="30" width="32" height="110" rx="2" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.5"/><text x="60" y="155" text-anchor="middle" style="fill:var(--c1);font-size:11px;font-weight:400">n₀</text><text x="100" y="155" text-anchor="middle" style="fill:var(--c5);font-size:11px;font-weight:400">p₀</text><text x="80" y="176" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">loại p</text><rect x="174" y="75" width="32" height="65" rx="2" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><rect x="214" y="75" width="32" height="65" rx="2" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.5"/><text x="190" y="155" text-anchor="middle" style="fill:var(--c1);font-size:11px;font-weight:400">n₀</text><text x="230" y="155" text-anchor="middle" style="fill:var(--c5);font-size:11px;font-weight:400">p₀</text><text x="210" y="176" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">tinh khiết</text><rect x="304" y="30" width="32" height="110" rx="2" style="fill:var(--c1);stroke:var(--c1);stroke-width:2;fill-opacity:0.5"/><rect x="344" y="120" width="32" height="20" rx="2" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.5"/><text x="320" y="155" text-anchor="middle" style="fill:var(--c1);font-size:11px;font-weight:400">n₀</text><text x="360" y="155" text-anchor="middle" style="fill:var(--c5);font-size:11px;font-weight:400">p₀</text><text x="340" y="176" text-anchor="middle" style="fill:var(--ink);font-size:13px;font-weight:700">loại n</text></svg><figcaption>Hạt đa số tăng thì hạt thiểu số giảm theo, như bập bênh (vẽ theo thang log).</figcaption></figure>
+
     <p>Khi ta nhân trực tiếp hai biểu thức $n_0$ và $p_0$ ở trên với nhau, hai hàm mũ đối dấu tự triệt tiêu ($\exp(+x)\cdot\exp(-x) = e^0 = 1$):</p>
     <div class="f">
       $$\mathbf{n_0 \cdot p_0 = n_i^2 = N_c N_v \exp\left[-\frac{E_g}{kT}\right]}$$
@@ -3264,10 +3492,18 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       1. <b>Ý nghĩa:</b> Ở trạng thái cân bằng nhiệt tại một nhiệt độ $T$ cố định, dù em có pha tạp loại N hay loại P nhiều hay ít, thì <b>tích số giữa nồng độ electron và nồng độ lỗ trống luôn là một hằng số bằng $n_i^2$</b>! Khi biết hạt dẫn đa số (ví dụ $n_0$), em tìm ngay được hạt dẫn thiểu số bằng phép chia: $p_0 = \frac{n_i^2}{n_0}$.<br>
       2. <b>Điều kiện hợp lệ:</b> Công thức $n_0 p_0 = n_i^2$ được chứng minh dựa trên <b>Xấp xỉ Boltzmann</b>. Nếu pha tạp quá đậm đặc khiến xấp xỉ Boltzmann không còn đúng nữa (bán dẫn suy biến), thì $n_0 p_0 = n_i^2$ <b>cũng không còn đúng nữa</b>!
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul><li>$n_0=n_i\exp\dfrac{E_F-E_{Fi}}{kT}$ và $p_0=n_i\exp\left(-\dfrac{E_F-E_{Fi}}{kT}\right)$.</li><li><b>$n_0p_0=n_i^2$</b> (định luật tác dụng khối lượng, chỉ đúng khi không suy biến).</li><li>$E_F$ <b>trên</b> $E_{Fi}$ → loại n. $E_F$ <b>dưới</b> $E_{Fi}$ → loại p.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Hệ thức này dùng xấp xỉ Boltzmann. Mục 2 hỏi: nếu pha tạp quá đậm thì sao?</div>
+</section>
 
   <section>
     <h2>2. Tích Phân Fermi-Dirac $F_{1/2}(\eta_F)$ &amp; Bán Dẫn Suy Biến (Degenerate Semiconductor)</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Mục 1 dùng xấp xỉ Boltzmann, đúng khi $E_F$ cách mép dải ít nhất $3kT$.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Cho biết <i>khi nào</i> công thức quen thuộc sai, để không dùng nhầm khi pha tạp đậm.</div>
+
     <p>Ở các buổi trước, để giải tích phân nồng độ hạt dẫn một cách dễ dàng, chúng ta luôn giả sử mức Fermi $E_F$ nằm cách xa mép dải dẫn $E_c$ ít nhất là $3kT$ ($E_c - E_F \ge 3kT$) để được quyền bỏ số $1$ ở mẫu số của hàm Fermi-Dirac (Xấp xỉ Boltzmann). Nhưng nếu người kỹ sư <b>pha tạp cực kỳ đậm đặc</b> (ví dụ $N_d \ge 10^{19}\text{ cm}^{-3}$) làm mức Fermi $E_F$ tiến sát vào trong khoảng $3kT$ quanh $E_c$, hoặc thậm chí <b>chui hẳn vào bên trong dải dẫn ($E_F > E_c$)</b> thì sao?</p>
 
     <h3>2.1. Công thức Tích phân Fermi-Dirac bậc $1/2$</h3>
@@ -3291,6 +3527,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>2.2. Phân biệt Bán dẫn Không suy biến (Nondegenerate) và Bán dẫn Suy biến (Degenerate)</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 194" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="10" y="20" width="190" height="45" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="10" y="130" width="190" height="35" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="10" y1="65" x2="200" y2="65" style="stroke:var(--c1);stroke-width:2.5"/><line x1="10" y1="130" x2="200" y2="130" style="stroke:var(--c5);stroke-width:2.5"/><rect x="220" y="20" width="190" height="45" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="220" y="130" width="190" height="35" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="220" y1="65" x2="410" y2="65" style="stroke:var(--c1);stroke-width:2.5"/><line x1="220" y1="130" x2="410" y2="130" style="stroke:var(--c5);stroke-width:2.5"/><line x1="10" y1="105" x2="200" y2="105" style="stroke:var(--c4);stroke-width:3"/><text x="14" y="101" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">E_F</text><line x1="105" y1="68" x2="105" y2="102" style="stroke:var(--c4);stroke-width:1.5" marker-end="url(#fa)"/><text x="112" y="90" text-anchor="start" style="fill:var(--c4);font-size:11px;font-weight:400">≥ 3kT</text><rect x="220" y="48" width="190" height="17" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.55"/><line x1="220" y1="48" x2="410" y2="48" style="stroke:var(--c4);stroke-width:3"/><text x="224" y="44" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">E_F</text><text x="105" y="184" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">Không suy biến</text><text x="315" y="184" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">Suy biến: E_F vào dải dẫn</text></svg><figcaption>Pha tạp đậm đẩy E_F vào trong dải dẫn nên không dùng Boltzmann được nữa.</figcaption></figure>
+
     <div class="tw">
       <table>
         <tr>
@@ -3344,10 +3582,18 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="b6-deg-desc" class="box"></div>
       <svg id="b6-deg-svg" viewBox="0 0 680 280"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul><li>Pha tạp quá đậm thì $E_F$ tiến sát hoặc vào trong dải dẫn/hóa trị: <b>bán dẫn suy biến</b>.</li><li>Lúc này dùng $n_0=\dfrac{2}{\sqrt\pi}N_cF_{1/2}(\eta_F)$, với $\eta_F=\dfrac{E_F-E_c}{kT}$.</li><li>Trong Si, suy biến bắt đầu từ cỡ $3.2\times10^{17}\text{ cm}^{-3}$. Khi đó $n_0p_0=n_i^2$ <b>không còn đúng</b>.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Ta mới giả sử mỗi tạp chất cho một hạt dẫn. Mục 3 kiểm tra điều đó có đúng không.</div>
+</section>
 
   <section>
     <h2>3. Thống Kê Tạp Chất Donor/Acceptor: Ion Hóa Hoàn Toàn &amp; Đóng Băng (Freeze-Out)</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Mục 1–2 coi mọi tạp chất đều đã cho hạt dẫn. Thực tế phụ thuộc nhiệt độ.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Giải thích vì sao linh kiện hoạt động ổn định ở nhiệt độ phòng, và vì sao lạnh sâu thì ngừng dẫn.</div>
+
     <h3>3.1. Xác suất chiếm giữ trên mức năng lượng tạp chất $E_d$ và $E_a$</h3>
     <p>Nguyên lý loại trừ Pauli không chỉ áp dụng cho các trạng thái trong dải dẫn/dải hóa trị mà còn áp dụng cho chính các mức năng lượng tạp chất $E_d$ và $E_a$! Tuy nhiên, có một điểm tinh tế về <b>hệ số suy biến spin $g$ (degeneracy factor)</b>:</p>
     <ul>
@@ -3366,6 +3612,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </ul>
 
     <h3>3.2. Tỷ lệ tạp chất chưa ion hóa, Ion hóa hoàn toàn (Complete Ionization) và Đóng băng (Freeze-Out)</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 178" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="40" y1="150" x2="390" y2="150" style="stroke:var(--mut);stroke-width:1.5"/><line x1="40" y1="150" x2="40" y2="30" style="stroke:var(--mut);stroke-width:1.5"/><path d="M40.0,145.6 L44.0,144.8 L48.0,143.8 L52.0,142.6 L56.0,141.3 L60.0,139.7 L64.0,137.9 L68.0,135.8 L72.0,133.4 L76.0,130.7 L80.0,127.6 L84.0,124.2 L88.0,120.4 L92.0,116.3 L96.0,111.9 L100.0,107.3 L104.0,102.5 L108.0,97.5 L112.0,92.5 L116.0,87.5 L120.0,82.7 L124.0,78.1 L128.0,73.7 L132.0,69.6 L136.0,65.8 L140.0,62.4 L144.0,59.3 L148.0,56.6 L152.0,54.2 L156.0,52.1 L160.0,50.3 L164.0,48.7 L168.0,47.4 L172.0,46.2 L176.0,45.2 L180.0,44.4 L184.0,43.7 L188.0,43.1 L192.0,42.6 L196.0,42.2 L200.0,41.8 L204.0,41.5 L208.0,41.3 L212.0,41.1 L216.0,40.9 L220.0,40.7 L224.0,40.6 L228.0,40.5 L232.0,40.4 L236.0,40.4 L240.0,40.3 L244.0,40.2 L248.0,40.2 L252.0,40.2 L256.0,40.1 L260.0,40.1 L264.0,40.1 L268.0,40.1 L272.0,40.1 L276.0,40.1 L280.0,40.0 L284.0,40.0 L288.0,40.0 L292.0,40.0 L296.0,40.0 L300.0,40.0 L304.0,40.0 L308.0,40.0 L312.0,40.0 L316.0,40.0 L320.0,40.0 L324.0,40.0 L328.0,40.0 L332.0,40.0 L336.0,40.0 L340.0,40.0 L344.0,40.0 L348.0,40.0 L352.0,40.0 L356.0,40.0 L360.0,40.0 L364.0,40.0 L368.0,40.0 L372.0,40.0 L376.0,40.0 L380.0,40.0 L384.0,40.0 L388.0,40.0" style="fill:none;stroke:var(--c5);stroke-width:3.5;fill-opacity:1"/><line x1="302" y1="150" x2="302" y2="40" style="stroke:var(--c4);stroke-width:1.5" stroke-dasharray="5 4"/><text x="302" y="166" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">300 K</text><text x="110" y="166" text-anchor="middle" style="fill:var(--c5);font-size:12px;font-weight:400">đóng băng</text><text x="340" y="32" text-anchor="end" style="fill:var(--c2);font-size:12px;font-weight:700">Nd⁺ ≈ Nd</text><text x="36" y="44" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">1</text><text x="36" y="154" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">0</text><text x="390" y="166" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">T</text><text x="46" y="24" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">tỉ lệ ion hóa</text></svg><figcaption>Ở nhiệt độ phòng gần như mọi tạp chất đã ion hóa.</figcaption></figure>
+
     <p>Khi áp dụng xấp xỉ Boltzmann $(E_d - E_F) \gg kT$, ta có $n_d \approx 2N_d \exp\left(\frac{E_d - E_F}{kT}\right)$. Kết hợp với $n_0 = N_c \exp\left(-\frac{E_c - E_F}{kT}\right)$, ta lập được công thức tính <b>tỷ lệ phần trăm electron vẫn còn kẹt lại ở mức Donor ($n_d$) so với tổng số electron ở cả dải dẫn và mức Donor ($n_d + n_0$)</b> (giải trực tiếp <b>Câu 3a Bài tập</b>):</p>
     <div class="f">
       $$\mathbf{\frac{n_d}{n_d + n_0} = \frac{1}{1 + \frac{N_c}{2 N_d}\exp\left[-\frac{E_c - E_d}{kT}\right]}} \qquad \text{và tương tự cho Acceptor } (g=4): \qquad \mathbf{\frac{p_a}{p_0 + p_a} = \frac{1}{1 + \frac{N_v}{4 N_a}\exp\left[-\frac{E_a - E_v}{kT}\right]}}$$
@@ -3376,11 +3624,21 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       </li>
       <li><span class="k b1">Hiện tượng Đóng băng hạt dẫn (Freeze-Out - Ở nhiệt độ cực thấp $T \to 0\text{ K}$)</span> Khi hạ nhiệt độ xuống rất thấp ($T \to 0\text{ K}$), năng lượng nhiệt $kT$ quá nhỏ nên không có electron nào từ mức Donor $E_d$ nhảy lên nổi dải dẫn (và không có electron nào từ dải hóa trị nhảy lên mức Acceptor $E_a$). Toàn bộ các hạt dẫn bị "đóng băng" tại các mức tạp chất: $\mathbf{n_d = N_d\ (N_d^+ = 0)}$ và $\mathbf{p_a = N_a\ (N_a^- = 0)}$. Lúc này tại $T = 0\text{ K}$, mức Fermi $E_F$ nằm giữa $E_d$ và $E_c$ (với loại N) hoặc nằm giữa $E_v$ và $E_a$ (với loại P).</li>
     </ul>
-  </section>
+  
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul><li>Ở $300\text{ K}$: <b>ion hóa hoàn toàn</b>, $N_d^+\approx N_d$ và $N_a^-\approx N_a$.</li><li>Ở nhiệt độ rất thấp ($T\to0$): hạt dẫn <b>đóng băng</b> (freeze-out) trên mức tạp chất.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Chuyện gì xảy ra khi pha cả donor lẫn acceptor? Mục 4.</div>
+</section>
 
   <section>
     <h2>4. Trung Hòa Điện Tích (Charge Neutrality), Bán Dẫn Bù Trừ &amp; Nồng Độ Hạt Dẫn</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Đến giờ chỉ có một loại tạp chất. Thực tế thường có cả hai.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> Phương trình trung hòa điện tích là công cụ chung để tìm $n_0$, $p_0$ trong mọi trường hợp, kể cả bù trừ.</div>
+
     <h3>4.1. Bán dẫn Bù trừ (Compensated Semiconductor) là gì?</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 184" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="40" y1="150" x2="400" y2="150" style="stroke:var(--mut);stroke-width:1.5"/><rect x="90" y="40" width="70" height="110" rx="3" style="fill:var(--c4);stroke:var(--c4);stroke-width:2;fill-opacity:0.2"/><rect x="90" y="40" width="70" height="50" rx="3" style="fill:var(--c2);stroke:var(--c2);stroke-width:2;fill-opacity:0.5"/><rect x="220" y="90" width="70" height="60" rx="3" style="fill:var(--c5);stroke:var(--c5);stroke-width:2;fill-opacity:0.3"/><text x="125" y="166" text-anchor="middle" style="fill:var(--c4);font-size:14px;font-weight:700">Nd</text><text x="255" y="166" text-anchor="middle" style="fill:var(--c5);font-size:14px;font-weight:700">Na</text><line x1="165" y1="90" x2="215" y2="90" style="stroke:var(--mut);stroke-width:1.5" stroke-dasharray="5 4"/><path d="M165,110 Q195,130 215,118" style="fill:none;stroke:var(--c4);stroke-width:2.5;fill-opacity:1" marker-end="url(#fa)"/><text x="190" y="84" text-anchor="middle" style="fill:var(--c4);font-size:11px;font-weight:400">e⁻ rơi</text><text x="295" y="62" text-anchor="start" style="fill:var(--c2);font-size:12px;font-weight:400">electron còn lại:</text><text x="295" y="80" text-anchor="start" style="fill:var(--c2);font-size:13px;font-weight:700">n₀ ≈ Nd − Na</text></svg><figcaption>Bù trừ: các acceptor "nuốt" bớt electron của donor, chỉ phần dư tạo hạt dẫn.</figcaption></figure>
+
     <p>Trong thực tế chế tạo vi mạch, người ta thường khuếch tán tạp chất loại N đè lên một vùng bán dẫn vốn đã có sẵn tạp chất loại P (hoặc ngược lại) để tạo ra các linh kiện. Một chất bán dẫn chứa <b>cả nguyên tử tạp chất Donor ($N_d$) lẫn nguyên tử tạp chất Acceptor ($N_a$) trong cùng một vùng không gian</b> được gọi là <b>Bán dẫn bù trừ (Compensated Semiconductor)</b>:</p>
     <ul>
       <li>Nếu $\mathbf{N_d > N_a}$: Số nguyên tử cho electron nhiều hơn số nguyên tử nhận electron $\implies$ Tạo thành <b>Bán dẫn bù trừ loại N</b> (với nồng độ Donor hiệu dụng là $N_d - N_a$).</li>
@@ -3443,11 +3701,21 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="b6-comp-desc" class="box"></div>
       <svg id="b6-comp-svg" viewBox="0 0 680 260"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul><li>Trung hòa điện tích: $n_0+N_a=p_0+N_d$.</li><li>Với $N_d\gt N_a$: $n_0=\dfrac{N_d-N_a}{2}+\sqrt{\left(\dfrac{N_d-N_a}{2}\right)^2+n_i^2}$, và $p_0=\dfrac{n_i^2}{n_0}$.</li><li>Chỉ <b>hiệu</b> $N_d-N_a$ quyết định loại và nồng độ hạt đa số.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Có $n_0$, $p_0$ rồi, Mục 5 tìm vị trí $E_F$ và xem nó dịch chuyển thế nào.</div>
+</section>
 
   <section>
     <h2>5. Vị Trí Mức Năng Lượng Fermi $E_F$ Theo Nồng Độ Pha Tạp, Nhiệt Độ &amp; Ý Nghĩa Vật Lý</h2>
+    <div class="bridge"><b>Nối từ Mục 4:</b> $n_0$ đã biết, đảo công thức ở Mục 1 để suy ra $E_F$.</div>
+
+    <div class="box why"><b>Học phần này để làm gì?</b> $E_F$ là "chỉ số" gọn nhất cho biết trạng thái của bán dẫn. Quy tắc $E_F$ phẳng khi tiếp xúc là nền cho linh kiện nhiều lớp vật liệu.</div>
+
     <h3>5.1. Công thức xác định vị trí Mức Fermi $E_F$ theo nồng độ pha tạp</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 184" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><rect x="40" y="20" width="200" height="35" rx="0" style="fill:var(--c1);stroke:var(--c1);stroke-width:0;fill-opacity:0.18"/><rect x="40" y="125" width="200" height="35" rx="0" style="fill:var(--c5);stroke:var(--c5);stroke-width:0;fill-opacity:0.18"/><line x1="40" y1="55" x2="240" y2="55" style="stroke:var(--c1);stroke-width:2.5"/><line x1="40" y1="125" x2="240" y2="125" style="stroke:var(--c5);stroke-width:2.5"/><line x1="40" y1="90" x2="240" y2="90" style="stroke:var(--mut);stroke-width:1.5" stroke-dasharray="5 4"/><text x="246" y="94" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">E_Fi</text><line x1="60" y1="78" x2="220" y2="78" style="stroke:var(--c4);stroke-width:2.5"/><line x1="60" y1="68" x2="220" y2="68" style="stroke:var(--c4);stroke-width:2.5"/><line x1="60" y1="58" x2="220" y2="58" style="stroke:var(--c4);stroke-width:2.5"/><line x1="60" y1="102" x2="220" y2="102" style="stroke:var(--c5);stroke-width:2.5"/><line x1="60" y1="112" x2="220" y2="112" style="stroke:var(--c5);stroke-width:2.5"/><line x1="60" y1="122" x2="220" y2="122" style="stroke:var(--c5);stroke-width:2.5"/><line x1="330" y1="95" x2="330" y2="50" style="stroke:var(--c4);stroke-width:2.5" marker-end="url(#fa)"/><text x="335" y="38" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:700">Nd tăng:</text><text x="335" y="54" text-anchor="start" style="fill:var(--c4);font-size:12px;font-weight:400">E_F lên</text><line x1="330" y1="100" x2="330" y2="140" style="stroke:var(--c5);stroke-width:2.5" marker-end="url(#fa)"/><text x="335" y="156" text-anchor="start" style="fill:var(--c5);font-size:12px;font-weight:700">Na tăng:</text><text x="335" y="172" text-anchor="start" style="fill:var(--c5);font-size:12px;font-weight:400">E_F xuống</text></svg><figcaption>Pha tạp càng đậm thì E_F càng sát dải của hạt đa số.</figcaption></figure>
+
     <p>Bằng cách lấy logarit tự nhiên ($\ln$) hai vế của các phương trình nồng độ hạt dẫn (trong miền xấp xỉ Boltzmann còn hiệu lực), ta dễ dàng xác định được khoảng cách từ mức Fermi $E_F$ đến các mép dải $E_c, E_v$ hoặc đến mức nội tại $E_{Fi}$:</p>
     <div class="f">
       $$\text{Bán dẫn loại N } (N_d > N_a): \quad \mathbf{E_c - E_F = kT \ln\left(\frac{N_c}{n_0}\right) \approx kT \ln\left(\frac{N_c}{N_d - N_a}\right)}$$
@@ -3459,6 +3727,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>5.2. Ba vùng nhiệt độ hoạt động của Bán dẫn Pha tạp (Figure 4.16 &amp; 4.19)</h3>
+    <figure class="fig fl"><svg viewBox="0 0 420 192" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="40" y1="150" x2="400" y2="150" style="stroke:var(--mut);stroke-width:1.5"/><line x1="40" y1="150" x2="40" y2="20" style="stroke:var(--mut);stroke-width:1.5"/><path d="M50,145 C85,145 105,80 140,75 L250,75 C300,75 330,60 385,22" style="fill:none;stroke:var(--c5);stroke-width:3.5;fill-opacity:1"/><line x1="140" y1="20" x2="140" y2="150" style="stroke:var(--g);stroke-width:1.5" stroke-dasharray="5 4"/><line x1="255" y1="20" x2="255" y2="150" style="stroke:var(--g);stroke-width:1.5" stroke-dasharray="5 4"/><line x1="40" y1="75" x2="140" y2="75" style="stroke:var(--c4);stroke-width:1.5" stroke-dasharray="4 4"/><text x="90" y="166" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:400">đóng băng</text><text x="197" y="166" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">ngoại lai</text><text x="327" y="166" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:400">nội tại</text><text x="197" y="64" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">n₀ ≈ Nd</text><text x="46" y="18" text-anchor="start" style="fill:var(--mut);font-size:12px;font-weight:400">log n₀</text><text x="398" y="182" text-anchor="end" style="fill:var(--mut);font-size:12px;font-weight:400">nhiệt độ T →</text></svg><figcaption>Ba vùng nhiệt độ của bán dẫn pha tạp: dùng được nhất là vùng ngoại lai.</figcaption></figure>
+
     <p>Khi theo dõi nồng độ electron $n_0(T)$ và vị trí mức Fermi $E_F(T)$ của một chất bán dẫn pha tạp khi nhiệt độ tăng dần từ $0\text{ K}$ lên tới $700\text{ K}$, ta luôn thấy <b>3 vùng chế độ rõ rệt</b>:</p>
     <ol>
       <li><span class="k b1">Vùng 1 — Nhiệt độ thấp ($T < 100\text{ K}$): Vùng Ion hóa một phần / Đóng băng (Partial Ionization / Freeze-Out)</span> Nhiệt độ quá thấp không đủ làm bật hết electron ra khỏi mức Donor $E_d$. Khi $T$ giảm về $0\text{ K}$, $n_0$ tụt dốc xuống $0$ và mức Fermi $E_F$ dâng lên nằm cao hơn cả mức $E_d$ (với loại N) hoặc tụt xuống dưới mức $E_a$ (với loại P).</li>
@@ -3489,6 +3759,8 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
     </div>
 
     <h3>5.4. Ý nghĩa Vật lý Sâu sắc của Mức năng lượng Fermi khi Tiếp xúc Hai Vật liệu (Figure 4.20)</h3>
+    <figure class="fig fr"><svg viewBox="0 0 420 190" role="img"><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker></defs><line x1="10" y1="40" x2="100" y2="40" style="stroke:var(--c1);stroke-width:3"/><line x1="10" y1="140" x2="100" y2="140" style="stroke:var(--c5);stroke-width:3"/><line x1="110" y1="40" x2="200" y2="40" style="stroke:var(--c1);stroke-width:3"/><line x1="110" y1="140" x2="200" y2="140" style="stroke:var(--c5);stroke-width:3"/><line x1="10" y1="55" x2="100" y2="55" style="stroke:var(--c4);stroke-width:2.5" stroke-dasharray="5 4"/><line x1="110" y1="125" x2="200" y2="125" style="stroke:var(--c4);stroke-width:2.5" stroke-dasharray="5 4"/><text x="55" y="36" text-anchor="middle" style="fill:var(--c1);font-size:13px;font-weight:700">n</text><text x="155" y="36" text-anchor="middle" style="fill:var(--c5);font-size:13px;font-weight:700">p</text><text x="105" y="178" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">E_F khác nhau</text><path d="M220,60 H290 C310,60 320,10 340,10 H410" style="fill:none;stroke:var(--c1);stroke-width:3;fill-opacity:1"/><path d="M220,160 H290 C310,160 320,110 340,110 H410" style="fill:none;stroke:var(--c5);stroke-width:3;fill-opacity:1"/><line x1="220" y1="85" x2="410" y2="85" style="stroke:var(--c4);stroke-width:2.5" stroke-dasharray="5 4"/><text x="315" y="178" text-anchor="middle" style="fill:var(--c4);font-size:12px;font-weight:700">E_F phẳng khi cân bằng</text><text x="247" y="52" text-anchor="middle" style="fill:var(--c1);font-size:13px;font-weight:700">n</text><text x="385" y="62" text-anchor="middle" style="fill:var(--c5);font-size:13px;font-weight:700">p</text></svg><figcaption>Khi tiếp xúc, mức Fermi hai bên san bằng và các dải bị uốn cong.</figcaption></figure>
+
     <p>Tại sao các kỹ sư bán dẫn lại quan tâm đến vị trí mức Fermi $E_F$ đến vậy? Bởi vì <b>Mức năng lượng Fermi đóng vai trò giống hệt như "Mực nước" (Thế năng hóa học) của các hạt electron!</b></p>
     <ul>
       <li>Giả sử ta có Vật liệu A (có mức Fermi cao $E_{FA}$) và Vật liệu B (có mức Fermi thấp hơn $E_{FB} < E_{FA}$).</li>
@@ -3505,14 +3777,22 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <div id="b6-contact-desc" class="box"></div>
       <svg id="b6-contact-svg" viewBox="0 0 680 230"></svg>
     </div>
-  </section>
+  
+    <div class="box key"><b>Mục 5 — Nhớ</b><ul><li>Ba vùng nhiệt độ: <b>đóng băng</b> (thấp), <b>ngoại lai</b> (vừa, $n_0\approx N_d$), <b>nội tại</b> (cao, $n_i$ vượt mức pha tạp).</li><li>Pha tạp tăng → $E_F$ dịch về phía dải của hạt đa số.</li><li>Hai vật liệu tiếp xúc ở cân bằng nhiệt: <b>$E_F$ hai bên bằng nhau</b>.</li></ul></div>
+
+    <div class="next"><b>Tiếp theo:</b> Gom công thức (Mục 6) rồi luyện bài (Mục 7).</div>
+</section>
 
   <section>
     <h2>6. Cẩm Nang Công Thức Trọng Tâm Buổi 6 (Giải Nghĩa Chi Tiết)</h2>
+    <div class="bridge"><b>Nối từ Mục 1–5:</b> Bảng chọn công thức.</div>
+
+    <div class="tw"><table><tr><th>Đề bài hỏi gì?</th><th>Công thức</th></tr><tr><td>$n_0$, $p_0$ từ $E_F-E_{Fi}$, hạt thiểu số</td><td>Công thức 1</td></tr><tr><td>Pha tạp rất đậm, suy biến</td><td>Công thức 2</td></tr><tr><td>Tỷ lệ tạp chất đã ion hóa, nhiệt độ đóng băng</td><td>Công thức 3</td></tr><tr><td>Bán dẫn bù trừ, vị trí $E_F$</td><td>Công thức 4</td></tr></table></div>
+
 
     <div class="formula-card">
       <h3>Công thức 1: Nồng độ Hạt dẫn theo $E_{Fi}$ &amp; Định luật Tác dụng Khối lượng ($n_0 p_0 = n_i^2$)</h3>
-      <div class="f">
+      <div class="f key">
         $$n_0 = n_i \exp\left[\frac{E_F - E_{Fi}}{kT}\right], \qquad p_0 = n_i \exp\left[-\frac{E_F - E_{Fi}}{kT}\right], \qquad \mathbf{n_0 \cdot p_0 = n_i^2}$$
       </div>
       <div class="formula-meta">
@@ -3531,7 +3811,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 2: Tích phân Fermi-Dirac $F_{1/2}(\eta_F)$ cho Bán dẫn Suy biến</h3>
-      <div class="f">
+      <div class="f key">
         $$n_0 = \frac{2}{\sqrt{\pi}}\,N_c\,F_{1/2}(\eta_F) \qquad \text{với} \qquad \eta_F = \frac{E_F - E_c}{kT}, \qquad F_{1/2}(\eta_F) = \int_0^\infty \frac{\eta^{1/2}\,d\eta}{1 + \exp(\eta - \eta_F)}$$
       </div>
       <div class="formula-meta">
@@ -3549,7 +3829,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 3: Thống kê Mức Tạp chất &amp; Tỷ lệ Tạp chất Chưa Ion hóa</h3>
-      <div class="f">
+      <div class="f key">
         $$n_d = \frac{N_d}{1 + \frac{1}{2}\exp\left(\frac{E_d - E_F}{kT}\right)}, \quad p_a = \frac{N_a}{1 + \frac{1}{g}\exp\left(\frac{E_F - E_a}{kT}\right)}, \quad \mathbf{\frac{n_d}{n_d + n_0} = \frac{1}{1 + \frac{N_c}{2N_d}\exp\left[-\frac{E_c - E_d}{kT}\right]}}$$
       </div>
       <div class="formula-meta">
@@ -3568,7 +3848,7 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
     <div class="formula-card">
       <h3>Công thức 4: Nồng độ Hạt dẫn trong Bán dẫn Bù trừ &amp; Vị trí Mức Fermi $E_F$</h3>
-      <div class="f">
+      <div class="f key">
         $$\text{Loại N } (N_d > N_a): \quad \mathbf{n_0 = \frac{N_d - N_a}{2} + \sqrt{\left(\frac{N_d - N_a}{2}\right)^2 + n_i^2}}, \qquad \mathbf{E_c - E_F = kT \ln\left(\frac{N_c}{N_d - N_a}\right)}$$
         $$\text{Loại P } (N_a > N_d): \quad \mathbf{p_0 = \frac{N_a - N_d}{2} + \sqrt{\left(\frac{N_a - N_d}{2}\right)^2 + n_i^2}}, \qquad \mathbf{E_F - E_v = kT \ln\left(\frac{N_v}{N_a - N_d}\right)}$$
       </div>
@@ -3587,6 +3867,12 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
 
   <section>
     <h2>7. Bài Tập Trọng Tâm Buổi 6 (Có Gợi Ý &amp; Giải Chi Tiết Từng Bước)</h2>
+    <div class="bridge"><b>Nối từ Mục 6:</b> Mỗi câu luyện một nhánh của bài.</div>
+
+    <div class="tw"><table><tr><th>Câu</th><th>Luyện</th><th>Công thức</th></tr><tr><td>1</td><td>$n_0$, $p_0$ từ vị trí $E_F$</td><td>1</td></tr><tr><td>2</td><td>Suy biến, dùng $F_{1/2}$</td><td>2</td></tr><tr><td>3</td><td>Kiểm tra ion hóa hoàn toàn; nhiệt độ ion hóa $90\%$</td><td>3</td></tr><tr><td>4</td><td>Hạt đa số và thiểu số, kể cả bù trừ</td><td>1, 4</td></tr><tr><td>5</td><td>Thiết kế bù trừ để đạt $E_F$ cho trước</td><td>4</td></tr><tr><td>6</td><td>Nồng độ pha tạp tối đa để còn dùng được Boltzmann</td><td>2</td></tr></table></div>
+
+    <div class="box key"><b>Cách làm chung Buổi 6</b><ol><li><b>Bước 1:</b> Kiểm tra pha tạp có quá đậm không (có suy biến không).</li><li><b>Bước 2:</b> Kiểm tra nhiệt độ (ion hóa hoàn toàn hay không).</li><li><b>Bước 3:</b> Chọn công thức tương ứng rồi tính $n_0$, sau đó $p_0=n_i^2/n_0$.</li></ol></div>
+
     <p>Toàn bộ các bài toán trọng tâm trong slide bài giảng Buổi 6 đã được thầy hệ thống hóa thành 6 câu hỏi đầy đủ dưới đây. Em hãy bấm vào <b>Xem Gợi ý</b> để nắm hướng đi trước, sau đó mở <b>Xem Lời giải chi tiết</b> kèm giải thích màu xám ở từng bước biến đổi nhé!</p>
 
     <!-- CÂU 1 BUỔI 6 -->
@@ -3878,7 +4164,9 @@ html[data-view=desktop] .sim-card svg{max-height:640px}
       <li><b>Ion hóa hoàn toàn &amp; Đóng băng:</b> Ở nhiệt độ phòng ($300\text{ K}$), gần như $100\%$ tạp chất bị ion hóa ($N_d^+ \approx N_d, N_a^- \approx N_a$). Ở nhiệt độ cực thấp ($T \to 0\text{ K}$), hạt dẫn bị đóng băng trên mức tạp chất.</li>
       <li><b>Bán dẫn bù trừ &amp; Trung hòa điện tích:</b> Khi có cả $N_d$ và $N_a$, phương trình $n_0 + N_a = p_0 + N_d$ cho nghiệm $n_0 = \frac{N_d-N_a}{2} + \sqrt{\left(\frac{N_d-N_a}{2}\right)^2 + n_i^2}$ (với $N_d > N_a$). Khi hai vật liệu tiếp xúc nhau ở cân bằng nhiệt, mức Fermi $E_F$ ở cả hai bên luôn san bằng ngang nhau.</li>
     </ul>
-  </section>
+  
+    <div class="next"><b>Tiếp theo trong môn học:</b> Em đã biết số hạt dẫn và vị trí $E_F$ ở cân bằng. Khi học về linh kiện, ta dùng chính những kết quả này để xét điều gì xảy ra khi có điện áp hoặc khi ghép hai vùng n và p.</div>
+</section>
 </template>
 
 <template id="tpl-buoi-pending">
@@ -5986,6 +6274,7 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.csel-wrap.open').forEach(w => w.classList.remove('open'));
 });
 
+function arrangeSims(root){}
 function loadLesson(lessonId) {
   const mainEl = $('app-content');
   if (lessonId === '1') {
@@ -6051,6 +6340,7 @@ function loadLesson(lessonId) {
   }
 
   upgradeCustomSelects(document);
+  arrangeSims(mainEl);
   buildTOC();
   if (window.MathJax && MathJax.typesetPromise) {
     MathJax.typesetPromise([mainEl]);
