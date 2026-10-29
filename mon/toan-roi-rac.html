@@ -74,7 +74,7 @@ window.MathJax = {
 /* ==========================================================================
    2. CẤU TRÚC BỐ CỤC & TYPOGRAPHY
    ========================================================================== */
-html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; overflow-x: hidden; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
 * { box-sizing: border-box; }
 body {
   margin: 0;
@@ -83,6 +83,7 @@ body {
   font: 17.5px/1.92 "Be Vietnam Pro", system-ui, sans-serif;
   letter-spacing: 0.01em;
   overflow-x: hidden;
+  overflow-x: clip;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -112,6 +113,7 @@ section {
   box-shadow: 0 4px 20px rgba(0,0,0,.04);
   max-width: 100%;
   overflow: hidden;
+  overflow: clip;
 }
 @media (max-width: 600px) {
   main { padding: 20px 12px 70px; }
@@ -538,6 +540,67 @@ input[type=range]::-moz-range-thumb {
 #toc-links a.sub { padding-left: 24px; font-size: 13.5px; color: var(--mut); }
 #toc-links a.grp { font-weight: 600; margin-top: 4px; }
 section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px); }
+
+/* ==========================================================================
+   3. THÀNH PHẦN THEO KHUNG MẪU (bridge / next / key / steps / ans)
+   ========================================================================== */
+.bridge, .next { border-radius: 12px; padding: 12px 18px; margin: 0 0 18px; background: var(--tint); border-left: 5px solid var(--c5); font-size: 16px; line-height: 1.8; }
+.next { border-color: var(--c2); margin: 24px 0 0; }
+.key { border: 2px solid var(--c4); background: var(--card); position: relative; padding-top: 30px; box-shadow: 0 4px 16px rgba(230,73,128,.14); }
+.key::before { content: "★ PHẢI NHỚ"; position: absolute; top: -2px; left: 16px; background: var(--c4); color: #fff; font: 800 12px/1 "Be Vietnam Pro", sans-serif; padding: 6px 10px; border-radius: 0 0 8px 8px; }
+figcaption { font-size: 14.5px; color: var(--mut); margin-top: 8px; line-height: 1.7; padding: 0 8px; }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 12px 0; }
+.steps > li { counter-increment: s; position: relative; padding: 11px 14px 11px 54px; margin: 10px 0; background: var(--card); border: 1px solid var(--g); border-radius: 12px; line-height: 1.85; }
+.steps > li::before { content: counter(s); position: absolute; left: 13px; top: 11px; width: 29px; height: 29px; border-radius: 50%; background: var(--c5); color: #fff; font: 800 14px/29px "Be Vietnam Pro", sans-serif; text-align: center; }
+.steps.nn > li { padding-left: 16px; }
+.steps.nn > li::before { display: none; }
+.ans { background: var(--card); border: 2px solid var(--c2); border-radius: 12px; padding: 10px 16px; margin: 12px 0 2px; }
+
+/* ==========================================================================
+   4. CHẾ ĐỘ XEM: ĐIỆN THOẠI / MÁY TÍNH
+   ========================================================================== */
+.vs { display: flex; gap: 4px; padding: 4px; background: var(--tint); border: 1.5px solid var(--g); border-radius: 12px; margin-bottom: 12px; }
+.vs b { font-size: 11px; color: var(--mut); padding: 0 6px; align-self: center; text-transform: uppercase; }
+.vb { flex: 1; border: 0; border-radius: 9px; padding: 7px; background: 0; color: var(--ink); font: 700 12.5px "Be Vietnam Pro", sans-serif; cursor: pointer; }
+.vb[aria-pressed=true] { background: var(--c5); color: #fff; }
+#toc-links a.on { background: var(--tint); color: var(--c5); }
+html[data-view=desktop] body { font-size: 18px; }
+html[data-view=desktop] main { max-width: none; padding: 26px clamp(18px, 2.6vw, 60px) 90px; }
+html[data-view=desktop] section { display: flow-root; padding: 34px clamp(24px, 2.8vw, 58px); }
+html[data-view=desktop] p, html[data-view=desktop] li { max-width: 165ch; }
+html[data-view=desktop] table { min-width: 0; }
+html[data-view=desktop] #mn { width: min(420px, calc(100vw - 28px)); }
+
+/* ==========================================================================
+   5. BỐ CỤC MÔ HÌNH: MÀN HÌNH MÔ PHỎNG 60% | THÔNG SỐ + DỮ LIỆU 40%
+   ========================================================================== */
+.sim-card { container-type: inline-size; padding: 16px; }
+.sim-card .sim-tabs { margin-bottom: 14px; padding: 8px; gap: 8px; border-radius: 16px; }
+.sim-card .sim-tab { padding: 9px 12px; font-size: 14px; }
+.sim-card .sim-tabs { flex-wrap: nowrap; overflow-x: auto; }
+.sim-card .sim-tab { flex: 0 0 auto; white-space: nowrap; }
+.sim-body { display: block; }
+.sim-stage {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 62px); z-index: 6;
+  background: var(--card); padding: 0 0 10px; margin-bottom: 10px;
+  border-bottom: 1px solid var(--g);
+}
+.sim-stage svg { margin: 0; }
+.sim-side { min-width: 0; }
+.sim-h { font-size: 13px; font-weight: 800; color: var(--c5); margin: 4px 2px 8px; letter-spacing: .02em; }
+.sim-side .ctrl-row { margin: 0 0 14px; padding: 12px 14px; gap: 12px; }
+.sim-side .ctrl-row label { margin-bottom: 6px; font-size: 14px; }
+.sim-side .box { margin: 0; padding: 14px 16px; font-size: 15px; line-height: 1.85; }
+
+@container (min-width: 640px) {
+  .sim-card .sim-tabs { flex-wrap: wrap; overflow-x: visible; }
+  .sim-card .sim-tab { flex: 1 1 170px; white-space: normal; }
+  .sim-body { display: grid; grid-template-columns: 60% minmax(0, 1fr); column-gap: 18px; align-items: stretch; }
+  .sim-stage { position: static; display: flex; align-items: center; margin: 0; padding: 10px; background: var(--tint); border: 1px solid var(--g); border-radius: 16px; }
+  .sim-stage svg { border: 0; background: transparent; }
+  .sim-side { max-height: calc(100vh - 150px); overflow-y: auto; padding-right: 4px; }
+  .sim-side .ctrl-row { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -549,6 +612,7 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
 
 <!-- Menu điều hướng chứa bộ chọn bài học và mục lục tự động -->
 <nav id="mn" hidden aria-label="Menu bài học và mục lục">
+  <div class="vs" role="group" aria-label="Chế độ xem"><b>Chế độ xem</b><button type="button" id="vm" class="vb" aria-pressed="true">Điện thoại</button><button type="button" id="vd" class="vb" aria-pressed="false">Máy tính</button></div>
   <div class="menu-selector-wrap">
     <label for="lesson-select">Chọn bài học Toán Rời Rạc:</label>
     <select id="lesson-select" onchange="loadLesson(this.value)">
@@ -880,23 +944,28 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
         <button type="button" class="sim-tab" onclick="selectBoolMode('light', this)">3. Đèn Cầu Thang 3 Công Tắc</button>
       </div>
 
-      <div class="ctrl-row">
-        <div>
-          <label>Công tắc đầu vào $x$ (<span id="val-bx">1</span>):</label>
-          <input type="range" id="sl-bx" min="0" max="1" step="1" value="1" oninput="renderBoolSim()">
+      <div class="sim-body">
+        <div class="sim-stage"><svg id="bool-svg" viewBox="0 0 680 230" role="img" aria-label="Màn hình mô phỏng"></svg></div>
+        <div class="sim-side">
+          <div class="sim-h">Thông số mô hình</div>
+        <div class="ctrl-row">
+          <div>
+            <label>Công tắc đầu vào $x$ (<span id="val-bx">1</span>):</label>
+            <input type="range" id="sl-bx" min="0" max="1" step="1" value="1" oninput="renderBoolSim()">
+          </div>
+          <div>
+            <label>Công tắc đầu vào $y$ (<span id="val-by">1</span>):</label>
+            <input type="range" id="sl-by" min="0" max="1" step="1" value="1" oninput="renderBoolSim()">
+          </div>
+          <div>
+            <label>Công tắc đầu vào $z$ (<span id="val-bz">0</span>):</label>
+            <input type="range" id="sl-bz" min="0" max="1" step="1" value="0" oninput="renderBoolSim()">
+          </div>
         </div>
-        <div>
-          <label>Công tắc đầu vào $y$ (<span id="val-by">1</span>):</label>
-          <input type="range" id="sl-by" min="0" max="1" step="1" value="1" oninput="renderBoolSim()">
-        </div>
-        <div>
-          <label>Công tắc đầu vào $z$ (<span id="val-bz">0</span>):</label>
-          <input type="range" id="sl-bz" min="0" max="1" step="1" value="0" oninput="renderBoolSim()">
+          <div class="sim-h">Dữ liệu mô hình</div>
+          <div id="bool-desc" class="box"></div>
         </div>
       </div>
-
-      <div id="bool-desc" class="box"></div>
-      <svg id="bool-svg" viewBox="0 0 680 230"></svg>
     </div>
   </section>
 
@@ -1628,27 +1697,32 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
         <button type="button" class="sim-tab" onclick="selectCryptoMode('caesar', this)">3. Vòng Tròn Mật Mã Caesar</button>
       </div>
 
-      <div class="ctrl-row">
-        <div>
-          <label id="lbl-cr-1">Chọn cặp nguyên tố $(p, q)$ hoặc Tham số:</label>
-          <select id="sel-cr-pair" onchange="renderCryptoSim()">
-            <option value="0" selected>Cặp 1: p = 43, q = 59 (n = 2537, e = 13) — Chuẩn Slide</option>
-            <option value="1">Cặp 2: p = 11, q = 13 (n = 143, e = 7) — Số nhỏ dễ nhẩm</option>
-            <option value="2">Cặp 3: p = 17, q = 23 (n = 391, e = 3) — Khóa e = 3</option>
-          </select>
+      <div class="sim-body">
+        <div class="sim-stage"><svg id="crypto-svg" viewBox="0 0 680 250" role="img" aria-label="Màn hình mô phỏng"></svg></div>
+        <div class="sim-side">
+          <div class="sim-h">Thông số mô hình</div>
+        <div class="ctrl-row">
+          <div>
+            <label id="lbl-cr-1">Chọn cặp nguyên tố $(p, q)$ hoặc Tham số:</label>
+            <select id="sel-cr-pair" onchange="renderCryptoSim()">
+              <option value="0" selected>Cặp 1: p = 43, q = 59 (n = 2537, e = 13) — Chuẩn Slide</option>
+              <option value="1">Cặp 2: p = 11, q = 13 (n = 143, e = 7) — Số nhỏ dễ nhẩm</option>
+              <option value="2">Cặp 3: p = 17, q = 23 (n = 391, e = 3) — Khóa e = 3</option>
+            </select>
+          </div>
+          <div>
+            <label id="lbl-cr-2">Giá trị Bản rõ $M$ / Khóa $k_1$ (<span id="val-cr-m">18</span>):</label>
+            <input type="range" id="sl-cr-m" min="2" max="85" step="1" value="18" oninput="renderCryptoSim()">
+          </div>
+          <div>
+            <label id="lbl-cr-3">Khóa dịch chuyển $k$ / Khóa $k_2$ (<span id="val-cr-k">3</span>):</label>
+            <input type="range" id="sl-cr-k" min="1" max="25" step="1" value="3" oninput="renderCryptoSim()">
+          </div>
         </div>
-        <div>
-          <label id="lbl-cr-2">Giá trị Bản rõ $M$ / Khóa $k_1$ (<span id="val-cr-m">18</span>):</label>
-          <input type="range" id="sl-cr-m" min="2" max="85" step="1" value="18" oninput="renderCryptoSim()">
-        </div>
-        <div>
-          <label id="lbl-cr-3">Khóa dịch chuyển $k$ / Khóa $k_2$ (<span id="val-cr-k">3</span>):</label>
-          <input type="range" id="sl-cr-k" min="1" max="25" step="1" value="3" oninput="renderCryptoSim()">
+          <div class="sim-h">Dữ liệu mô hình</div>
+          <div id="crypto-desc" class="box"></div>
         </div>
       </div>
-
-      <div id="crypto-desc" class="box"></div>
-      <svg id="crypto-svg" viewBox="0 0 680 250"></svg>
     </div>
   </section>
 
@@ -2213,19 +2287,24 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
         <button type="button" class="sim-tab" onclick="selectIndMode('pow', this)">3. Đệ Quy Lũy Thừa (Bài 16-19*)</button>
       </div>
 
-      <div class="ctrl-row">
-        <div>
-          <label>Chọn bậc quy nạp / chỉ số $n$ (<span id="val-ind-n">5</span>):</label>
-          <input type="range" id="sl-ind-n" min="1" max="10" step="1" value="5" oninput="renderIndSim()">
+      <div class="sim-body">
+        <div class="sim-stage"><svg id="ind-svg" viewBox="0 0 680 250" role="img" aria-label="Màn hình mô phỏng"></svg></div>
+        <div class="sim-side">
+          <div class="sim-h">Thông số mô hình</div>
+        <div class="ctrl-row">
+          <div>
+            <label>Chọn bậc quy nạp / chỉ số $n$ (<span id="val-ind-n">5</span>):</label>
+            <input type="range" id="sl-ind-n" min="1" max="10" step="1" value="5" oninput="renderIndSim()">
+          </div>
+          <div>
+            <label>Cơ số $a$ (Dùng cho Tab 3 — <span id="val-ind-a">2</span>):</label>
+            <input type="range" id="sl-ind-a" min="2" max="5" step="1" value="2" oninput="renderIndSim()">
+          </div>
         </div>
-        <div>
-          <label>Cơ số $a$ (Dùng cho Tab 3 — <span id="val-ind-a">2</span>):</label>
-          <input type="range" id="sl-ind-a" min="2" max="5" step="1" value="2" oninput="renderIndSim()">
+          <div class="sim-h">Dữ liệu mô hình</div>
+          <div id="ind-desc" class="box"></div>
         </div>
       </div>
-
-      <div id="ind-desc" class="box"></div>
-      <svg id="ind-svg" viewBox="0 0 680 250"></svg>
     </div>
   </section>
 
@@ -2756,6 +2835,30 @@ window.loadLesson = loadLesson;
       btn.focus();
     }
   });
+
+  /* Chế độ xem Điện thoại / Máy tính (lưu lại lựa chọn) */
+  const store = (k, v) => { try { return v ? localStorage.setItem(k, v) : localStorage.getItem(k); } catch (e) { return null; } };
+  const applyView = v => {
+    document.documentElement.dataset.view = v;
+    $('vm').setAttribute('aria-pressed', v === 'mobile');
+    $('vd').setAttribute('aria-pressed', v === 'desktop');
+    store('toan-roi-rac-view', v);
+  };
+  $('vm').onclick = () => applyView('mobile');
+  $('vd').onclick = () => applyView('desktop');
+  const savedView = store('toan-roi-rac-view');
+  applyView(savedView === 'desktop' || savedView === 'mobile' ? savedView : (window.innerWidth >= 1000 ? 'desktop' : 'mobile'));
+
+  /* Tô sáng mục đang xem trong mục lục */
+  addEventListener('scroll', () => {
+    let cur = null;
+    document.querySelectorAll('#toc-links a').forEach(a => {
+      const t = document.getElementById(a.getAttribute('href').slice(1));
+      if (t && t.getBoundingClientRect().top <= 120) cur = a;
+      a.classList.remove('on');
+    });
+    if (cur) cur.classList.add('on');
+  }, { passive: true });
 
   // Mặc định mở Phần 4 (Bài 6 - Lý thuyết số & Mật mã hóa RSA) để xem ngay Mục 5.1 vừa bổ sung
   $('lesson-select').value = '4';
