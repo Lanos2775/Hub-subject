@@ -577,6 +577,7 @@ html[data-view="desktop"] table { min-width: 0; }
       <option value="7">Bài 7: Đa luồng</option>
       <option value="8">Bài 8: JavaFX, MVC, Serialization, JDBC</option>
       <option value="9">Bài 9: Lập trình mạng</option>
+      <option value="10">Bài 10: Kiểm thử và Tái cấu trúc mã nguồn</option>
       <option value="ref">Tra cứu nhanh lệnh Java</option>
     </select>
   </div>
@@ -2777,6 +2778,218 @@ public class ChatController {
 }`)
 + `<p>Đây cũng là lúc tuần tự hóa (Bài 8) phát huy: thay vì gửi chuỗi, Client và Server có thể gửi cả đối tượng <code>Message</code> (<code>implements Serializable</code>) qua <code>ObjectOutputStream</code>/<code>ObjectInputStream</code> bọc trên socket, hoặc gửi đối tượng đã đổi thành JSON mỗi dòng một tin. Giao thức đơn giản nhưng đã đủ để xây ứng dụng thật.</p>`)
 };
+
+LES['10'] = {b:'b3', n:'BÀI 10', t:'Kiểm thử và Tái cấu trúc mã nguồn', d:'Unit test, kiểm thử hộp đen/hộp trắng, JUnit, kiểm thử tự động; code smell và các kỹ thuật refactoring.',
+body: () =>
+sec('Phần 1. Vì sao phải kiểm thử?',
+`<p>Viết xong code không có nghĩa là code đúng. <b>Kiểm thử (testing)</b> là chạy chương trình với dữ liệu có chủ đích để <b>tìm lỗi</b> trước khi người dùng gặp. Lưu ý: kiểm thử chỉ chứng minh được là <i>có</i> lỗi, không bao giờ chứng minh được là <i>hết</i> lỗi.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> kiểm thử giống kiểm tra xe trước khi xuất xưởng: thử phanh, thử đèn, thử từng bộ phận riêng, rồi mới chạy thử cả xe. Bộ phận nào hỏng thì sửa ngay ở xưởng, rẻ hơn nhiều so với sửa khi xe đã bán.')
++ `<h3>Các mức kiểm thử</h3>`
++ tb(['Mức','Kiểm tra cái gì','Ai thường làm'],[
+ ['<b>Unit test</b> (đơn vị)','Một phương thức hoặc một lớp riêng lẻ','Lập trình viên'],
+ ['<b>Integration test</b> (tích hợp)','Các module ghép lại có phối hợp đúng không','Lập trình viên / tester'],
+ ['<b>System test</b> (hệ thống)','Cả hệ thống so với yêu cầu','Nhóm kiểm thử'],
+ ['<b>Acceptance test</b> (nghiệm thu)','Khách hàng có chấp nhận sản phẩm không','Khách hàng / người dùng'],
+ ['<b>Regression test</b> (hồi quy)','Sau khi sửa code, chức năng cũ có bị hỏng không','Tự động chạy lại toàn bộ test'],
+ ])
++ `<p>Bài này tập trung vào <b>unit test</b>, mức nhỏ nhất và là nền móng của các mức còn lại.</p>
+<h3>Test case là gì?</h3>
+<p>Một <b>test case</b> gồm: <b>dữ liệu đầu vào</b>, <b>điều kiện thực thi</b> và <b>kết quả mong đợi</b>. Chạy chương trình, so kết quả thực tế với kết quả mong đợi: khác nhau tức là có lỗi. Thứ dùng để quyết định "kết quả mong đợi" là một <b>oracle</b> (người, tài liệu đặc tả, hoặc một chương trình tham chiếu).</p>`
++ bridge('Câu hỏi tiếp theo: số đầu vào có thể là vô hạn, vậy chọn test case nào cho đủ mà không quá nhiều? Có hai trường phái: nhìn vào chức năng (hộp đen) hoặc nhìn vào code (hộp trắng).'))
++ sec('Phần 2. Kiểm thử hộp đen và hộp trắng',
+`<p><b>Hộp đen (black-box)</b>: chỉ biết "đưa gì vào, ra gì", không nhìn code bên trong. <b>Hộp trắng (white-box)</b>: nhìn code để chọn test sao cho đi qua mọi nhánh.</p>`
++ tb(['','Hộp đen','Hộp trắng'],[
+ ['Dựa vào','Đặc tả, yêu cầu','Cấu trúc code'],
+ ['Cần biết code?','Không','Có'],
+ ['Kỹ thuật','Phân vùng tương đương, giá trị biên, ngẫu nhiên, đoán lỗi','Phủ câu lệnh, phủ nhánh, phủ đường đi'],
+ ['Mạnh ở','Phát hiện chức năng thiếu hoặc sai','Phát hiện nhánh code chưa được chạy']])
++ `<h3>Các kỹ thuật hộp đen</h3>`
++ ul(['<b>Phân vùng tương đương (Equivalence Partitioning, EP)</b>: chia đầu vào thành các vùng mà trong cùng vùng chương trình xử lý "như nhau", rồi mỗi vùng chỉ cần thử <b>một</b> đại diện.',
+ '<b>Phân tích giá trị biên (Boundary Value Analysis, BVA)</b>: lỗi hay nằm ở rìa các vùng (dùng <code>&lt;</code> thay vì <code>&lt;=</code>), nên thử đúng giá trị biên và hai giá trị sát biên.',
+ '<b>Kiểm thử ngẫu nhiên</b>: sinh dữ liệu ngẫu nhiên với số lượng lớn.',
+ '<b>Đoán lỗi (error guessing)</b>: dựa kinh nghiệm, thử những chỗ hay sai như <code>null</code>, chuỗi rỗng, số âm, chia cho 0.'])
++ `<h3>Ví dụ: hàm xếp loại điểm</h3>
+<p>Điểm hợp lệ từ 0 đến 10. Dưới 5 là Yếu, từ 5 đến dưới 7 là Trung bình, từ 7 đến dưới 8,5 là Khá, từ 8,5 trở lên là Giỏi. Ngoài 0–10 là không hợp lệ.</p>`
++ tb(['Vùng tương đương','Đại diện (EP)','Giá trị biên (BVA)'],[
+ ['Không hợp lệ (&lt; 0)','-3','-0.1, 0'],
+ ['Yếu [0, 5)','2','0, 0.1, 4.9'],
+ ['Trung bình [5, 7)','6','4.9, 5, 5.1, 6.9, 7'],
+ ['Khá [7, 8.5)','8','6.9, 7, 7.1, 8.4, 8.5'],
+ ['Giỏi [8.5, 10]','9.5','8.4, 8.5, 8.6, 9.9, 10'],
+ ['Không hợp lệ (&gt; 10)','12','10, 10.1']])
++ box('tip','<b>Mẹo:</b> chỉ với khoảng 10–20 test case chọn khéo ta đã phủ đủ các vùng và các biên, thay vì thử hàng nghìn số tùy ý.')
++ `<h3>Kiểm thử tổ hợp t-way</h3>
+<p>Khi hàm có nhiều tham số, thử mọi tổ hợp là bùng nổ (5 tham số, mỗi tham số 4 giá trị đã có 1024 tổ hợp). Thống kê cho thấy phần lớn lỗi chỉ do tương tác của <b>ít tham số</b> (1 đến 2, tối đa khoảng 6). <b>t-way testing</b> chọn một tập test nhỏ sao cho mọi tổ hợp của <b>t tham số bất kỳ</b> đều xuất hiện ít nhất một lần (2-way còn gọi là <b>pairwise</b>). Nhờ vậy số test giảm mạnh mà vẫn bắt được hầu hết lỗi.</p>`
++ bridge('Có test case rồi, ta không muốn ngồi chạy tay từng cái. Phần sau là cách <b>tự động hóa</b> bằng JUnit.'))
++ sec('Phần 3. Kiểm thử tự động và JUnit',
+`<p><b>Kiểm thử tự động</b>: viết test thành code, bấm một nút là chạy hết và báo đạt hay hỏng. Ích lợi lớn nhất là <b>kiểm thử hồi quy</b>: mỗi lần sửa code, chạy lại toàn bộ test trong vài giây.</p>
+<h3>Giàn giáo kiểm thử (test scaffolding)</h3>`
++ tb(['Thành phần','Vai trò','Ví dụ ẩn dụ'],[
+ ['<b>Test driver</b>','Code gọi thành phần cần test và truyền dữ liệu','Người đạp thử bàn đạp phanh'],
+ ['<b>Test harness</b>','Khung chạy nhiều test, thu và báo kết quả','Phòng thử nghiệm'],
+ ['<b>Stub</b>','Bản giả trả về giá trị cố định thay cho module chưa có hoặc quá nặng','Hình nộm thay người lái'],
+ ['<b>Mock</b>','Bản giả có kiểm tra thêm: nó có được gọi đúng cách, đúng số lần không','Cảm biến ghi lại phanh đã được đạp mấy lần'],
+ ['<b>Oracle</b>','Nguồn cho biết kết quả đúng là gì','Sổ tay thông số của nhà sản xuất']])
++ `<h3>JUnit 5</h3>
+<p>JUnit là framework test phổ biến nhất của Java. Mỗi test là một phương thức gắn <code>@Test</code>; bên trong gọi phương thức cần kiểm tra rồi dùng <b>assertion</b> để so kết quả.</p>`
++ pre(J`import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class GradeTest {
+    Grade g;
+
+    @BeforeEach
+    void setUp() { g = new Grade(); }          // chạy trước MỖI test
+
+    @Test
+    void diem9_5_laGioi() {
+        assertEquals("Giỏi", g.rank(9.5));
+    }
+
+    @Test
+    void diemBien5_laTrungBinh() {
+        assertEquals("Trung bình", g.rank(5));
+    }
+
+    @Test
+    void diemAm_nemNgoaiLe() {
+        assertThrows(IllegalArgumentException.class, () -> g.rank(-1));
+    }
+
+    @Test
+    void chayKhongQua100ms() {
+        assertTimeout(java.time.Duration.ofMillis(100), () -> g.rank(7));
+    }
+}`)
++ tb(['Annotation','Ý nghĩa'],[
+ ['<code>@Test</code>','Đánh dấu một phương thức là test'],
+ ['<code>@BeforeEach</code> / <code>@AfterEach</code>','Chạy trước / sau mỗi test (dựng và dọn môi trường)'],
+ ['<code>@BeforeAll</code> / <code>@AfterAll</code>','Chạy một lần trước / sau cả lớp test (phương thức <code>static</code>)'],
+ ['<code>@Disabled</code>','Tạm bỏ qua test này'],
+ ['<code>@DisplayName("...")</code>','Tên dễ đọc hiển thị trong báo cáo']])
++ tb(['Assertion','Ý nghĩa'],[
+ ['<code>assertEquals(expected, actual)</code>','Hai giá trị bằng nhau (chú ý thứ tự: kỳ vọng trước)'],
+ ['<code>assertTrue(cond)</code> / <code>assertFalse(cond)</code>','Điều kiện đúng / sai'],
+ ['<code>assertNull(x)</code> / <code>assertNotNull(x)</code>','Kiểm tra null'],
+ ['<code>assertSame(a, b)</code>','Cùng một đối tượng (so <code>==</code>)'],
+ ['<code>assertArrayEquals(a, b)</code>','Hai mảng bằng nhau từng phần tử'],
+ ['<code>assertThrows(Ex.class, () -> ...)</code>','Đoạn code phải ném đúng ngoại lệ'],
+ ['<code>assertTimeout(duration, () -> ...)</code>','Đoạn code phải chạy xong trong thời hạn'],
+ ['<code>assertEquals(e, a, delta)</code>','So số thực với sai số cho phép']])
++ box('warn','<b>Dễ nhầm:</b> với số <code>double</code> đừng so bằng <code>assertEquals(0.3, 0.1+0.2)</code> không có delta, vì sai số làm tròn sẽ khiến test hỏng oan. Hãy thêm tham số <code>delta</code>.')
++ `<h3>Thói quen viết test tốt</h3>`
++ ul(['<b>Mỗi test kiểm tra một điều</b>, tên test nói rõ đang kiểm tra gì.',
+ '<b>Test độc lập</b>: không phụ thuộc thứ tự chạy, không dùng chung trạng thái giữa các test.',
+ '<b>Chạy nhanh và lặp lại được</b>: cùng code thì cùng kết quả.',
+ '<b>Thử cả đường lỗi</b>: giá trị biên, null, ngoại lệ, không chỉ trường hợp "đẹp".',
+ '<b>Viết test cùng lúc với code</b>, chạy lại sau mỗi lần sửa.'])
++ bridge('Test là lưới an toàn. Có lưới rồi, ta mới dám dọn dẹp và cải thiện code bên trong mà không sợ làm hỏng chức năng. Đó là <b>tái cấu trúc</b>.'))
++ sec('Phần 4. Code smell: mùi của code xấu',
+`<p><b>Code smell</b> là dấu hiệu trong code cho thấy thiết kế có vấn đề. Code vẫn chạy đúng, nhưng khó đọc, khó sửa, dễ sinh lỗi. Giống như nhà bếp có mùi lạ: chưa hỏng gì, nhưng báo hiệu cần dọn.</p>`
++ tb(['Smell','Dấu hiệu','Hướng xử lý thường gặp'],[
+ ['<b>Duplicated code</b>','Cùng một đoạn code lặp ở nhiều nơi','Extract Method, đưa lên lớp cha'],
+ ['<b>Long method</b>','Phương thức dài, làm nhiều việc','Extract Method'],
+ ['<b>Large class</b>','Lớp ôm quá nhiều trách nhiệm','Extract Class'],
+ ['<b>Long parameter list</b>','Quá nhiều tham số','Introduce Parameter Object'],
+ ['<b>Magic number</b>','Con số trơ trụi như <code>3.14</code>, <code>86400</code> trong code','Extract Constant'],
+ ['<b>Tên khó hiểu</b>','Biến <code>x</code>, <code>tmp</code>, <code>doIt()</code>','Rename'],
+ ['<b>Switch/if dài theo kiểu</b>','Nhiều nhánh rẽ theo loại đối tượng','Thay bằng đa hình']])
++ bridge('Ngửi thấy mùi rồi thì dọn bằng cách nào? Bằng những thao tác nhỏ, có tên gọi và có quy trình: refactoring.'))
++ sec('Phần 5. Tái cấu trúc (Refactoring)',
+`<p><b>Refactoring</b> là <b>thay đổi cấu trúc bên trong của code mà không đổi hành vi bên ngoài</b>. Mục tiêu: dễ đọc, dễ bảo trì, dễ mở rộng. Nó không thêm tính năng và không sửa lỗi; nếu đổi hành vi thì đó không còn là refactoring.</p>`
++ box('analogy','<b>Ví dụ ẩn dụ:</b> sắp xếp lại tủ quần áo. Quần áo vẫn là những bộ đó, nhưng lần sau tìm đồ nhanh hơn. Đang sắp xếp mà tiện tay mua thêm áo thì là hai việc khác nhau, đừng trộn.')
++ `<h3>Quy trình an toàn</h3>`
++ ul(['<b>Có test</b> bao phủ đoạn code sắp đổi (nếu chưa có thì viết trước).','Đổi <b>một bước nhỏ</b>.','Chạy lại toàn bộ test. Xanh thì giữ, đỏ thì hoàn tác.','Lặp lại.'])
++ box('tip','<b>Mẹo:</b> dùng chức năng Refactor của IDE (IntelliJ: <code>Ctrl+Alt+Shift+T</code>) thay vì sửa tay; IDE cập nhật mọi chỗ dùng một cách nhất quán.')
++ `<h3>Các kỹ thuật chính</h3>`
++ tb(['Kỹ thuật','Làm gì','Khi nào dùng'],[
+ ['<b>Rename</b>','Đổi tên biến, hàm, lớp cho rõ nghĩa','Tên khó hiểu'],
+ ['<b>Extract Method</b>','Tách một đoạn code thành phương thức mới có tên nói rõ việc','Phương thức dài, code lặp'],
+ ['<b>Inline Method</b>','Ngược lại: thân hàm đã rõ hơn tên, nhét vào chỗ gọi','Hàm quá tầm thường'],
+ ['<b>Extract Variable</b>','Gán biểu thức phức tạp cho biến có tên','Biểu thức dài khó đọc'],
+ ['<b>Extract Constant</b>','Biến con số/chuỗi trơ trụi thành hằng <code>static final</code>','Magic number'],
+ ['<b>Extract Field</b>','Biến biến cục bộ thành thuộc tính của lớp','Nhiều phương thức cần dùng chung giá trị'],
+ ['<b>Extract Class</b>','Tách bớt trách nhiệm sang lớp mới','Lớp quá lớn'],
+ ['<b>Move Method / Field</b>','Chuyển sang lớp dùng nó nhiều nhất','Hàm dùng dữ liệu của lớp khác nhiều hơn của lớp mình'],
+ ['<b>Pull Up / Push Down</b>','Đưa phần chung lên lớp cha / đẩy phần riêng xuống lớp con','Lặp code giữa các lớp con'],
+ ['<b>Replace Conditional with Polymorphism</b>','Thay chuỗi if/switch theo kiểu bằng các lớp con','Rẽ nhánh theo loại đối tượng']])
++ `<h3>Ví dụ: Extract Constant và Extract Method</h3>
+<p>Trước:</p>`
++ pre(J`double area(double r) { return 3.14159 * r * r; }
+double perimeter(double r) { return 2 * 3.14159 * r; }
+
+void report(Order o) {
+    // in tiêu đề
+    System.out.println("Đơn: " + o.id);
+    System.out.println("-----");
+    // tính tổng
+    double sum = 0;
+    for (Item i : o.items) sum += i.price * i.qty;
+    System.out.println("Tổng: " + sum);
+}`)
++ `<p>Sau:</p>`
++ pre(J`private static final double PI = 3.14159;       // Extract Constant
+
+double area(double r) { return PI * r * r; }
+double perimeter(double r) { return 2 * PI * r; }
+
+void report(Order o) {
+    printHeader(o);
+    System.out.println("Tổng: " + total(o));
+}
+
+private void printHeader(Order o) {               // Extract Method
+    System.out.println("Đơn: " + o.id);
+    System.out.println("-----");
+}
+
+private double total(Order o) {                   // Extract Method
+    double sum = 0;
+    for (Item i : o.items) sum += i.price * i.qty;
+    return sum;
+}`)
++ `<h3>Tình huống minh họa: game xe tăng</h3>
+<p>Một game xe tăng ban đầu có <code>Tank</code> chứa cả việc vẽ, di chuyển, bắn và va chạm, còn code bắn đạn lặp ở xe người chơi và xe địch. Áp dụng refactoring từng bước:</p>`
++ ul(['<b>Extract Method</b>: tách <code>move()</code>, <code>fire()</code>, <code>draw()</code> khỏi hàm <code>update()</code> dài.','<b>Pull Up</b>: phần chung của xe người chơi và xe địch (vị trí, hướng, bắn) lên lớp cha <code>Tank</code>.','<b>Extract Constant</b>: tốc độ, kích thước, thời gian hồi đạn thành hằng có tên.','<b>Replace Conditional with Polymorphism</b>: mỗi loại xe tự quyết định cách điều khiển (<code>PlayerTank</code> đọc phím, <code>EnemyTank</code> chạy AI) thay vì <code>if (isPlayer)</code> khắp nơi.'])
++ `<p>Sau mỗi bước, chạy lại test và chơi thử: hành vi của game không đổi, nhưng thêm loại xe mới giờ chỉ là thêm một lớp con.</p>`
++ bridge('Kết nối hai nửa của bài: <b>kiểm thử</b> cho ta lưới an toàn, <b>refactoring</b> cho ta dũng khí dọn code. Hai việc này đi cùng nhau: không có test thì refactor là đánh cược.'))
+};
+
+REF.push(
+E('JUnit @Test','Từ khóa','10','Đánh dấu một phương thức là test case của JUnit 5; chạy bằng IDE hoặc Maven/Gradle.',
+ J`import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CalcTest {
+    @BeforeEach void setUp() { /* dựng môi trường */ }
+    @Test void cong() { assertEquals(5, new Calc().add(2, 3)); }
+}`,
+ [['@Test','Phương thức là một test'],['@BeforeEach / @AfterEach','Chạy trước / sau mỗi test'],['@BeforeAll / @AfterAll','Một lần cho cả lớp (static)'],['@Disabled','Bỏ qua test']],
+ ['Assertions']),
+E('Assertions','Lớp','10','Các hàm so sánh kết quả thực tế với mong đợi trong JUnit; sai thì test thất bại.',
+ J`assertEquals(10, calc.sum(4, 6));
+assertTrue(list.isEmpty());
+assertNotNull(obj);
+assertEquals(0.3, 0.1 + 0.2, 1e-9);
+assertThrows(IllegalArgumentException.class, () -> g.rank(-1));
+assertTimeout(Duration.ofMillis(100), () -> g.rank(7));`,
+ [['assertEquals(expected, actual)','Bằng nhau (kỳ vọng đứng trước)'],['assertTrue / assertFalse','Điều kiện đúng / sai'],['assertNull / assertNotNull','Kiểm tra null'],['assertArrayEquals','So mảng'],['assertThrows(Ex.class, code)','Phải ném đúng ngoại lệ'],['assertTimeout(d, code)','Phải xong trong thời hạn']],
+ ['JUnit @Test']),
+E('Phân vùng tương đương và giá trị biên','Mẫu TK','10','Hai kỹ thuật kiểm thử hộp đen để chọn ít test case mà vẫn phủ tốt.',
+ J`// Điểm 0..10: vùng Yếu [0,5), TB [5,7), Khá [7,8.5), Giỏi [8.5,10]
+// EP : thử một đại diện mỗi vùng: 2, 6, 8, 9.5
+// BVA: thử sát biên: 4.9, 5, 5.1,  6.9, 7, 7.1,  8.4, 8.5, 8.6`,
+ [['EP','Mỗi vùng tương đương thử một đại diện'],['BVA','Thử đúng biên và hai giá trị sát biên'],['t-way','Mọi tổ hợp t tham số xuất hiện ít nhất một lần']],
+ ['JUnit @Test']),
+E('Refactoring','Mẫu TK','10','Đổi cấu trúc bên trong code mà không đổi hành vi bên ngoài; làm từng bước nhỏ và chạy test sau mỗi bước.',
+ J`// Extract Constant
+private static final double PI = 3.14159;
+// Extract Method
+double total(Order o) { /* ... */ }`,
+ [['Rename','Đổi tên cho rõ nghĩa'],['Extract Method','Tách đoạn code thành phương thức'],['Extract Constant / Field / Variable','Đặt tên cho hằng, thuộc tính, biểu thức'],['Extract Class','Tách lớp quá lớn'],['Move Method / Pull Up / Push Down','Chuyển trách nhiệm đúng chỗ'],['Replace Conditional with Polymorphism','Thay if/switch bằng đa hình']],
+ ['JUnit @Test'])
+);
+LNAME['10'] = 'Bài 10';
 
 REF.push(
 E('Application','Lớp','8','Lớp cha của mọi ứng dụng JavaFX; bạn kế thừa và ghi đè <code>start</code>.',
