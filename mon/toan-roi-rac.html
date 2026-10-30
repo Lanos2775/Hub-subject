@@ -1737,7 +1737,7 @@ ol.steps,.ans,.f{display:flow-root}figure.fl{margin:14px 0}figure.fl svg{margin:
 
   <!-- MỤC 9: BÀI TẬP TRỌNG TÂM BÀI 6 (CÓ GỢI Ý & LỜI GIẢI CHI TIẾT) -->
   <section>
-    <h2>9. Bài Tập Trọng Tâm Bài 6 (Luyện Thi Thực Chiến Giải Chi Tiết)</h2>
+    <h2>9. Bài Tập Trọng Tâm Bài 6 (Luyện Thi Thực Chiến Giải Chi Tiết — 13 Câu)</h2>
 
     <div class="formula-card">
       <h3 id="bt-b6-1">Câu 1: Tìm Nghịch đảo Modulo bằng Định lý Bézout</h3>
@@ -1853,6 +1853,87 @@ ol.steps,.ans,.f{display:flow-root}figure.fl{margin:14px 0}figure.fl svg{margin:
           Vậy khóa bí mật chung của Alice và Bob là $\mathbf{K = 2}$!
         </div>
       </div>
+    </div>
+
+
+    <div class="formula-card">
+      <h3 id="bt-b6-4">Câu 4: Tính nhanh số dư (kể cả số âm)</h3>
+      <p><b>Đề bài:</b> Tính: a) $(-127) \bmod 12$; b) $(98\cdot 76)\bmod 11$; c) $(2^{10}+3^{5})\bmod 7$.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-4')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-4')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-4" class="panel">Số âm: cộng thêm bội của $m$ cho đến khi không âm. Với tích/tổng: lấy dư từng số trước.</div>
+      <div id="s-b6-4" class="panel"><div class="step"><b>a)</b> $-127+12\cdot 11=5$ ⇒ $(-127)\bmod 12=\mathbf{5}$.</div><div class="step"><b>b)</b> $98\equiv 10$, $76\equiv 10 \pmod{11}$ ⇒ $10\cdot10=100\equiv \mathbf{1}$.</div><div class="step"><b>c)</b> $2^{10}=1024\equiv 2$, $3^5=243\equiv 5 \pmod 7$ ⇒ $2+5=7\equiv \mathbf{0}$.</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-5">Câu 5: Số dư của lũy thừa lớn nhờ chu kỳ</h3>
+      <p><b>Đề bài:</b> Tìm a) $2^{100}\bmod 7$; b) chữ số tận cùng của $3^{2026}$.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-5')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-5')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-5" class="panel">Tìm số mũ nhỏ nhất làm lũy thừa $\equiv 1$ (hoặc quay về giá trị ban đầu) rồi chia số mũ cho chu kỳ.</div>
+      <div id="s-b6-5" class="panel"><div class="step"><b>a)</b> $2^3=8\equiv1 \pmod 7$. $100=3\cdot33+1$ ⇒ $2^{100}=(2^3)^{33}\cdot2\equiv \mathbf{2}$.</div><div class="step"><b>b)</b> Chữ số tận cùng là $3^{2026}\bmod 10$. Các lũy thừa của 3: $3,9,7,1$ rồi lặp (chu kỳ 4). $2026=4\cdot506+2$ ⇒ giống $3^2=9$ ⇒ chữ số tận cùng là $\mathbf{9}$.</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-6">Câu 6: Giải phương trình đồng dư $ax\equiv b$</h3>
+      <p><b>Đề bài:</b> Giải $7x\equiv 3 \pmod{26}$.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-6')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-6')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-6" class="panel">Tìm nghịch đảo của $7$ modulo $26$ rồi nhân hai vế.</div>
+      <div id="s-b6-6" class="panel"><div class="step">$\gcd(7,26)=1$ nên có nghịch đảo. $26=3\cdot7+5$; $7=1\cdot5+2$; $5=2\cdot2+1$ ⇒ $1=5-2\cdot2=5-2(7-5)=3\cdot5-2\cdot7=3(26-3\cdot7)-2\cdot7=3\cdot26-11\cdot7$.</div><div class="step">Suy ra $-11\cdot7\equiv1$ ⇒ nghịch đảo của $7$ là $-11\equiv\mathbf{15} \pmod{26}$ (kiểm tra: $7\cdot15=105=4\cdot26+1$).</div><div class="step">Nhân hai vế với $15$: $x\equiv 45\equiv \mathbf{19} \pmod{26}$. Thử lại: $7\cdot19=133=5\cdot26+3$ ✓.</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-7">Câu 7: Phương trình đồng dư khi $\gcd>1$</h3>
+      <p><b>Đề bài:</b> Giải: a) $12x\equiv 18\pmod{30}$; b) $6x\equiv 5\pmod 9$.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-7')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-7')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-7" class="panel">Tính $d=\gcd(a,m)$. Nếu $d\nmid b$ thì vô nghiệm; nếu $d\mid b$ thì chia cả phương trình cho $d$.</div>
+      <div id="s-b6-7" class="panel"><div class="step"><b>a)</b> $\gcd(12,30)=6$ và $6\mid18$ nên có nghiệm. Chia cho $6$: $2x\equiv3 \pmod 5$. Nghịch đảo của $2$ mod $5$ là $3$ ⇒ $x\equiv9\equiv4 \pmod 5$.</div><div class="step">Trong $\mathbb{Z}_{30}$: $x\in\{\mathbf{4,9,14,19,24,29}\}$ (6 nghiệm, vì $x\equiv4 \pmod 5$).</div><div class="step"><b>b)</b> $\gcd(6,9)=3$ nhưng $3\nmid5$ ⇒ <b>vô nghiệm</b>.</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-8">Câu 8: Nghịch đảo bằng Bézout</h3>
+      <p><b>Đề bài:</b> Tìm nghịch đảo của $25$ modulo $63$.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-8')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-8')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-8" class="panel">Euclid xuôi cho $63$ và $25$, sau đó thế ngược.</div>
+      <div id="s-b6-8" class="panel"><div class="step">$63=2\cdot25+13$; $25=1\cdot13+12$; $13=1\cdot12+1$ ⇒ $\gcd=1$.</div><div class="step">Thế ngược: $1=13-12=13-(25-13)=2\cdot13-25=2(63-2\cdot25)-25=2\cdot63-5\cdot25$.</div><div class="step">Vậy $-5\cdot25\equiv1 \pmod{63}$ ⇒ nghịch đảo là $-5\equiv\mathbf{58}$. Kiểm tra: $25\cdot58=1450=23\cdot63+1$ ✓.</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-9">Câu 9: Lũy thừa mô-đu-lô nhanh</h3>
+      <p><b>Đề bài:</b> Tính $7^{43}\bmod 13$ bằng phương pháp bình phương liên tiếp.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-9')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-9')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-9" class="panel">Viết $43=32+8+2+1=(101011)_2$ rồi tính $7^1,7^2,7^4,7^8,7^{16},7^{32}$ mod $13$.</div>
+      <div id="s-b6-9" class="panel"><div class="step">$7^1\equiv7$; $7^2=49\equiv10$; $7^4\equiv10^2=100\equiv9$; $7^8\equiv9^2=81\equiv3$; $7^{16}\equiv3^2=9$; $7^{32}\equiv9^2\equiv3$.</div><div class="step">$7^{43}=7^{32}\cdot7^{8}\cdot7^{2}\cdot7^{1}\equiv3\cdot3\cdot10\cdot7=630$.</div><div class="step">$630=48\cdot13+6$ ⇒ $7^{43}\bmod13=\mathbf{6}$.</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-10">Câu 10: RSA: tạo khóa, mã hóa, giải mã</h3>
+      <p><b>Đề bài:</b> RSA với $p=7$, $q=17$, $e=5$. a) Tính $n$, $\varphi(n)$ và khóa bí mật $d$. b) Mã hóa $M=19$. c) Giải mã lại bản mã.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-10')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-10')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-10" class="panel">$d$ là nghịch đảo của $e$ modulo $\varphi(n)$.</div>
+      <div id="s-b6-10" class="panel"><div class="step"><b>a)</b> $n=7\cdot17=119$, $\varphi=6\cdot16=96$, $\gcd(5,96)=1$ ✓. $5d\equiv1 \pmod{96}$: $96=19\cdot5+1$ ⇒ $1=96-19\cdot5$ ⇒ $d\equiv-19\equiv\mathbf{77}$.</div><div class="step"><b>b)</b> $C=19^5\bmod119$: $19^2=361\equiv4$, $19^4\equiv16$, $19^5\equiv16\cdot19=304=2\cdot119+66$ ⇒ $C=\mathbf{66}$.</div><div class="step"><b>c)</b> $M=66^{77}\bmod119$ tính bằng bình phương liên tiếp ra đúng $\mathbf{19}$ ✓ (vì $5\cdot77=385=4\cdot96+1$).</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-11">Câu 11: RSA: giải mã khi biết khóa công khai</h3>
+      <p><b>Đề bài:</b> Khóa công khai $(n,e)=(33,7)$ với $33=3\cdot11$. Bản mã $C=5$. Tìm bản rõ $M$.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-11')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-11')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-11" class="panel">Tìm $\varphi(33)$, rồi $d$, rồi $M=C^d\bmod n$.</div>
+      <div id="s-b6-11" class="panel"><div class="step">$\varphi(33)=2\cdot10=20$. $7d\equiv1 \pmod{20}$: $7\cdot3=21\equiv1$ ⇒ $d=\mathbf{3}$.</div><div class="step">$M=5^3\bmod33=125\bmod33=\mathbf{26}$ (vì $125=3\cdot33+26$).</div><div class="step">Kiểm tra: $26^7\bmod33=5$ ✓.</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-12">Câu 12: Mật mã Caesar</h3>
+      <p><b>Đề bài:</b> Mật mã Caesar dịch $k=7$ (A=0,…,Z=25): $C=(M+7)\bmod26$. a) Mã hóa "MATH". b) Giải mã "AVHU".</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-12')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-12')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-12" class="panel">Giải mã là $M=(C-7)\bmod26$; nhớ cộng $26$ khi ra số âm.</div>
+      <div id="s-b6-12" class="panel"><div class="step"><b>a)</b> M(12)→19=T; A(0)→7=H; T(19)→26 mod 26=0=A; H(7)→14=O ⇒ <b>THAO</b>.</div><div class="step"><b>b)</b> A(0)→−7+26=19=T; V(21)→14=O; H(7)→0=A; U(20)→13=N ⇒ <b>TOAN</b>.</div></div>
+    </div>
+
+    <div class="formula-card">
+      <h3 id="bt-b6-13">Câu 13: Trao đổi khóa Diffie-Hellman</h3>
+      <p><b>Đề bài:</b> Alice và Bob dùng $p=19$, $a=2$. Khóa riêng của Alice $k_1=5$, của Bob $k_2=7$. Tìm các giá trị công khai và khóa chung $K$.</p>
+      <div class="btn-group"><button type="button" class="btn btn-hint" onclick="togglePanel('h-b6-13')">Xem Gợi ý</button><button type="button" class="btn btn-sol" onclick="togglePanel('s-b6-13')">Xem Lời giải chi tiết</button></div>
+      <div id="h-b6-13" class="panel">Alice gửi $a^{k_1}\bmod p$, Bob gửi $a^{k_2}\bmod p$; khóa chung $K=a^{k_1k_2}\bmod p$.</div>
+      <div id="s-b6-13" class="panel"><div class="step">Alice gửi $Y_A=2^5=32\equiv\mathbf{13}\pmod{19}$. Bob gửi $Y_B=2^7=128=6\cdot19+14$ ⇒ $\mathbf{14}$.</div><div class="step">Alice tính $K=Y_B^{5}\bmod19=14^5\bmod19$; Bob tính $K=Y_A^{7}\bmod19=13^7\bmod19$. Cả hai ra cùng khóa <b>$K=\mathbf{10}$</b>, và đó cũng chính là $2^{35}\bmod19$.</div></div>
     </div>
   </section>
 
