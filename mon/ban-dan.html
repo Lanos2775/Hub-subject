@@ -201,8 +201,13 @@ section>svg{max-height:420px}
 #fp .fp-b.on{background:var(--c1);color:#fff}
 #fp .fp-x{color:#c0392b}
 #fp .fp-l{flex:1;min-height:0;overflow:auto;padding:2px 6px;touch-action:pan-x pan-y}
-#fp .fp-f{padding:2px 0;font-size:15px;line-height:1.5;white-space:nowrap;text-align:center}
-#fp .fp-f+.fp-f{border-top:1px solid var(--g)}
+#fp .fp-r{display:flex;gap:3px;align-items:stretch}
+#fp .fp-f{flex:none;display:flex;align-items:center;justify-content:center;padding:2px 8px;border:1px solid var(--g);border-radius:7px;background:var(--card);font-size:15px;line-height:1.5;white-space:nowrap;text-align:center;cursor:grab;user-select:none;touch-action:none}
+#fp .fp-f:hover{border-color:var(--c1)}
+#fp .fp-d{opacity:.3}
+#fp .fp-ind{position:absolute;background:var(--c1);border-radius:2px;pointer-events:none;z-index:5}
+.fp-g{display:flex;align-items:center;justify-content:center;padding:2px 8px;background:var(--card);color:var(--ink);border:1.5px solid var(--c1);border-radius:7px;box-shadow:0 6px 18px rgba(0,0,0,.3);opacity:.92;font-size:15px;white-space:nowrap;cursor:grabbing}
+#fp .fp-r+.fp-r{margin-top:3px}
 #fp mjx-container[display="true"]{margin:2px 0 !important}
 body.fp-pick,body.fp-pick *{cursor:crosshair !important}
 body.fp-pick #fp .fp-h,body.fp-pick #fp .fp-h *{cursor:pointer !important}
@@ -6782,7 +6787,15 @@ window.loadLesson = loadLesson;
   const $=id=>document.getElementById(id);
   const store={get(k,d){try{const v=localStorage.getItem(LS+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(LS+k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(LS+k)}catch(e){}}};
 
-  let pins=store.get('pins2',[]).filter(x=>typeof x==='string'&&x.trim());
+  const tokens=h=>new Set(h.match(/\\[a-zA-Z]+|[A-Za-z]/g)||[]);
+  const short=h=>h.replace(/<[^>]*>|\$/g,'').length<=34;
+  const rel=(a,b)=>{const A=tokens(a),B=tokens(b);let n=0;A.forEach(x=>B.has(x)&&n++);return n/Math.max(1,A.size+B.size-n)};
+  let rows=[],lastAdded=null;
+  function place(h){const c={h};let best=null,bs=-1;
+    if(short(h))rows.forEach((r,i)=>{if(r.length===1&&short(r[0].h)){const s=rel(h,r[0].h)+i*1e-3;if(s>bs){bs=s;best=r}}});
+    best?best.push(c):rows.push([c]);return c}
+  const save=()=>store.set('rows3',rows.map(r=>r.map(c=>c.h)));
+  {const r3=store.get('rows3',null);if(r3)rows=r3.map(a=>a.map(h=>({h})));else store.get('pins2',[]).filter(x=>typeof x==='string'&&x.trim()).forEach(place)}
   let picking=false,hl=null;
 
   /* ----- dựng popup ----- */
@@ -6791,6 +6804,7 @@ window.loadLesson = loadLesson;
   const fp=document.createElement('div');fp.id='fp';fp.setAttribute('role','dialog');fp.setAttribute('aria-label','Công thức ghim');
   fp.innerHTML=`<div class="fp-h" id="fp-h"><button class="fp-b" id="fp-clear" type="button" aria-label="Xóa ghim mới nhất" title="Xóa ghim mới nhất">${ICON_CLEAR}</button><button class="fp-b" id="fp-add" type="button" aria-label="Thêm ghim" title="Thêm ghim">${ICON_ADD}</button><button class="fp-b" id="fp-reset" type="button" aria-label="Xóa toàn bộ ghim" title="Xóa toàn bộ ghim">⟲</button><button class="fp-b fp-x" id="fp-x" type="button" aria-label="Đóng (T)" title="Đóng (T)">✕</button></div><div class="fp-l" id="fp-list"></div>`;
   document.body.appendChild(fp);
+  {const h=fp.firstElementChild;[...h.children].reverse().forEach(b=>h.appendChild(b))}
 
   /* ----- vẽ danh sách ghim ----- */
   function typeset(n){
@@ -6801,8 +6815,50 @@ window.loadLesson = loadLesson;
   }
   function render(){
     const L=$('fp-list');L.innerHTML='';
-    pins.forEach(h=>{const d=document.createElement('div');d.className='fp-f';d.innerHTML=h;L.appendChild(d)});
+    rows.forEach(r=>{const d=document.createElement('div');d.className='fp-r';r.forEach(c=>{const e=document.createElement('div');e.className='fp-f';e.innerHTML=c.h;e._c=c;e.addEventListener('pointerdown',dragStart);d.appendChild(e)});L.appendChild(d)});
     typeset(L);
+  }
+  const cells=()=>[...$('fp-list').querySelectorAll('.fp-f')];
+  function findDrop(px,py,c){
+    let best=null,bd=1e9;
+    cells().forEach(el=>{if(el._c===c)return;const r=el.getBoundingClientRect(),d=Math.hypot(Math.max(r.left-px,0,px-r.right),Math.max(r.top-py,0,py-r.bottom));if(d<bd){bd=d;best=el}});
+    if(!best||bd>36)return null;
+    const r=best.getBoundingClientRect(),nx=(px-(r.left+r.right)/2)/(r.width/2),ny=(py-(r.top+r.bottom)/2)/(r.height/2);
+    return{t:best._c,side:Math.abs(nx)>Math.abs(ny)?(nx<0?'left':'right'):(ny<0?'top':'bottom')};
+  }
+  function showInd(d,ind){
+    if(!d){ind.style.display='none';return}
+    const el=cells().find(x=>x._c===d.t),v=d.side==='left'||d.side==='right',r=(v?el:el.parentNode).getBoundingClientRect(),F=fp.getBoundingClientRect();
+    const x=d.side==='left'?r.left:d.side==='right'?r.right:r.left,y=d.side==='top'?r.top:d.side==='bottom'?r.bottom:r.top;
+    ind.style.cssText=`display:block;left:${x-F.left-(v?2:0)}px;top:${y-F.top-(v?0:2)}px;width:${v?3:r.width}px;height:${v?r.height:3}px`;
+  }
+  function doDrop(c,d){
+    rows.forEach(r=>{const i=r.indexOf(c);if(i>-1)r.splice(i,1)});
+    const ri=rows.findIndex(r=>r.includes(d.t)),r=rows[ri];
+    if(d.side==='left')r.splice(r.indexOf(d.t),0,c);
+    else if(d.side==='right')r.splice(r.indexOf(d.t)+1,0,c);
+    else rows.splice(d.side==='top'?ri:ri+1,0,[c]);
+    rows=rows.filter(r=>r.length);save();
+  }
+  function dragStart(e){
+    if(e.button>0)return;
+    const cell=e.currentTarget,c=cell._c,sx=e.clientX,sy=e.clientY,ind=document.createElement('div');ind.className='fp-ind';
+    let g=null,drop=null,moved=false;
+    const mv=ev=>{
+      if(!moved){
+        if(Math.hypot(ev.clientX-sx,ev.clientY-sy)<5)return;
+        moved=true;const r=cell.getBoundingClientRect();
+        g=cell.cloneNode(true);g.className='fp-g';g.style.cssText=`position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;pointer-events:none;z-index:70`;
+        document.body.appendChild(g);cell.classList.add('fp-d');fp.appendChild(ind);
+      }
+      g.style.transform=`translate(${ev.clientX-sx}px,${ev.clientY-sy}px)`;
+      drop=findDrop(ev.clientX,ev.clientY,c);showInd(drop,ind);
+    };
+    const up=()=>{
+      removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);
+      if(!moved)return;g.remove();ind.remove();if(drop)doDrop(c,drop);render();
+    };
+    addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up);
   }
 
   /* ----- vị trí: mặc định góc trên bên phải (CSS), kéo thì chuyển sang left/top ----- */
@@ -6822,7 +6878,7 @@ window.loadLesson = loadLesson;
   });
   function setCol(on){fp.classList.toggle('col',on);store.set('col',on)}
   if(store.get('col',false))fp.classList.add('col');
-  $('fp-reset').onclick=()=>{pins=[];store.set('pins2',pins);render()};
+  $('fp-reset').onclick=()=>{rows=[];lastAdded=null;save();render()};
 
   /* ----- mở / đóng ----- */
   function setOpen(on){
@@ -6834,7 +6890,7 @@ window.loadLesson = loadLesson;
   $('fp-x').onclick=()=>setOpen(false);
 
   /* ----- xóa ghim ----- */
-  $('fp-clear').onclick=()=>{pins.pop();store.set('pins2',pins);render()};
+  $('fp-clear').onclick=()=>{const r=rows.find(r=>r.includes(lastAdded))||rows[rows.length-1];if(!r)return;r.splice(lastAdded&&r.includes(lastAdded)?r.indexOf(lastAdded):r.length-1,1);rows=rows.filter(x=>x.length);lastAdded=null;save();render()};
 
   /* ----- thêm ghim: bấm nút rồi chọn vùng có công thức ----- */
   function setPick(on){
@@ -6878,7 +6934,7 @@ window.loadLesson = loadLesson;
   function addPin(el){
     const h=extract(el);
     if(!h)return false;
-    if(!pins.includes(h)){pins.push(h);store.set('pins2',pins)}
+    if(!rows.some(r=>r.some(c=>c.h===h))){lastAdded=place(h);save()}
     setCol(false);render();const L=$('fp-list');L.scrollTop=L.scrollHeight;
     return true;
   }
@@ -6904,7 +6960,7 @@ window.loadLesson = loadLesson;
     if(k==='Escape'&&picking)setPick(false);
   },true);
 
-  window.formulaPin={toggle,open:()=>setOpen(true),close:()=>setOpen(false),pins:()=>pins.slice()};
+  window.formulaPin={toggle,open:()=>setOpen(true),close:()=>setOpen(false),pins:()=>rows.flat().map(c=>c.h)};
   if(store.get('open',false))setOpen(true);
 })();
 </script>
