@@ -204,7 +204,9 @@ section>svg{max-height:420px}
 #fp .fp-t{display:none;flex:1;min-width:0;gap:2px;align-self:flex-end;margin-left:4px;overflow-x:auto;scrollbar-width:none}
 #fp .fp-t.on{display:flex}
 #fp .fp-tb{display:flex;align-items:center;flex:none;gap:3px;height:16px;padding:0 2px 0 7px;border:1px solid var(--g);border-bottom:0;border-radius:6px 6px 0 0;background:var(--tint);color:var(--mut);font:600 10.5px/1 "Be Vietnam Pro",sans-serif;cursor:pointer;white-space:nowrap;user-select:none}
+#fp .fp-tb{cursor:grab;touch-action:none}
 #fp .fp-tb.on{background:var(--card);color:var(--ink);border-color:var(--c1)}
+#fp .fp-tb.fp-td{background:var(--c1);color:#fff;border-color:var(--c1)}
 #fp .fp-tb i{font-style:normal;width:14px;height:14px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px}
 #fp .fp-tb i:hover{background:var(--g)}
 #fp .fp-r{display:flex;gap:3px;align-items:stretch}
@@ -6813,7 +6815,7 @@ window.loadLesson = loadLesson;
     const T=$('fp-tabs');T.classList.toggle('on',tabs.length>1);T.innerHTML='';
     tabs.forEach((t,i)=>{const b=document.createElement('div');b.className='fp-tb'+(i===cur?' on':'');b.textContent=t.n;
       if(tabs.length>1){const x=document.createElement('i');x.textContent='✕';x.onclick=ev=>{ev.stopPropagation();closeTab(i)};b.appendChild(x)}
-      b.onclick=()=>switchTab(i);b.onauxclick=ev=>{if(ev.button===1)closeTab(i)};
+      b.onclick=()=>switchTab(i);b.onpointerdown=e=>tabDragStart(e,t);b.onauxclick=ev=>{if(ev.button===1)closeTab(i)};
       b.ondblclick=()=>{const n=prompt('Tên tab',t.n);if(n&&n.trim()){t.n=n.trim().slice(0,16);save();renderTabs()}};
       T.appendChild(b)});
   }
@@ -6825,7 +6827,7 @@ window.loadLesson = loadLesson;
   const ICON_ADD='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3H4l3 5-3 5h5"/><path d="M11.5 9.5v4M9.5 11.5h4"/></svg>';
   const ICON_TAB='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2 6h12M8 8v3.5M6.25 9.75h3.5"/></svg>';
   const fp=document.createElement('div');fp.id='fp';fp.setAttribute('role','dialog');fp.setAttribute('aria-label','Công thức ghim');
-  fp.innerHTML=`<div class="fp-h" id="fp-h"><button class="fp-b fp-x" id="fp-x" type="button" aria-label="Đóng (T)" title="Đóng (T)">✕</button><button class="fp-b" id="fp-add" type="button" aria-label="Thêm công thức (H)" title="Thêm công thức (H)">${ICON_ADD}</button><button class="fp-b" id="fp-tab" type="button" aria-label="Thêm tab" title="Thêm tab">${ICON_TAB}</button><div class="fp-t" id="fp-tabs"></div></div><div class="fp-l" id="fp-list"></div>`;
+  fp.innerHTML=`<div class="fp-h" id="fp-h"><button class="fp-b fp-x" id="fp-x" type="button" aria-label="Đóng" title="Đóng">✕</button><button class="fp-b" id="fp-add" type="button" aria-label="Thêm công thức (H)" title="Thêm công thức (H)">${ICON_ADD}</button><button class="fp-b" id="fp-tab" type="button" aria-label="Thêm tab" title="Thêm tab">${ICON_TAB}</button><div class="fp-t" id="fp-tabs"></div></div><div class="fp-l" id="fp-list"></div>`;
   document.body.appendChild(fp);
 
   /* ----- vẽ danh sách ghim ----- */
@@ -6862,10 +6864,23 @@ window.loadLesson = loadLesson;
     else rows.splice(d.side==='top'?ri:ri+1,0,[c]);
     rows=rows.filter(r=>r.length);save();
   }
+  function toTab(c,i){rows.forEach(r=>{const k=r.indexOf(c);if(k>-1)r.splice(k,1)});rows=rows.filter(r=>r.length);tabs[i].rows.push([c]);if(lastAdded===c)lastAdded=null;save()}
+  function tabDragStart(e,t){
+    if(e.button>0||e.target.closest('i'))return;
+    const sx=e.clientX;let moved=false;
+    const mv=ev=>{
+      if(!moved){if(Math.abs(ev.clientX-sx)<5)return;moved=true;switchTab(tabs.indexOf(t))}
+      const j=[...$('fp-tabs').children].findIndex(el=>{const r=el.getBoundingClientRect();return ev.clientX>=r.left&&ev.clientX<r.right}),i=tabs.indexOf(t);
+      if(j<0||j===i)return;
+      const ct=tabs[cur];tabs.splice(i,1);tabs.splice(j,0,t);cur=tabs.indexOf(ct);save();renderTabs();
+    };
+    const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up)};
+    addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up);
+  }
   function dragStart(e){
     if(e.button>0)return;
     const cell=e.currentTarget,c=cell._c,sx=e.clientX,sy=e.clientY,ind=document.createElement('div');ind.className='fp-ind';
-    let g=null,drop=null,moved=false;
+    let g=null,drop=null,moved=false,th=null;
     const mv=ev=>{
       if(!moved){
         if(Math.hypot(ev.clientX-sx,ev.clientY-sy)<5)return;
@@ -6874,11 +6889,13 @@ window.loadLesson = loadLesson;
         document.body.appendChild(g);cell.classList.add('fp-d');fp.appendChild(ind);
       }
       g.style.transform=`translate(${ev.clientX-sx}px,${ev.clientY-sy}px)`;
-      drop=findDrop(ev.clientX,ev.clientY,c);showInd(drop,ind);
+      const te=document.elementFromPoint(ev.clientX,ev.clientY),tb=te&&te.closest&&te.closest('.fp-tb'),tbs=[...$('fp-tabs').children];
+      th=tb&&tbs.indexOf(tb)!==cur?tbs.indexOf(tb):null;tbs.forEach((x,k)=>x.classList.toggle('fp-td',k===th));
+      drop=th!=null?null:findDrop(ev.clientX,ev.clientY,c);showInd(drop,ind);
     };
     const up=()=>{
       removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);
-      if(!moved)return;g.remove();ind.remove();if(drop)doDrop(c,drop);render();
+      if(!moved)return;g.remove();ind.remove();[...$('fp-tabs').children].forEach(x=>x.classList.remove('fp-td'));if(th!=null)toTab(c,th);else if(drop)doDrop(c,drop);render();
     };
     addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up);
   }
@@ -6907,7 +6924,7 @@ window.loadLesson = loadLesson;
     if(on){applyPos(store.get('pos',null));renderTabs();render();const mb=$('mb');if(mb&&mb.getAttribute('aria-expanded')==='true')mb.click()}
     else setPick(false);
   }
-  const toggle=()=>setOpen(!fp.classList.contains('on'));
+  const toggle=()=>fp.classList.contains('on')?setCol(!fp.classList.contains('col')):setOpen(true);
   $('fp-x').onclick=()=>setOpen(false);
 
   /* ----- xóa ghim ----- */
