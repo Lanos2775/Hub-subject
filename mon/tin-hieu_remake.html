@@ -91,7 +91,7 @@ figcaption{font-size:14.5px;color:var(--mut);margin-top:8px;line-height:1.7;padd
 #mb span{width:20px;height:3px;border-radius:2px;background:#fff}
 #mn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 64px);left:14px;z-index:30;width:min(300px,calc(100vw - 28px));max-height:calc(100vh - 90px);max-height:calc(100dvh - 90px);overflow-y:auto;overscroll-behavior:contain;background:var(--card);border:1px solid var(--g);border-radius:14px;padding:10px;box-shadow:0 10px 34px rgba(0,0,0,.3)}
 #mn[hidden]{display:none}
-#ls{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-bottom:8px}
+#ls{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin-bottom:8px}
 #ls button{border:0;border-radius:8px;padding:8px 0;background:var(--tint);color:var(--ink);font:700 12.5px/1 "Be Vietnam Pro",sans-serif;cursor:pointer}
 #ls button.on{background:var(--c5);color:#fff}
 #toc a{display:block;padding:6px 9px;border-radius:9px;color:var(--ink);text-decoration:none;font-size:13px;line-height:1.45;font-weight:600}
@@ -3039,11 +3039,262 @@ $y_0[-2] = -\frac{9}{2}(-3)^{-2} + \frac{1}{2} = -\frac{9}{2}\cdot\frac{1}{9} + 
 
 [BOX: analogy] **Câu thần chú cuối bài**: *"Đặc trưng tìm nghiệm, tự nhiên theo dạng. Cưỡng bách thử giống input, trùng thì nhân thêm $t$. Tổng hai là đáp án, hằng số từ điều kiện ban đầu. Nhớ: cộng hưởng nguy hiểm, nghiệm kép có $t$, và đừng quên $u$."*
 
-# BÀI 6 (BẢN ĐẦY ĐỦ): CHUỖI FOURIER VÀ BIẾN ĐỔI FOURIER
+# BÀI 6 (BẢN ĐẦY ĐỦ): TÍCH CHẬP VÀ ĐÁP ỨNG XUNG
+
+[SECTION: bai-tichchap-overview]
+
+[H2] Bài 6. Tích chập và đáp ứng xung
+
+---
+
+## Phần A. Động cơ — Tại sao tích chập là trái tim của Chương 2?
+
+[BRIDGE] Ở Bài 5, bạn đã biết cách giải phương trình vi/sai phân để tìm đầu ra $y(t)$ khi biết đầu vào $x(t)$. Nhưng phương pháp đó có một nhược điểm lớn: **mỗi lần đổi input, phải giải lại từ đầu**. Giờ hãy tưởng tượng bạn có một hệ thống LTI và hàng trăm input khác nhau cần xử lý — liệu có cách nào **tính một lần, dùng cho mọi input** không? Câu trả lời là **có**, và đó chính là phép tích chập.
+
+[P] **Ý tưởng cốt lõi**: Hệ thống LTI được **đặc trưng hoàn toàn** bởi một hàm duy nhất — **đáp ứng xung** $h(t)$ (hoặc $h[n]$). Biết $h$, ta tính được đầu ra cho **mọi** input $x$ bằng công thức tích chập:
+$$y = x * h$$
+
+[P] **Ba lý do phải học tích chập**:
+1. **Công cụ vạn năng**: Một công thức duy nhất thay thế việc giải phương trình vi phân cho mọi input. Đây là lý do các kỹ sư thiết kế hệ thống bằng cách **thiết kế $h$** thay vì thiết kế phương trình.
+2. **Nền tảng của miền tần số**: Tính chất "tích chập trong thời gian = phép nhân trong tần số" (học ở Chương 3) là cầu nối giữa Chương 2 và Chương 3. Không hiểu tích chập thì không hiểu vì sao Fourier lại quan trọng đến vậy.
+3. **Trực quan và dễ kiểm tra**: Khác với phương trình vi phân (phải giải đại số), tích chập có thể **vẽ ra** và **kiểm tra bằng mắt** — đặc biệt hữu ích khi thi.
+
+[BOX: analogy] **Ẩn dụ**: Hãy tưởng tượng bạn ném một viên sỏi xuống hồ. Viên sỏi tạo ra một **gợn sóng lan tỏa** — đó là "đáp ứng xung" $h(t)$ của mặt hồ. Nếu bạn ném **một viên sỏi** ở thời điểm $t=0$, mặt hồ gợn theo $h(t)$. Nếu bạn ném **nhiều viên sỏi** ở các thời điểm khác nhau với lực khác nhau (input $x$), mặt hồ sẽ là **tổng chồng chất** của nhiều gợn sóng — mỗi gợn bị trễ đi theo thời điểm ném và nhân với lực ném. Tích chập chính là phép "cộng chồng chất" đó.
+
+---
+
+## Phần B. Đáp ứng xung là gì?
+
+### B.1. Định nghĩa
+
+[P] **Đáp ứng xung** $h(t)$ (hoặc $h[n]$) của hệ thống LTI là **đầu ra khi đầu vào là xung delta**:
+$$\delta(t) \to h(t), \qquad \delta[n] \to h[n]$$
+
+[FIG: TC.1] Đáp ứng xung $h(t)$ là đầu ra khi đầu vào là xung delta $\delta(t)$. Đây là "dấu vân tay" của hệ thống LTI — biết $h$ là biết mọi thứ.
+
+[P] Nghĩa là: bạn "chích" hệ thống bằng một xung cực ngắn (về lý thuyết là xung Dirac), rồi đo phản ứng. Phản ứng đó chính là $h$.
+
+[BOX: analogy] **Ẩn dụ y học**: Bác sĩ gõ nhẹ vào đầu gối bạn (một xung) và quan sát chân bạn đá lên (phản ứng). Phản ứng đó là "đáp ứng xung" của phản xạ đầu gối. Mỗi người có phản ứng khác nhau — đó là "hệ thống" khác nhau. Biết phản ứng đó, bác sĩ có thể dự đoán phản ứng với các kích thích khác.
+
+### B.2. Tại sao $h$ đặc trưng hoàn toàn cho hệ LTI?
+
+[P] Vì hệ LTI có hai tính chất:
+- **Tuyến tính**: input là tổng các thành phần → output là tổng các output thành phần.
+- **Bất biến**: input bị trễ → output bị trễ tương ứng.
+
+[P] Kết hợp hai tính chất: nếu ta **phân tích input thành tổng các xung delta** (mỗi xung bị trễ và nhân hệ số), thì output là **tổng các đáp ứng xung** (mỗi đáp ứng bị trễ và nhân hệ số tương ứng). Đó chính là tích chập.
+
+---
+
+## Phần C. Biểu diễn tín hiệu qua xung delta
+
+### C.1. Công thức "chọn mẫu"
+
+[P] Mọi tín hiệu đều viết được thành tổng (hoặc tích phân) các xung delta có trọng số:
+[FORMULA: key]
+$$\text{Rời rạc: } x[n] = \sum_{k=-\infty}^{\infty}x[k]\,\delta[n-k]$$
+$$\text{Liên tục: } x(t) = \int_{-\infty}^{\infty}x(\tau)\,\delta(t-\tau)\,d\tau$$
+[/FORMULA]
+
+[P] Nghĩa là: tín hiệu $x$ là "chồng chất" của vô số xung delta, mỗi xung có **trọng số** $x[k]$ (hoặc $x(\tau)$) và **vị trí** $k$ (hoặc $\tau$).
+
+[FIG: TC.2] Mọi tín hiệu đều phân tích được thành tổng các xung delta có trọng số: $x[n] = \sum_k x[k]\delta[n-k]$. Đây là cơ sở để suy ra công thức tích chập.
+
+[BOX: analogy] **Ẩn dụ**: Hãy nghĩ tín hiệu như một **bức tranh ghép từ các điểm ảnh**. Mỗi điểm ảnh là một "xung delta" có màu (trọng số) tại vị trí cụ thể. Bức tranh hoàn chỉnh = tổng các điểm ảnh. Tương tự, tín hiệu = tổng các xung delta có trọng số.
+
+### C.2. Từ biểu diễn đến tích chập
+
+[P] Cho $x[n] = \sum_k x[k]\delta[n-k]$ qua hệ thống LTI có đáp ứng xung $h[n]$:
+- Mỗi xung $\delta[n-k]$ → $h[n-k]$ (tính bất biến: trễ $k$).
+- Nhân trọng số $x[k]$: $x[k]\delta[n-k]$ → $x[k]h[n-k]$ (tính tuyến tính).
+- Tổng lại: $\sum_k x[k]\delta[n-k]$ → $\sum_k x[k]h[n-k]$ (tính xếp chồng).
+
+[FORMULA: key]
+$$\boxed{y[n] = \sum_{k=-\infty}^{\infty}x[k]\,h[n-k]}$$
+[/FORMULA]
+
+[P] Tương tự liên tục:
+[FORMULA: key]
+$$\boxed{y(t) = \int_{-\infty}^{\infty}x(\tau)\,h(t-\tau)\,d\tau}$$
+[/FORMULA]
+
+[P] Đây chính là **công thức tích chập**. Ký hiệu: $y = x * h$.
+
+[BOX: warn] **Tại sao là $h[n-k]$ mà không phải $h[k]$?** Vì xung tại vị trí $k$ khi qua hệ thống bị **trễ** $k$ đơn vị → đáp ứng là $h$ dịch đi $k$, tức $h[n-k]$. Đây là điểm dễ nhầm nhất — nhớ kỹ: **biến của $h$ là $n-k$** (trừ, không phải cộng).
+
+---
+
+## Phần D. Ba cách tính tích chập
+
+### D.1. Cách 1 — Cộng tín hiệu (dùng cho rời rạc, $h$ ngắn)
+
+[P] **Ý tưởng**: Viết $y[n] = \sum_k h[k]x[n-k]$. Mỗi $h[k]$ là một **hệ số**; $x[n-k]$ là tín hiệu $x$ dịch đi $k$. Kết quả là **tổng các tín hiệu dịch có trọng số**.
+
+[P] **Ví dụ**: $h[n] = \delta[n] + 2\delta[n-1]$ (tức $h[0]=1$, $h[1]=2$, còn lại 0).
+$$y[n] = \sum_k h[k]x[n-k] = h[0]x[n] + h[1]x[n-1] = x[n] + 2x[n-1]$$
+
+[P] Chỉ cần vẽ $x[n]$ và $2x[n-1]$ rồi cộng lại — rất nhanh nếu $h$ có ít số hạng khác 0.
+
+[BOX: analogy] **Khi nào dùng cách này?** Khi $h$ có **ít số hạng** (như 2-3 xung) — vì mỗi số hạng là một lần vẽ tín hiệu dịch. Nếu $h$ dài (như 10 xung), cách này chậm.
+
+### D.2. Cách 2 — Lật và dịch (dùng cho cả liên tục và rời rạc, trực quan)
+
+[P] **Quy trình 4 bước** (đây là cách "chuẩn" để hiểu bản chất):
+
+[STEPS]
+1. **Cố định $n$** (coi $n$ là tham số), **biến $k$** là biến độc lập.
+2. **Lật $h[k]$** thành $h[-k]$ (qua trục tung).
+3. **Dịch phải $n$ bước**: $h[-k] \to h[-(k-n)] = h[n-k]$.
+4. **Nhân với $x[k]$** tại từng $k$, rồi **lấy tổng (hoặc tích phân)** theo $k$ → được $y[n]$.
+[/STEPS]
+
+[P] Làm lần lượt $n = 0, 1, 2, \dots$ để có toàn bộ $y$.
+
+[BOX: analogy] **Ẩn dụ "trượt"**: Hãy tưởng tượng bạn có hai tấm phim trong suốt: một tấm là $x[k]$, một tấm là $h[n-k]$ (đã lật). Bạn **trượt** tấm $h$ từ trái sang phải theo $n$. Tại mỗi vị trí, bạn tính "diện tích chồng lấn" (tích phân của tích hai tấm). Diện tích đó chính là $y[n]$. Đó là lý do tích chập còn gọi là "chồng chập".
+
+[FIG: TC.3] Quá trình lật-dịch để tính tích chập. Đầu tiên lật $h[k]$ thành $h[-k]$, rồi dịch phải $n$ bước thành $h[n-k]$. Tại mỗi $n$, tính "diện tích chồng lấn" với $x[k]$ — đó chính là $y[n]$.
+
+[BOX: warn] **Mẹo vẽ nhanh**: Khi làm bài thi, hãy vẽ **3 hàng**: hàng trên là $x[k]$, hàng giữa là $h[n-k]$ tại vài giá trị $n$ đặc biệt (như $n$ nhỏ, $n$ trung bình, $n$ lớn), hàng dưới là tích $x[k]h[n-k]$. Xác định các **khoảng chồng lấn** (khi nào hai tín hiệu cùng khác 0) — đó là các cận tích phân.
+
+### D.3. Cách 3 — Ma trận (dùng cho rời rạc, nhanh)
+
+[P] Nếu $x[n]$ dài $N_1$ (từ $n=0$ đến $N_1-1$), $h[n]$ dài $N_2$, thì $y[n]$ dài $N_1 + N_2 - 1$.
+
+[P] **Lập ma trận Toeplitz** từ $x$: hàng 1 là $[x_0, 0, 0, \ldots]$; hàng 2 là $[x_1, x_0, 0, \ldots]$; hàng 3 là $[x_2, x_1, x_0, \ldots]$; … (mỗi hàng dịch phải 1, chèn 0 vào đầu). Nhân ma trận với vector $h$ (đã thêm 0 cho đủ chiều dài).
+
+[P] **Ví dụ**: $x[n] = [6, -3]$ (từ $n=0$), $h[n] = [-3, 6, 3]$ (từ $n=0$).
+$$\begin{bmatrix}y(0)\\y(1)\\y(2)\\y(3)\end{bmatrix} = \begin{bmatrix}6&0&0&0\\-3&6&0&0\\0&-3&6&0\\0&0&-3&6\end{bmatrix}\begin{bmatrix}-3\\6\\3\\0\end{bmatrix} = \begin{bmatrix}-18\\45\\0\\-9\end{bmatrix}$$
+
+[BOX: analogy] **Khi nào dùng cách này?** Khi cả $x$ và $h$ đều ngắn và rời rạc — ma trận cho kết quả nhanh, ít sai sót. Nhược điểm: không trực quan, không dùng được cho liên tục.
+
+---
+
+## Phần E. Ví dụ chi tiết — Tích chập liên tục
+
+[P] **Đề**: Cho $x(t) = u(t-1) - u(t-3)$ (xung vuông từ $t=1$ đến $t=3$), $h(t) = u(t) - u(t-2)$ (xung vuông từ $t=0$ đến $t=2$). Tính $y(t) = x(t) * h(t)$.
+
+**Bước 1 — Vẽ $x(\tau)$ và $h(t-\tau)$**:
+- $x(\tau) = 1$ với $\tau \in [1, 3]$.
+- $h(\tau) = 1$ với $\tau \in [0, 2]$ → $h(-\tau) = 1$ với $-\tau \in [0, 2]$, tức $\tau \in [-2, 0]$ (lật).
+- $h(t-\tau) = 1$ với $t-\tau \in [0, 2]$, tức $\tau \in [t-2, t]$ (dịch phải $t$).
+
+**Bước 2 — Xác định các khoảng chồng lấn** giữa $[1, 3]$ và $[t-2, t]$:
+- **Khoảng 1**: $t < 1$ → đoạn $[t-2, t]$ nằm hoàn toàn bên trái $1$ → không chồng lấn → $y(t) = 0$.
+- **Khoảng 2**: $1 \leq t < 3$ → chồng lấn từ $\max(1, t-2) = 1$ đến $\min(3, t) = t$. Tích phân: $y(t) = \int_1^t 1\cdot1\,d\tau = t-1$.
+- **Khoảng 3**: $3 \leq t < 5$ → chồng lấn từ $t-2$ đến $3$. Tích phân: $y(t) = \int_{t-2}^3 1\,d\tau = 3-(t-2) = 5-t$.
+- **Khoảng 4**: $t \geq 5$ → đoạn $[t-2, t]$ nằm hoàn toàn bên phải $3$ → không chồng lấn → $y(t) = 0$.
+
+**Kết quả**: vì hai xung vuông có **cùng độ rộng 2**, $y(t)$ là một **tam giác**:
+- $0$ với $t < 1$ hoặc $t \geq 5$.
+- Tăng tuyến tính từ 0 đến 2 trong $[1, 3]$ ($y = t-1$).
+- Giảm tuyến tính từ 2 về 0 trong $[3, 5]$ ($y = 5-t$).
+
+[BOX: analogy] **Quy tắc "xung vuông ∗ xung vuông = hình thang"** — đây là kết quả kinh điển. Nếu hai xung vuông cao 1, có độ rộng $W_1, W_2$ và bắt đầu tại $t_1, t_2$, thì tích chập là hình thang bắt đầu tại $t_1 + t_2$, kết thúc tại $t_1 + W_1 + t_2 + W_2$, đỉnh bằng $\min(W_1, W_2)$. Khi hai xung **cùng độ rộng** ($W_1 = W_2 = W$), phần đỉnh phẳng co lại thành một điểm và hình thang trở thành **tam giác** đỉnh $W$ — đúng như ví dụ trên ($W = 2$, đỉnh 2 tại $t = 3$).
+
+[FIG: TC.4] Tích chập của hai xung vuông cùng độ rộng cho ra tam giác (nếu khác độ rộng thì là hình thang). Đây là kết quả kinh điển — nhớ để kiểm tra nhanh.
+
+---
+
+## Phần F. Tính chất tích chập
+
+[P] Các tính chất **phải nhớ**:
+
+[TABLE]
+| Tính chất | Công thức | Ý nghĩa |
+|---|---|---|
+| Giao hoán | $x*h = h*x$ | Thứ tự không quan trọng |
+| Kết hợp | $(x*h_1)*h_2 = x*(h_1*h_2)$ | Nối tiếp hai hệ = tích chập hai $h$ |
+| Phân phối | $x*(h_1+h_2) = x*h_1 + x*h_2$ | Song song hai hệ = cộng hai output |
+| Nhân với delta | $x*\delta = x$ | Delta là "phần tử đơn vị" |
+| Dịch | $x(t-t_0)*h = x*h(t-t_0)$ | Dịch input = dịch output |
+| Nhân quả | $x, h$ nhân quả ⇒ $x*h$ nhân quả | Tính chất được bảo toàn |
+[/TABLE]
+
+[BOX: analogy] **"Delta là phần tử đơn vị"**: Giống như nhân số với 1 không đổi số, tích chập với delta không đổi tín hiệu. Đây là lý do $\delta$ đóng vai trò "phần tử trung tính" của tích chập.
+
+---
+
+## Phần G. Các bẫy thi
+
+[BOX: warn] **6 bẫy phổ biến**:
+1. **Nhầm $h[n-k]$ với $h[k-n]$**: Đúng là $h[n-k]$ (biến $k$ bị trừ từ $n$). $h[k-n]$ là dạng khác (dịch ngược). Đây là lỗi phổ biến nhất.
+2. **Quên xác định khoảng chồng lấn**: Với tín hiệu liên tục, phải chia **nhiều trường hợp** theo $t$ (như ví dụ trên có 4 khoảng). Nhiều bạn chỉ tính một khoảng rồi kết luận sai.
+3. **Nhầm chiều dài output**: Với rời rạc, $y$ dài $N_1 + N_2 - 1$ — không phải $N_1 + N_2$, không phải $\max(N_1, N_2)$.
+4. **Quên cận tích phân**: Khi tính $\int x(\tau)h(t-\tau)d\tau$, cận là **khoảng chồng lấn** của $x$ và $h(t-\cdot)$, không phải cận của $x$ hay $h$ riêng lẻ.
+5. **Nhầm tích chập với phép nhân thường**: $x*h \neq x\cdot h$. Tích chập là phép toán phức tạp hơn nhiều.
+6. **Quên kiểm tra bằng trực giác**: Kết quả tích chập của hai xung vuông phải là hình thang (hoặc tam giác) — nếu bạn ra dạng khác, có lỗi.
+
+[SECTION: bai-tichchap-exercises]
+
+[H2] Bài tập mẫu — Quiz C02_LTI System_1
+
+[BRIDGE] Ba bài dưới đây tương ứng ba cách tính ở Phần D: cộng tín hiệu (Bài tập 1), ma trận (Bài tập 2) và lật-dịch cho tín hiệu liên tục (Bài tập 3).
+
+---
+
+[H3] Bài tập 1 — Cộng tín hiệu
+
+[P] **Đề**: Cho $h[n] = \delta[n] + 2\delta[n-1]$ (tức $h[0]=1, h[1]=2$), $x[n]$ có giá trị $x[0]=3$, $x[1]=2$, $x[2]=3$, $x[3]=5$ (các mẫu khác 0). Tính $y[n] = x[n]*h[n]$.
+
+**Lời giải**
+
+[STEPS]
+1. **Viết $y$ theo $x$**: $y[n] = x[n] + 2x[n-1]$.
+2. **Tính từng mẫu**:
+   - $y[0] = x[0] + 2x[-1] = 3 + 0 = 3$.
+   - $y[1] = x[1] + 2x[0] = 2 + 6 = 8$.
+   - $y[2] = x[2] + 2x[1] = 3 + 4 = 7$.
+   - $y[3] = x[3] + 2x[2] = 5 + 6 = 11$.
+   - $y[4] = x[4] + 2x[3] = 0 + 10 = 10$.
+   - $y[5] = x[5] + 2x[4] = 0 + 0 = 0$.
+3. **Kiểm tra độ dài**: $N_1 + N_2 - 1 = 4 + 2 - 1 = 5$ mẫu (từ $n=0$ đến $n=4$) ✓.
+[/STEPS]
+
+[ANS] **Kết quả**: $y[n] = [3, 8, 7, 11, 10]$ (từ $n=0$ đến $n=4$).
+
+[H3] Bài tập 2 — Ma trận
+
+[P] **Đề**: $x[n] = [6, -3]$, $h[n] = [-3, 6, 3]$. Tính $y = x*h$.
+
+**Lời giải**
+
+[STEPS]
+1. **Độ dài output**: $N_1 + N_2 - 1 = 2 + 3 - 1 = 4$ → ma trận Toeplitz $4 \times 4$ từ $x$, vector $h$ thêm một số 0.
+2. **Nhân ma trận**:
+$$\begin{bmatrix}y(0)\\y(1)\\y(2)\\y(3)\end{bmatrix} = \begin{bmatrix}6&0&0&0\\-3&6&0&0\\0&-3&6&0\\0&0&-3&6\end{bmatrix}\begin{bmatrix}-3\\6\\3\\0\end{bmatrix} = \begin{bmatrix}-18\\45\\0\\-9\end{bmatrix}$$
+[/STEPS]
+
+[ANS] **Kết quả**: $y[n] = [-18, 45, 0, -9]$.
+
+[H3] Bài tập 3 — Tích chập liên tục
+
+[P] **Đề**: $x(t) = u(t-1) - u(t-3)$, $h(t) = u(t) - u(t-2)$. Tính $y(t)$.
+
+[P] **Kết quả** (đã giải chi tiết ở Phần E): $y(t)$ là tam giác đỉnh bằng 2 tại $t = 3$, tăng từ 0 đến 2 trong $[1, 3]$, giảm từ 2 về 0 trong $[3, 5]$.
+
+[ANS] **Công thức**:
+$$y(t) = \begin{cases}0 & t<1\\ t-1 & 1\leq t<3\\ 5-t & 3\leq t<5\\ 0 & t\geq 5\end{cases}$$
+
+[SECTION: bai-tichchap-summary]
+
+[H2] Tổng kết Bài 6
+
+[BOX] **Công thức cần nhớ**:
+- **Đáp ứng xung**: $\delta(t) \to h(t)$ — đặc trưng hoàn toàn cho hệ LTI.
+- **Biểu diễn tín hiệu**: $x[n] = \sum_k x[k]\delta[n-k]$; $x(t) = \int x(\tau)\delta(t-\tau)d\tau$.
+- **Tích chập rời rạc**: $y[n] = \sum_k x[k]h[n-k]$.
+- **Tích chập liên tục**: $y(t) = \int x(\tau)h(t-\tau)d\tau$.
+- **Tính chất**: giao hoán, kết hợp, phân phối, $x*\delta = x$, dịch, nhân quả.
+- **Ba cách tính**: cộng tín hiệu (ít số hạng), lật-dịch (trực quan), ma trận (nhanh cho rời rạc).
+- **Quy tắc**: xung vuông ∗ xung vuông = hình thang; cùng độ rộng = tam giác.
+
+[BOX: analogy] **Câu thần chú cuối bài**: *"Đáp ứng xung là dấu vân tay. Tín hiệu là tổng các xung delta. Đưa từng xung qua hệ thống, nhân trọng số, cộng lại — đó là tích chập. Nhớ: biến của $h$ là $n-k$ (trừ), phải lật trước khi dịch. Xung vuông ∗ xung vuông = hình thang (cùng độ rộng thì thành tam giác)."*
+
+# BÀI 7 (BẢN ĐẦY ĐỦ): CHUỖI FOURIER VÀ BIẾN ĐỔI FOURIER
 
 [SECTION: bai6-overview]
 
-[H2] Bài 6. Chuỗi Fourier và Biến đổi Fourier — Từ miền thời gian sang miền tần số
+[H2] Bài 7. Chuỗi Fourier và Biến đổi Fourier — Từ miền thời gian sang miền tần số
 
 ---
 
@@ -3551,7 +3802,7 @@ $$X[k] = \frac{1}{2}\int_0^1 1\cdot e^{-jk\pi t}dt = \frac{1}{2}\left[\frac{e^{-
 
 [SECTION: bai6-summary]
 
-[H2] Tổng kết Bài 6
+[H2] Tổng kết Bài 7
 
 [BOX] **Bảng tổng hợp 12 câu**:
 
@@ -3588,17 +3839,17 @@ $$X[k] = \frac{1}{2}\int_0^1 1\cdot e^{-jk\pi t}dt = \frac{1}{2}\left[\frac{e^{-
 
 [BOX: analogy] **Câu thần chú cuối bài**: *"Tuần hoàn thì FS rời rạc, không tuần hoàn thì FT liên tục. Euler biến sin/cos thành mũ phức, hệ số $c_k$ là âm lượng từng nốt. Nhớ cặp vàng: xung vuông ↔ sinc, mũ tắt ↔ phân thức. Dịch thời gian thì nhân pha, tích chập thì nhân tần. Và đừng quên: FT ngược có $\frac{1}{2\pi}$."*
 
-# BÀI 7 (BẢN ĐẦY ĐỦ): BIẾN ĐỔI FOURIER NGƯỢC
+# BÀI 8 (BẢN ĐẦY ĐỦ): BIẾN ĐỔI FOURIER NGƯỢC
 
 [SECTION: bai7-overview]
 
-[H2] Bài 7. Biến đổi Fourier ngược — Từ phổ về tín hiệu
+[H2] Bài 8. Biến đổi Fourier ngược — Từ phổ về tín hiệu
 
 ---
 
 ## Phần A. Động cơ — Tại sao phải học biến đổi ngược?
 
-[BRIDGE] Ở Bài 6, bạn đã học cách **đi từ tín hiệu sang phổ** — cho $x(t)$, tính $X(\omega)$ hoặc $c_k$. Bài này dạy chiều ngược lại: **cho phổ hoặc hệ số, tìm lại tín hiệu gốc**. Đây là kỹ năng thiết yếu vì trong kỹ thuật, người ta thường biết "phổ mong muốn" (ví dụ: bộ lọc cần giữ tần số 100 Hz, chặn tần số 500 Hz) rồi phải thiết kế tín hiệu (đáp ứng xung) tương ứng.
+[BRIDGE] Ở Bài 7, bạn đã học cách **đi từ tín hiệu sang phổ** — cho $x(t)$, tính $X(\omega)$ hoặc $c_k$. Bài này dạy chiều ngược lại: **cho phổ hoặc hệ số, tìm lại tín hiệu gốc**. Đây là kỹ năng thiết yếu vì trong kỹ thuật, người ta thường biết "phổ mong muốn" (ví dụ: bộ lọc cần giữ tần số 100 Hz, chặn tần số 500 Hz) rồi phải thiết kế tín hiệu (đáp ứng xung) tương ứng.
 
 [P] **Ba lý do cốt lõi**:
 
@@ -3608,7 +3859,7 @@ $$X[k] = \frac{1}{2}\int_0^1 1\cdot e^{-jk\pi t}dt = \frac{1}{2}\left[\frac{e^{-
 
 3. **Hiểu tính chất miền tần số**: Khi ai đó nói "nhân $X[k]$ với $\cos(\pi k/5)$", bạn cần biết điều đó tương đương với phép gì trong miền thời gian. Đó là dùng **tính chất** của biến đổi Fourier theo chiều ngược.
 
-[BOX: analogy] **Ẩn dụ**: Nếu Bài 6 là "dịch từ tiếng Việt sang tiếng Anh", thì Bài 7 là "dịch từ tiếng Anh về tiếng Việt". Bạn cần biết cả hai chiều để thực sự hiểu ngôn ngữ. Và cũng giống như dịch ngược không phải lúc nào cũng dễ (có câu dịch đi dịch lại bị sai), biến đổi ngược cũng có những bẫy riêng — đó là nội dung bài này.
+[BOX: analogy] **Ẩn dụ**: Nếu Bài 7 là "dịch từ tiếng Việt sang tiếng Anh", thì Bài 8 là "dịch từ tiếng Anh về tiếng Việt". Bạn cần biết cả hai chiều để thực sự hiểu ngôn ngữ. Và cũng giống như dịch ngược không phải lúc nào cũng dễ (có câu dịch đi dịch lại bị sai), biến đổi ngược cũng có những bẫy riêng — đó là nội dung bài này.
 
 ---
 
@@ -3679,7 +3930,7 @@ $$\text{Nếu } X[k] = A\,\delta[k - k_0] \text{ thì } x[n] = A\,e^{jk_0\Omega_
 
 ### C.3. Các tính chất ngược cần nhớ
 
-[P] Đây là các tính chất **của biến đổi Fourier** (nhưng dùng theo chiều ngược). Bạn đã học ở Bài 6 — giờ áp dụng chiều ngược:
+[P] Đây là các tính chất **của biến đổi Fourier** (nhưng dùng theo chiều ngược). Bạn đã học ở Bài 7 — giờ áp dụng chiều ngược:
 
 [TABLE]
 | Nếu phổ có... | Thì tín hiệu có... |
@@ -3957,7 +4208,7 @@ $$2j\sin(6\pi k/11) = e^{j6\pi k/11} - e^{-j6\pi k/11} = e^{j3\Omega_0 k} - e^{-
 
 [SECTION: bai7-summary]
 
-[H2] Tổng kết Bài 7
+[H2] Tổng kết Bài 8
 
 [BOX] **Bảng tổng hợp 7 câu**:
 
@@ -3990,17 +4241,17 @@ $$2j\sin(6\pi k/11) = e^{j6\pi k/11} - e^{-j6\pi k/11} = e^{j3\Omega_0 k} - e^{-
 
 [BOX: analogy] **Câu thần chú cuối bài**: *"Từ phổ về tín hiệu: mỗi delta là một mũ phức, mỗi mũ phức là một delta. Dấu ngược nhau — nhân pha dương thì dịch trái. Nhân cos thì trung bình hai dịch. Nhớ Euler: cos là tổng, sin là hiệu. Và đừng quên: FT ngược có $\frac{1}{2\pi}$, FS ngược thì không."*
 
-# BÀI 8 (BẢN ĐẦY ĐỦ): ĐÁP ỨNG TẦN SỐ CỦA HỆ THỐNG LTI
+# BÀI 9 (BẢN ĐẦY ĐỦ): ĐÁP ỨNG TẦN SỐ CỦA HỆ THỐNG LTI
 
 [SECTION: bai8-overview]
 
-[H2] Bài 8. Đáp ứng tần số — Cách hệ thống phản ứng với từng tần số
+[H2] Bài 9. Đáp ứng tần số — Cách hệ thống phản ứng với từng tần số
 
 ---
 
 ## Phần A. Động cơ — Tại sao phải học đáp ứng tần số?
 
-[BRIDGE] Ở Bài 6 và 7, bạn đã biết cách phân tích tín hiệu thành tổng các sin/cos. Giờ câu hỏi là: **khi đưa một tín hiệu sin/cos vào hệ thống LTI, đầu ra là gì?** Đáp ứng tần số $H(\omega)$ (hoặc $H(\Omega)$) trả lời chính xác câu hỏi đó — nó cho biết **hệ thống khuếch đại hay làm yếu từng tần số, và dịch pha bao nhiêu**.
+[BRIDGE] Ở Bài 7 và 7, bạn đã biết cách phân tích tín hiệu thành tổng các sin/cos. Giờ câu hỏi là: **khi đưa một tín hiệu sin/cos vào hệ thống LTI, đầu ra là gì?** Đáp ứng tần số $H(\omega)$ (hoặc $H(\Omega)$) trả lời chính xác câu hỏi đó — nó cho biết **hệ thống khuếch đại hay làm yếu từng tần số, và dịch pha bao nhiêu**.
 
 [P] **Tại sao đây là bài quan trọng bậc nhất của môn?**
 
@@ -4012,7 +4263,7 @@ Hãy tưởng tượng bạn thiết kế bộ lọc âm thanh. Bạn muốn gi�
 
 2. **Đáp ứng với sin/cos**: Nhờ eigenfunction, đáp ứng với $A\cos(\omega_0 t + \phi)$ là $A|H(\omega_0)|\cos(\omega_0 t + \phi + \angle H(\omega_0))$ — cùng tần số, chỉ khác biên độ và pha. Đây là công thức "thần thánh" của bài này.
 
-3. **Liên hệ với phương trình vi/sai phân**: Từ phương trình mô tả hệ thống, có thể tìm $H(\omega)$ bằng cách thay $d/dt \to j\omega$ (hoặc $y[n-k] \to e^{-jk\Omega}$). Đây là cầu nối giữa Bài 5 (phương trình) và Bài 8 (tần số).
+3. **Liên hệ với phương trình vi/sai phân**: Từ phương trình mô tả hệ thống, có thể tìm $H(\omega)$ bằng cách thay $d/dt \to j\omega$ (hoặc $y[n-k] \to e^{-jk\Omega}$). Đây là cầu nối giữa Bài 5 (phương trình) và Bài 9 (tần số).
 
 [BOX: analogy] **Ẩn dụ**: Hãy nghĩ $H(\omega)$ như "bộ điều chỉnh âm thanh" (equalizer) của dàn âm thanh. Với mỗi tần số, nó có một **hệ số khuếch đại** (biên độ) và một **độ trễ** (pha). Tín hiệu vào đi qua bộ điều chỉnh → tín hiệu ra bị thay đổi biên độ và pha theo từng tần số. Nếu bạn biết $H(\omega)$, bạn biết chính xác "bộ điều chỉnh" đã làm gì.
 [FIG: 8.2] Đáp ứng biên độ $|H(\omega)|$ của bộ lọc thông thấp. Tần số thấp: $|H| \approx 1$ (qua). Tần số cao: $|H| \approx 0$ (chặn). $\omega_c$ là tần số cắt.
@@ -4109,7 +4360,7 @@ Nếu đề cho $H(\omega)$ dạng phân thức, chỉ cần thay $\omega = 0$ v
 [P] **Quy trình 3 bước**:
 
 [STEPS]
-1. **Tính $H(\omega) = \mathcal{F}\{h\}$**: Áp dụng công thức FT hoặc DTFT. Thường dùng bảng cặp thông dụng (Bài 6).
+1. **Tính $H(\omega) = \mathcal{F}\{h\}$**: Áp dụng công thức FT hoặc DTFT. Thường dùng bảng cặp thông dụng (Bài 7).
    - $e^{-at}u(t) \to 1/(a + j\omega)$.
    - $a^n u[n] \to 1/(1 - ae^{-j\Omega})$.
 2. **Tính $H(\omega_k)$ cho từng tần số** trong tín hiệu vào (như Dạng 1).
@@ -4139,7 +4390,7 @@ Nếu đề cho $H(\omega)$ dạng phân thức, chỉ cần thay $\omega = 0$ v
 
 [P] Lấy FT hai vế phương trình, rút $H(\omega) = Y(\omega)/X(\omega)$.
 
-[BOX: analogy] **Tại sao thay thế được?** Vì FT biến đạo hàm thành phép nhân với $j\omega$ (tính chất đạo hàm ở Bài 6). Tương tự, $y[n-k]$ trong miền thời gian là "trễ $k$ mẫu" — trong miền tần số là nhân với $e^{-jk\Omega}$ (tính chất dịch). Đây là lý do phương trình vi/sai phân trong miền thời gian trở thành phương trình **đại số** trong miền tần số — dễ giải hơn nhiều!
+[BOX: analogy] **Tại sao thay thế được?** Vì FT biến đạo hàm thành phép nhân với $j\omega$ (tính chất đạo hàm ở Bài 7). Tương tự, $y[n-k]$ trong miền thời gian là "trễ $k$ mẫu" — trong miền tần số là nhân với $e^{-jk\Omega}$ (tính chất dịch). Đây là lý do phương trình vi/sai phân trong miền thời gian trở thành phương trình **đại số** trong miền tần số — dễ giải hơn nhiều!
 
 ### D.2. Công thức tổng quát
 
@@ -4413,7 +4664,7 @@ $$y_2(t) = \frac{\sqrt{2}}{4}\cdot\frac{\sqrt{2}}{2}[\cos(2t) + \sin(2t)] = \fra
 
 [SECTION: bai8-summary]
 
-[H2] Tổng kết Bài 8
+[H2] Tổng kết Bài 9
 
 [BOX] **Bảng tổng hợp 9 câu**:
 
@@ -4443,21 +4694,21 @@ $$y_2(t) = \frac{\sqrt{2}}{4}\cdot\frac{\sqrt{2}}{2}[\cos(2t) + \sin(2t)] = \fra
 - **DC**: $A \to A\cdot H(0)$.
 - **Từ phương trình vi phân**: $H(\omega) = \frac{\sum b_k(j\omega)^k}{\sum a_k(j\omega)^k}$.
 - **Từ phương trình sai phân**: $H(\Omega) = \frac{\sum b_k e^{-jk\Omega}}{\sum a_k e^{-jk\Omega}}$.
-- **Từ $h$**: $H = \mathcal{F}\{h\}$ (dùng bảng Bài 6).
+- **Từ $h$**: $H = \mathcal{F}\{h\}$ (dùng bảng Bài 7).
 
 [BOX: analogy] **Câu thần chú cuối bài**: *"Vào sin, ra sin — cùng tần số. Biên độ nhân $|H|$, pha cộng $\angle H$. Hằng số thì dùng $H(0)$. Muốn tìm $H$ từ phương trình: đạo hàm thành $j\omega$, trễ $k$ thành $e^{-jk\Omega}$. Và nhớ: hệ LTI không bao giờ đổi tần số!"*
 
-# BÀI 9 (BẢN ĐẦY ĐỦ): ĐỒ THỊ PHỔ CỦA TÍN HIỆU
+# BÀI 10 (BẢN ĐẦY ĐỦ): ĐỒ THỊ PHỔ CỦA TÍN HIỆU
 
 [SECTION: bai9-overview]
 
-[H2] Bài 9. Đồ thị phổ của tín hiệu — Đọc và tái tạo tín hiệu từ phổ
+[H2] Bài 10. Đồ thị phổ của tín hiệu — Đọc và tái tạo tín hiệu từ phổ
 
 ---
 
 ## Phần A. Động cơ — Tại sao phải đọc đồ thị phổ?
 
-[BRIDGE] Ở Bài 6 và 7, bạn đã biết cách tính $X(\omega)$ từ $x(t)$ và ngược lại bằng công thức tích phân. Nhưng trong thực tế kỹ thuật, người ta thường **không có công thức** — họ có **đồ thị phổ** (từ máy phân tích phổ, từ thiết kế bộ lọc, từ dữ liệu đo). Câu hỏi đặt ra: **từ đồ thị phổ, làm sao biết tín hiệu gốc là gì?** Đây chính là kỹ năng của bài này.
+[BRIDGE] Ở Bài 7 và 7, bạn đã biết cách tính $X(\omega)$ từ $x(t)$ và ngược lại bằng công thức tích phân. Nhưng trong thực tế kỹ thuật, người ta thường **không có công thức** — họ có **đồ thị phổ** (từ máy phân tích phổ, từ thiết kế bộ lọc, từ dữ liệu đo). Câu hỏi đặt ra: **từ đồ thị phổ, làm sao biết tín hiệu gốc là gì?** Đây chính là kỹ năng của bài này.
 
 [P] **Ba lý do cốt lõi**:
 
@@ -4465,7 +4716,7 @@ $$y_2(t) = \frac{\sqrt{2}}{4}\cdot\frac{\sqrt{2}}{2}[\cos(2t) + \sin(2t)] = \fra
 
 2. **Hiểu bản chất của phổ**: Khi bạn đọc được phổ, bạn hiểu được "tín hiệu này chứa tần số nào, mạnh yếu ra sao, lệch pha bao nhiêu". Đó là nền tảng để thiết kế bộ lọc, phân tích nhiễu, nén tín hiệu.
 
-3. **Liên hệ với Bài 8**: Nếu bạn biết đáp ứng tần số $H(\omega)$ của hệ thống (Bài 8), và biết phổ của tín hiệu vào $X(\omega)$ (Bài 9), thì phổ đầu ra là $Y = X\cdot H$ — chỉ cần nhân biên độ và cộng pha. Đây là cách phân tích hệ thống nhanh nhất.
+3. **Liên hệ với Bài 9**: Nếu bạn biết đáp ứng tần số $H(\omega)$ của hệ thống (Bài 9), và biết phổ của tín hiệu vào $X(\omega)$ (Bài 10), thì phổ đầu ra là $Y = X\cdot H$ — chỉ cần nhân biên độ và cộng pha. Đây là cách phân tích hệ thống nhanh nhất.
 
 [BOX: analogy] **Ẩn dụ**: Đồ thị phổ giống như **bản nhạc** của một bài hát. Bản nhạc ghi rõ "nốt Đô ở quãng 4, kéo dài 2 phách, mạnh (forte)". Đồ thị phổ ghi rõ "tần số 200π có biên độ 3/4, pha 0; tần số 400π có biên độ 1, pha −π/4". Từ bản nhạc, người nhạc công có thể chơi lại bài hát; từ đồ thị phổ, kỹ sư có thể tái tạo tín hiệu.
 
@@ -4775,7 +5026,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
 
 [SECTION: bai9-summary]
 
-[H2] Tổng kết Bài 9
+[H2] Tổng kết Bài 10
 
 [BOX] **Bảng tổng hợp 9 câu**:
 
@@ -4824,10 +5075,11 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
             { id: 3, shortTitle: "Phép toán trên tín hiệu" },
             { id: 4, shortTitle: "Tín hiệu tuần hoàn" },
             { id: 5, shortTitle: "Phương trình vi phân / sai phân" },
-            { id: 6, shortTitle: "Chuỗi Fourier và Biến đổi Fourier" },
-            { id: 7, shortTitle: "Biến đổi Fourier ngược" },
-            { id: 8, shortTitle: "Đáp ứng tần số của hệ thống LTI" },
-            { id: 9, shortTitle: "Đồ thị phổ của tín hiệu" }
+            { id: 6, shortTitle: "Tích chập và đáp ứng xung" },
+            { id: 7, shortTitle: "Chuỗi Fourier và Biến đổi Fourier" },
+            { id: 8, shortTitle: "Biến đổi Fourier ngược" },
+            { id: 9, shortTitle: "Đáp ứng tần số của hệ thống LTI" },
+            { id: 10, shortTitle: "Đồ thị phổ của tín hiệu" }
         ];
 
         // Parse Raw Verbatim Content into Structured Lessons
@@ -4848,7 +5100,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
                 };
 
                 // Extract sections: [SECTION: baiX-overview], [SECTION: baiX-exercises], [SECTION: baiX-summary]
-                const sectionRegex = /\[SECTION:\s*bai\d+-(overview|exercises|summary)\]/g;
+                const sectionRegex = /\[SECTION:\s*bai[\w-]*?-(overview|exercises|summary)\]/g;
                 const sections = { overview: '', exercises: '', summary: '' };
                 let match;
                 const matches = [];
@@ -4865,7 +5117,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
 
                 return {
                     index: idx,
-                    number: idx + 1,
+                    number: meta.id,
                     shortTitle: meta.shortTitle,
                     sections
                 };
@@ -5099,7 +5351,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
 
                 // [FIG: id] caption
                 if (line.startsWith('[FIG:')) {
-                    const fm = line.match(/^\[FIG:\s*([\d.]+)\]\s*(.*)$/);
+                    const fm = line.match(/^\[FIG:\s*([\w.]+)\]\s*(.*)$/);
                     if (fm && FIGS[fm[1]]) {
                         const svgStr = FIGS[fm[1]](); const vb = svgStr.match(/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/); const ratio = vb ? (vb[1] / vb[2]).toFixed(3) : 2;
                         html += `<figure style="--r:${ratio}">${svgStr}<figcaption>${formatInline(fm[2])}</figcaption></figure>`;
@@ -5271,6 +5523,59 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
             const w0 = sb('ω', '0'), T0 = sb('T', '0'), N0 = sb('N', '0');
 
             return {
+                // BÀI 5B — tích chập và đáp ứng xung
+                'TC.1': () => {
+                    const X = u => 530 + u * 30, Y = v => 150 - v * 62;
+                    const cur = sample(u => Math.exp(-u / 1.3) * Math.cos(3.2 * u), 0, 6, 90, X, Y);
+                    return sv(760, 240,
+                        ln(55, 150, 135, 150) + ln(95, 150, 95, 38, { c: C1, w: 3.5, m: 'ar' }) + tx(95, 28, 'δ(t)', { s: 20, i: 1, c: C1, w: 800 }) + tx(95, 178, 'xung vào', { s: 14, c: MUT, w: 500 }) +
+                        ln(150, 95, 235, 95, { m: 'ar' }) + rc(245, 55, 170, 80, { c: C5, w: 2.5 }) + tx(330, 102, 'HỆ THỐNG LTI', { s: 17, c: C5, w: 800 }) + tx(330, 168, 'h(t)', { s: 20, i: 1, c: C5, w: 800 }) +
+                        ln(425, 95, 505, 95, { m: 'ar' }) +
+                        ay(530, 170, 36) + ax(520, 740, 150) + pa(pts(cur), { c: C2, w: 3 }) +
+                        tx(640, 28, 'h(t)', { s: 20, i: 1, c: C2, w: 800 }) + tx(640, 205, 'phản ứng ra', { s: 14, c: MUT, w: 500 }) +
+                        tx(380, 228, 'xung vào → phản ứng ra', { s: 14, c: MUT, w: 400 }));
+                },
+                'TC.2': () => {
+                    const v = [3, 2, 3, 5], cols = [C1, C2, C3, C4], lb = ['3δ[n]', '2δ[n−1]', '3δ[n−2]', '5δ[n−3]'];
+                    let s = tx(150, 28, 'x[n]', { s: 19, i: 1, c: C5, w: 800 }) + ax(45, 270, 245);
+                    v.forEach((a, n) => { const x = 85 + n * 48, y = 245 - a * 32; s += ln(x, 245, x, y, { c: cols[n], w: 3 }) + ci(x, y, 6, { f: cols[n], c: cols[n] }) + tx(x, y - 14, a, { s: 14, c: cols[n], w: 700 }) + tx(x, 266, n, { s: 13, c: MUT, w: 500 }); });
+                    s += tx(305, 165, '=', { s: 52, c: C4, w: 800 });
+                    v.forEach((a, r) => { const yb = 80 + r * 64, x = 385 + r * 48, y = yb - a * 11; s += ln(350, yb, 560, yb, { op: .6 }) + ln(x, yb, x, y, { c: cols[r], w: 3 }) + ci(x, y, 5, { f: cols[r], c: cols[r] }) + tx(575, yb + 5, (r ? '+ ' : '') + lb[r], { a: 'start', s: 16, c: cols[r], w: 800 }); });
+                    return sv(760, 290, s);
+                },
+                'TC.3': () => {
+                    const X = k => 125 + (k + 3) * 62;
+                    const pulse = (k1, k2, yb, h, c, o = {}) => pa(pts([[X(k1), yb], [X(k1), yb - h], [X(k2), yb - h], [X(k2), yb]], true), o.dash ? { c: c, d: '5 4', op: .85, w: 2 } : { c: c, f: c, fo: o.fo == null ? .28 : o.fo, w: 2.5 });
+                    const base = yb => ln(X(-3.4), yb, X(6.6), yb, { op: .6 });
+                    const L = (y, str, c, z) => tx(14, y, str, { a: 'start', s: z || 17, i: 1, c: c, w: 800 });
+                    let s = base(78) + pulse(1, 3, 78, 38, C1) + L(66, 'x[k]', C1);
+                    s += base(148) + pulse(0, 2, 148, 38, C5) + L(136, 'h[k]', C5);
+                    s += ln(X(0), 100, X(0), 226, { c: C3, d: '4 4' }) + ln(X(3.3), 158, X(3.3), 200, { c: C3, w: 2.5, m: 'ar' }) + tx(X(3.5), 184, 'lật qua k = 0', { a: 'start', s: 14, c: C3, w: 700 });
+                    s += base(218) + pulse(-2, 0, 218, 38, C4) + L(206, 'h[−k]', C4);
+                    s += tx(14, 272, 'h[n−k] tại vài giá trị n (nét đứt = x[k]; tô đậm = vùng chồng lấn):', { a: 'start', s: 14, c: MUT, w: 600 });
+                    [[0, 315, null], [2, 370, [1, 2]], [4, 425, [2, 3]]].forEach(([n, yb, ov]) => {
+                        s += base(yb) + pulse(1, 3, yb, 32, MUT, { dash: 1 });
+                        if (ov) s += pulse(ov[0], ov[1], yb, 32, C2, { fo: .55 });
+                        s += pulse(n - 2, n, yb, 32, C4) + ln(X(n), yb - 40, X(n), yb + 6, { c: C3, d: '4 4' }) + L(yb - 10, 'n = ' + n, C4, 15);
+                    });
+                    [-2, 0, 2, 4, 6].forEach(k => { s += tx(X(k), 452, k, { s: 13, c: MUT, w: 500 }); });
+                    return sv(760, 462, s);
+                },
+                'TC.4': () => {
+                    const base = 170;
+                    const P = (x0, t1, t2, h, c) => solid([[x0 + t1 * 40, base], [x0 + t1 * 40, base - h], [x0 + t2 * 40, base - h], [x0 + t2 * 40, base]], c);
+                    const panel = (x0, name, c) => ax(x0 - 10, x0 + 205, base) + ay(x0, base + 8, 40) + tx(x0 + 100, 30, name, { s: 19, i: 1, c: c, w: 800 });
+                    const tk = (x0, ts) => ts.map(t => ln(x0 + t * 40, base - 4, x0 + t * 40, base + 4, { c: MUT, w: 1.5 }) + tx(x0 + t * 40, base + 22, t, { s: 13, c: MUT, w: 500 })).join('');
+                    let s = panel(40, 'x(t)', C1) + P(40, 1, 3, 50, C1) + tk(40, [1, 3]);
+                    s += tx(262, 142, '*', { s: 52, c: C3, w: 800 });
+                    s += panel(290, 'h(t)', C5) + P(290, 0, 2, 50, C5) + tk(290, [2]);
+                    s += tx(517, 128, '=', { s: 40, c: C3, w: 800 });
+                    s += panel(540, 'y(t) = x * h', C4) + solid([[580, base], [660, base - 100], [740, base]], C4) +
+                        ln(660, base, 660, base - 100, { c: C4, d: '4 4', op: .8 }) + ln(540, base - 100, 660, base - 100, { c: C4, d: '4 4', op: .8 }) +
+                        tx(532, base - 95, '2', { a: 'end', s: 14, c: C4, w: 700 }) + tk(540, [1, 3, 5]);
+                    return sv(760, 215, s);
+                },
+
                 // BÀI 1 — mô hình hộp đen
                 '1.1': () => sv(760, 205,
                     tx(95, 77, 'x(t)', { s: 20, i: 1, c: C1, w: 800 }) + ln(150, 70, 290, 70, { m: 'ar' }) +
@@ -5736,7 +6041,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
             const lesson = state.lessons[state.currentLessonIndex];
             if (!lesson) return;
 
-            $('lesson-chip').textContent = `Bài ${lesson.number}/${state.lessons.length}`;
+            $('lesson-chip').textContent = `Bài ${lesson.number}`;
             $('lesson-title').textContent = lesson.shortTitle;
             document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.filter === state.sectionFilter));
 
@@ -5836,7 +6141,9 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
 
         window.addEventListener('DOMContentLoaded', () => {
             parseCourseContent();
-            state.lessons.push({ index: state.lessons.length, number: state.lessons.length + 1, shortTitle: 'Quiz trắc nghiệm 109 câu', sections: {}, quiz: true });
+            state.lessons.unshift({ index: 0, number: 0, shortTitle: 'Quiz trắc nghiệm 109 câu', sections: {}, quiz: true });
+            state.lessons.forEach((l, i) => { l.index = i; });
+            state.currentLessonIndex = 1;
             renderCurrentLesson();
         });
     </script>
