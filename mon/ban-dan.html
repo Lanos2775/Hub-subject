@@ -146,8 +146,13 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 .roadmap{background:var(--tint);border-radius:16px;padding:6px 22px;margin:16px 0;border:1px solid var(--g)}
 .roadmap ol{padding-left:22px}
 .ans{background:var(--card);border:2px solid var(--c2);border-radius:12px;padding:10px 16px;margin:12px 0 2px}
-.vs{display:flex;gap:4px;padding:4px;background:var(--tint);border:1.5px solid var(--g);border-radius:12px;margin-bottom:12px}
-.vs b{font-size:11px;color:var(--mut);padding:0 6px;align-self:center;text-transform:uppercase}
+.nav-view-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.nav-view-row .vs{flex:1;margin-bottom:0}
+.btn-theme-settings{flex:0 0 38px;width:38px;height:36px;padding:0;border-radius:10px;border:1.5px solid var(--g);background:var(--tint);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .2s ease}
+.btn-theme-settings:hover{background:var(--card);border-color:var(--c5);color:var(--c5);transform:translateY(-1px);box-shadow:0 4px 12px rgba(112,72,232,.18)}
+.btn-theme-settings:active{transform:scale(.95)}
+.vs{display:flex;gap:4px;padding:4px;background:var(--tint);border:1.5px solid var(--g);border-radius:12px}
+.vs b{display:none}
 .vb{flex:1;border:0;border-radius:9px;padding:8px;background:transparent;color:var(--ink);font:700 12.5px "Be Vietnam Pro",sans-serif;cursor:pointer}
 .vb[aria-pressed=true]{background:var(--c5);color:#fff}
 html[data-view=desktop] body{font-size:18px}
@@ -225,8 +230,464 @@ html[data-view] .fig.wide{float:none;width:100%;margin:16px 0}
   html[data-view=desktop] .box,html[data-view=desktop] .tw,html[data-view=desktop] .f,html[data-view=desktop] .bridge,html[data-view=desktop] .next{min-width:52%}
 html[data-view=desktop] .f,html[data-view=desktop] .tw,html[data-view=desktop] :is(.box,.bridge,.next,.roadmap,.formula-card,.key,ul,ol):has(.f,.tw,table){clear:both}
 @media(max-width:1399px){html[data-view=desktop] .f{font-size:15px}}
+
+/* =====================================================================
+   LIQUID GLASS INTEGRATION & THEME STYLES
+   ===================================================================== */
+:root{
+  --lg-blur:14px;
+  --lg-sat:200%;
+  --lg-fill:.12;
+  --lg-tint:.16;
+  --lg-ink:#0d1140;
+  --lg-text:#ffffff;
+  --lg-muted:rgba(255,255,255,.82);
+  --lg-ok:#5ff0b5; --lg-warn:#ffd666; --lg-bad:#ff9db6;
+  --lg-r-xl:36px; --lg-r-lg:28px; --lg-r-md:18px;
+  --lg-orb-blur:16px;
+}
+
+/* Nền và các vòng tròn Liquid Glass */
+body.lg-theme{
+  min-height:100vh;
+  color:var(--lg-text,#fff);
+  letter-spacing:-.005em;
+  background-color:#14183f;
+  background-image:
+    radial-gradient(60% 55% at 8% 0%,rgba(63,107,255,.85),transparent 70%),
+    radial-gradient(50% 50% at 100% 12%,rgba(176,67,255,.7),transparent 70%),
+    radial-gradient(55% 55% at 42% 108%,rgba(255,79,154,.6),transparent 70%),
+    radial-gradient(40% 40% at 92% 96%,rgba(18,214,192,.5),transparent 70%),
+    linear-gradient(160deg,#14183f,#1c1b52 45%,#2a1650);
+  background-attachment:fixed;
+  --bg:transparent;
+  --card:rgba(18,22,68,.45);
+  --ink:#ffffff;
+  --mut:rgba(255,255,255,.78);
+  --c1:#6ea0ff;
+  --c2:#38d9a9;
+  --c3:#ffd43b;
+  --c4:#ff8fb8;
+  --c5:#a78bfa;
+  --g:rgba(255,255,255,.2);
+  --tint:rgba(255,255,255,.08);
+}
+
+.lg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;transition:filter .25s ease,opacity .25s ease}
+body:not(.lg-theme) .lg-orbs{display:none !important}
+.lg-orbs.lg-orbs-hidden{display:none !important}
+.lg-orbs i{position:absolute;border-radius:50%;display:block}
+.lg-orbs i:nth-child(1){left:6%;top:14%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#9fb4ff,#4f6bff 55%,#2a2fb0)}
+.lg-orbs i:nth-child(2){right:9%;top:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#f0c0ff,#b043ff 55%,#6a1fb8)}
+.lg-orbs i:nth-child(3){left:38%;top:52%;width:280px;height:280px;background:radial-gradient(circle at 32% 28%,#ffc2dd,#ff4f9a 55%,#b01a68)}
+.lg-orbs i:nth-child(4){right:4%;bottom:6%;width:210px;height:210px;background:radial-gradient(circle at 32% 28%,#b4fff2,#12d6c0 55%,#0a7f8f)}
+.lg-orbs i:nth-child(5){left:3%;bottom:8%;width:150px;height:150px;background:radial-gradient(circle at 32% 28%,#fff1b0,#ffc83d 55%,#d98a00)}
+
+body.lg-theme main,body.lg-theme #app-content{position:relative;z-index:1}
+body.lg-theme #mb{z-index:60}
+
+/* Hiệu ứng kính cho các khung và thẻ */
+body.lg-theme section,
+body.lg-theme .formula-card,
+body.lg-theme .sim-card,
+body.lg-theme .key,
+body.lg-theme .roadmap{
+  position:relative;isolation:isolate;color:var(--lg-text);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(14,16,70,var(--lg-tint)) !important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(255,255,255,.18),
+    inset 0 0 26px rgba(255,255,255,.08),
+    inset 0 -20px 30px -20px rgba(255,255,255,.24),
+    0 26px 54px -20px rgba(4,6,36,.65);
+  border:1px solid rgba(255,255,255,.22) !important;
+  text-shadow:0 1px 10px rgba(8,10,56,.35);
+}
+
+/* Hiệu ứng kính cho menu và bảng công thức (bắt buộc position: fixed để không bị trôi khi cuộn) */
+body.lg-theme #mn,
+body.lg-theme #fp{
+  position:fixed !important;
+  z-index:60 !important;
+  color:var(--lg-text);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(14,16,70,var(--lg-tint)) !important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(255,255,255,.18),
+    inset 0 0 26px rgba(255,255,255,.08),
+    inset 0 -20px 30px -20px rgba(255,255,255,.24),
+    0 26px 54px -20px rgba(4,6,36,.65);
+  border:1px solid rgba(255,255,255,.22) !important;
+  text-shadow:0 1px 10px rgba(8,10,56,.35);
+}
+body.lg-theme #mn[hidden]{display:none !important}
+
+body.lg-theme section{border-left:6px solid var(--c1) !important}
+body.lg-theme section:nth-of-type(5n+2){border-left-color:var(--c2) !important}
+body.lg-theme section:nth-of-type(5n+3){border-left-color:var(--c3) !important}
+body.lg-theme section:nth-of-type(5n+4){border-left-color:var(--c4) !important}
+body.lg-theme section:nth-of-type(5n+5){border-left-color:var(--c5) !important}
+
+body.lg-theme section::before,
+body.lg-theme .formula-card::before,
+body.lg-theme .sim-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(circle 200px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.22),transparent 70%),
+    radial-gradient(120% 55% at 50% -8%,rgba(255,255,255,.28),transparent 58%);
+}
+body.lg-theme:not(.lg-glow-on) section::before,
+body.lg-theme:not(.lg-glow-on) .formula-card::before,
+body.lg-theme:not(.lg-glow-on) .sim-card::before{
+  display:none !important;
+}
+body.lg-theme section::after,
+body.lg-theme .formula-card::after,
+body.lg-theme .sim-card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.1) 30%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.7));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+
+body.lg-theme h1{background:linear-gradient(90deg,#9fb4ff,#d4ddff,#ffc2dd);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+body.lg-theme h2{color:#fff;text-shadow:0 2px 12px rgba(8,10,56,.5)}
+body.lg-theme h3{color:#c4b5fd;text-shadow:0 1px 8px rgba(8,10,56,.4)}
+
+body.lg-theme .box,
+body.lg-theme .bridge,
+body.lg-theme .next,
+body.lg-theme .f,
+body.lg-theme .formula-meta div,
+body.lg-theme .panel,
+body.lg-theme .ans{
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+}
+body.lg-theme .cmt{
+  background:rgba(140,160,230,.15) !important;
+  border-left:3.5px solid #a78bfa !important;
+  color:rgba(255,255,255,.88) !important;
+}
+body.lg-theme .ctrl-row,
+body.lg-theme .sim-tabs,
+body.lg-theme .vs{
+  background:rgba(8,10,50,.32) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+}
+
+body.lg-theme .btn,
+body.lg-theme .sim-tab,
+body.lg-theme .vb,
+body.lg-theme .btn-theme-settings,
+body.lg-theme #mb{
+  color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.06)) !important;
+  border:1px solid rgba(255,255,255,.32) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(255,255,255,.1),0 8px 16px -10px rgba(4,6,36,.6) !important;
+  text-shadow:0 1px 8px rgba(8,10,56,.5);
+}
+body.lg-theme .btn:hover,
+body.lg-theme .sim-tab:hover,
+body.lg-theme .vb:hover,
+body.lg-theme .btn-theme-settings:hover,
+body.lg-theme #mb:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.12)) !important;
+  border-color:rgba(255,255,255,.65) !important;
+}
+body.lg-theme .vb[aria-pressed=true],
+body.lg-theme .sim-tab.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  border-color:#ffffff !important;
+  text-shadow:none !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.28),inset 0 1px 0 #ffffff !important;
+}
+body.lg-theme .sim-tab.active::before{
+  border-color:var(--lg-ink,#0d1140) !important;
+  background:var(--lg-ink,#0d1140) !important;
+  box-shadow:inset 0 0 0 3px #fff !important;
+}
+body.lg-theme .btn-sol{
+  background:linear-gradient(180deg,#d4ddff,#9fb4ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  text-shadow:none !important;
+  border-color:rgba(255,255,255,.75) !important;
+}
+body.lg-theme .btn-sol::before{background:var(--lg-ink,#0d1140) !important}
+body.lg-theme .btn-hint{
+  background:rgba(245,159,0,.22) !important;
+  border-color:rgba(255,214,102,.6) !important;
+  color:#ffe9a8 !important;
+}
+body.lg-theme .btn-hint::before{background:#ffd43b !important}
+
+body.lg-theme svg:not(#lg-defs):not(.btn-theme-settings svg):not(.theme-modal-close-btn svg){
+  background:rgba(14,18,56,.55) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+}
+body.lg-theme svg text{fill:#ffffff !important}
+body.lg-theme .ax{stroke:rgba(255,255,255,.25) !important}
+body.lg-theme th{background:rgba(255,255,255,.12) !important;color:#c4b5fd !important}
+body.lg-theme td,body.lg-theme th{border-bottom:1px solid rgba(255,255,255,.12) !important}
+body.lg-theme mjx-container{color:#ffffff !important}
+body.lg-theme #toc-links a{color:rgba(255,255,255,.88) !important}
+body.lg-theme #toc-links a:hover{background:rgba(255,255,255,.14) !important;color:#ffffff !important}
+body.lg-theme #toc-links a.sub{color:rgba(255,255,255,.65) !important}
+body.lg-theme .toc-title{color:rgba(255,255,255,.6) !important}
+body.lg-theme .menu-selector-wrap label{color:#c4b5fd !important}
+body.lg-theme select#lesson-select{background:rgba(8,10,50,.45) !important;border-color:rgba(255,255,255,.3) !important;color:#ffffff !important}
+body.lg-theme select#lesson-select option{background-color:#14183f;color:#ffffff}
+body.lg-theme .csel-trigger{background:rgba(8,10,50,.45) !important;border-color:rgba(255,255,255,.3) !important;color:#ffffff !important}
+body.lg-theme .csel-menu{background:rgba(18,22,68,.96) !important;border-color:rgba(255,255,255,.3) !important;box-shadow:0 14px 36px rgba(0,0,0,.6) !important}
+body.lg-theme .csel-opt{color:#ffffff !important}
+body.lg-theme .csel-opt:hover{background:rgba(255,255,255,.15) !important}
+body.lg-theme .csel-opt.selected{background:linear-gradient(180deg,#ffffff,#dfe5ff) !important;color:var(--lg-ink,#0d1140) !important}
+
+/* Khúc xạ trên Chromium */
+html.lg-refract body.lg-theme section,
+html.lg-refract body.lg-theme .formula-card,
+html.lg-refract body.lg-theme .sim-card,
+html.lg-refract body.lg-theme #mn,
+html.lg-refract body.lg-theme #fp{
+  -webkit-backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
+  backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
+}
+
+/* Modal Popup Cài đặt Giao diện */
+.theme-modal-overlay{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(8,10,44,.6);
+  -webkit-backdrop-filter:blur(10px) saturate(130%);
+  backdrop-filter:blur(10px) saturate(130%);
+  z-index:9999;
+  animation:fadeInModal .2s ease;
+}
+.theme-modal-overlay[hidden]{display:none !important}
+@keyframes fadeInModal{from{opacity:0}to{opacity:1}}
+
+.theme-modal-box{
+  width:min(440px,calc(100vw - 32px));
+  max-height:calc(100vh - 40px);
+  overflow-y:auto;
+  border-radius:24px;
+  padding:22px;
+  background:var(--card);
+  color:var(--ink);
+  border:2px solid var(--c5);
+  box-shadow:0 16px 48px rgba(0,0,0,.35);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  font-family:"Be Vietnam Pro",system-ui,sans-serif;
+  animation:slideUpModal .22s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes slideUpModal{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+body.lg-theme .theme-modal-box{
+  background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 60%,rgba(255,255,255,.12)),rgba(22,26,98,.82) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(180%) !important;
+  backdrop-filter:blur(28px) saturate(180%) !important;
+  border:1px solid rgba(255,255,255,.35) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 24px 60px rgba(4,6,36,.8) !important;
+}
+
+.theme-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:12px;border-bottom:1px solid var(--g);
+}
+body.lg-theme .theme-modal-header{border-bottom-color:rgba(255,255,255,.2)}
+.theme-modal-header h3{margin:0;font-size:18px;font-weight:800;color:inherit}
+.theme-modal-close-btn{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--g);
+  background:var(--tint);color:var(--ink);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;font-weight:700;transition:all .18s ease;
+}
+.theme-modal-close-btn:hover{background:var(--c4);color:#fff;border-color:transparent}
+
+.theme-mode-select{
+  display:flex;gap:4px;padding:4px;border-radius:999px;
+  background:var(--tint);border:1.5px solid var(--g);
+}
+body.lg-theme .theme-mode-select{
+  background:rgba(8,10,50,.45);border-color:rgba(255,255,255,.25);
+}
+.thm-toggle-btn{
+  flex:1;border:0;border-radius:999px;padding:9px 8px;
+  font:700 13.5px "Be Vietnam Pro",sans-serif;
+  color:var(--ink);background:transparent;cursor:pointer;
+  transition:all .2s ease;text-align:center;
+}
+body.lg-theme .thm-toggle-btn{color:rgba(255,255,255,.88)}
+.thm-toggle-btn.active{
+  background:var(--c5);color:#fff;
+  box-shadow:0 3px 10px rgba(112,72,232,.3);
+}
+body.lg-theme .thm-toggle-btn.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.35),inset 0 1px 0 #ffffff !important;
+}
+
+.theme-default-notice{
+  padding:14px 16px;border-radius:14px;background:var(--tint);
+  border:1px dashed var(--g);font-size:13.5px;line-height:1.6;color:var(--mut);text-align:center;
+}
+
+.theme-ctrl-group{
+  display:flex;flex-direction:column;gap:13px;
+}
+.theme-ctrl-item{
+  display:flex;flex-direction:column;gap:5px;
+  font-size:13px;font-weight:600;
+}
+.theme-ctrl-item-head{
+  display:flex;justify-content:space-between;align-items:center;
+  color:var(--ink);
+}
+body.lg-theme .theme-ctrl-item-head{color:#ffffff}
+.theme-ctrl-item-head span{
+  font-size:11.5px;color:var(--mut);font-weight:500;
+}
+body.lg-theme .theme-ctrl-item-head span{color:rgba(255,255,255,.7)}
+.theme-ctrl-item-head output{
+  font-weight:700;color:var(--c5);
+}
+body.lg-theme .theme-ctrl-item-head output{color:#a78bfa}
+.theme-ctrl-item input[type=range]{
+  width:100%;margin:3px 0;accent-color:var(--c5);
+}
+
+.theme-modal-actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;
+}
+.theme-btn-action{
+  flex:1;min-width:110px;padding:9px 12px;border-radius:999px;
+  font:700 12.5px "Be Vietnam Pro",sans-serif;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1.5px solid var(--g);background:var(--tint);color:var(--ink);
+  transition:all .18s ease;
+}
+.theme-btn-action:hover{border-color:var(--c5);background:var(--card)}
+body.lg-theme .theme-btn-action{
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
+  border-color:rgba(255,255,255,.3);color:#fff;
+}
+body.lg-theme .theme-btn-action:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,.12));
+}
+.theme-btn-action.active{
+  background:var(--c5);color:#fff;border-color:var(--c5);
+}
+body.lg-theme .theme-btn-action.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff);color:var(--lg-ink,#0d1140);
+  border-color:#ffffff;
+}
+
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn,body.lg-theme #fp{background:#262a72 !important}
+}
+@media (prefers-reduced-transparency:reduce){
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn,body.lg-theme #fp,.theme-modal-box,.theme-modal-overlay{-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn,body.lg-theme #fp{background:#262a72 !important}
+}
+@media (prefers-reduced-motion:reduce){
+  .btn-theme-settings,.thm-toggle-btn,.theme-btn-action,.theme-modal-overlay,.theme-modal-box{transition:none !important;animation:none !important}
+}
 </style>
 </head><body>
+
+<!-- Bộ lọc khúc xạ SVG cho Liquid Glass -->
+<svg id="lg-defs" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- Vòng tròn nền Liquid Glass -->
+<div id="lg-orbs" class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+<!-- Popup Cài đặt Giao diện -->
+<div id="theme-modal-overlay" class="theme-modal-overlay" hidden>
+  <div id="theme-modal" class="theme-modal-box" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
+    <div class="theme-modal-header">
+      <h3 id="theme-modal-title">Cài đặt giao diện</h3>
+      <button type="button" id="theme-modal-close" class="theme-modal-close-btn" aria-label="Đóng popup">✕</button>
+    </div>
+
+    <!-- Chuyển đổi giữa 2 giao diện -->
+    <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
+      <button type="button" id="thm-opt-default" class="thm-toggle-btn active">Dracula</button>
+      <button type="button" id="thm-opt-liquid" class="thm-toggle-btn">Liquid Glass</button>
+    </div>
+
+    <div id="default-theme-notice" class="theme-default-notice">
+      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> để trải nghiệm giao diện kính mờ Apple và bật các tuỳ chỉnh chi tiết.
+    </div>
+
+    <!-- Các thiết lập của Liquid Glass -->
+    <div id="lg-settings-panel" class="theme-ctrl-group" style="display:none">
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ mờ phía sau kính (--lg-blur)</span>
+          <output id="o-lg-blur">14px</output>
+        </div>
+        <input id="r-lg-blur" type="range" min="0" max="40" value="14" aria-label="Độ mờ phía sau kính">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ sáng của kính (--lg-fill)</span>
+          <output id="o-lg-fill">0.12</output>
+        </div>
+        <input id="r-lg-fill" type="range" min="2" max="40" value="12" aria-label="Độ sáng của kính">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ phủ màu tối (--lg-tint)</span>
+          <output id="o-lg-tint">0.16</output>
+        </div>
+        <input id="r-lg-tint" type="range" min="0" max="60" value="16" aria-label="Độ phủ màu tối">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ rực màu nền (--lg-sat)</span>
+          <output id="o-lg-sat">200%</output>
+        </div>
+        <input id="r-lg-sat" type="range" min="100" max="300" value="200" aria-label="Độ rực màu nền">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Làm mờ nền / Vòng tròn (kéo min = ẩn)</span>
+          <output id="o-lg-orb-blur">16px</output>
+        </div>
+        <input id="r-lg-orb-blur" type="range" min="0" max="50" value="16" aria-label="Làm mờ nền hoặc ẩn vòng tròn">
+      </div>
+
+      <div class="theme-modal-actions">
+        <button type="button" id="b-lg-glow" class="theme-btn-action" aria-pressed="false">Vệt sáng chuột: Tắt</button>
+        <button type="button" id="b-lg-refract" class="theme-btn-action" aria-pressed="false">Khúc xạ (Chrome): Tắt</button>
+        <button type="button" id="b-lg-reset" class="theme-btn-action">Đặt lại</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Nút 3 gạch ở góc trên bên trái -->
 <button id="mb" type="button" aria-label="Mở menu chọn bài và mục lục" aria-expanded="false" aria-controls="mn">
@@ -235,7 +696,15 @@ html[data-view=desktop] .f,html[data-view=desktop] .tw,html[data-view=desktop] :
 
 <!-- Menu điều hướng chứa bộ chọn bài học (On-demand loader) và mục lục bài đang mở -->
 <nav id="mn" hidden aria-label="Menu bài học và mục lục">
-  <div class="vs" role="group" aria-label="Chế độ xem"><b>Chế độ xem</b><button type="button" id="vm" class="vb" aria-pressed="true">Điện thoại</button><button type="button" id="vd" class="vb" aria-pressed="false">Máy tính</button></div>
+  <div class="nav-view-row">
+    <div class="vs" role="group" aria-label="Chế độ xem">
+      <button type="button" id="vm" class="vb" aria-pressed="true">Điện thoại</button>
+      <button type="button" id="vd" class="vb" aria-pressed="false">Máy tính</button>
+    </div>
+    <button type="button" id="btn-theme-settings" class="btn-theme-settings" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </div>
   <div class="menu-selector-wrap">
     <label for="lesson-select">Chọn buổi học cần tải:</label>
     <select id="lesson-select" onchange="loadLesson(this.value)">
@@ -7485,6 +7954,243 @@ window.loadLesson = loadLesson;
   document.getElementById('vm').onclick=()=>ap('mobile');
   document.getElementById('vd').onclick=()=>ap('desktop');
   ap(st('ban-dan-view')==='desktop'?'desktop':'mobile');
+})();
+
+(function themeManager() {
+  const root = document.documentElement;
+  const body = document.body;
+  const st = (k, v) => {
+    try {
+      if (typeof v !== 'undefined') localStorage.setItem(k, JSON.stringify(v));
+      const val = localStorage.getItem(k);
+      return val ? JSON.parse(val) : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const DEF_LG = { blur: 14, fill: 12, tint: 16, sat: 200, orbBlur: 16, refract: false, glow: false };
+  let currentTheme = st('ban-dan-theme') || 'default';
+  let lgConfig = Object.assign({}, DEF_LG, st('ban-dan-lg-settings') || {});
+
+  const modalOverlay = document.getElementById('theme-modal-overlay');
+  const btnSettings = document.getElementById('btn-theme-settings');
+  const btnCloseModal = document.getElementById('theme-modal-close');
+  const optDefault = document.getElementById('thm-opt-default');
+  const optLiquid = document.getElementById('thm-opt-liquid');
+  const lgSettingsPanel = document.getElementById('lg-settings-panel');
+  const defaultNotice = document.getElementById('default-theme-notice');
+  const orbsEl = document.getElementById('lg-orbs');
+
+  const rBlur = document.getElementById('r-lg-blur');
+  const oBlur = document.getElementById('o-lg-blur');
+  const rFill = document.getElementById('r-lg-fill');
+  const oFill = document.getElementById('o-lg-fill');
+  const rTint = document.getElementById('r-lg-tint');
+  const oTint = document.getElementById('o-lg-tint');
+  const rSat = document.getElementById('r-lg-sat');
+  const oSat = document.getElementById('o-lg-sat');
+  const rOrbBlur = document.getElementById('r-lg-orb-blur');
+  const oOrbBlur = document.getElementById('o-lg-orb-blur');
+  const bGlow = document.getElementById('b-lg-glow');
+  const bRefract = document.getElementById('b-lg-refract');
+  const bReset = document.getElementById('b-lg-reset');
+
+  const canRefract = () => /Chrom(e|ium)\//.test(navigator.userAgent) && window.CSS && CSS.supports && CSS.supports('backdrop-filter', 'blur(1px)');
+
+  function applyLgTokens() {
+    const s = root.style;
+    s.setProperty('--lg-blur', lgConfig.blur + 'px');
+    s.setProperty('--lg-fill', (lgConfig.fill / 100).toFixed(2));
+    s.setProperty('--lg-tint', (lgConfig.tint / 100).toFixed(2));
+    s.setProperty('--lg-sat', lgConfig.sat + '%');
+
+    // Orb blur & min=0 ẩn vòng tròn
+    if (lgConfig.orbBlur === 0) {
+      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+      s.setProperty('--lg-orb-blur', '0px');
+    } else {
+      if (orbsEl) {
+        orbsEl.classList.remove('lg-orbs-hidden');
+        orbsEl.style.filter = 'blur(' + lgConfig.orbBlur + 'px)';
+      }
+      s.setProperty('--lg-orb-blur', lgConfig.orbBlur + 'px');
+    }
+
+    // Vệt sáng chuột
+    body.classList.toggle('lg-glow-on', !!lgConfig.glow);
+    if (bGlow) {
+      bGlow.classList.toggle('active', !!lgConfig.glow);
+      bGlow.setAttribute('aria-pressed', !!lgConfig.glow);
+      bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
+    }
+
+    // Refraction
+    root.classList.toggle('lg-refract', !!lgConfig.refract);
+    if (bRefract) {
+      bRefract.classList.toggle('active', !!lgConfig.refract);
+      bRefract.setAttribute('aria-pressed', !!lgConfig.refract);
+      if (!canRefract()) {
+        bRefract.disabled = true;
+        bRefract.textContent = 'Khúc xạ: cần Chrome / Edge';
+      } else {
+        bRefract.textContent = 'Khúc xạ (Chrome): ' + (lgConfig.refract ? 'Bật' : 'Tắt');
+      }
+    }
+  }
+
+  function syncControlUI() {
+    if (rBlur) { rBlur.value = lgConfig.blur; oBlur.textContent = lgConfig.blur + 'px'; }
+    if (rFill) { rFill.value = lgConfig.fill; oFill.textContent = (lgConfig.fill / 100).toFixed(2); }
+    if (rTint) { rTint.value = lgConfig.tint; oTint.textContent = (lgConfig.tint / 100).toFixed(2); }
+    if (rSat) { rSat.value = lgConfig.sat; oSat.textContent = lgConfig.sat + '%'; }
+    if (rOrbBlur) {
+      rOrbBlur.value = lgConfig.orbBlur;
+      oOrbBlur.textContent = lgConfig.orbBlur === 0 ? 'Ẩn vòng tròn' : lgConfig.orbBlur + 'px';
+    }
+    if (bGlow) {
+      bGlow.classList.toggle('active', !!lgConfig.glow);
+      bGlow.setAttribute('aria-pressed', !!lgConfig.glow);
+      bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
+    }
+  }
+
+  function setTheme(t) {
+    currentTheme = t;
+    st('ban-dan-theme', t);
+    const isLg = t === 'liquid-glass';
+
+    body.classList.toggle('lg-theme', isLg);
+    if (optDefault) optDefault.classList.toggle('active', !isLg);
+    if (optLiquid) optLiquid.classList.toggle('active', isLg);
+
+    if (lgSettingsPanel) lgSettingsPanel.style.display = isLg ? 'flex' : 'none';
+    if (defaultNotice) defaultNotice.style.display = isLg ? 'none' : 'block';
+
+    if (isLg) {
+      applyLgTokens();
+    } else {
+      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+      root.classList.remove('lg-refract');
+    }
+  }
+
+  // Open / Close modal
+  function openModal() {
+    if (modalOverlay) {
+      modalOverlay.hidden = false;
+      syncControlUI();
+    }
+  }
+  function closeModal() {
+    if (modalOverlay) modalOverlay.hidden = true;
+  }
+
+  if (btnSettings) {
+    btnSettings.onclick = (e) => {
+      e.stopPropagation();
+      const nav = document.getElementById('mn');
+      const mb = document.getElementById('mb');
+      if (nav) nav.hidden = true;
+      if (mb) {
+        mb.setAttribute('aria-expanded', 'false');
+        mb.setAttribute('aria-label', 'Mở menu chọn bài và mục lục');
+      }
+      openModal();
+    };
+  }
+  if (btnCloseModal) btnCloseModal.onclick = closeModal;
+  if (modalOverlay) {
+    modalOverlay.onclick = (e) => {
+      if (e.target === modalOverlay) closeModal();
+    };
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay && !modalOverlay.hidden) {
+      e.stopPropagation();
+      closeModal();
+    }
+  }, true);
+
+  if (optDefault) optDefault.onclick = () => setTheme('default');
+  if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
+
+  // Sliders
+  function bindSlider(slider, output, key, transformOut, onApply) {
+    if (!slider || !output) return;
+    slider.oninput = () => {
+      const v = +slider.value;
+      lgConfig[key] = v;
+      output.textContent = transformOut(v);
+      onApply(v);
+      st('ban-dan-lg-settings', lgConfig);
+    };
+  }
+
+  bindSlider(rBlur, oBlur, 'blur', v => v + 'px', v => root.style.setProperty('--lg-blur', v + 'px'));
+  bindSlider(rFill, oFill, 'fill', v => (v / 100).toFixed(2), v => root.style.setProperty('--lg-fill', (v / 100).toFixed(2)));
+  bindSlider(rTint, oTint, 'tint', v => (v / 100).toFixed(2), v => root.style.setProperty('--lg-tint', (v / 100).toFixed(2)));
+  bindSlider(rSat, oSat, 'sat', v => v + '%', v => root.style.setProperty('--lg-sat', v + '%'));
+  bindSlider(rOrbBlur, oOrbBlur, 'orbBlur', v => v === 0 ? 'Ẩn vòng tròn' : v + 'px', v => {
+    if (v === 0) {
+      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+    } else {
+      if (orbsEl) {
+        orbsEl.classList.remove('lg-orbs-hidden');
+        orbsEl.style.filter = 'blur(' + v + 'px)';
+      }
+    }
+    root.style.setProperty('--lg-orb-blur', v + 'px');
+  });
+
+  if (bGlow) {
+    bGlow.onclick = () => {
+      lgConfig.glow = !lgConfig.glow;
+      body.classList.toggle('lg-glow-on', lgConfig.glow);
+      bGlow.classList.toggle('active', lgConfig.glow);
+      bGlow.setAttribute('aria-pressed', lgConfig.glow);
+      bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
+      st('ban-dan-lg-settings', lgConfig);
+    };
+  }
+
+  if (bRefract) {
+    bRefract.onclick = () => {
+      if (!canRefract()) return;
+      lgConfig.refract = !lgConfig.refract;
+      root.classList.toggle('lg-refract', lgConfig.refract);
+      bRefract.classList.toggle('active', lgConfig.refract);
+      bRefract.setAttribute('aria-pressed', lgConfig.refract);
+      bRefract.textContent = 'Khúc xạ (Chrome): ' + (lgConfig.refract ? 'Bật' : 'Tắt');
+      st('ban-dan-lg-settings', lgConfig);
+    };
+  }
+
+  if (bReset) {
+    bReset.onclick = () => {
+      lgConfig = Object.assign({}, DEF_LG);
+      st('ban-dan-lg-settings', lgConfig);
+      syncControlUI();
+      applyLgTokens();
+    };
+  }
+
+  // Pointer light tracking in liquid glass mode (chỉ chạy khi bật vệt sáng chuột)
+  if (window.matchMedia && matchMedia('(pointer:fine)').matches) {
+    document.addEventListener('pointermove', (e) => {
+      if (!body.classList.contains('lg-theme') || !lgConfig.glow) return;
+      const el = e.target.closest && e.target.closest('section, .sim-card, .formula-card, #mn, .theme-modal-box');
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }, { passive: true });
+  }
+
+  // Init
+  syncControlUI();
+  setTheme(currentTheme);
 })();
 </script>
 <script>
