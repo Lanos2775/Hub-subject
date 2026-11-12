@@ -1,0 +1,3119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Xác Suất Thống Kê (MAT1052) — Nền Tảng &amp; Ôn Thi Giữa Kỳ UET</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M16 46 Q 32 16 48 46' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='28' r='4' fill='%23fef3c7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true },
+    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+    chtml: { scale: .96 }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+
+/* ==========================================================================
+   1. BẢNG MÀU & BIẾN HỆ THỐNG (Tự động thích ứng Light Mode / Dark Mode)
+   ========================================================================== */
+:root {
+  --bg: #f6f8ff;
+  --card: #ffffff;
+  --ink: #1d2350;
+  --mut: #58608a;
+  --c1: #2f6fed; /* Xanh dương chủ đạo */
+  --c2: #12b886; /* Xanh ngọc lục bảo */
+  --c3: #f59f00; /* Vàng cam nổi bật */
+  --c4: #e64980; /* Hồng đậm cảnh báo/nhấn mạnh */
+  --c5: #7048e8; /* Tím hiện đại */
+  --g: #c9cfe8;  /* Màu viền lưới */
+  --tint: #eaf0ff; /* Màu nền phụ */
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10142e;
+    --card: #1a2046;
+    --ink: #eef0ff;
+    --mut: #a4abd6;
+    --c1: #6ea0ff;
+    --c2: #38d9a9;
+    --c3: #ffd43b;
+    --c4: #ff8fb8;
+    --c5: #a78bfa;
+    --g: #3b4380;
+    --tint: #222b5e;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #10142e;
+  --card: #1a2046;
+  --ink: #eef0ff;
+  --mut: #a4abd6;
+  --c1: #6ea0ff;
+  --c2: #38d9a9;
+  --c3: #ffd43b;
+  --c4: #ff8fb8;
+  --c5: #a78bfa;
+  --g: #3b4380;
+  --tint: #222b5e;
+}
+
+/* ==========================================================================
+   2. CẤU TRÚC BỐ CỤC & TYPOGRAPHY
+   ========================================================================== */
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 17.5px/1.92 "Be Vietnam Pro", system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+main { max-width: 860px; width: 100%; margin: 0 auto; padding: 28px 20px 90px; }
+header { padding: 38px 0 14px; }
+
+h1 {
+  font-size: clamp(28px, 6vw, 44px);
+  line-height: 1.25;
+  margin: 10px 0 16px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, var(--c1), var(--c5), var(--c4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+h2 { font-size: clamp(20px, 4.5vw, 24px); line-height: 1.4; margin: 0 0 16px; font-weight: 800; }
+h3 { font-size: clamp(17.5px, 3.8vw, 19.5px); line-height: 1.45; margin: 30px 0 12px; color: var(--c5); font-weight: 800; }
+
+section {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 30px 28px;
+  margin: 28px 0;
+  border-left: 8px solid var(--c1);
+  box-shadow: 0 4px 20px rgba(0,0,0,.04);
+  max-width: 100%;
+  overflow: hidden;
+  overflow: clip;
+}
+@media (max-width: 600px) {
+  main { padding: 20px 12px 70px; }
+  section { padding: 22px 16px; border-radius: 18px; }
+}
+section:nth-of-type(5n+2) { border-color: var(--c2); }
+section:nth-of-type(5n+3) { border-color: var(--c3); }
+section:nth-of-type(5n+4) { border-color: var(--c4); }
+section:nth-of-type(5n+5) { border-color: var(--c5); }
+
+p { margin: 16px 0; line-height: 1.95; }
+.mut { color: var(--mut); }
+ul, ol { margin: 14px 0; padding-left: 22px; }
+li { margin: 12px 0; line-height: 1.9; }
+
+/* Hộp thông tin, mẹo, cảnh báo, ví dụ ẩn dụ */
+.box {
+  background: var(--tint);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin: 20px 0;
+  line-height: 1.95;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.tip { border-left: 5px solid var(--c3); }
+.warn { border-left: 5px solid var(--c4); }
+.analogy { border-left: 5px solid var(--c2); }
+
+/* Hộp công thức và chống tràn MathJax toàn cục */
+.f {
+  background: var(--tint);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin: 18px 0;
+  font-size: 16.5px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  line-height: 2;
+}
+.f small {
+  font: 14.5px/1.75 "Be Vietnam Pro", sans-serif;
+  font-style: normal;
+  color: var(--mut);
+  display: block;
+  margin-top: 8px;
+}
+
+/* Chống tràn tuyệt đối cho mọi công thức MathJax (cả inline và display) */
+mjx-container {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  vertical-align: middle;
+}
+mjx-container[display="true"] {
+  display: block !important;
+  margin: 12px 0 !important;
+  padding: 4px 0 !important;
+}
+
+/* Đồ họa Vector SVG & Nhãn màu (Badges) */
+svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 16px 0;
+  background: var(--tint);
+  border-radius: 14px;
+  border: 1px solid var(--g);
+}
+.ax { stroke: var(--g); stroke-width: 1.5; }
+svg text { fill: var(--ink); font: 13px "Be Vietnam Pro", sans-serif; }
+
+.k {
+  display: inline-block;
+  padding: 3px 11px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  vertical-align: middle;
+  margin: 2px 4px 2px 0;
+}
+.b1 { background: var(--c1); }
+.b2 { background: var(--c2); }
+.b3 { background: var(--c3); color: #222; }
+.b4 { background: var(--c4); }
+.b5 { background: var(--c5); }
+
+/* Bảng dữ liệu */
+.tw { overflow-x: auto; margin: 18px 0; max-width: 100%; border-radius: 12px; border: 1px solid var(--g); }
+table { border-collapse: collapse; width: 100%; font-size: 15.5px; min-width: 480px; line-height: 1.75; }
+td, th { padding: 12px 14px; border-bottom: 1px solid var(--g); text-align: left; }
+th { color: var(--c5); font-weight: 800; background: var(--tint); }
+.sum li { margin: 12px 0; }
+
+/* Khung giả mã (Pseudocode) */
+.pseudo {
+  background: var(--tint);
+  border: 1.5px solid var(--g);
+  border-left: 6px solid var(--c5);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin: 18px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.85;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Hệ thống nút bấm */
+.btn-group { display: flex; gap: 14px; flex-wrap: wrap; margin: 20px 0 12px; }
+.btn {
+  appearance: none; -webkit-appearance: none;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font: 700 15px/1.4 "Be Vietnam Pro", system-ui, sans-serif;
+  cursor: pointer;
+  transition: all .24s cubic-bezier(.2,.8,.2,1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  text-align: center;
+}
+.btn::before {
+  content: "";
+  flex: 0 0 8px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+  transition: transform .2s ease;
+}
+.btn:hover { transform: translateY(-2px); filter: brightness(1.04); }
+.btn:hover::before { transform: scale(1.3); }
+.btn:active { transform: translateY(0) scale(0.97); }
+
+.btn-hint {
+  background: var(--tint);
+  color: var(--ink);
+  border-color: var(--c3);
+  box-shadow: 0 4px 14px rgba(245,159,0,.18);
+}
+.btn-hint::before { background: var(--c3); box-shadow: 0 0 8px var(--c3); }
+.btn-hint:hover {
+  background: linear-gradient(135deg, #fff3bf, #ffe066);
+  color: #1d2350;
+  box-shadow: 0 8px 22px rgba(245,159,0,.32);
+}
+
+.btn-sol {
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(112,72,232,.32);
+}
+.btn-sol::before { background: #fff; box-shadow: 0 0 8px #fff; }
+.btn-sol:hover { box-shadow: 0 10px 26px rgba(112,72,232,.48); }
+
+/* Khung ẩn/hiện Gợi ý & Lời giải */
+.panel {
+  display: none;
+  margin-top: 16px;
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: var(--tint);
+  border: 1px solid var(--g);
+  line-height: 1.95;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.panel.open { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+.step { margin: 18px 0; padding-bottom: 16px; border-bottom: 1px dashed var(--g); line-height: 1.95; max-width: 100%; overflow-x: auto; }
+.step:last-child { border-bottom: none; padding-bottom: 0; }
+.cmt {
+  display: block;
+  color: var(--mut);
+  font-size: 15px;
+  line-height: 1.85;
+  font-style: italic;
+  background: rgba(130,140,190,0.12);
+  padding: 11px 16px;
+  border-radius: 10px;
+  margin: 10px 0;
+  border-left: 3.5px solid var(--mut);
+}
+
+/* Thẻ Công thức & Thẻ Mô phỏng */
+.formula-card { border: 1px solid var(--g); border-radius: 16px; padding: 22px; margin: 24px 0; background: var(--card); max-width: 100%; overflow: hidden; }
+.formula-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 14px; margin-top: 14px; font-size: 15.5px; line-height: 1.9; }
+.formula-meta > div { background: var(--tint); padding: 16px 18px; border-radius: 12px; min-width: 0; max-width: 100%; overflow-x: auto; }
+.sim-card { border: 1px solid var(--g); border-radius: 20px; padding: 22px; margin: 24px 0; background: var(--card); box-shadow: 0 8px 28px rgba(0,0,0,.05); max-width: 100%; }
+
+/* Nút chọn chế độ mô hình (Segmented Pill Radio Buttons) */
+.sim-tabs {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 20px; padding: 10px;
+  background: var(--tint);
+  border-radius: 18px;
+  border: 1.5px solid var(--g);
+}
+.sim-tab {
+  appearance: none; -webkit-appearance: none;
+  flex: 1 1 170px;
+  min-width: 0;
+  border: 1.5px solid var(--g);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: var(--card);
+  color: var(--ink);
+  font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif;
+  cursor: pointer;
+  transition: all .22s cubic-bezier(.2,.8,.2,1);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.03);
+}
+.sim-tab::before {
+  content: "";
+  flex: 0 0 16px; width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--mut);
+  background: transparent;
+  transition: all .2s ease;
+  box-sizing: border-box;
+}
+.sim-tab:hover { border-color: var(--c5); color: var(--c5); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(112,72,232,.14); }
+.sim-tab:hover::before { border-color: var(--c5); transform: scale(1.1); }
+.sim-tab:active { transform: translateY(0) scale(0.98); }
+.sim-tab.active {
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 8px 20px rgba(112,72,232,.36);
+  transform: translateY(-1px);
+  font-weight: 700;
+}
+.sim-tab.active::before {
+  border-color: #fff;
+  background: #fff;
+  box-shadow: inset 0 0 0 3.5px var(--c5);
+}
+
+/* Hàng điều khiển thanh trượt & hộp chọn */
+.ctrl-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 16px;
+  align-items: center;
+  margin: 14px 0;
+  background: var(--tint);
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1.5px solid var(--g);
+  max-width: 100%;
+}
+.ctrl-row > div { min-width: 0; max-width: 100%; }
+.ctrl-row label { font-size: 14.5px; font-weight: 700; display: block; margin-bottom: 10px; color: var(--ink); }
+
+/* Bộ chọn danh sách thả xuống tùy chỉnh (Custom Dropdown Select) */
+select.native-select-hidden {
+  position: absolute !important;
+  width: 1px !important; height: 1px !important;
+  padding: 0 !important; margin: -1px !important;
+  overflow: hidden !important; clip: rect(0,0,0,0) !important;
+  border: 0 !important; opacity: 0 !important; pointer-events: none !important;
+}
+.csel-wrap { position: relative; width: 100%; max-width: 100%; user-select: none; font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif; z-index: 5; }
+.csel-wrap.open { z-index: 45; }
+.csel-trigger {
+  appearance: none; -webkit-appearance: none;
+  width: 100%;
+  max-width: 100%;
+  padding: 13px 44px 13px 16px;
+  border-radius: 14px;
+  border: 2px solid var(--c5);
+  background: var(--card);
+  color: var(--ink);
+  font: 600 14.5px/1.45 "Be Vietnam Pro", system-ui, sans-serif;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all .22s ease;
+  box-shadow: 0 4px 12px rgba(112,72,232,.1);
+  position: relative; text-align: left;
+  min-width: 0;
+}
+.csel-trigger::before {
+  content: "";
+  flex: 0 0 10px; width: 10px; height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  margin-right: 10px;
+  box-shadow: 0 0 0 3px var(--tint);
+}
+.csel-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.csel-trigger:hover { border-color: var(--c1); background: var(--tint); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(112,72,232,.18); }
+.csel-wrap.open .csel-trigger { border-color: var(--c1); background: var(--card); box-shadow: 0 0 0 4px rgba(112,72,232,.22); }
+.csel-arrow {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; border-radius: 8px;
+  background: var(--tint);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .25s ease; pointer-events: none;
+}
+.csel-arrow::after {
+  content: ""; width: 7px; height: 7px;
+  border-right: 2.5px solid var(--c5);
+  border-bottom: 2.5px solid var(--c5);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .25s ease;
+}
+.csel-wrap.open .csel-arrow { background: var(--c5); }
+.csel-wrap.open .csel-arrow::after { border-color: #fff; transform: translateY(2px) rotate(-135deg); }
+.csel-menu {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 60;
+  background: var(--card); border: 2px solid var(--c5);
+  border-radius: 16px; padding: 8px;
+  box-shadow: 0 14px 36px rgba(16,20,46,.28);
+  display: none; max-height: 280px; overflow-y: auto;
+}
+.csel-wrap.open .csel-menu { display: block; animation: fadeIn .18s ease; }
+.csel-opt {
+  padding: 11px 14px; border-radius: 11px;
+  color: var(--ink); cursor: pointer;
+  transition: all .16s ease; margin: 3px 0;
+  line-height: 1.45; display: flex; align-items: center; gap: 10px;
+}
+.csel-opt::before {
+  content: ""; flex: 0 0 14px; width: 14px; height: 14px;
+  border-radius: 50%; border: 2px solid var(--g); transition: all .16s ease;
+}
+.csel-opt:hover { background: var(--tint); color: var(--c5); padding-left: 18px; }
+.csel-opt:hover::before { border-color: var(--c5); }
+.csel-opt.selected {
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  color: #fff; font-weight: 700;
+  box-shadow: 0 4px 12px rgba(112,72,232,.3);
+}
+.csel-opt.selected::before { border-color: #fff; background: #fff; box-shadow: inset 0 0 0 3px var(--c5); }
+.menu-selector-wrap .csel-trigger { border: 2px solid var(--c5); background: var(--tint); font-size: 14.5px; font-weight: 700; }
+
+/* Thanh trượt Range Slider tùy chỉnh */
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 8px; border-radius: 999px;
+  background: var(--g); outline: none; margin: 6px 0; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  border: 3px solid var(--card);
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  cursor: pointer; transition: transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.12); }
+input[type=range]::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c5));
+  border: 3px solid var(--card);
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  cursor: pointer; transition: transform .15s;
+}
+
+/* Thanh cuộn tùy chỉnh & Menu góc trên bên trái */
+* { scrollbar-width: thin; scrollbar-color: var(--c5) var(--tint); }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: var(--tint); border-radius: 999px; margin: 4px; }
+::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--c1), var(--c5)); border-radius: 999px; border: 2px solid var(--tint); transition: background .2s; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, var(--c5), var(--c4)); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* Nút 3 gạch (Hamburger Button) */
+#mb {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 14px; z-index: 30;
+  width: 46px; height: 46px;
+  border: 0; border-radius: 14px;
+  background: var(--c5); color: #fff;
+  cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25);
+}
+#mb span { display: block; width: 22px; height: 3px; border-radius: 2px; background: #fff; transition: transform .2s, opacity .2s; }
+#mb[aria-expanded=true] span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+#mb[aria-expanded=true] span:nth-child(2) { opacity: 0; }
+#mb[aria-expanded=true] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+#mb:focus-visible, #mn a:focus-visible { outline: 3px solid var(--c3); outline-offset: 2px; }
+
+/* Hộp Menu Mục lục & Bộ chọn bài học */
+#mn {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 66px);
+  left: 14px; z-index: 30;
+  width: min(370px, calc(100vw - 28px));
+  max-height: calc(100vh - 90px - env(safe-area-inset-top, 0px));
+  overflow-y: auto;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 34px rgba(0,0,0,.3);
+  border: 1px solid var(--g);
+}
+#mn[hidden] { display: none; }
+.menu-selector-wrap { padding-bottom: 12px; margin-bottom: 10px; border-bottom: 2px solid var(--g); }
+.menu-selector-wrap label { display: block; font-size: 13px; font-weight: 800; color: var(--c5); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.toc-title { font-size: 13px; font-weight: 800; color: var(--mut); text-transform: uppercase; margin: 8px 0 4px; padding: 0 8px; }
+#toc-links a { display: block; padding: 7px 10px; border-radius: 10px; color: var(--ink); text-decoration: none; font-size: 14.5px; line-height: 1.4; }
+#toc-links a:hover { background: var(--tint); }
+#toc-links a.sub { padding-left: 24px; font-size: 13.5px; color: var(--mut); }
+#toc-links a.grp { font-weight: 600; margin-top: 4px; }
+section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px); }
+
+/* ==========================================================================
+   3. THÀNH PHẦN THEO KHUNG MẪU (bridge / next / key / steps / ans)
+   ========================================================================== */
+.bridge, .next { border-radius: 12px; padding: 12px 18px; margin: 0 0 18px; background: var(--tint); border-left: 5px solid var(--c5); font-size: 16px; line-height: 1.8; }
+.next { border-color: var(--c2); margin: 24px 0 0; }
+.key { border: 2px solid var(--c4); background: var(--card); position: relative; padding-top: 30px; box-shadow: 0 4px 16px rgba(230,73,128,.14); }
+.key::before { content: "★ PHẢI NHỚ"; position: absolute; top: -2px; left: 16px; background: var(--c4); color: #fff; font: 800 12px/1 "Be Vietnam Pro", sans-serif; padding: 6px 10px; border-radius: 0 0 8px 8px; }
+figcaption { font-size: 14.5px; color: var(--mut); margin-top: 8px; line-height: 1.7; padding: 0 8px; }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 12px 0; }
+.steps > li { counter-increment: s; position: relative; padding: 11px 14px 11px 54px; margin: 10px 0; background: var(--card); border: 1px solid var(--g); border-radius: 12px; line-height: 1.85; }
+.steps > li::before { content: counter(s); position: absolute; left: 13px; top: 11px; width: 29px; height: 29px; border-radius: 50%; background: var(--c5); color: #fff; font: 800 14px/29px "Be Vietnam Pro", sans-serif; text-align: center; }
+.steps.nn > li { padding-left: 16px; }
+.steps.nn > li::before { display: none; }
+.ans { background: var(--card); border: 2px solid var(--c2); border-radius: 12px; padding: 10px 16px; margin: 12px 0 2px; }
+
+/* ==========================================================================
+   4. BỐ CỤC CHUẨN MÁY TÍNH & ĐIỀU HƯỚNG
+   ========================================================================== */
+#toc-links a.on { background: var(--tint); color: var(--c5); }
+body { font-size: 18px; }
+main { max-width: none; width: 100%; margin: 0 auto; padding: 26px clamp(18px, 2.6vw, 60px) 90px; }
+section { display: flow-root; padding: 34px clamp(24px, 2.8vw, 58px); }
+p, li { max-width: 165ch; }
+table { min-width: 0; }
+#mn { width: min(340px, calc(100vw - 28px)); }
+
+/* ==========================================================================
+   5. BỐ CỤC MÔ HÌNH: MÀN HÌNH MÔ PHỎNG 60% | THÔNG SỐ + DỮ LIỆU 40%
+   ========================================================================== */
+.sim-card { container-type: inline-size; padding: 16px; }
+.sim-card .sim-tabs { margin-bottom: 14px; padding: 8px; gap: 8px; border-radius: 16px; }
+.sim-card .sim-tab { padding: 9px 12px; font-size: 14px; }
+.sim-card .sim-tabs { flex-wrap: nowrap; overflow-x: auto; }
+.sim-card .sim-tab { flex: 0 0 auto; white-space: nowrap; }
+.sim-body { display: block; }
+.sim-stage {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 62px); z-index: 6;
+  background: var(--card); padding: 0 0 10px; margin-bottom: 10px;
+  border-bottom: 1px solid var(--g);
+}
+.sim-stage svg { margin: 0; }
+.sim-side { min-width: 0; }
+.sim-h { font-size: 13px; font-weight: 800; color: var(--c5); margin: 4px 2px 8px; letter-spacing: .02em; }
+.sim-side .ctrl-row { margin: 0 0 14px; padding: 12px 14px; gap: 12px; }
+.sim-side .ctrl-row label { margin-bottom: 6px; font-size: 14px; }
+.sim-side .box { margin: 0; padding: 14px 16px; font-size: 15px; line-height: 1.85; }
+
+@container (min-width: 640px) {
+  .sim-card .sim-tabs { flex-wrap: wrap; overflow-x: visible; }
+  .sim-card .sim-tab { flex: 1 1 170px; white-space: normal; }
+  .sim-body { display: grid; grid-template-columns: 60% minmax(0, 1fr); column-gap: 18px; align-items: stretch; }
+  .sim-stage { position: static; display: flex; align-items: center; margin: 0; padding: 10px; background: var(--tint); border: 1px solid var(--g); border-radius: 16px; }
+  .sim-stage svg { border: 0; background: transparent; }
+  .sim-side { max-height: calc(100vh - 150px); overflow-y: auto; padding-right: 4px; }
+  .sim-side .ctrl-row { grid-template-columns: 1fr; }
+}
+
+ol.steps,.ans,.f{display:flow-root}figure.fl{margin:14px 0}figure.fl svg{margin:0}
+@media(min-width:900px){figure.fl{float:right;clear:right;width:min(46%,560px);margin:6px 0 14px 28px}}
+
+/* ==========================================================================
+   6. CÀI ĐẶT GIAO DIỆN & LIQUID GLASS THEME
+   ========================================================================== */
+.nav-view-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 6px 10px;margin-bottom:8px;
+  border-bottom:1px solid var(--g);
+}
+body.lg-theme .nav-view-row{border-bottom-color:rgba(255,255,255,.2)}
+.menu-label{
+  font-size:13.5px;font-weight:800;color:var(--c5);letter-spacing:.02em;
+}
+body.lg-theme .menu-label{color:#7dd3fc}
+.btn-theme-settings{
+  width:34px;height:34px;border-radius:9px;border:1.5px solid var(--g);
+  background:var(--tint);color:var(--ink);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;transition:all .2s ease;
+}
+.btn-theme-settings:hover{border-color:var(--c5);transform:rotate(30deg)}
+
+#ls{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin-bottom:8px}
+#ls button{border:0;border-radius:8px;padding:8px 0;background:var(--tint);color:var(--ink);font:700 12.5px/1 "Be Vietnam Pro",sans-serif;cursor:pointer;transition:all .15s ease}
+#ls button.on{background:var(--c5);color:#fff}
+
+/* Nền phong cách iOS Silk Wave */
+.lg-bg-ios{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  transition:filter .25s ease,opacity .3s ease;display:none;
+}
+body.lg-theme[data-lg-bg="ios"] .lg-bg-ios{
+  display:block;
+}
+body:not(.lg-theme) .lg-bg-ios{display:none !important}
+.lg-bg-ios.lg-orbs-hidden{display:none !important}
+.lg-bg-ios svg{
+  background:none !important;border:none !important;border-radius:0 !important;
+  margin:0 !important;padding:0 !important;box-shadow:none !important;
+  width:100% !important;height:100% !important;display:block !important;
+}
+
+/* Thay đổi gradient nền chính khi chọn iOS */
+body.lg-theme[data-lg-bg="ios"]{
+  background-color:#020510 !important;
+  background-image:
+    radial-gradient(circle at 50% 50%,transparent 35%,rgba(2,4,14,.7) 100%),
+    radial-gradient(ellipse 95% 65% at 80% 0%,rgba(56,189,248,.38),transparent 70%),
+    radial-gradient(ellipse 85% 55% at 15% 40%,rgba(168,85,247,.32),transparent 65%),
+    radial-gradient(ellipse 85% 65% at 85% 85%,rgba(59,130,246,.32),transparent 70%),
+    radial-gradient(ellipse 70% 50% at 5% 95%,rgba(20,184,166,.25),transparent 65%),
+    linear-gradient(160deg,#02040d,#070d24 45%,#030614) !important;
+  background-attachment:fixed !important;
+}
+
+/* Các viên ngọc nằm sau kính (Aurora) */
+.lg-orbs{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  transition:filter .25s ease,opacity .3s ease;display:none;
+}
+body.lg-theme[data-lg-bg="aurora"] .lg-orbs{
+  display:block;
+}
+body:not(.lg-theme) .lg-orbs{display:none !important}
+.lg-orbs.lg-orbs-hidden{display:none !important}
+.lg-orbs i{position:absolute;border-radius:50%;display:block}
+.lg-orbs i:nth-child(1){left:6%;top:14%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#9fb4ff,#4f6bff 55%,#2a2fb0)}
+.lg-orbs i:nth-child(2){right:9%;top:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#f0c0ff,#b043ff 55%,#6a1fb8)}
+.lg-orbs i:nth-child(3){left:38%;top:52%;width:280px;height:280px;background:radial-gradient(circle at 32% 28%,#ffc2dd,#ff4f9a 55%,#b01a68)}
+.lg-orbs i:nth-child(4){right:4%;bottom:6%;width:210px;height:210px;background:radial-gradient(circle at 32% 28%,#b4fff2,#12d6c0 55%,#0a7f8f)}
+.lg-orbs i:nth-child(5){left:3%;bottom:8%;width:150px;height:150px;background:radial-gradient(circle at 32% 28%,#fff1b0,#ffc83d 55%,#d98a00)}
+
+/* Giao diện Kính mờ chính */
+body.lg-theme{
+  --lg-blur:14px;--lg-sat:200%;--lg-fill:0.12;--lg-tint:0.16;
+  --bg:#070a24;
+  --card:rgba(255,255,255,.08);
+  --ink:#ffffff;
+  --mut:rgba(255,255,255,.82);
+  --g:rgba(255,255,255,.24);
+  --tint:rgba(255,255,255,.1);
+  --c1:#6ea0ff;--c2:#38d9a9;--c3:#ffd43b;--c4:#ff8fb8;--c5:#a78bfa;
+  --lg-text:#ffffff;--lg-ink:#0d1140;
+  color-scheme:dark;
+  background-color:#070a24 !important;
+  background-image:
+    radial-gradient(60% 55% at 8% 0%,rgba(63,107,255,.75),transparent 70%),
+    radial-gradient(50% 50% at 100% 12%,rgba(176,67,255,.6),transparent 70%),
+    radial-gradient(55% 55% at 42% 108%,rgba(255,79,154,.5),transparent 70%),
+    radial-gradient(40% 40% at 92% 96%,rgba(18,214,192,.45),transparent 70%),
+    linear-gradient(160deg,#070a24,#0d1139 45%,#170e30) !important;
+  background-attachment:fixed !important;
+  -webkit-font-smoothing:antialiased;
+}
+
+body.lg-theme main,body.lg-theme #app-content{position:relative;z-index:1}
+body.lg-theme #mb{z-index:60}
+
+body.lg-theme section,
+body.lg-theme .formula-card,
+body.lg-theme .sim-card,
+body.lg-theme .key{
+  position:relative;isolation:isolate;color:var(--lg-text);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(14,16,70,var(--lg-tint)) !important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(255,255,255,.18),
+    inset 0 0 26px rgba(255,255,255,.08),
+    inset 0 -20px 30px -20px rgba(255,255,255,.24),
+    0 26px 54px -20px rgba(4,6,36,.65);
+  border:1px solid rgba(255,255,255,.22) !important;
+  text-shadow:0 1px 10px rgba(8,10,56,.35);
+}
+
+body.lg-theme #mn{
+  position:fixed !important;
+  z-index:60 !important;
+  color:var(--lg-text);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(14,16,70,var(--lg-tint)) !important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(255,255,255,.18),
+    inset 0 0 26px rgba(255,255,255,.08),
+    inset 0 -20px 30px -20px rgba(255,255,255,.24),
+    0 26px 54px -20px rgba(4,6,36,.65);
+  border:1px solid rgba(255,255,255,.22) !important;
+  text-shadow:0 1px 10px rgba(8,10,56,.35);
+}
+body.lg-theme #mn[hidden]{display:none !important}
+
+body.lg-theme section{border-left:6px solid var(--c1) !important}
+body.lg-theme section:nth-of-type(5n+2){border-left-color:var(--c2) !important}
+body.lg-theme section:nth-of-type(5n+3){border-left-color:var(--c3) !important}
+body.lg-theme section:nth-of-type(5n+4){border-left-color:var(--c4) !important}
+body.lg-theme section:nth-of-type(5n+5){border-left-color:var(--c5) !important}
+
+body.lg-theme section::before,
+body.lg-theme .formula-card::before,
+body.lg-theme .sim-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(circle 200px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.22),transparent 70%),
+    radial-gradient(120% 55% at 50% -8%,rgba(255,255,255,.28),transparent 58%);
+}
+body.lg-theme:not(.lg-glow-on) section::before,
+body.lg-theme:not(.lg-glow-on) .formula-card::before,
+body.lg-theme:not(.lg-glow-on) .sim-card::before{
+  display:none !important;
+}
+
+body.lg-theme section::after,
+body.lg-theme .formula-card::after,
+body.lg-theme .sim-card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.1) 30%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.7));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+
+body.lg-theme h1{background:linear-gradient(90deg,#9fb4ff,#d4ddff,#ffc2dd);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+body.lg-theme h2{color:#fff;text-shadow:0 2px 12px rgba(8,10,56,.5)}
+body.lg-theme h3{color:#c4b5fd;text-shadow:0 1px 8px rgba(8,10,56,.4)}
+
+body.lg-theme .box,
+body.lg-theme .f,
+body.lg-theme .panel,
+body.lg-theme .ans{
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+}
+body.lg-theme .ctrl-row,
+body.lg-theme .sim-tabs{
+  background:rgba(8,10,50,.32) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+}
+
+body.lg-theme .btn,
+body.lg-theme .sim-tab,
+body.lg-theme #ls button,
+body.lg-theme .btn-theme-settings,
+body.lg-theme #mb{
+  color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.06)) !important;
+  border:1px solid rgba(255,255,255,.32) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(255,255,255,.1),0 8px 16px -10px rgba(4,6,36,.6) !important;
+  text-shadow:0 1px 8px rgba(8,10,56,.5);
+}
+body.lg-theme .btn:hover,
+body.lg-theme .sim-tab:hover,
+body.lg-theme #ls button:hover,
+body.lg-theme .btn-theme-settings:hover,
+body.lg-theme #mb:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.12)) !important;
+  border-color:rgba(255,255,255,.65) !important;
+}
+body.lg-theme #ls button.on,
+body.lg-theme .sim-tab.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  border-color:#ffffff !important;
+  text-shadow:none !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.28),inset 0 1px 0 #ffffff !important;
+}
+body.lg-theme .btn-sol{
+  background:linear-gradient(180deg,#d4ddff,#9fb4ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  text-shadow:none !important;
+  border-color:rgba(255,255,255,.75) !important;
+}
+body.lg-theme .btn-sol::before{background:var(--lg-ink,#0d1140) !important}
+body.lg-theme .btn-hint{
+  background:rgba(245,159,0,.22) !important;
+  border-color:rgba(255,214,102,.6) !important;
+  color:#ffe9a8 !important;
+}
+body.lg-theme .btn-hint::before{background:#ffd43b !important}
+
+body.lg-theme svg:not(#lg-defs):not(.btn-theme-settings svg):not(.theme-modal-close-btn svg):not(.lg-bg-ios svg){
+  background:rgba(14,18,56,.55) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+}
+body.lg-theme svg text{fill:#ffffff !important}
+body.lg-theme .ax{stroke:rgba(255,255,255,.25) !important}
+body.lg-theme th{background:rgba(255,255,255,.12) !important;color:#c4b5fd !important}
+body.lg-theme td,body.lg-theme th{border-bottom:1px solid rgba(255,255,255,.12) !important}
+body.lg-theme mjx-container{color:#ffffff !important}
+body.lg-theme #toc-links a{color:rgba(255,255,255,.88) !important}
+body.lg-theme #toc-links a:hover{background:rgba(255,255,255,.14) !important;color:#ffffff !important}
+body.lg-theme #toc-links a.sub{color:rgba(255,255,255,.65) !important}
+body.lg-theme .toc-title{color:rgba(255,255,255,.6) !important}
+body.lg-theme .steps > li::before, body.lg-theme .k{color:#0d1140 !important}
+
+/* Khúc xạ trên Chromium */
+html.lg-refract body.lg-theme section,
+html.lg-refract body.lg-theme .formula-card,
+html.lg-refract body.lg-theme .sim-card,
+html.lg-refract body.lg-theme #mn{
+  -webkit-backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
+  backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
+}
+
+/* Modal Popup Cài đặt Giao diện */
+.theme-modal-overlay{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(8,10,44,.6);
+  -webkit-backdrop-filter:blur(10px) saturate(130%);
+  backdrop-filter:blur(10px) saturate(130%);
+  z-index:9999;
+  animation:fadeInModal .2s ease;
+}
+.theme-modal-overlay[hidden]{display:none !important}
+@keyframes fadeInModal{from{opacity:0}to{opacity:1}}
+
+.theme-modal-box{
+  width:min(440px,calc(100vw - 32px));
+  max-height:calc(100vh - 40px);
+  overflow-y:auto;
+  border-radius:24px;
+  padding:22px;
+  background:var(--card);
+  color:var(--ink);
+  border:2px solid var(--c5);
+  box-shadow:0 16px 48px rgba(0,0,0,.35);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  font-family:"Be Vietnam Pro",system-ui,sans-serif;
+  animation:slideUpModal .22s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes slideUpModal{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+body.lg-theme .theme-modal-box{
+  background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 60%,rgba(255,255,255,.12)),rgba(22,26,98,.82) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(180%) !important;
+  backdrop-filter:blur(28px) saturate(180%) !important;
+  border:1px solid rgba(255,255,255,.35) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 24px 60px rgba(4,6,36,.8) !important;
+}
+
+.theme-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:12px;border-bottom:1px solid var(--g);
+}
+body.lg-theme .theme-modal-header{border-bottom-color:rgba(255,255,255,.2)}
+.theme-modal-header h3{margin:0;font-size:18px;font-weight:800;color:inherit}
+.theme-modal-close-btn{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--g);
+  background:var(--tint);color:var(--ink);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;font-weight:700;transition:all .18s ease;
+}
+.theme-modal-close-btn:hover{background:var(--c4);color:#fff;border-color:transparent}
+
+.theme-mode-select{
+  display:flex;gap:4px;padding:4px;border-radius:999px;
+  background:var(--tint);border:1.5px solid var(--g);
+}
+body.lg-theme .theme-mode-select{
+  background:rgba(8,10,50,.45);border-color:rgba(255,255,255,.25);
+}
+.thm-toggle-btn{
+  flex:1;border:0;border-radius:999px;padding:9px 8px;
+  font:700 13.5px "Be Vietnam Pro",sans-serif;
+  color:var(--ink);background:transparent;cursor:pointer;
+  transition:all .2s ease;text-align:center;
+}
+body.lg-theme .thm-toggle-btn{color:rgba(255,255,255,.88)}
+.thm-toggle-btn.active{
+  background:var(--c5);color:#fff;
+  box-shadow:0 3px 10px rgba(112,72,232,.3);
+}
+body.lg-theme .thm-toggle-btn.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.35),inset 0 1px 0 #ffffff !important;
+}
+
+.theme-default-notice{
+  padding:14px 16px;border-radius:14px;background:var(--tint);
+  border:1px dashed var(--g);font-size:13.5px;line-height:1.6;color:var(--mut);text-align:center;
+}
+
+.theme-ctrl-group{
+  display:flex;flex-direction:column;gap:13px;
+}
+.theme-ctrl-item{
+  display:flex;flex-direction:column;gap:5px;
+  font-size:13px;font-weight:600;
+}
+.theme-ctrl-item-head{
+  display:flex;justify-content:space-between;align-items:center;
+  color:var(--ink);
+}
+body.lg-theme .theme-ctrl-item-head{color:#ffffff}
+.theme-ctrl-item-head span{
+  font-size:11.5px;color:var(--mut);font-weight:500;
+}
+body.lg-theme .theme-ctrl-item-head span{color:rgba(255,255,255,.7)}
+.theme-ctrl-item-head output{
+  font-weight:700;color:var(--c5);
+}
+body.lg-theme .theme-ctrl-item-head output{color:#a78bfa}
+.theme-ctrl-item input[type=range]{
+  width:100%;margin:3px 0;accent-color:var(--c5);
+}
+
+.theme-bg-selector{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:4px;
+}
+.theme-bg-card{
+  all:unset;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  padding:8px 8px 10px;
+  border-radius:14px;
+  background:var(--tint);
+  border:1.5px solid var(--g);
+  cursor:pointer;
+  transition:all .2s ease;
+  user-select:none;
+}
+body.lg-theme .theme-bg-card{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.16);
+}
+.theme-bg-card:hover{
+  border-color:var(--c5);
+  transform:translateY(-1px);
+}
+body.lg-theme .theme-bg-card:hover{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.35);
+}
+.theme-bg-card.active{
+  border-color:var(--c5);
+  background:var(--card);
+  box-shadow:0 0 0 2px var(--c5);
+}
+body.lg-theme .theme-bg-card.active{
+  background:linear-gradient(180deg,rgba(56,189,248,.22),rgba(14,165,233,.08)) !important;
+  border-color:#38bdf8 !important;
+  box-shadow:0 0 16px rgba(56,189,248,.35),inset 0 1px 1px rgba(255,255,255,.5) !important;
+}
+.theme-bg-preview{
+  width:100%;
+  height:46px;
+  border-radius:9px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+}
+.preview-aurora{
+  background:
+    radial-gradient(circle at 25% 35%,#38bdf8 0%,transparent 45%),
+    radial-gradient(circle at 75% 25%,#6366f1 0%,transparent 45%),
+    radial-gradient(circle at 55% 75%,#06b6d4 0%,transparent 45%),
+    #060b19;
+}
+.preview-ios{
+  background:
+    radial-gradient(circle at 80% 15%,#38bdf8 0%,transparent 50%),
+    radial-gradient(circle at 20% 45%,#ec4899 0%,transparent 50%),
+    radial-gradient(circle at 75% 85%,#6366f1 0%,transparent 50%),
+    linear-gradient(135deg,#02040d,#080d24);
+}
+.preview-ios::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(55deg,transparent 35%,rgba(255,255,255,.4) 48%,rgba(56,189,248,.7) 53%,transparent 66%);
+  filter:blur(1px);
+}
+.theme-bg-name{
+  font-size:12px;
+  font-weight:700;
+  color:inherit;
+  text-align:center;
+}
+body.lg-theme .theme-bg-name{color:#fff}
+
+.theme-modal-actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;
+}
+.theme-btn-action{
+  flex:1;min-width:110px;padding:9px 12px;border-radius:999px;
+  font:700 12.5px "Be Vietnam Pro",sans-serif;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1.5px solid var(--g);background:var(--tint);color:var(--ink);
+  transition:all .18s ease;
+}
+.theme-btn-action:hover{border-color:var(--c5);background:var(--card)}
+body.lg-theme .theme-btn-action{
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
+  border-color:rgba(255,255,255,.3);color:#fff;
+}
+body.lg-theme .theme-btn-action:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,.12));
+}
+.theme-btn-action.active{
+  background:var(--c5);color:#fff;border-color:var(--c5);
+}
+body.lg-theme .theme-btn-action.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff);color:var(--lg-ink,#0d1140);
+  border-color:#ffffff;
+}
+
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn{background:#262a72 !important}
+}
+@media (prefers-reduced-transparency:reduce){
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn,.theme-modal-box,.theme-modal-overlay{-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn{background:#262a72 !important}
+}
+@media (prefers-reduced-motion:reduce){
+  .btn-theme-settings,.thm-toggle-btn,.theme-btn-action,.theme-modal-overlay,.theme-modal-box{transition:none !important;animation:none !important}
+}
+
+
+/* Bổ sung thêm style cho widget tương tác tuần 4, 5, 7 */
+.sim-widget {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 18px 0;
+}
+.quiz-box {
+  border-left: 5px solid var(--c1);
+  background: var(--card);
+  padding: 20px clamp(16px, 2vw, 32px);
+  border-radius: 14px;
+}
+</style>
+</head>
+<body class="lg-theme" data-lg-bg="ios">
+
+<!-- Bộ lọc SVG cho hiệu ứng khúc xạ của Google Chrome -->
+<svg id="lg-defs" width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">
+  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- Vòng tròn nền Liquid Glass (Aurora) -->
+<div id="lg-orbs" class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+<!-- Nền phong cách iOS Silk Wave -->
+<div id="lg-bg-ios" class="lg-bg-ios" aria-hidden="true">
+  <svg viewBox="0 0 1440 900" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="ios-cyan-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#38bdf8" />
+        <stop offset="50%" stop-color="#0284c7" />
+        <stop offset="100%" stop-color="#1e3a8a" />
+      </linearGradient>
+      <linearGradient id="ios-magenta-purple" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ec4899" />
+        <stop offset="50%" stop-color="#a855f7" />
+        <stop offset="100%" stop-color="#4338ca" />
+      </linearGradient>
+      <linearGradient id="ios-amber-teal" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#06b6d4" />
+        <stop offset="60%" stop-color="#3b82f6" />
+        <stop offset="100%" stop-color="#6366f1" />
+      </linearGradient>
+      <filter id="ios-glow-heavy" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="65" />
+      </filter>
+      <filter id="ios-glow-mid" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="30" />
+      </filter>
+      <filter id="ios-glow-fine" x="-10%" y="-10%" width="120%" height="120%">
+        <feGaussianBlur stdDeviation="4" />
+      </filter>
+    </defs>
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="url(#ios-cyan-blue)" stroke-width="170" fill="none" opacity="0.65" filter="url(#ios-glow-heavy)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="url(#ios-magenta-purple)" stroke-width="160" fill="none" opacity="0.55" filter="url(#ios-glow-heavy)" />
+    <path d="M 180 -120 C 420 320, 720 740, 1320 820 C 1520 860, 1620 740, 1700 680" stroke="url(#ios-amber-teal)" stroke-width="150" fill="none" opacity="0.5" filter="url(#ios-glow-heavy)" />
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="#38bdf8" stroke-width="36" fill="none" opacity="0.45" filter="url(#ios-glow-mid)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="#f472b6" stroke-width="32" fill="none" opacity="0.4" filter="url(#ios-glow-mid)" />
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="#e0f2fe" stroke-width="2.5" fill="none" opacity="0.75" filter="url(#ios-glow-fine)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="#fce7f3" stroke-width="2" fill="none" opacity="0.7" filter="url(#ios-glow-fine)" />
+  </svg>
+</div>
+
+<!-- Popup Cài đặt Giao diện -->
+<div id="theme-modal-overlay" class="theme-modal-overlay" hidden>
+  <div id="theme-modal" class="theme-modal-box" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
+    <div class="theme-modal-header">
+      <h3 id="theme-modal-title">Cài đặt giao diện</h3>
+      <button type="button" id="theme-modal-close" class="theme-modal-close-btn" aria-label="Đóng popup">✕</button>
+    </div>
+
+    <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
+      <button type="button" id="thm-opt-default" class="thm-toggle-btn">Dracula</button>
+      <button type="button" id="thm-opt-liquid" class="thm-toggle-btn active">Liquid Glass</button>
+    </div>
+
+    <div id="default-theme-notice" class="theme-default-notice" style="display:none">
+      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> để trải nghiệm giao diện kính mờ pha lê và bật các tuỳ chỉnh chi tiết.
+    </div>
+
+    <div id="lg-settings-panel" class="theme-ctrl-group">
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <label id="lbl-lg-bg" style="font-weight:700">Hình nền Liquid Glass</label>
+          <output id="o-lg-bg">iOS</output>
+        </div>
+        <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-lg-bg">
+          <label class="theme-bg-opt">
+            <input type="radio" name="lg-bg-choice" value="ios" checked>
+            <span>iOS</span>
+          </label>
+          <label class="theme-bg-opt">
+            <input type="radio" name="lg-bg-choice" value="aurora">
+            <span>Aurora</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Làm mờ kính (Backdrop Blur)</span>
+          <output id="o-lg-blur">16px</output>
+        </div>
+        <input id="r-lg-blur" type="range" min="4" max="32" value="16" aria-label="Độ làm mờ kính">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ đậm lớp kính (Fill Opacity)</span>
+          <output id="o-lg-fill">0.14</output>
+        </div>
+        <input id="r-lg-fill" type="range" min="0.04" max="0.45" step="0.01" value="0.14" aria-label="Độ đậm kính">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ bão hoà màu (Saturate)</span>
+          <output id="o-lg-sat">200%</output>
+        </div>
+        <input id="r-lg-sat" type="range" min="100" max="260" step="5" value="200" aria-label="Độ bão hoà màu">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Làm mờ nền / Vòng tròn (kéo min = ẩn)</span>
+          <output id="o-lg-orb-blur">16px</output>
+        </div>
+        <input id="r-lg-orb-blur" type="range" min="0" max="50" value="16" aria-label="Làm mờ nền hoặc ẩn vòng tròn">
+      </div>
+
+      <div class="theme-modal-actions">
+        <button type="button" id="b-lg-glow" class="theme-btn-action" aria-pressed="false">Vệt sáng chuột: Tắt</button>
+        <button type="button" id="b-lg-refract" class="theme-btn-action" aria-pressed="false">Khúc xạ (Chrome): Tắt</button>
+        <button type="button" id="b-lg-reset" class="theme-btn-action">Đặt lại</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Nút mở menu bài học & mục lục (Góc trên bên trái) -->
+<button id="mb" type="button" aria-label="Mở menu chọn bài và mục lục" aria-expanded="false" aria-controls="mn">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- Menu bài học & Mục lục -->
+<nav id="mn" hidden aria-label="Menu bài học và mục lục">
+  <div class="nav-view-row">
+    <div class="menu-label">Xác suất Thống kê</div>
+    <button type="button" id="btn-theme-settings" class="btn-theme-settings" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </div>
+  <div id="ls"></div>
+  <select id="lesson-select" style="display:none" onchange="loadLesson(this.value)">
+    <option value="1">Tuần 1: Câu hỏi &amp; Dữ liệu</option>
+    <option value="2">Tuần 2: Tóm tắt dữ liệu 1 biến</option>
+    <option value="3">Tuần 3: Tóm tắt 2 biến &amp; Đồ họa</option>
+    <option value="4">Tuần 4: Tương quan &amp; Hồi quy OLS</option>
+    <option value="5">Tuần 5: Nền tảng Xác suất &amp; Bayes</option>
+    <option value="6">Tuần 6: Biến ngẫu nhiên &amp; Phân phối</option>
+    <option value="7">Tuần 7: Kỳ vọng, Phương sai &amp; CLT</option>
+  </select>
+  <div class="toc-title">Mục lục bài đang mở</div>
+  <div id="toc-links"></div>
+</nav>
+
+<!-- VÙNG NỘI DUNG CHÍNH -->
+<main id="app-content"></main>
+
+<!-- ==========================================
+     TEMPLATES CÁC TUẦN TỪ 1 ĐẾN 7
+     ========================================== -->
+<template id="tpl-buoi-1">
+<header>
+  <span class="k">Tuần 01</span>
+  <h1>Câu Hỏi Thống Kê &amp; Bảng Dữ Liệu (Data Frame)</h1>
+  <p class="mut">Bốn loại khẳng định khoa học dữ liệu, phân loại biến định tính vs. định lượng, cấu trúc bảng dữ liệu và ý nghĩa thực sự của cỡ mẫu $n$.</p>
+</header>
+
+<div class="card c0" id="w1-sec1">
+  <h2>1. Bốn Loại Khẳng Định Trong Khoa Học Dữ Liệu</h2>
+  <div class="bridge">
+    Khi bắt đầu học Thống kê, mọi sinh viên đều bị choáng ngợp bởi hàng loạt con số. Nhưng hãy nhớ: <strong>Một con số vô hồn không có nghĩa lý gì nếu không đặt trong một câu khẳng định có cấu trúc!</strong> Một khẳng định có giá trị khoa học đến đâu phụ thuộc hoàn toàn vào cách dữ liệu được thu thập, chứ không phải bảng dữ liệu dài bao nhiêu hàng.
+  </div>
+
+  <div class="box analogy">
+    <strong>💡 Trực giác đời sống:</strong> Hãy tưởng tượng bạn khảo sát 100 bạn cùng lớp và thấy 80 bạn thích uống trà sữa.
+    <ul>
+      <li>Nếu bạn nói: <em>"Trong lớp mình, 80% thích trà sữa"</em> &rarr; Bạn đang <strong>Tóm tắt</strong> dữ liệu thực tế trước mắt.</li>
+      <li>Nếu bạn nói: <em>"80% sinh viên UET thích trà sữa"</em> &rarr; Bạn đang <strong>Khái quát hóa</strong> ra toàn trường (cần mẫu ngẫu nhiên đại diện!).</li>
+      <li>Nếu bạn nói: <em>"Nếu trường mở quán trà sữa thì sinh viên sẽ học giỏi hơn"</em> &rarr; Bạn đang nói về <strong>Nhân quả</strong> (can thiệp làm thay đổi kết quả).</li>
+      <li>Nếu bạn gặp bạn Nam mới chuyển vào lớp và nói: <em>"Nam có 80% khả năng thích trà sữa"</em> &rarr; Bạn đang <strong>Dự đoán</strong> cho một cá thể mới.</li>
+    </ul>
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Bảng Đối Chiếu 4 Loại Khẳng Định (Trọng Tâm Thi Giữa Kỳ)</h3>
+    <table class="tw">
+      <thead>
+        <tr>
+          <th>Loại khẳng định</th>
+          <th>Bản chất &amp; Phạm vi nói đến</th>
+          <th>Ví dụ chuẩn xác</th>
+          <th>Bẫy thi thường gặp (Sai lầm)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Tóm tắt (Summary)</strong></td>
+          <td>Chỉ mô tả đúng tập dữ liệu hiện có trong tay, không suy diễn ra bên ngoài.</td>
+          <td><em>"Trong 50 email được khảo sát, có 13 email chứa từ khóa 'free'."</em></td>
+          <td>Nói quá đà sang những cá thể chưa được khảo sát.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Khái quát hóa (Generalization)</strong></td>
+          <td>Suy rộng từ một tập mẫu (sample) sang toàn bộ quần thể (population). Yêu cầu mẫu phải ngẫu nhiên và không thiên lệch.</td>
+          <td><em>"Ước tính khoảng 24% đến 28% toàn bộ email gửi đến hòm thư sinh viên là thư rác."</em></td>
+          <td>Khái quát hóa từ một nhóm tự chọn (ví dụ: khảo sát sinh viên IT rồi suy ra sinh viên toàn quốc).</td>
+        </tr>
+        <tr>
+          <td><strong>3. Nhân quả (Causal)</strong></td>
+          <td>Khẳng định việc chủ động can thiệp / thay đổi biến $X$ sẽ làm biến $Y$ thay đổi theo.</td>
+          <td><em>"Thêm bộ lọc spam dựa trên danh sách đen làm giảm 90% số thư rác lọt vào Inbox."</em></td>
+          <td><strong>Bẫy chết người:</strong> Thấy $X$ và $Y$ tương quan với nhau đã vội vàng kết luận $X$ gây ra $Y$ (Correlation $\neq$ Causation)!</td>
+        </tr>
+        <tr>
+          <td><strong>4. Dự đoán (Prediction)</strong></td>
+          <td>Dùng dữ liệu đã biết trong quá khứ để gán nhãn hoặc đoán giá trị của một đối tượng cụ thể trong tương lai.</td>
+          <td><em>"Email vừa nhận này có xác suất 95% là thư lừa đảo tài chính."</em></td>
+          <td>Nhầm lẫn giữa xác suất dự đoán của một cá thể với tỉ lệ trung bình của quần thể.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ CẢNH BÁO BẪY THI GIỮA KỲ:</strong>
+    Đề thi thường đưa ra một kết quả nghiên cứu quan sát (Observational study), ví dụ: <em>"Người uống nhiều cà phê có tỷ lệ mắc bệnh tim thấp hơn người không uống"</em>, rồi hỏi câu nào sau đây đúng.
+    <br>&rarr; <strong>SAI:</strong> "Uống cà phê giúp chữa bệnh tim" (Đây là khẳng định nhân quả, nghiên cứu quan sát không chứng minh được vì có biến gây nhiễu như lối sống, vận động).
+    <br>&rarr; <strong>ĐÚNG:</strong> "Có mối liên hệ nghịch giữa mức tiêu thụ cà phê và bệnh tim trong mẫu khảo sát" (Khẳng định tóm tắt / liên hệ). Muốn kết luận nhân quả, bắt buộc phải có <strong>Thử nghiệm ngẫu nhiên có đối chứng (Randomized Controlled Trial - RCT)</strong>!
+  </div>
+</div>
+
+<div class="card c1" id="w1-sec2">
+  <h2>2. Đơn Vị Quan Sát &amp; Phân Loại Biến Thống Kê</h2>
+  <div class="bridge">
+    Mỗi bảng dữ liệu là một lát cắt của thực tế. Trước khi bấm máy hay viết code xử lý, câu hỏi sống còn là: <strong>Mỗi dòng đại diện cho cái gì? Và mỗi cột mang bản chất toán học nào?</strong>
+  </div>
+
+  <h3>2.1 Đơn vị quan sát (Observational Unit)</h3>
+  <p>Là đối tượng cụ thể mà mỗi dòng trong bảng dữ liệu thu thập thông tin. Nó có thể là: một sinh viên, một giao dịch chuyển tiền, một lần bấm nút trên trang web, hoặc một lượt sinh viên - học phần - học kỳ.</p>
+
+  <h3>2.2 Phân loại biến: Bản chất quyết định phép tính</h3>
+  <div class="key">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c1);margin:0 0 8px">1. BIẾN SỐ (Định lượng - Numerical)</h4>
+        <p>Giá trị là các con số có độ lớn toán học thực sự (cộng, trừ, tính trung bình có nghĩa).</p>
+        <ul>
+          <li><strong>Rời rạc (Discrete):</strong> Nhận các giá trị đếm nguyên, có bước nhảy. Ví dụ: số lượng email gửi đi ($0, 1, 2,\dots$), số lỗi code, số anh chị em.</li>
+          <li><strong>Liên tục (Continuous):</strong> Nhận bất kỳ giá trị thực nào trong một khoảng, đo bằng dụng cụ đo. Ví dụ: lãi suất vay (12.35%), thời gian phản hồi server (142.6 ms), cân nặng.</li>
+        </ul>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c4);margin:0 0 8px">2. BIẾN PHÂN LOẠI (Định tính - Categorical)</h4>
+        <p>Giá trị chia đối tượng vào các nhóm hoặc danh mục rời nhau.</p>
+        <ul>
+          <li><strong>Danh nghĩa (Nominal):</strong> Các nhóm không có thứ tự tự nhiên hơn kém. Ví dụ: Giới tính, Hệ điều hành (Linux/Mac/Windows), Loài chim cánh cụt.</li>
+          <li><strong>Thứ bậc (Ordinal):</strong> Các nhóm có thứ tự hơn kém rõ ràng, nhưng khoảng cách giữa các bậc không đo được bằng con số chính xác. Ví dụ: Xếp loại học lực (Yếu, TB, Khá, Giỏi), Mức độ hài lòng (1 sao đến 5 sao), Kích cỡ áo (S, M, L, XL).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ BẪY THI KINH ĐIỂN: "CỘT CHỨA SỐ" CHƯA CHẮC LÀ "BIẾN SỐ"!</strong>
+    <ul>
+      <li><strong>Mã định danh (ID, Mã SV, Số CCCD):</strong> Dù toàn là số nguyên nhưng chỉ dùng để phân biệt đối tượng. Bạn không thể tính "trung bình mã sinh viên"! Đây là <strong>Biến phân loại danh nghĩa</strong> (hoặc khóa định danh).</li>
+      <li><strong>Mã bưu điện (Zip Code, 100000):</strong> Toàn số nhưng là <strong>Danh nghĩa</strong> vì không thể cộng trừ mã bưu điện.</li>
+      <li><strong>Thang đo Likert (Khảo sát đánh giá 1 đến 5 điểm):</strong> Dù lưu bằng số 1, 2, 3, 4, 5 nhưng bản chất là <strong>Thứ bậc (Ordinal)</strong> vì khoảng cách tâm lý giữa "Hài lòng" và "Rất hài lòng" không thể đo đếm bằng thước đo vật lý.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card c2" id="w1-sec3">
+  <h2>3. Cấu Trúc Khung Dữ Liệu (Data Frame) &amp; Khái Niệm Cỡ Mẫu $n$</h2>
+  <div class="bridge">
+    Khi làm việc với các bảng dữ liệu thực tế như <code>email50</code> hay <code>loan50</code>, ta cần hiểu rõ: số hàng trong bảng có luôn bằng cỡ mẫu độc lập $n$?
+  </div>
+
+  <div class="box analogy">
+    <strong>💡 Câu chuyện $100.000$ hàng log server:</strong>
+    Một kỹ sư tự hào: <em>"Tôi có bộ dữ liệu với $n = 100.000$ quan sát để nghiên cứu thời gian người dùng tương tác ứng dụng!"</em>
+    <br>Nhưng khi soi kỹ: 100.000 hàng đó chỉ được ghi lại từ <strong>50 người dùng thử nghiệm</strong>, mỗi người bấm 2.000 lần!
+    <br>&rarr; <strong>Phân tích:</strong> Các hành động của cùng một người là <em>phép đo lặp</em> (repeated measures), chúng phụ thuộc lẫn nhau mật thiết (thói quen, tốc độ bấm của người đó). Cỡ mẫu độc lập thực tế chỉ là $n = 50$, không phải $100.000$! Nếu giả định các quan sát độc lập để tính phương sai, bạn sẽ phạm sai lầm nghiêm trọng!
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Quy Tắc Nhận Diện Khung Dữ Liệu Chuẩn (Tidy Data)</h3>
+    <ol>
+      <li>Mỗi <strong>hàng (row)</strong> biểu diễn đúng một đơn vị quan sát độc lập.</li>
+      <li>Mỗi <strong>cột (column)</strong> biểu diễn đúng một biến đo lường.</li>
+      <li>Mỗi <strong>ô (cell)</strong> chứa đúng một giá trị duy nhất.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card c3" id="w1-sec4">
+  <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 1)</h2>
+  
+  <!-- Câu 1 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 1 (Mức độ Nhận biết):</div>
+    <p>Một nhà nghiên cứu khảo sát 200 bệnh nhân tiểu đường và nhận thấy những người đi bộ trên 10.000 bước/ngày có chỉ số đường huyết thấp hơn rõ rệt so với người ít vận động. Ông đưa ra phát biểu: <em>"Đi bộ 10.000 bước mỗi ngày giúp hạ đường huyết ở người tiểu đường"</em>. Phát biểu này thuộc loại khẳng định nào và có được hỗ trợ đầy đủ bởi dữ liệu quan sát không?</p>
+    <ul>
+      <li>A. Khẳng định tóm tắt; được hỗ trợ đầy đủ.</li>
+      <li>B. Khẳng định dự đoán; không được hỗ trợ.</li>
+      <li>C. Khẳng định nhân quả; không được hỗ trợ đầy đủ vì đây là nghiên cứu quan sát.</li>
+      <li>D. Khẳng định khái quát hóa; được hỗ trợ đầy đủ vì cỡ mẫu lớn ($n=200$).</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w1-ans1')">Xem Lời Giải &amp; Phân Tích</button>
+    </div>
+    <div id="w1-ans1" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: C</strong>
+        <p><strong>Phân tích cặn kẽ:</strong> Cụm từ <em>"giúp hạ đường huyết"</em> chỉ ra mối quan hệ <strong>nhân quả</strong> (can thiệp đi bộ sẽ làm thay đổi chỉ số đường huyết). Tuy nhiên, vì đây chỉ là khảo sát quan sát (bệnh nhân tự đi bộ theo thói quen), có thể tồn tại các biến gây nhiễu ẩn (ví dụ: người chịu đi bộ thường ăn uống kiêng khem cẩn thận hơn, uống thuốc đều hơn). Do đó, nghiên cứu quan sát không đủ căn cứ vững chắc để khẳng định nhân quả!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Câu 2 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 2 (Mức độ Thông hiểu - Bẫy Phân loại biến):</div>
+    <p>Trong một bảng cơ sở dữ liệu quản lý sinh viên của UET, xét 4 cột sau: (1) <code>Mã số sinh viên</code> (ví dụ: 23020150); (2) <code>Năm học</code> (năm 1, năm 2, năm 3, năm 4); (3) <code>Điểm GPA</code> (thang điểm 4.0); (4) <code>Số tín chỉ đã tích lũy</code>. Phân loại chuẩn xác cho 4 biến này lần lượt là:</p>
+    <ul>
+      <li>A. (1) Số rời rạc; (2) Số rời rạc; (3) Số liên tục; (4) Số rời rạc.</li>
+      <li>B. (1) Phân loại danh nghĩa; (2) Phân loại thứ bậc; (3) Số liên tục; (4) Số rời rạc.</li>
+      <li>C. (1) Phân loại thứ bậc; (2) Phân loại thứ bậc; (3) Số liên tục; (4) Số liên tục.</li>
+      <li>D. (1) Phân loại danh nghĩa; (2) Số rời rạc; (3) Số rời rạc; (4) Số rời rạc.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w1-ans2')">Xem Lời Giải &amp; Phân Tích</button>
+    </div>
+    <div id="w1-ans2" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: B</strong>
+        <p><strong>Phân tích cặn kẽ:</strong></p>
+        <ul>
+          <li>(1) <code>Mã số sinh viên</code>: Dù lưu bằng số nhưng là mã định danh, không có ý nghĩa cộng trừ &rarr; Phân loại danh nghĩa (Nominal).</li>
+          <li>(2) <code>Năm học</code>: Có thứ tự tự nhiên (Năm 1 &lt; Năm 2 &lt; Năm 3 &lt; Năm 4) &rarr; Phân loại thứ bậc (Ordinal).</li>
+          <li>(3) <code>Điểm GPA</code>: Đo lường mức độ học tập trên thang liên tục (3.15, 3.82,...) &rarr; Biến số liên tục (Continuous).</li>
+          <li>(4) <code>Số tín chỉ tích lũy</code>: Nhận giá trị đếm nguyên không âm ($0, 15, 32,\dots$) &rarr; Biến số rời rạc (Discrete).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<template id="tpl-buoi-2">
+<header>
+  <span class="k">Tuần 02</span>
+  <h1>Tóm Tắt Dữ Liệu Một Biến (Thống Kê Mô Tả)</h1>
+  <p class="mut">Hình dạng phân phối (lệch phải, lệch trái), Mean vs. Median, phương sai $s^2$, độ lệch chuẩn $s$, biểu đồ hộp Boxplot và quy tắc $1.5 \times \text{IQR}$.</p>
+</header>
+
+<div class="card c0" id="w2-sec1">
+  <h2>1. Hình Dạng Phân Phối Dữ Liệu (Distribution Shape)</h2>
+  <div class="bridge">
+    Khi nhìn vào một biểu đồ tần số (Histogram), điều đầu tiên người làm thống kê cần nhận diện không phải là con số cụ thể, mà là <strong>hình dạng phân phối</strong>. Hình dạng sẽ quyết định phương pháp tính toán nào là đúng đắn và công bằng nhất.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Hai Thuộc Tính Nhận Dạng Hình Dạng Phân Phối</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c1);margin:0 0 8px">1. SỐ ĐỈNH (Modality)</h4>
+        <ul>
+          <li><strong>Đơn đỉnh (Unimodal):</strong> Đồ thị chỉ có 1 đỉnh duy nhất (ví dụ: chiều cao, điểm thi chuẩn).</li>
+          <li><strong>Song đỉnh (Bimodal):</strong> Đồ thị có 2 đỉnh tách biệt &rarr; Dấu hiệu dữ liệu gồm hai nhóm khác nhau bị gộp chung (ví dụ: thời gian đi làm gồm nhóm đi xe bus và nhóm đi xe máy).</li>
+          <li><strong>Đều (Uniform):</strong> Các khoảng có tần số xấp xỉ ngang nhau (ví dụ: xúc xắc 6 mặt).</li>
+        </ul>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c4);margin:0 0 8px">2. ĐỘ LỆCH (Skewness)</h4>
+        <ul>
+          <li><strong>Đối xứng (Symmetric):</strong> Nửa trái và nửa phải cân bằng như tấm gương soi.</li>
+          <li><strong>Lệch phải (Right-skewed / Lệch dương):</strong> Đuôi kéo dài sang bên phải (chiều giá trị lớn). Đa số dữ liệu tập trung ở bên trái.</li>
+          <li><strong>Lệch trái (Left-skewed / Lệch âm):</strong> Đuôi kéo dài sang bên trái (chiều giá trị bé). Đa số dữ liệu tập trung ở bên phải.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="box analogy">
+    <strong>💡 Mẹo nhớ chiều lệch siêu dễ:</strong>
+    <em>"Đuôi dài về phía nào thì gọi là lệch về phía đó!"</em>
+    <ul>
+      <li><strong>Thu nhập dân cư:</strong> Đa số người có thu nhập từ 5–15 triệu, nhưng có một vài tỷ phú thu nhập hàng trăm tỷ &rarr; Đuôi kéo dài sang bên phải &rarr; <strong>Lệch phải (Right-skewed)</strong>.</li>
+      <li><strong>Tuổi thọ tử vong:</strong> Đa số người qua đời ở độ tuổi 70–90, số ít người mất sớm vì tai nạn ở tuổi 10–20 &rarr; Đuôi kéo dài sang bên trái &rarr; <strong>Lệch trái (Left-skewed)</strong>.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card c1" id="w2-sec2">
+  <h2>2. Đo Lường Xu Hướng Trung Tâm: Mean vs. Median vs. Mode</h2>
+  <div class="bridge">
+    Làm sao để đại diện cho cả một tập hợp dữ liệu bằng một con số duy nhất? Ta có 3 công cụ kinh điển, nhưng mỗi công cụ có một "tính cách" hoàn toàn khác nhau.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Bảng So Sánh 3 Đại Lượng Trung Tâm (Trọng Tâm Thi)</h3>
+    <table class="tw">
+      <thead>
+        <tr>
+          <th>Đại lượng</th>
+          <th>Công thức &amp; Bản chất</th>
+          <th>Ưu điểm &amp; Nhược điểm</th>
+          <th>Tính bền vững (Robustness)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Trung bình (Mean) $\bar{x}$</strong></td>
+          <td>$\bar{x} = \dfrac{1}{n} \sum_{i=1}^n x_i$<br>Bản chất: <strong>Trọng tâm vật lý</strong> của dữ liệu. Tổng độ lệch quanh trung bình luôn triệt tiêu: $\sum (x_i - \bar{x}) = 0$.</td>
+          <td>Tận dụng thông tin của mọi điểm dữ liệu. Nhưng <strong>cực kỳ nhạy cảm với giá trị ngoại lai (outliers)</strong> và phân phối lệch.</td>
+          <td><span class="no">KHÔNG BỀN VỮNG</span><br>(Chỉ cần 1 tỷ phú bước vào phòng, lương trung bình nhảy vọt).</td>
+        </tr>
+        <tr>
+          <td><strong>Trung vị (Median) $M$</strong></td>
+          <td>Giá trị nằm chính giữa sau khi đã sắp xếp dãy số theo thứ tự tăng dần.<br>Nếu $n$ lẻ: lấy số ở vị trí $\frac{n+1}{2}$.<br>Nếu $n$ chẵn: lấy trung bình cộng của 2 số giữa.</td>
+          <td>Chia đôi tập dữ liệu: 50% số quan sát nhỏ hơn hoặc bằng nó, 50% lớn hơn nó.</td>
+          <td><span class="ok">RẤT BỀN VỮNG (ROBUST)</span><br>(Dù người giàu nhất có giàu lên gấp 1000 lần, trung vị vẫn giữ nguyên).</td>
+        </tr>
+        <tr>
+          <td><strong>Yếu vị (Mode / Mốt)</strong></td>
+          <td>Giá trị có tần số xuất hiện nhiều lần nhất trong tập dữ liệu.</td>
+          <td>Dùng tốt cho cả biến phân loại (ví dụ: cỡ áo bán chạy nhất). Một tập dữ liệu có thể không có mốt hoặc có nhiều mốt.</td>
+          <td>Ít dùng cho dữ liệu số liên tục vì các giá trị đo thường không trùng nhau từng chữ số thập phân.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ MỐI QUAN HỆ VÀNG GIỮA MEAN VÀ MEDIAN (CÂU HỎI THI KINH ĐIỂN):</strong>
+    <ul>
+      <li><strong>Phân phối đối xứng:</strong> $\text{Mean} \approx \text{Median} \approx \text{Mode}$.</li>
+      <li><strong>Phân phối lệch phải (Right-skewed):</strong> Các giá trị cực lớn ở đuôi phải kéo mạnh giá trị trung bình về phía nó &rarr; $\mathbf{\text{Mean} > \text{Median}}$.</li>
+      <li><strong>Phân phối lệch trái (Left-skewed):</strong> Các giá trị cực nhỏ ở đuôi trái kéo mạnh giá trị trung bình xuống &rarr; $\mathbf{\text{Mean} < \text{Median}}$.</li>
+    </ul>
+    <em>Bẫy trắc nghiệm:</em> Đề bài cho biết lương trung vị một công ty là 12 triệu, nhưng lương trung bình là 25 triệu. Hỏi phân phối lương có dạng gì? &rarr; Đáp án ngay: <strong>Lệch phải (Right-skewed)</strong>!
+  </div>
+</div>
+
+<div class="card c2" id="w2-sec3">
+  <h2>3. Đo Lường Độ Phân Tán &amp; Quy Tắc Hộp $1.5 \times \text{IQR}$</h2>
+  <div class="bridge">
+    Hai lớp học cùng có điểm trung bình là 7.0, nhưng một lớp toàn điểm 6.5 đến 7.5, lớp kia có người 0 điểm và người 10 điểm. Trung tâm giống nhau, nhưng <strong>độ phân tán (sự biến động)</strong> hoàn toàn khác nhau!
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Các Thước Đo Độ Phân Tán Bắt Buộc Phải Nhớ</h3>
+    <ol>
+      <li>
+        <strong>Phương sai mẫu (Sample Variance) $s^2$:</strong>
+        <div class="f">$$s^2 = \frac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})^2$$</div>
+        <em>Tại sao chia cho $n-1$ mà không phải $n$?</em> Vì ta đã dùng trung bình mẫu $\bar{x}$ (vốn đã tính từ $n$ quan sát) làm điểm đối chiếu, khiến tập dữ liệu mất đi 1 bậc tự do (Degrees of Freedom). Chia cho $n-1$ (hiệu chỉnh Bessel) giúp $s^2$ trở thành ước lượng <strong>không chệch (unbiased)</strong> cho phương sai $\sigma^2$ của cả quần thể!
+      </li>
+      <li>
+        <strong>Độ lệch chuẩn mẫu (Standard Deviation) $s$:</strong>
+        <div class="f">$$s = \sqrt{s^2}$$</div>
+        Đưa mức độ dao động về <strong>cùng đơn vị đo</strong> với biến ban đầu (ví dụ: nếu $x$ đo bằng mét, $s^2$ là $\text{m}^2$ khó hình dung, thì $s$ là mét). $s \ge 0$, và $s = 0$ khi và chỉ khi mọi quan sát đều bằng nhau chằn chặn.
+      </li>
+      <li>
+        <strong>Tứ phân vị &amp; Khoảng tứ phân vị (Interquartile Range - IQR):</strong>
+        <ul>
+          <li>$Q_1$ (Tứ phân vị thứ nhất): Điểm cắt 25% dữ liệu dưới.</li>
+          <li>$Q_2$ (Tứ phân vị thứ hai): Chính là <strong>Trung vị (Median)</strong> (50%).</li>
+          <li>$Q_3$ (Tứ phân vị thứ ba): Điểm cắt 75% dữ liệu dưới (tức 25% dữ liệu trên).</li>
+          <li><strong>Khoảng tứ phân vị:</strong> $\mathbf{\text{IQR} = Q_3 - Q_1}$. Đại diện cho độ phân tán của 50% dữ liệu ở khu vực trung tâm, cực kỳ bền vững trước các giá trị ngoại lai!</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ QUY TẮC $1.5 \times \text{IQR}$ ĐỂ PHÁT HIỆN GIÁ TRỊ NGOẠI LAI (OUTLIERS):</strong>
+    Trên biểu đồ hộp (Boxplot), một quan sát $x$ bị coi là <em>ngoại lai tiềm năng</em> nếu rơi ra ngoài khoảng hai "hàng rào" (fences):
+    <div class="f">
+      $$\text{Hàng rào dưới} = Q_1 - 1.5 \times \text{IQR}$$
+      $$\text{Hàng rào trên} = Q_3 + 1.5 \times \text{IQR}$$
+    </div>
+    Râu của biểu đồ hộp (Whiskers) chỉ kéo dài tới điểm dữ liệu thực tế xa nhất <em>vẫn còn nằm bên trong</em> hai hàng rào này. Mọi điểm nằm ngoài hàng rào đều được vẽ riêng thành các dấu chấm tròn rời rạc (outliers).
+  </div>
+
+  <h3>3.1 Tác động của Biến Đổi Tuyến Tính $Y = aX + b$</h3>
+  <div class="key">
+    Nếu nhân mọi quan sát với $a$ rồi cộng thêm hằng số $b$:
+    <ul>
+      <li><strong>Trung tâm (Mean, Median):</strong> Bị tịnh tiến và co giãn hoàn toàn: $\bar{y} = a\bar{x} + b$, $M_y = a M_x + b$.</li>
+      <li><strong>Độ phân tán (SD, IQR):</strong> <em>Không bị ảnh hưởng bởi phép cộng $b$</em> (cộng thêm chỉ trượt vị trí, độ rộng giữ nguyên!), chỉ bị nhân với giá trị tuyệt đối $|a|$:
+        <div class="f">$$s_Y = |a| \cdot s_X \quad \text{và} \quad \text{IQR}_Y = |a| \cdot \text{IQR}_X$$</div>
+        Phương sai nhân với $a^2$: $\mathbf{s_Y^2 = a^2 s_X^2}$.
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="card c3" id="w2-sec4">
+  <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 2)</h2>
+
+  <!-- Câu 1 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 1 (Tính toán 5 số tóm tắt &amp; Outlier):</div>
+    <p>Cho dãy số liệu điểm kiểm tra của 9 sinh viên: $3, 5, 6, 7, 8, 8, 9, 10, 19$. Hãy xác định Trung vị, $Q_1$, $Q_3$, IQR và chỉ ra giá trị nào là ngoại lai theo quy tắc $1.5 \times \text{IQR}$.</p>
+    <ul>
+      <li>A. Median = 7; $Q_1 = 5.5$; $Q_3 = 8.5$; $\text{IQR} = 3$; Không có ngoại lai.</li>
+      <li>B. Median = 8; $Q_1 = 5.5$; $Q_3 = 9.5$; $\text{IQR} = 4$; Giá trị 19 là ngoại lai.</li>
+      <li>C. Median = 8; $Q_1 = 5.5$; $Q_3 = 8.5$; $\text{IQR} = 3$; Giá trị 19 là ngoại lai.</li>
+      <li>D. Median = 8; $Q_1 = 6$; $Q_3 = 9$; $\text{IQR} = 3$; Không có ngoại lai.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w2-ans1')">Xem Lời Giải Chi Tiết Từng Bước</button>
+    </div>
+    <div id="w2-ans1" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: C</strong>
+        <p><strong>Các bước giải bài bản:</strong></p>
+        <ol>
+          <li>Dãy đã sắp xếp ($n=9$ phần tử): $3, 5, 6, 7, \mathbf{8}, 8, 9, 10, 19$.</li>
+          <li><strong>Trung vị ($Q_2$):</strong> Là phần tử ở vị trí chính giữa (vị trí thứ 5) &rarr; $\mathbf{Q_2 = 8}$.</li>
+          <li><strong>Tìm $Q_1$ và $Q_3$:</strong>
+            <ul>
+              <li>Nửa dưới (bỏ số 8 ở giữa đi): $\{3, 5, 6, 7\}$. Trung vị của nửa dưới là trung bình cộng của 5 và 6 &rarr; $Q_1 = \frac{5 + 6}{2} = \mathbf{5.5}$.</li>
+              <li>Nửa trên: $\{8, 9, 10, 19\}$. Trung vị của nửa trên là trung bình cộng của 8 và 9 &rarr; $Q_3 = \frac{8 + 9}{2} = \mathbf{8.5}$.</li>
+            </ul>
+          </li>
+          <li><strong>Khoảng tứ phân vị:</strong> $\text{IQR} = Q_3 - Q_1 = 8.5 - 5.5 = \mathbf{3}$.</li>
+          <li><strong>Kiểm tra ngoại lai:</strong>
+            <ul>
+              <li>Hàng rào trên: $Q_3 + 1.5 \times \text{IQR} = 8.5 + 1.5 \times 3 = 8.5 + 4.5 = \mathbf{13.0}$.</li>
+              <li>Hàng rào dưới: $Q_1 - 1.5 \times \text{IQR} = 5.5 - 4.5 = \mathbf{1.0}$.</li>
+            </ul>
+            Vì $19 > 13.0$, số 19 rơi ra ngoài hàng rào trên &rarr; <strong>19 là giá trị ngoại lai (Outlier)</strong>!
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Câu 2 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 2 (Biến đổi tuyến tính):</div>
+    <p>Một tập dữ liệu nhiệt độ đo bằng độ Celsius ($X$) có nhiệt độ trung bình $\bar{x} = 20^\circ\text{C}$ và độ lệch chuẩn $s_X = 5^\circ\text{C}$. Nếu đổi toàn bộ dữ liệu sang độ Fahrenheit ($Y$) theo công thức $Y = 1.8X + 32$, thì nhiệt độ trung bình $\bar{y}$ và độ lệch chuẩn $s_Y$ mới lần lượt là:</p>
+    <ul>
+      <li>A. $\bar{y} = 68^\circ\text{F}$ và $s_Y = 41^\circ\text{F}$.</li>
+      <li>B. $\bar{y} = 68^\circ\text{F}$ và $s_Y = 9^\circ\text{F}$.</li>
+      <li>C. $\bar{y} = 36^\circ\text{F}$ và $s_Y = 9^\circ\text{F}$.</li>
+      <li>D. $\bar{y} = 68^\circ\text{F}$ và $s_Y = 25^\circ\text{F}$.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w2-ans2')">Xem Lời Giải &amp; Phân Tích Bẫy</button>
+    </div>
+    <div id="w2-ans2" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: B</strong>
+        <p><strong>Giải thích chi tiết:</strong></p>
+        <ul>
+          <li>Trung bình mới: $\bar{y} = 1.8 \cdot \bar{x} + 32 = 1.8 \cdot 20 + 32 = 36 + 32 = \mathbf{68^\circ\text{F}}$.</li>
+          <li>Độ lệch chuẩn mới: <strong>CẢNH BÁO BẪY:</strong> Phép cộng hằng số $+32$ KHÔNG làm thay đổi độ phân tán! Chỉ nhân hệ số co giãn $1.8$:<br>
+          $s_Y = |1.8| \cdot s_X = 1.8 \cdot 5 = \mathbf{9^\circ\text{F}}$. (Rất nhiều sinh viên lấy $1.8 \cdot 5 + 32 = 41$ là hoàn toàn sai lầm!).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<template id="tpl-buoi-3">
+<header>
+  <span class="k">Tuần 03</span>
+  <h1>Tóm Tắt Dữ Liệu Hai Biến &amp; Ngữ Pháp Đồ Họa</h1>
+  <p class="mut">Ngữ pháp đồ họa (Data, Aes, Geom, Facet), Bảng tiếp liên 2 chiều, phân phối biên vs. có điều kiện và Nghịch lý Simpson.</p>
+</header>
+
+<div class="card c0" id="w3-sec1">
+  <h2>1. Ngữ Pháp Đồ Họa (Grammar of Graphics)</h2>
+  <div class="bridge">
+    Thay vì học vẹt từng loại biểu đồ rời rạc, khoa học dữ liệu hiện đại coi biểu đồ như một <strong>ngôn ngữ có ngữ pháp</strong> (nền tảng của thư viện <code>ggplot2</code> trong R và <code>seaborn / plotnine</code> trong Python). Khi nắm vững ngữ pháp, bạn có thể tạo ra bất kỳ biểu đồ trực quan nào!
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Bốn Lớp Cốt Lõi Của Ngữ Pháp Đồ Họa</h3>
+    <ol>
+      <li><strong>Dữ liệu (Data):</strong> Bảng dữ liệu đầu vào dạng DataFrame (mỗi hàng là một đơn vị quan sát, mỗi cột là một biến).</li>
+      <li><strong>Ánh xạ thẩm mỹ (Aesthetic Mappings - <code>aes</code>):</strong> Quyết định biến nào trong bảng dữ liệu sẽ điều khiển yếu tố thị giác nào:
+        <ul>
+          <li>Vị trí trục hoành <code>x</code>, trục tung <code>y</code>.</li>
+          <li>Màu sắc (<code>color</code> viền / <code>fill</code> ruột).</li>
+          <li>Kích thước (<code>size</code>), Độ trong suốt (<code>alpha</code>), Hình dạng điểm (<code>shape</code>).</li>
+        </ul>
+      </li>
+      <li><strong>Dạng hình học (Geometries - <code>geom</code>):</strong> Dấu vết vật lý được vẽ lên màn hình để biểu diễn quan sát:
+        <ul>
+          <li><code>geom_point</code>: Biểu đồ phân tán (Scatter plot) cho 2 biến số.</li>
+          <li><code>geom_histogram / geom_density</code>: Biểu diễn phân phối của 1 biến số.</li>
+          <li><code>geom_bar / geom_col</code>: Biểu đồ cột cho biến phân loại.</li>
+          <li><code>geom_boxplot</code>: Biểu đồ hộp so sánh biến số qua các nhóm phân loại.</li>
+        </ul>
+      </li>
+      <li><strong>Phân nhóm / Chia lưới (Facets):</strong> Tách đồ thị thành nhiều ô nhỏ kề nhau theo giá trị của một biến phân loại (ví dụ: chia thành 3 ô cho 3 loài chim cánh cụt).</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card c1" id="w3-sec2">
+  <h2>2. Bảng Tiếp Liên (Contingency Table) &amp; Điều Kiện Hóa</h2>
+  <div class="bridge">
+    Khi muốn tìm hiểu mối liên hệ giữa <strong>hai biến phân loại</strong> (ví dụ: <code>Giới tính</code> và <code>Tình trạng việc làm</code>, hoặc <code>Loại email</code> và <code>Có chứa từ 'spam'</code>), ta dùng bảng tiếp liên 2 chiều.
+  </div>
+
+  <div class="box analogy">
+    <strong>💡 "Một ô, Ba mẫu số, Ba câu hỏi hoàn toàn khác nhau":</strong>
+    Xét ô giao giữa hàng <em>Nữ</em> và cột <em>Đã có việc</em> có số lượng $20$ người, tổng số nữ là $40$, tổng số người có việc là $50$, tổng toàn trường là $100$.
+    <ul>
+      <li><strong>Mẫu số 100 (Tỉ lệ đồng thời):</strong> $20/100 = 20\%$ &rarr; Trả lời: <em>"Trong toàn trường, tỉ lệ sinh viên vừa là Nữ vừa Đã có việc là bao nhiêu?"</em></li>
+      <li><strong>Mẫu số 40 (Tỉ lệ có điều kiện theo Hàng):</strong> $20/40 = 50\%$ &rarr; Trả lời: <em>"BÊN TRONG nhóm Nữ, tỉ lệ đã có việc là bao nhiêu?"</em></li>
+      <li><strong>Mẫu số 50 (Tỉ lệ có điều kiện theo Cột):</strong> $20/50 = 40\%$ &rarr; Trả lời: <em>"BÊN TRONG nhóm Đã có việc, tỉ lệ là Nữ là bao nhiêu?"</em></li>
+    </ul>
+    <strong>Lời dặn của giảng viên:</strong> Luôn đọc kỹ câu hỏi thi xem <em>"nhóm làm chuẩn (mẫu số)"</em> là ai trước khi bấm máy tính!
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Phân Phối Biên vs. Phân Phối Có Điều Kiện</h3>
+    <ul>
+      <li><strong>Phân phối biên (Marginal distribution):</strong> Phân phối của riêng một biến ở cột Tổng (lề bảng), hoàn toàn phớt lờ biến kia.</li>
+      <li><strong>Phân phối có điều kiện (Conditional distribution):</strong> Phân phối của một biến khi ta <strong>cố định</strong> một nhóm cụ thể của biến kia (xem từng hàng hoặc từng cột riêng rẽ).</li>
+      <li><strong>Khi nào hai biến KHÔNG CÓ MỐI LIÊN HỆ (Độc lập)?</strong> Khi phân phối có điều kiện của biến này <em>giống hệt nhau</em> ở mọi mức của biến kia! (Ví dụ: tỷ lệ có việc của Nam là 50% và Nữ cũng là 50% &rarr; Giới tính không liên quan đến việc làm).</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card c2" id="w3-sec3">
+  <h2>3. Nghịch Lý Simpson (Simpson's Paradox)</h2>
+  <div class="bridge">
+    Nghịch lý Simpson là một trong những hiện tượng kỳ lạ và cuốn hút nhất của khoa học dữ liệu, chứng minh rằng: <strong>Một cái nhìn hời hợt gộp chung dữ liệu có thể dẫn tới kết luận hoàn toàn trái ngược với sự thật bên trong!</strong>
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Định Nghĩa &amp; Trực Giác Bản Chất</h3>
+    <p><strong>Nghịch lý Simpson</strong> xảy ra khi một xu hướng hoặc mối liên hệ xuất hiện ở nhiều nhóm dữ liệu con, nhưng lại <strong>bị đảo ngược hoàn toàn</strong> khi gộp các nhóm con đó lại với nhau!</p>
+    <p>Nguyên nhân là do sự tồn tại của một <strong>biến gây nhiễu (Confounder / Lurking variable)</strong> có liên quan mạnh mẽ tới cả hai biến đang nghiên cứu và phân bố không đồng đều giữa các nhóm.</p>
+  </div>
+
+  <div class="box analogy">
+    <strong>💡 Ví dụ kinh điển: Tuyển sinh tại UC Berkeley (1973)</strong>
+    <p>Nhìn vào số liệu gộp chung toàn trường: Tỷ lệ trúng tuyển của Nam là <strong>44%</strong>, trong khi của Nữ chỉ là <strong>35%</strong>. Dư luận dậy sóng vì nghi vấn trường thiên vị nam giới.</p>
+    <p>Tuy nhiên, khi các nhà thống kê tách dữ liệu ra phân tích <strong>bên trong từng khoa (điều kiện hóa theo khoa)</strong>:</p>
+    <ul>
+      <li>Ở hầu hết các khoa, tỷ lệ trúng tuyển của Nữ thậm chí còn <strong>cao hơn hoặc bằng</strong> Nam!</li>
+      <li><strong>Tại sao gộp lại Nữ lại thấp hơn?</strong> Vì các ứng viên nữ có xu hướng nộp hồ sơ nhiều vào các ngành Khoa học Xã hội và Nhân văn (những khoa có tỷ lệ chọi cực kỳ khốc liệt, tỷ lệ trúng tuyển chung chỉ 5–10%). Ngược lại, nam giới nộp nhiều vào các khoa Kỹ thuật (tỷ lệ trúng tuyển chung rất cao, khoảng 60–80%).</li>
+      <li><em>Biến gây nhiễu ở đây chính là: <strong>Khoa nộp hồ sơ</strong>!</em></li>
+    </ul>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ BÀI HỌC CHO PHÂN TÍCH DỮ LIỆU:</strong>
+    Không bao giờ vội vàng đưa ra quyết định chính sách hay khẳng định nhân quả chỉ dựa trên số liệu gộp bề mặt. Luôn tự hỏi: <em>"Liệu có biến nhóm con nào đang chi phối kết quả này không?"</em>
+  </div>
+</div>
+
+<div class="card c3" id="w3-sec4">
+  <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 3)</h2>
+
+  <!-- Câu 1 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 1 (Đọc bảng tiếp liên &amp; Phân phối có điều kiện):</div>
+    <p>Khảo sát 200 khách hàng vay vốn tại một ngân hàng về <code>Hình thức sở hữu nhà</code> và <code>Tình trạng trả nợ</code> thu được bảng tiếp liên sau:</p>
+    <table class="tw" style="margin:10px 0">
+      <thead>
+        <tr><th>Nhà ở \ Nợ</th><th>Đúng hạn</th><th>Quá hạn</th><th>Tổng</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Sở hữu (Own)</td><td>70</td><td>10</td><td>80</td></tr>
+        <tr><td>Thuê (Rent)</td><td>90</td><td>30</td><td>120</td></tr>
+        <tr><td><strong>Tổng</strong></td><td><strong>160</strong></td><td><strong>40</strong></td><td><strong>200</strong></td></tr>
+      </tbody>
+    </table>
+    <p>Tính: (1) Tỉ lệ khách hàng trả nợ đúng hạn trong nhóm khách hàng đang đi thuê nhà; và (2) Tỉ lệ khách hàng sở hữu nhà trong nhóm những khách hàng bị quá hạn nợ.</p>
+    <ul>
+      <li>A. (1) 75.0%; (2) 25.0%.</li>
+      <li>B. (1) 45.0%; (2) 5.0%.</li>
+      <li>C. (1) 56.25%; (2) 25.0%.</li>
+      <li>D. (1) 75.0%; (2) 12.5%.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w3-ans1')">Xem Lời Giải &amp; Mẹo Bấm Máy</button>
+    </div>
+    <div id="w3-ans1" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: A</strong>
+        <p><strong>Phân tích mẫu số từng câu:</strong></p>
+        <ol>
+          <li>Câu (1): <em>"trong nhóm khách hàng đang đi thuê nhà"</em> &rarr; Điều kiện là hàng <strong>Thuê (Rent)</strong>, mẫu số là tổng hàng Thuê: $120$. Số người trả đúng hạn là $90$.<br>
+          &rarr; Tỉ lệ: $\dfrac{90}{120} = 0.75 = \mathbf{75.0\%}$.</li>
+          <li>Câu (2): <em>"trong nhóm những khách hàng bị quá hạn nợ"</em> &rarr; Điều kiện là cột <strong>Quá hạn</strong>, mẫu số là tổng cột Quá hạn: $40$. Số người sở hữu nhà trong nhóm này là $10$.<br>
+          &rarr; Tỉ lệ: $\dfrac{10}{40} = 0.25 = \mathbf{25.0\%}$.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Câu 2 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 2 (Bản chất Nghịch lý Simpson):</div>
+    <p>Khi nào một nhà phân tích dữ liệu cần nghi ngờ có sự xuất hiện của Nghịch lý Simpson?</p>
+    <ul>
+      <li>A. Khi hệ số tương quan Pearson giữa hai biến số bằng chính xác 0.</li>
+      <li>B. Khi mối liên hệ giữa hai biến khi phân tích gộp toàn bộ dữ liệu có chiều hướng ngược lại so với mối liên hệ khi phân tích riêng trong từng phân nhóm con.</li>
+      <li>C. Khi dữ liệu có quá nhiều giá trị ngoại lai (outliers) vượt qua hàng rào $3 \times \text{IQR}$.</li>
+      <li>D. Khi phương sai mẫu lớn hơn gấp 2 lần giá trị trung bình mẫu.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w3-ans2')">Xem Lời Giải &amp; Phân Tích</button>
+    </div>
+    <div id="w3-ans2" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: B</strong>
+        <p><strong>Giải thích:</strong> Đáp án B là định nghĩa kinh điển của Nghịch lý Simpson: xu hướng đảo chiều khi điều kiện hóa theo biến thứ ba (biến gây nhiễu).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<template id="tpl-buoi-4">
+<header>
+  <span class="k">Tuần 04</span>
+  <h1>Tương Quan Pearson &amp; Mô Hình Hồi Quy Tuyến Tính OLS</h1>
+  <p class="mut">Hệ số tương quan $r$, phương trình hồi quy $\hat{y} = b_0 + b_1 x$, phần dư $e_i$, hệ số xác định $R^2$ và mô phỏng OLS tương tác.</p>
+</header>
+
+<div class="card c0" id="w4-sec1">
+  <h2>1. Hệ Số Tương Quan Tuyến Tính Pearson ($r$)</h2>
+  <div class="bridge">
+    Khi hai biến số cùng tăng hoặc cùng giảm, làm sao để lượng hóa mức độ gắn kết giữa chúng bằng một con số chuẩn mực từ $-1$ đến $+1$? Đó chính là <strong>hệ số tương quan Pearson $r$</strong>.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Công Thức &amp; Bản Chất Của Pearson $r$</h3>
+    <div class="f">
+      $$r = \frac{1}{n-1} \sum_{i=1}^n \left(\frac{x_i - \bar{x}}{s_x}\right)\left(\frac{y_i - \bar{y}}{s_y}\right) = \frac{1}{n-1}\sum_{i=1}^n z_{x,i} \cdot z_{y,i} = \frac{S_{xy}}{\sqrt{S_{xx} S_{yy}}}$$
+    </div>
+    <p><strong>Trực giác cốt lõi:</strong> $r$ chính là trung bình cộng của <em>tích hai điểm số chuẩn hóa ($z_x \cdot z_y$)</em>.
+    Nếu $x$ lớn hơn trung bình ($z_x > 0$) mà $y$ cũng lớn hơn trung bình ($z_y > 0$), tích của chúng mang dấu dương. Khi đa số các điểm cùng nằm ở góc phần tư cùng dấu, tổng sẽ dương và $r > 0$.</p>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ NĂM TÍNH CHẤT BẮT BUỘC PHẢI NHỚ CỦA $r$ (THI RẤT HAY HỎI):</strong>
+    <ol>
+      <li><strong>Giới hạn:</strong> $-1 \le r \le 1$. $r = +1$ hoặc $r = -1$ khi và chỉ khi <em>mọi điểm dữ liệu nằm chính xác tuyệt đối trên một đường thẳng</em>.</li>
+      <li><strong>Không có đơn vị đo:</strong> Vì được tính từ các biến đã chuẩn hóa $z$, $r$ là số thuần túy không mang đơn vị.</li>
+      <li><strong>Bất biến trước đổi đơn vị tuyến tính:</strong> Nếu chuyển $x' = ax + b$ (với $a > 0$), hệ số tương quan $r(x', y) = r(x, y)$ không hề đổi! Chỉ khi $a < 0$ thì $r$ mới đổi dấu.</li>
+      <li><strong>Chỉ đo quan hệ TUYẾN TÍNH:</strong> $r = 0$ chỉ có nghĩa là <em>không có liên hệ đường thẳng</em>, KHÔNG có nghĩa là hai biến độc lập! (Ví dụ: quan hệ parabol hoàn hảo $y = x^2$ đối xứng qua 0 sẽ cho $r \approx 0$).</li>
+      <li><strong>Nhạy cảm với ngoại lai (Outliers):</strong> Chỉ cần một điểm đơn lẻ nằm xa cụm dữ liệu có thể bẻ cong hoặc phá hủy hoàn toàn giá trị của $r$.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card c1" id="w4-sec2">
+  <h2>2. Mô Hình Hồi Quy Tuyến Tính Đơn Biến OLS (Ordinary Least Squares)</h2>
+  <div class="bridge">
+    Nếu $r$ chỉ cho biết hai biến gắn bó mạnh hay yếu, thì <strong>phương trình hồi quy tuyến tính</strong> cho phép chúng ta <em>dự đoán giá trị của $y$ khi biết trước $x$</em>: $\hat{y} = b_0 + b_1 x$.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Công Thức Vàng Của Đường Hồi Quy Tuyến Tính OLS</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c1);margin:0 0 8px">1. HỆ SỐ GÓC (Slope) $b_1$</h4>
+        <div class="f">$$b_1 = r \cdot \frac{s_y}{s_x} = \frac{S_{xy}}{S_{xx}}$$</div>
+        <p><strong>Ý nghĩa kinh tế/kỹ thuật:</strong> Khi $x$ tăng thêm 1 đơn vị, giá trị dự báo $\hat{y}$ sẽ thay đổi trung bình $b_1$ đơn vị.<br>
+        <em>Góc nhìn chuẩn hóa:</em> Khi $x$ tăng thêm 1 độ lệch chuẩn ($s_x$), $\hat{y}$ thay đổi $r$ lần độ lệch chuẩn của $y$ ($s_y$).</p>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c4);margin:0 0 8px">2. HỆ SỐ CHẶN (Intercept) $b_0$</h4>
+        <div class="f">$$b_0 = \bar{y} - b_1 \bar{x}$$</div>
+        <p><strong>ĐIỀU CỐT TỬ:</strong> Đường hồi quy OLS <strong>luôn luôn đi qua điểm trọng tâm $(\bar{x}, \bar{y})$</strong>!<br>
+        Hệ số chặn $b_0$ là giá trị dự báo của $y$ khi $x = 0$. (Lưu ý: nếu $x = 0$ vô lý trong thực tế, $b_0$ chỉ có ý nghĩa toán học để neo đường thẳng, không có ý nghĩa thực tiễn).</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>2.1 Phần dư (Residuals) &amp; Hệ số xác định $R^2$</h3>
+  <div class="key">
+    <ul>
+      <li><strong>Phần dư của quan sát thứ $i$:</strong> Khoảng cách theo phương thẳng đứng từ điểm thực tế đến đường dự báo:
+        <div class="f">$$e_i = y_i - \hat{y}_i = \text{Giá trị thực tế} - \text{Giá trị dự báo}$$</div>
+      </li>
+      <li><strong>Hai đặc tính toán học của OLS:</strong>
+        <ol>
+          <li>Tổng các phần dư luôn luôn bằng 0: $\mathbf{\sum_{i=1}^n e_i = 0}$.</li>
+          <li>Phần dư không còn tương quan tuyến tính với biến giải thích: $\mathbf{\sum_{i=1}^n x_i e_i = 0}$.</li>
+        </ol>
+      </li>
+      <li><strong>Hệ số xác định (Coefficient of Determination) $R^2$:</strong>
+        Trong hồi quy đơn biến: $\mathbf{R^2 = r^2}$.
+        <br><strong>Ý nghĩa:</strong> $R^2$ đo lường <em>tỷ lệ phần trăm sự biến thiên của biến phản hồi $y$ được giải thích bởi quan hệ tuyến tính với biến $x$</em>. Ví dụ: $r = 0.8 \implies R^2 = 0.64 = 64\%$ biến thiên của $y$ do $x$ quyết định, còn lại 36% do các yếu tố ngẫu nhiên khác.
+      </li>
+    </ul>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ BẪY THI CẦN TRÁNH:</strong>
+    <ul>
+      <li><strong>Ngoại suy (Extrapolation):</strong> Dùng đường hồi quy để dự đoán giá trị của $y$ tại một điểm $x$ nằm ngoài phạm vi dữ liệu đã thu thập là cực kỳ nguy hiểm và thiếu tin cậy!</li>
+      <li><strong>Nhầm lẫn $b_1$ với $r$:</strong> $b_1$ phụ thuộc vào đơn vị đo của $x$ và $y$ (ví dụ: triệu đồng / mét vuông), còn $r$ là đại lượng vô hướng không đổi!</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card c2" id="w4-sec3">
+  <h2>3. Mô Phỏng Tương Tác: Khám Phá Đường Hồi Quy OLS &amp; Phần Dư</h2>
+  <div class="bridge">
+    Hãy thử kéo thanh trượt bên dưới để thay đổi hệ số tương quan $r$ và độ dốc của đám mây dữ liệu. Quan sát cách đường thẳng hồi quy luôn đi qua điểm trung tâm $(\bar{x}, \bar{y})$ và cách tổng bình phương phần dư thay đổi!
+  </div>
+
+  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:20px;margin:16px 0">
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:16px">
+      <div>
+        <label for="ols-r-slider" style="font-weight:700">Hệ số tương quan ($r$): </label>
+        <input type="range" id="ols-r-slider" min="-0.98" max="0.98" step="0.02" value="0.75" oninput="updateOLSSim()" style="vertical-align:middle;width:180px">
+        <span id="ols-r-val" style="font-weight:800;color:var(--c1);margin-left:8px">+0.75</span>
+      </div>
+      <div>
+        <span>$R^2 = \mathbf{r^2}$: </span>
+        <span id="ols-r2-val" style="font-weight:800;color:var(--c2)">56.25%</span>
+      </div>
+    </div>
+
+    <!-- Canvas SVG đồ họa trực quan -->
+    <div style="text-align:center">
+      <svg id="ols-svg" viewBox="0 0 500 300" style="width:100%;max-width:550px;background:rgba(0,0,0,0.25);border-radius:12px;border:1px solid rgba(255,255,255,0.1)"></svg>
+    </div>
+    <div id="ols-desc" style="font-size:14px;margin-top:10px;text-align:center;color:var(--mut)"></div>
+  </div>
+</div>
+
+<div class="card c3" id="w4-sec4">
+  <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 4)</h2>
+
+  <!-- Câu 1 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 1 (Tính toán phương trình hồi quy OLS):</div>
+    <p>Khảo sát một mẫu gồm 25 căn hộ cho thuê, ta thu được các thống kê mô tả sau:
+    <br>Diện tích căn hộ ($x$, đơn vị $\text{m}^2$): $\bar{x} = 60$, $s_x = 10$.
+    <br>Giá thuê căn hộ ($y$, đơn vị triệu đồng/tháng): $\bar{y} = 15$, $s_y = 4$.
+    <br>Hệ số tương quan giữa diện tích và giá thuê là $r = 0.75$.
+    <br>Hãy xác định phương trình hồi quy tuyến tính OLS dự báo giá thuê theo diện tích, và dự đoán giá thuê của một căn hộ rộng $80\,\text{m}^2$.</p>
+    <ul>
+      <li>A. $\hat{y} = 3.0 + 0.30x$; Dự đoán căn $80\,\text{m}^2$ có giá 27.0 triệu đồng.</li>
+      <li>B. $\hat{y} = -3.0 + 0.30x$; Dự đoán căn $80\,\text{m}^2$ có giá 21.0 triệu đồng.</li>
+      <li>C. $\hat{y} = -3.0 + 0.30x$; Dự đoán căn $80\,\text{m}^2$ có giá 24.0 triệu đồng.</li>
+      <li>D. $\hat{y} = 15 + 0.75x$; Dự đoán căn $80\,\text{m}^2$ có giá 75.0 triệu đồng.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w4-ans1')">Xem Lời Giải Từng Bước Chuẩn Mực</button>
+    </div>
+    <div id="w4-ans1" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: B</strong>
+        <p><strong>Các bước giải chi tiết:</strong></p>
+        <ol>
+          <li><strong>Tính hệ số góc $b_1$:</strong>
+            $$b_1 = r \cdot \frac{s_y}{s_x} = 0.75 \cdot \frac{4}{10} = 0.75 \cdot 0.4 = \mathbf{0.30}$$
+            <em>(Ý nghĩa: Cứ mỗi mét vuông diện tích tăng thêm, giá thuê tăng trung bình 0.3 triệu đồng = 300.000 VNĐ).</em>
+          </li>
+          <li><strong>Tính hệ số chặn $b_0$:</strong>
+            $$b_0 = \bar{y} - b_1 \bar{x} = 15 - 0.30 \cdot 60 = 15 - 18 = \mathbf{-3.0}$$
+          </li>
+          <li><strong>Phương trình hồi quy OLS:</strong>
+            $$\mathbf{\hat{y} = -3.0 + 0.30x}$$
+          </li>
+          <li><strong>Dự báo cho căn hộ $x = 80\,\text{m}^2$:</strong>
+            $$\hat{y} = -3.0 + 0.30 \cdot (80) = -3.0 + 24.0 = \mathbf{21.0\,\text{triệu đồng}}$$
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Câu 2 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 2 (Ý nghĩa của phần dư và $R^2$):</div>
+    <p>Một căn hộ trong mẫu có diện tích $x = 70\,\text{m}^2$ và giá thuê thực tế là $y = 19.5$ triệu đồng. Dựa vào phương trình hồi quy ở Câu 1 ($\hat{y} = -3.0 + 0.30x$), hãy tính phần dư của căn hộ này và giải thích ý nghĩa.</p>
+    <ul>
+      <li>A. Phần dư $e = -1.5$ triệu đồng; căn hộ này cho thuê rẻ hơn kỳ vọng của mô hình.</li>
+      <li>B. Phần dư $e = +1.5$ triệu đồng; căn hộ này cho thuê đắt hơn kỳ vọng của mô hình.</li>
+      <li>C. Phần dư $e = 0$ triệu đồng; căn hộ nằm chính xác trên đường hồi quy.</li>
+      <li>D. Phần dư $e = +18.0$ triệu đồng.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w4-ans2')">Xem Lời Giải &amp; Phân Tích</button>
+    </div>
+    <div id="w4-ans2" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: B</strong>
+        <p><strong>Giải thích chi tiết:</strong></p>
+        <ul>
+          <li>Giá thuê dự báo từ mô hình: $\hat{y} = -3.0 + 0.30 \cdot 70 = 18.0$ triệu đồng.</li>
+          <li>Phần dư: $e = y - \hat{y} = 19.5 - 18.0 = \mathbf{+1.5}$ triệu đồng.</li>
+          <li><strong>Ý nghĩa:</strong> Vì $e > 0$, giá thuê thực tế cao hơn giá trị dự đoán trung bình của các căn hộ cùng diện tích $70\,\text{m}^2$ một khoản là 1.5 triệu đồng (có thể do căn này có view đẹp hơn, nội thất xịn hơn).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<template id="tpl-buoi-5">
+<header>
+  <span class="k">Tuần 05</span>
+  <h1>Nền Tảng Xác Suất, Xác Suất Có Điều Kiện &amp; Định Lý Bayes</h1>
+  <p class="mut">Không gian mẫu $\Omega$, quy tắc cộng/nhân, phân biệt độc lập vs. xung khắc, công thức xác suất toàn phần và Định lý Bayes với xét nghiệm y tế.</p>
+</header>
+
+<div class="card c0" id="w5-sec1">
+  <h2>1. Không Gian Mẫu, Biến Cố &amp; Quy Tắc Cộng</h2>
+  <div class="bridge">
+    Xác suất là công cụ toán học dùng để định lượng <strong>sự bất định (uncertainty)</strong>. Mọi bài toán xác suất đều bắt đầu từ một phép thử ngẫu nhiên và một danh sách đầy đủ tất cả những gì có thể xảy ra.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Các Khái Niệm Nền Tảng Không Thể Bỏ Quên</h3>
+    <ul>
+      <li><strong>Không gian mẫu ($\Omega$ hoặc $S$):</strong> Tập hợp tất cả các kết quả sơ cấp có thể xảy ra của phép thử. Ví dụ: tung đồng xu 2 lần thì $\Omega = \{SS, SN, NS, NN\}$.</li>
+      <li><strong>Biến cố ($A$):</strong> Một tập con của không gian mẫu ($A \subseteq \Omega$). Biến cố xảy ra khi kết quả của phép thử thuộc về $A$.</li>
+      <li><strong>Mô hình đồng khả năng (Xác suất cổ điển):</strong> Nếu mọi kết quả trong $\Omega$ đều có cơ hội xuất hiện như nhau:
+        <div class="f">$$P(A) = \frac{|A|}{|\Omega|} = \frac{\text{Số kết quả thuận lợi cho } A}{\text{Tổng số kết quả có thể xảy ra}}$$</div>
+      </li>
+      <li><strong>Biến cố phần bù ($\overline{A}$ hoặc $A^c$):</strong> Biến cố "$A$ không xảy ra".
+        <div class="f">$$P(\overline{A}) = 1 - P(A)$$</div>
+        <em>Chiến thuật làm bài thi:</em> Khi đề bài có cụm từ <strong>"có ít nhất một..."</strong>, 99% trường hợp dùng biến cố phần bù là cách giải nhanh nhất: $P(\text{Ít nhất 1 lần xảy ra}) = 1 - P(\text{Không lần nào xảy ra})$.
+      </li>
+    </ul>
+  </div>
+
+  <h3>1.1 Quy Tắc Cộng Xác Suất</h3>
+  <div class="key">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c1);margin:0 0 8px">1. Hai biến cố Xung khắc (Rời nhau)</h4>
+        <p>Nếu $A$ và $B$ không thể cùng xảy ra ($A \cap B = \emptyset$):</p>
+        <div class="f">$$P(A \cup B) = P(A) + P(B)$$</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c4);margin:0 0 8px">2. Quy tắc cộng tổng quát</h4>
+        <p>Nếu $A$ và $B$ có thể cùng xảy ra (phần giao bị tính 2 lần):</p>
+        <div class="f">$$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card c1" id="w5-sec2">
+  <h2>2. Xác Suất Có Điều Kiện &amp; Sự Độc Lập Thống Kê</h2>
+  <div class="bridge">
+    Khi nhận thêm một thông tin mới $B$, khả năng xảy ra của $A$ thay đổi như thế nào? Đây là trái tim của việc ra quyết định dựa trên dữ liệu.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Định Nghĩa Xác Suất Có Điều Kiện &amp; Quy Tắc Nhân</h3>
+    <div class="f">
+      $$P(A \mid B) = \frac{P(A \cap B)}{P(B)} \quad (\text{với } P(B) > 0)$$
+    </div>
+    <p><strong>Trực giác hình học:</strong> Khi biến cố $B$ đã xảy ra, toàn bộ thế giới khả dĩ $\Omega$ bị <em>thu hẹp</em> lại chỉ còn đúng tập hợp $B$. Xác suất để $A$ xảy ra chính là tỷ lệ phần diện tích chung $A \cap B$ nằm bên trong $B$!</p>
+    <p><strong>Quy tắc nhân xác suất:</strong></p>
+    <div class="f">
+      $$P(A \cap B) = P(B) \cdot P(A \mid B) = P(A) \cdot P(B \mid A)$$
+    </div>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ BẪY THI CỰC LỚN: XUNG KHẮC (MUTUALLY EXCLUSIVE) $\neq$ ĐỘC LẬP (INDEPENDENT)!</strong>
+    <p>Đây là câu hỏi "bẫy rớt môn" phổ biến nhất trong các đề thi trắc nghiệm:</p>
+    <ul>
+      <li><strong>Định nghĩa Độc lập:</strong> $A$ và $B$ độc lập khi việc biết $B$ xảy ra không làm thay đổi xác suất của $A$:
+        <div class="f">$$P(A \mid B) = P(A) \iff P(A \cap B) = P(A) \cdot P(B)$$</div>
+      </li>
+      <li><strong>Xung khắc là gì?</strong> Xung khắc nghĩa là $A \cap B = \emptyset \implies P(A \cap B) = 0$.</li>
+      <li><strong>KẾT LUẬN SỐNG CÒN:</strong> Giả sử $P(A) > 0$ và $P(B) > 0$:
+        <br>Nếu $A$ và $B$ xung khắc thì $P(A \cap B) = 0$, trong khi $P(A) \cdot P(B) > 0$.
+        <br>&rarr; $P(A \cap B) \neq P(A)P(B)$.
+        <br>&rarr; <strong>Hai biến cố xung khắc với xác suất dương KHÔNG BAO GIỜ độc lập, mà ngược lại, chúng CỰC KỲ PHỤ THUỘC LẪN NHAU!</strong> (Nếu $B$ đã xảy ra thì chắc chắn $A$ không thể xảy ra!).
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="card c2" id="w5-sec3">
+  <h2>3. Công Thức Xác Suất Toàn Phần &amp; Định Lý Bayes</h2>
+  <div class="bridge">
+    Định lý Bayes cho phép chúng ta <strong>đảo ngược điều kiện</strong>: Từ xác suất thuận $P(\text{Bằng chứng} \mid \text{Nguyên nhân})$ suy ra xác suất nghịch $P(\text{Nguyên nhân} \mid \text{Bằng chứng})$.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Bộ Đôi Công Thức Vàng Trong Xác Suất</h3>
+    <ol>
+      <li>
+        <strong>Công thức Xác suất Toàn phần:</strong>
+        Cho hệ biến cố đầy đủ $\{A_1, A_2, \dots, A_k\}$ rời nhau từng đôi và phủ kín không gian mẫu ($\sum P(A_i) = 1$). Với mọi biến cố $B$:
+        <div class="f">$$P(B) = \sum_{i=1}^k P(A_i) \cdot P(B \mid A_i)$$</div>
+        <em>Ý nghĩa:</em> Muốn tính xác suất của $B$, ta chia thành các trường hợp $A_i$, tính trong từng trường hợp rồi cộng có trọng số!
+      </li>
+      <li>
+        <strong>Định lý Bayes:</strong>
+        <div class="f">$$P(A_j \mid B) = \frac{P(A_j) \cdot P(B \mid A_j)}{P(B)} = \frac{P(A_j) \cdot P(B \mid A_j)}{\sum_{i=1}^k P(A_i) \cdot P(B \mid A_i)}$$</div>
+        <ul>
+          <li>$P(A_j)$: <strong>Xác suất tiên nghiệm (Prior probability)</strong> — niềm tin ban đầu khi chưa có dữ liệu.</li>
+          <li>$P(B \mid A_j)$: <strong>Hàm hợp lý (Likelihood)</strong> — khả năng quan sát thấy bằng chứng $B$ nếu nguyên nhân $A_j$ đúng.</li>
+          <li>$P(A_j \mid B)$: <strong>Xác suất hậu nghiệm (Posterior probability)</strong> — niềm tin được cập nhật sau khi đã thấy bằng chứng $B$.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <div class="box analogy">
+    <strong>💡 Nghịch Lý Xét Nghiệm Y Tế (Tại sao dương tính vẫn chưa chắc có bệnh?):</strong>
+    <p>Giả sử một căn bệnh hiếm gặp có tỷ lệ mắc trong cộng đồng là $0.1\%$ ($1$ người trong $1000$ người).
+    Một bộ kit xét nghiệm cực tốt có:
+    <br>- <strong>Độ nhạy (Sensitivity):</strong> $99\%$ (người có bệnh xét nghiệm sẽ dương tính với xác suất $99\%$).
+    <br>- <strong>Độ đặc hiệu (Specificity):</strong> $98\%$ (người không có bệnh xét nghiệm sẽ âm tính với xác suất $98\%$, tức tỷ lệ dương tính giả là $2\%$).</p>
+    <p>Nếu bạn đi khám ngẫu nhiên và nhận kết quả <strong>Dương tính ($+$)</strong>, xác suất bạn thật sự bị bệnh là bao nhiêu? $99\%$ ư?
+    <br>&rarr; <strong>Đáp án sốc: Chỉ khoảng $4.7\%$!</strong></p>
+    <p><strong>Giải thích trực quan trên $100.000$ người:</strong>
+    <ul>
+      <li>Có $100$ người bệnh thật. Xét nghiệm bắt đúng $99$ người ($99\%$).</li>
+      <li>Có $99.900$ người khỏe mạnh. Nhưng tỷ lệ dương tính giả $2\%$ sẽ tạo ra tới: $99.900 \times 0.02 = \mathbf{1.998\text{ ca dương tính giả}}$!</li>
+      <li>Tổng số người nhận giấy báo dương tính là: $99 + 1.998 = 2.097$ người.</li>
+      <li>Trong $2.097$ người dương tính đó, số người bệnh thật chỉ là $99$ người!
+      <br>&rarr; Xác suất bệnh thật: $P(\text{Bệnh} \mid +) = \frac{99}{2.097} \approx \mathbf{4.72\%}$!</li>
+    </ul>
+    <em>Bài học:</em> Khi căn bệnh là hiếm (tỷ lệ cơ sở thấp), số ca dương tính giả từ đại đa số người khỏe mạnh sẽ áp đảo hoàn toàn số ca bệnh thật!
+  </div>
+</div>
+
+<div class="card c3" id="w5-sec4">
+  <h2>4. Mô Phỏng Tương Tác: Khám Phá Định Lý Bayes &amp; Xét Nghiệm</h2>
+  <div class="bridge">
+    Hãy tự tay điều chỉnh Tỷ lệ mắc bệnh cơ sở, Độ nhạy và Độ đặc hiệu để xem xác suất hậu nghiệm $P(\text{Bệnh} \mid +)$ biến đổi kỳ diệu như thế nào!
+  </div>
+
+  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:20px;margin:16px 0">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px">
+      <div>
+        <label for="by-prev">Tỷ lệ bệnh cơ sở ($P(\text{Bệnh})$): </label><br>
+        <input type="range" id="by-prev" min="0.001" max="0.1" step="0.001" value="0.01" oninput="updateBayesSim()" style="width:100%">
+        <span id="by-prev-val" style="font-weight:800;color:var(--c1)">1.0%</span>
+      </div>
+      <div>
+        <label for="by-sens">Độ nhạy ($P(+ \mid \text{Bệnh})$): </label><br>
+        <input type="range" id="by-sens" min="0.8" max="0.999" step="0.005" value="0.98" oninput="updateBayesSim()" style="width:100%">
+        <span id="by-sens-val" style="font-weight:800;color:var(--c2)">98.0%</span>
+      </div>
+      <div>
+        <label for="by-spec">Độ đặc hiệu ($P(- \mid \text{Khỏe})$): </label><br>
+        <input type="range" id="by-spec" min="0.8" max="0.999" step="0.005" value="0.95" oninput="updateBayesSim()" style="width:100%">
+        <span id="by-spec-val" style="font-weight:800;color:var(--c4)">95.0%</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:16px;background:rgba(0,0,0,0.3);border-radius:12px;border:1px solid rgba(255,255,255,0.1)">
+      <div style="font-size:16px;margin-bottom:8px">Xác suất người xét nghiệm dương tính thực sự mắc bệnh:</div>
+      <div id="by-result" style="font-size:32px;font-weight:800;color:var(--c3)">16.5%</div>
+      <div id="by-explain" style="margin-top:8px;font-size:14px;color:var(--mut)"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card c4" id="w5-sec5">
+  <h2>5. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 5)</h2>
+
+  <!-- Câu 1 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 1 (Xác suất toàn phần &amp; Bayes):</div>
+    <p>Một xưởng sản xuất chip bán dẫn có ba dây chuyền máy $M_1, M_2, M_3$ với tỷ lệ sản lượng lần lượt là 50%, 30%, và 20%. Tỷ lệ phế phẩm của ba máy lần lượt là 2%, 3%, và 5%. Lấy ngẫu nhiên một con chip từ kho và thấy nó là phế phẩm ($F$).
+    <br>(1) Tính xác suất để một con chip ngẫu nhiên của xưởng là phế phẩm $P(F)$;
+    <br>(2) Biết con chip bị phế phẩm, tính xác suất nó do máy $M_3$ sản xuất $P(M_3 \mid F)$.</p>
+    <ul>
+      <li>A. $P(F) = 2.9\%$; $P(M_3 \mid F) \approx 34.48\%$.</li>
+      <li>B. $P(F) = 3.33\%$; $P(M_3 \mid F) \approx 20.0\%$.</li>
+      <li>C. $P(F) = 2.9\%$; $P(M_3 \mid F) \approx 10.0\%$.</li>
+      <li>D. $P(F) = 5.0\%$; $P(M_3 \mid F) \approx 50.0\%$.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w5-ans1')">Xem Lời Giải Từng Bước</button>
+    </div>
+    <div id="w5-ans1" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: A</strong>
+        <p><strong>Các bước giải chuẩn chỉ:</strong></p>
+        <ol>
+          <li><strong>Xác suất toàn phần:</strong>
+            $$P(F) = P(M_1)P(F \mid M_1) + P(M_2)P(F \mid M_2) + P(M_3)P(F \mid M_3)$$
+            $$P(F) = 0.50 \cdot 0.02 + 0.30 \cdot 0.03 + 0.20 \cdot 0.05 = 0.010 + 0.009 + 0.010 = \mathbf{0.029 = 2.9\%}$$
+          </li>
+          <li><strong>Áp dụng Định lý Bayes:</strong>
+            $$P(M_3 \mid F) = \frac{P(M_3) \cdot P(F \mid M_3)}{P(F)} = \frac{0.20 \cdot 0.05}{0.029} = \frac{0.010}{0.029} \approx \mathbf{0.3448 = 34.48\%}$$
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Câu 2 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 2 (Bẫy quan hệ Xung khắc vs. Độc lập):</div>
+    <p>Cho hai biến cố $A$ và $B$ thỏa mãn $P(A) = 0.4$ và $P(B) = 0.5$. Khẳng định nào sau đây là <strong>ĐÚNG</strong>?</p>
+    <ul>
+      <li>A. Nếu $A$ và $B$ xung khắc thì $A$ và $B$ độc lập.</li>
+      <li>B. Nếu $A$ và $B$ độc lập thì $P(A \cup B) = 0.9$.</li>
+      <li>C. $A$ và $B$ không thể đồng thời vừa xung khắc vừa độc lập.</li>
+      <li>D. Nếu $A$ và $B$ độc lập thì $P(A \mid B) = 0.5$.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w5-ans2')">Xem Lời Giải &amp; Phân Tích Bẫy</button>
+    </div>
+    <div id="w5-ans2" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: C</strong>
+        <p><strong>Phân tích cặn kẽ:</strong></p>
+        <ul>
+          <li>Nếu $A$ và $B$ xung khắc: $P(A \cap B) = 0$.</li>
+          <li>Nếu $A$ và $B$ độc lập: $P(A \cap B) = P(A)P(B) = 0.4 \times 0.5 = 0.2 \neq 0$.</li>
+          <li>Vì $0 \neq 0.2$, hai biến cố này <strong>không bao giờ có thể vừa xung khắc vừa độc lập</strong>! Đáp án C hoàn toàn chính xác.</li>
+          <li>(A sai vì xung khắc thì $P(A \cap B)=0 \neq P(A)P(B)$; B sai vì $P(A \cup B) = 0.4 + 0.5 - 0.2 = 0.7$; D sai vì $P(A \mid B) = P(A) = 0.4$).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<template id="tpl-buoi-6">
+<header>
+  <span class="k">Tuần 06</span>
+  <h1>Biến Ngẫu Nhiên &amp; Các Phân Phối Xác Suất Rời Rạc</h1>
+  <p class="mut">Hàm PMF, CDF, bẫy tính xác suất đầu mút $P(a \le X \le b)$, phân phối Bernoulli, Nhị thức, Hình học, Siêu bội và Poisson.</p>
+</header>
+
+<div class="card c0" id="w6-sec1">
+  <h2>1. Biến Ngẫu Nhiên, Hàm PMF &amp; Hàm CDF</h2>
+  <div class="bridge">
+    Trong thực tế, ta không chỉ quan tâm đến biến cố chữ (như "mặt ngửa", "hỏng máy") mà muốn <strong>gán cho mỗi kết quả một con số toán học</strong> để tính toán đại số. Ánh xạ biến thế giới thực thành con số đó gọi là <strong>Biến ngẫu nhiên (Random Variable)</strong>.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">PMF vs. CDF Của Biến Rời Rạc</h3>
+    <ul>
+      <li><strong>Hàm khối xác suất (PMF - Probability Mass Function) $p_X(x)$:</strong> Cho biết xác suất để $X$ nhận chính xác giá trị $x$:
+        <div class="f">$$p_X(x) = P(X = x) \quad \text{với } p_X(x) \ge 0 \quad \text{và} \quad \sum_x p_X(x) = 1$$</div>
+      </li>
+      <li><strong>Hàm phân phối tích lũy (CDF - Cumulative Distribution Function) $F_X(t)$:</strong> Xác suất để $X$ nhận giá trị <em>nhỏ hơn hoặc bằng</em> $t$:
+        <div class="f">$$F_X(t) = P(X \le t) = \sum_{x \le t} p_X(x)$$</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ BẪY TÍNH XÁC SUẤT ĐẦU MÚT VỚI BIẾN RỜI RẠC NGUYÊN (THI CỰC HAY BẪY):</strong>
+    <p>Khác với biến liên tục (nơi dấu $<$ và $\le$ cho cùng kết quả), với biến rời rạc nguyên, từng điểm nguyên đều chứa một "khối" xác suất:</p>
+    <table class="tw">
+      <thead>
+        <tr><th>Câu hỏi thành lời</th><th>Ký hiệu</th><th>Công thức tính qua CDF $F(x)$</th><th>Bẫy sai lầm phổ biến</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Không quá $k$ (tối đa $k$)</td><td>$P(X \le k)$</td><td>$\mathbf{F(k)}$</td><td>Nhầm sang $F(k-1)$</td></tr>
+        <tr><td>Ít hơn $k$ (nhỏ hơn $k$)</td><td>$P(X < k)$</td><td>$\mathbf{F(k - 1)}$</td><td>Nhầm sang $F(k)$ (quên bỏ điểm $k$)</td></tr>
+        <tr><td>Không dưới $k$ (ít nhất $k$)</td><td>$P(X \ge k)$</td><td>$\mathbf{1 - F(k - 1)}$</td><td>Lấy $1 - F(k)$ (làm mất điểm $k$!)</td></tr>
+        <tr><td>Nhiều hơn $k$ (lớn hơn $k$)</td><td>$P(X > k)$</td><td>$\mathbf{1 - F(k)}$</td><td>Lấy $1 - F(k-1)$</td></tr>
+        <tr><td>Từ $a$ đến $b$ (gồm hai đầu)</td><td>$P(a \le X \le b)$</td><td>$\mathbf{F(b) - F(a - 1)}$</td><td>Lấy $F(b) - F(a)$ (bị trừ mất điểm $a$!)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card c1" id="w6-sec2">
+  <h2>2. Bốn Phân Phối Rời Rạc Kinh Điển (Bộ Khung Thi Giữa Kỳ)</h2>
+  <div class="bridge">
+    Khi đọc một bài toán xác suất, chìa khóa để giải quyết trong 30 giây là: <strong>Nhận diện đúng mô hình phân phối</strong> từ các dấu hiệu đặc trưng trong đề bài.
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">1. Phân Phối Nhị Thức: $\text{Binomial}(n, p)$</h3>
+    <p><strong>Dấu hiệu:</strong> Đếm số lần thành công trong $n$ phép thử độc lập cố định, mỗi phép thử chỉ có 2 kết quả và xác suất thành công $p$ không đổi.</p>
+    <div class="f">
+      $$P(X = k) = \binom{n}{k} p^k (1-p)^{n-k} \quad (k = 0, 1, 2, \dots, n)$$
+    </div>
+    <p><em>Ý nghĩa từng thành phần:</em> $p^k(1-p)^{n-k}$ là xác suất xảy ra của một chuỗi cụ thể gồm $k$ thành công và $n-k$ thất bại; còn tổ hợp $\binom{n}{k} = \frac{n!}{k!(n-k)!}$ là số cách sắp xếp vị trí của $k$ lần thành công đó trong $n$ lần thử.</p>
+  </div>
+
+  <div class="key" style="margin-top:18px">
+    <h3 style="margin-top:0">2. Phân Phối Hình Học: $\text{Geometric}(p)$</h3>
+    <p><strong>Dấu hiệu:</strong> Thực hiện các phép thử Bernoulli độc lập cho đến khi <strong>lần đầu tiên thành công</strong> thì dừng lại. Biến ngẫu nhiên $X$ là <em>số lần thử cần thiết</em>.</p>
+    <div class="f">
+      $$P(X = k) = (1-p)^{k-1} \cdot p \quad (k = 1, 2, 3, \dots)$$
+    </div>
+    <p><em>Ý nghĩa:</em> $k-1$ lần đầu đều thất bại (xác suất $(1-p)^{k-1}$), và lần thứ $k$ thành công (xác suất $p$).<br>
+    <strong>Tính chất không nhớ (Memoryless):</strong> Nếu đã thất bại 10 lần, xác suất để cần thêm 3 lần nữa mới thành công vẫn bằng xác suất cần 3 lần từ đầu: $P(X > s + t \mid X > s) = P(X > t) = (1-p)^t$.</p>
+  </div>
+
+  <div class="key" style="margin-top:18px">
+    <h3 style="margin-top:0">3. Phân Phối Siêu Bội: $\text{Hypergeometric}(N, K, n)$</h3>
+    <p><strong>Dấu hiệu:</strong> Rút <strong>KHÔNG HOÀN LẠI</strong> $n$ phần tử từ một chiếc hộp hữu hạn gồm $N$ phần tử (trong đó có sẵn $K$ phần tử loại 1 và $N-K$ phần tử loại 2).</p>
+    <div class="f">
+      $$P(X = k) = \frac{\binom{K}{k}\binom{N-K}{n-k}}{\binom{N}{n}}$$
+    </div>
+    <p><strong>So sánh Nhị thức vs. Siêu bội:</strong>
+    <ul>
+      <li>Rút <em>CÓ HOÀN LẠI</em> &rarr; Xác suất các lần rút không đổi &rarr; <strong>Phân phối Nhị thức</strong>.</li>
+      <li>Rút <em>KHÔNG HOÀN LẠI</em> &rarr; Xác suất thay đổi theo từng lá rút &rarr; <strong>Phân phối Siêu bội</strong>.</li>
+      <li><em>Quy tắc xấp xỉ:</em> Nếu kích thước hộp $N$ rất lớn so với số lá rút $n$ ($n/N \le 0.05$), ta có thể xem như rút có hoàn lại và xấp xỉ siêu bội bằng nhị thức với $p = K/N$!</li>
+    </ul>
+    </p>
+  </div>
+
+  <div class="key" style="margin-top:18px">
+    <h3 style="margin-top:0">4. Phân Phối Poisson: $\text{Poisson}(\lambda)$</h3>
+    <p><strong>Dấu hiệu:</strong> Đếm số lần xuất hiện của một <em>sự kiện hiếm</em> trong một khoảng thời gian hoặc không gian liên tục cố định (ví dụ: số cuộc gọi đến tổng đài trong 1 phút, số lỗi chính tả trên 1 trang sách, số hạt phóng xạ phát ra trong 1 giây).</p>
+    <div class="f">
+      $$P(X = k) = \frac{e^{-\lambda} \cdot \lambda^k}{k!} \quad (k = 0, 1, 2, \dots)$$
+    </div>
+    <p>Trong đó $\lambda > 0$ là <strong>tốc độ trung bình</strong> xuất hiện sự kiện trong khoảng thời gian đó.<br>
+    <strong>Tính chất cộng Poisson:</strong> Nếu $X \sim \text{Poisson}(\lambda)$ và $Y \sim \text{Poisson}(\mu)$ độc lập, thì tổng $X + Y \sim \text{Poisson}(\lambda + \mu)$.<br>
+    <strong>Xấp xỉ Nhị thức sang Poisson:</strong> Khi số phép thử $n$ rất lớn ($n \ge 100$) và xác suất $p$ rất nhỏ ($p \le 0.01$), ta có thể xấp xỉ $\text{Binomial}(n, p) \approx \text{Poisson}(\lambda = n \cdot p)$.</p>
+  </div>
+</div>
+
+<div class="card c2" id="w6-sec3">
+  <h2>3. Bảng Tra Cứu Nhanh: Đọc Đề Thi &rarr; Chọn Đúng Mô Hình</h2>
+  <div class="bridge">
+    Khi làm bài thi trắc nghiệm, hãy dùng bảng đối chiếu sau để nhận diện ngay công thức cần bấm:
+  </div>
+
+  <table class="tw">
+    <thead>
+      <tr><th>Đề bài mô tả tình huống</th><th>Mô hình áp dụng</th><th>Tham số cần tìm</th><th>Công thức tính</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Rút $n$ lá <strong>có hoàn lại</strong> (hoặc tỉ lệ $p$ cố định từ quần thể vô hạn), đếm số lá thành công.</td>
+        <td><strong>Nhị thức</strong> $\text{Binomial}(n, p)$</td>
+        <td>$n$ (số lần thử), $p$ (xác suất 1 lần)</td>
+        <td>$\binom{n}{k} p^k (1-p)^{n-k}$</td>
+      </tr>
+      <tr>
+        <td>Rút $n$ lá <strong>không hoàn lại</strong> từ hộp có $N$ lá (trong đó $K$ lá loại A).</td>
+        <td><strong>Siêu bội</strong> $\text{Hyper}(N, K, n)$</td>
+        <td>$N$ (tổng hộp), $K$ (số lá A), $n$ (số lá rút)</td>
+        <td>$\dfrac{\binom{K}{k}\binom{N-K}{n-k}}{\binom{N}{n}}$</td>
+      </tr>
+      <tr>
+        <td>Thử lặp lại độc lập cho đến khi <strong>lần đầu tiên thành công</strong> thì dừng.</td>
+        <td><strong>Hình học</strong> $\text{Geometric}(p)$</td>
+        <td>$p$ (xác suất thành công)</td>
+        <td>$(1-p)^{k-1} p$</td>
+      </tr>
+      <tr>
+        <td>Đếm số sự kiện xảy ra trong một <strong>khoảng thời gian / diện tích</strong> với tốc độ trung bình $\lambda$.</td>
+        <td><strong>Poisson</strong> $\text{Poisson}(\lambda)$</td>
+        <td>$\lambda$ (trung bình trong khoảng)</td>
+        <td>$\dfrac{e^{-\lambda}\lambda^k}{k!}$</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card c3" id="w6-sec4">
+  <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 6)</h2>
+
+  <!-- Câu 1 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 1 (Nhị thức vs. Siêu bội):</div>
+    <p>Một hộp chứa 10 con chip, trong đó có 4 con chip hỏng và 6 con chip tốt. Lấy ngẫu nhiên ra 3 con chip không hoàn lại. Xác suất để lấy được đúng 2 con chip hỏng là:</p>
+    <ul>
+      <li>A. $\approx 0.288$.</li>
+      <li>B. $\approx 0.300$.</li>
+      <li>C. $\approx 0.150$.</li>
+      <li>D. $\approx 0.400$.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w6-ans1')">Xem Lời Giải Chi Tiết</button>
+    </div>
+    <div id="w6-ans1" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: B</strong>
+        <p><strong>Phân tích cặn kẽ:</strong></p>
+        <p>Vì đây là rút <strong>không hoàn lại</strong> từ hộp nhỏ ($N=10$, $K=4$ hỏng, $n=3$ rút), ta áp dụng phân phối <strong>Siêu bội</strong>:</p>
+        <div class="f">$$P(X = 2) = \frac{\binom{4}{2} \cdot \binom{6}{1}}{\binom{10}{3}} = \frac{6 \cdot 6}{120} = \frac{36}{120} = \mathbf{0.300 = 30\%}$$</div>
+        <em>Lưu ý bẫy:</em> Nếu vội vàng dùng công thức Nhị thức $\binom{3}{2}(0.4)^2(0.6)^1 = 3 \times 0.16 \times 0.6 = 0.288$ (đáp án A) là SAI vì rút không hoàn lại xác suất bị thay đổi qua từng lượt rút!
+      </div>
+    </div>
+  </div>
+
+  <!-- Câu 2 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 2 (Phân phối Poisson):</div>
+    <p>Một máy chủ web nhận các yêu cầu truy cập độc lập với tốc độ trung bình 2 yêu cầu mỗi giây ($\lambda = 2$). Xác suất để trong một giây máy chủ nhận được <strong>ít nhất 1 yêu cầu</strong> là:</p>
+    <ul>
+      <li>A. $1 - e^{-2} \approx 0.8647$.</li>
+      <li>B. $2e^{-2} \approx 0.2707$.</li>
+      <li>C. $e^{-2} \approx 0.1353$.</li>
+      <li>D. $1 - 2e^{-2} \approx 0.7293$.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w6-ans2')">Xem Lời Giải &amp; Mẹo Biến Cố Phần Bù</button>
+    </div>
+    <div id="w6-ans2" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: A</strong>
+        <p><strong>Giải nhanh bằng biến cố phần bù:</strong></p>
+        <p>Biến cố "ít nhất 1 yêu cầu" ($X \ge 1$) có biến cố phần bù là "không có yêu cầu nào" ($X = 0$).</p>
+        $$P(X = 0) = \frac{e^{-2} \cdot 2^0}{0!} = e^{-2} \approx 0.1353$$
+        $$P(X \ge 1) = 1 - P(X = 0) = 1 - e^{-2} \approx 1 - 0.1353 = \mathbf{0.8647 = 86.47\%}$$
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<template id="tpl-buoi-7">
+<header>
+  <span class="k">Tuần 07</span>
+  <h1>Kỳ Vọng, Phương Sai, Biến Liên Tục &amp; Định Lý Giới Hạn Trung Tâm (CLT)</h1>
+  <p class="mut">Kỳ vọng $E[X]$, phương sai $\text{Var}(X)$, phân phối chuẩn $\mathcal{N}(\mu, \sigma^2)$, định lý CLT, xấp xỉ chuẩn cho nhị thức kèm hiệu chỉnh liên tục $\pm 0.5$.</p>
+</header>
+
+<div class="card c0" id="w7-sec1">
+  <h2>1. Kỳ Vọng &amp; Phương Sai Của Biến Ngẫu Nhiên</h2>
+  <div class="bridge">
+    Kỳ vọng $E[X]$ và Phương sai $\text{Var}(X)$ là hai "trụ cột" định lượng quan trọng nhất của toàn bộ môn Xác suất Thống kê. Nắm vững hai đại lượng này, bạn đã nắm được một nửa điểm số của bài thi giữa kỳ!
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Định Nghĩa Toán Học Chuẩn Xác</h3>
+    <table class="tw">
+      <thead>
+        <tr><th>Đại lượng</th><th>Biến ngẫu nhiên Rời rạc</th><th>Biến ngẫu nhiên Liên tục</th><th>Bản chất ý nghĩa</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Kỳ vọng $E[X]$ ($\mu$)</strong></td>
+          <td>$$E[X] = \sum_x x \cdot p_X(x)$$</td>
+          <td>$$E[X] = \int_{-\infty}^\infty x \cdot f_X(x)\,dx$$</td>
+          <td><strong>Trọng tâm vật lý</strong> của phân phối xác suất. Trung bình của các kết quả trong dài hạn khi lặp lại vô hạn lần.</td>
+        </tr>
+        <tr>
+          <td><strong>Phương sai $\text{Var}(X)$ ($\sigma^2$)</strong></td>
+          <td colspan="2">$$\text{Var}(X) = E\left[(X - \mu)^2\right] = E[X^2] - \left(E[X]\right)^2$$</td>
+          <td>Trung bình của bình phương khoảng cách tới kỳ vọng. Đo <strong>mức độ rủi ro / dao động</strong> quanh tâm.</td>
+        </tr>
+        <tr>
+          <td><strong>Độ lệch chuẩn $\text{SD}(X)$ ($\sigma$)</strong></td>
+          <td colspan="2">$$\sigma = \text{SD}(X) = \sqrt{\text{Var}(X)}$$</td>
+          <td>Đo độ phân tán ở <strong>cùng đơn vị đo</strong> với biến $X$.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box warn">
+    <strong>⚠️ NĂM TÍNH CHẤT ĐẠI SỐ BẮT BUỘC PHẢI NHỚ (CỰC HAY GẶP BẪY):</strong>
+    <ol>
+      <li><strong>Tính tuyến tính tuyệt đối của Kỳ vọng:</strong>
+        <div class="f">$$E[aX + b] = aE[X] + b \quad \text{và} \quad \mathbf{E[X + Y] = E[X] + E[Y]}$$</div>
+        <em>ĐIỀU CỰC KỲ ĐẶC BIỆT:</em> Công thức $E[X+Y] = E[X] + E[Y]$ <strong>luôn đúng trong mọi trường hợp</strong>, kể cả khi $X$ và $Y$ có quan hệ phụ thuộc chằng chịt vào nhau!
+      </li>
+      <li><strong>Phương sai với phép biến đổi tuyến tính:</strong>
+        <div class="f">$$\text{Var}(aX + b) = a^2 \text{Var}(X) \quad \text{và} \quad \text{SD}(aX + b) = |a|\,\text{SD}(X)$$</div>
+        <em>(Cộng hằng số $b$ không làm thay đổi phương sai vì chỉ dịch chuyển toàn bộ phân phối).</em>
+      </li>
+      <li><strong>Phương sai của Tổng và Hiệu khi $X, Y$ ĐỘC LẬP:</strong>
+        <div class="f">
+          $$\text{Var}(X + Y) = \text{Var}(X) + \text{Var}(Y)$$
+          $$\mathbf{\text{Var}(X - Y) = \text{Var}(X) + \text{Var}(Y)} \quad (\text{VẪN LÀ DẤU CỘNG!})$$
+        </div>
+        <strong>CẢNH BÁO BẪY:</strong> Nhiều sinh viên viết $\text{Var}(X - Y) = \text{Var}(X) - \text{Var}(Y)$ là SAI HOÀN TOÀN! Hiệu của hai biến ngẫu nhiên độc lập thì độ bất định tích tụ nhiều hơn, không thể giảm đi!
+      </li>
+      <li><strong>Độ lệch chuẩn KHÔNG CỘNG ĐƯỢC:</strong> $\text{SD}(X+Y) \neq \text{SD}(X) + \text{SD}(Y)$. Muốn tìm SD của tổng, bắt buộc phải cộng phương sai rồi mới lấy căn: $\mathbf{\text{SD}(X+Y) = \sqrt{\text{Var}(X) + \text{Var}(Y)}}$.</li>
+    </ol>
+  </div>
+
+  <h3>1.1 Bảng Tra Cứu Kỳ Vọng &amp; Phương Sai Của Các Phân Phối</h3>
+  <table class="tw">
+    <thead>
+      <tr><th>Phân phối</th><th>Ký hiệu</th><th>Kỳ vọng $E[X]$</th><th>Phương sai $\text{Var}(X)$</th><th>Ghi chú thi</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Bernoulli</td><td>$\text{Ber}(p)$</td><td>$p$</td><td>$p(1-p)$</td><td>Cơ sở của phép thử nhị thức</td></tr>
+      <tr><td>Nhị thức</td><td>$\text{Bin}(n, p)$</td><td>$np$</td><td>$np(1-p)$</td><td>Tổng $n$ biến Bernoulli độc lập</td></tr>
+      <tr><td>Hình học</td><td>$\text{Geom}(p)$</td><td>$\dfrac{1}{p}$</td><td>$\dfrac{1-p}{p^2}$</td><td>Số lần thử đến thành công đầu tiên</td></tr>
+      <tr><td>Poisson</td><td>$\text{Pois}(\lambda)$</td><td>$\lambda$</td><td>$\lambda$</td><td>Đặc biệt: <strong>Kỳ vọng = Phương sai</strong>!</td></tr>
+      <tr><td>Đều liên tục</td><td>$U(a, b)$</td><td>$\dfrac{a+b}{2}$</td><td>$\dfrac{(b-a)^2}{12}$</td><td>Tâm là trung điểm khoảng</td></tr>
+      <tr><td>Mũ</td><td>$\text{Exp}(\lambda)$</td><td>$\dfrac{1}{\lambda}$</td><td>$\dfrac{1}{\lambda^2}$</td><td>Thời gian chờ đợi, $\text{SD} = E[X] = \frac{1}{\lambda}$</td></tr>
+      <tr><td>Chuẩn</td><td>$\mathcal{N}(\mu, \sigma^2)$</td><td>$\mu$</td><td>$\sigma^2$</td><td>Đường cong hình chuông Gauss</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card c1" id="w7-sec2">
+  <h2>2. Biến Ngẫu Nhiên Liên Tục &amp; Phân Phối Chuẩn $\mathcal{N}(\mu, \sigma^2)$</h2>
+  <div class="bridge">
+    Với biến ngẫu nhiên liên tục, ta không thể hỏi <em>"Xác suất để sinh viên nặng chính xác 65.000000 kg là bao nhiêu?"</em> (vì xác suất tại một điểm toán học bằng 0 tuyệt đối!). Thay vào đó, ta hỏi xác suất rơi vào một khoảng: <strong>Xác suất là diện tích dưới đường cong hàm mật độ (PDF)!</strong>
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Quy Tắc Thực Nghiệm 68 – 95 – 99.7 &amp; Điểm Chuẩn Hóa $Z$</h3>
+    <p>Mọi phân phối chuẩn $\mathcal{N}(\mu, \sigma^2)$ đều có hình chuông đối xứng quanh $\mu$:</p>
+    <ul>
+      <li>Khoảng $[\mu - \sigma, \mu + \sigma]$ chứa khoảng <strong>68.3%</strong> tổng diện tích xác suất.</li>
+      <li>Khoảng $[\mu - 2\sigma, \mu + 2\sigma]$ chứa khoảng <strong>95.5%</strong> tổng diện tích xác suất.</li>
+      <li>Khoảng $[\mu - 3\sigma, \mu + 3\sigma]$ chứa khoảng <strong>99.7%</strong> tổng diện tích xác suất.</li>
+    </ul>
+    <p><strong>Công thức chuẩn hóa Z-Score:</strong> Chuyển biến $X \sim \mathcal{N}(\mu, \sigma^2)$ về phân phối chuẩn tắc $Z \sim \mathcal{N}(0, 1)$:</p>
+    <div class="f">
+      $$Z = \frac{X - \mu}{\sigma}$$
+      $$P(X \le x) = P\left(Z \le \frac{x - \mu}{\sigma}\right) = \Phi(z)$$
+    </div>
+    <p><strong>Tính chất đối xứng của hàm chuẩn tắc $\Phi(z)$:</strong></p>
+    <div class="f">
+      $$\Phi(-z) = 1 - \Phi(z) \quad \text{và} \quad P(a \le X \le b) = \Phi\left(\frac{b-\mu}{\sigma}\right) - \Phi\left(\frac{a-\mu}{\sigma}\right)$$
+    </div>
+  </div>
+</div>
+
+<div class="card c2" id="w7-sec3">
+  <h2>3. Định Lý Giới Hạn Trung Tâm (CLT) &amp; Xấp Xỉ Chuẩn</h2>
+  <div class="bridge">
+    Định lý Giới hạn Trung tâm (CLT) được tôn vinh là một trong những thành tựu vĩ đại nhất của lịch sử toán học: <strong>Nó giải thích tại sao thế giới tự nhiên và xã hội tràn ngập hình ảnh quả chuông phân phối chuẩn!</strong>
+  </div>
+
+  <div class="key">
+    <h3 style="margin-top:0">Phát Biểu Định Lý Giới Hạn Trung Tâm (CLT)</h3>
+    <p>Giả sử $X_1, X_2, \dots, X_n$ là các biến ngẫu nhiên <strong>độc lập và cùng phân phối (i.i.d.)</strong> với kỳ vọng $\mu$ và phương sai $\sigma^2$ hữu hạn.</p>
+    <p>Khi cỡ mẫu $n$ đủ lớn (thông thường $\mathbf{n \ge 30}$):</p>
+    <ol>
+      <li><strong>Tổng mẫu $S_n = \sum_{i=1}^n X_i$:</strong>
+        <div class="f">$$E[S_n] = n\mu, \quad \text{Var}(S_n) = n\sigma^2, \quad \text{SD}(S_n) = \sigma\sqrt{n}$$
+        $$S_n \approx \mathcal{N}\left(n\mu, \; n\sigma^2\right)$$</div>
+      </li>
+      <li><strong>Trung bình mẫu $\bar{X}_n = \frac{1}{n} \sum_{i=1}^n X_i$:</strong>
+        <div class="f">$$E[\bar{X}_n] = \mu, \quad \text{Var}(\bar{X}_n) = \frac{\sigma^2}{n}, \quad \text{SD}(\bar{X}_n) = \frac{\sigma}{\sqrt{n}}$$
+        $$\mathbf{\bar{X}_n \approx \mathcal{N}\left(\mu, \; \frac{\sigma^2}{n}\right)}$$</div>
+      </li>
+    </ol>
+    <p><strong>Sự kỳ diệu của CLT:</strong> <em>Bất kể phân phối gốc ban đầu của từng biến $X_i$ là gì</em> (phân phối đều, phân phối lệch, hay xúc xắc), chỉ cần lấy trung bình của nhiều lần rút độc lập, đồ thị phân phối của $\bar{X}$ sẽ tự động bo tròn thành hình chuông chuẩn!</p>
+  </div>
+
+  <h3>3.1 Xấp Xỉ Chuẩn Cho Phân Phối Nhị Thức &amp; Hiệu Chỉnh Liên Tục</h3>
+  <div class="key">
+    <p>Khi $X \sim \text{Binomial}(n, p)$ với điều kiện <strong>$np \ge 10$ và $n(1-p) \ge 10$</strong>, ta có thể dùng phân phối chuẩn $Y \sim \mathcal{N}(\mu = np, \; \sigma^2 = np(1-p))$ để xấp xỉ:</p>
+    <div class="box warn">
+      <strong>⚠️ KỸ THUẬT HIỆU CHỈNH LIÊN TỤC (CONTINUITY CORRECTION):</strong>
+      Do biến nhị thức $X$ là rời rạc (cột chữ nhật rộng 1 đơn vị từ $k - 0.5$ đến $k + 0.5$), còn biến chuẩn $Y$ là đường cong liên tục, ta phải mở rộng khoảng nửa đơn vị $\pm 0.5$:
+      <ul>
+        <li>$P(X = k) \approx P(k - 0.5 \le Y \le k + 0.5)$</li>
+        <li>$P(X \le k) \approx P(Y \le k + 0.5)$</li>
+        <li>$P(X < k) = P(X \le k - 1) \approx P(Y \le k - 0.5)$</li>
+        <li>$P(X \ge k) \approx P(Y \ge k - 0.5)$</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card c3" id="w7-sec4">
+  <h2>4. Công Cụ Tương Tác: Khám Phá Phân Phối Chuẩn &amp; Tra Diện Tích Z-Score</h2>
+  <div class="bridge">
+    Nhập giá trị kỳ vọng $\mu$, độ lệch chuẩn $\sigma$ và điểm $X$ để tự động quan sát đồ thị đường cong Gauss, chuẩn hóa điểm số $Z = \frac{X-\mu}{\sigma}$ và tô màu diện tích xác suất $P(X \le x)$ tương ứng!
+  </div>
+
+  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:20px;margin:16px 0">
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:16px">
+      <div>
+        <label for="norm-mu">Kỳ vọng ($\mu$): </label>
+        <input type="number" id="norm-mu" value="100" step="5" style="width:70px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
+      </div>
+      <div>
+        <label for="norm-sigma">Độ lệch chuẩn ($\sigma$): </label>
+        <input type="number" id="norm-sigma" value="15" min="1" step="1" style="width:60px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
+      </div>
+      <div>
+        <label for="norm-x">Giá trị cần tính ($x$): </label>
+        <input type="number" id="norm-x" value="115" step="1" style="width:70px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
+      </div>
+    </div>
+
+    <div style="text-align:center">
+      <svg id="norm-svg" viewBox="0 0 500 240" style="width:100%;max-width:550px;background:rgba(0,0,0,0.25);border-radius:12px;border:1px solid rgba(255,255,255,0.1)"></svg>
+    </div>
+
+    <div style="display:flex;justify-content:space-around;margin-top:12px;padding:12px;background:rgba(0,0,0,0.2);border-radius:8px">
+      <div>Điểm chuẩn hóa: <strong id="norm-z-val" style="color:var(--c1)">Z = +1.00</strong></div>
+      <div>Xác suất tích lũy: <strong id="norm-p-val" style="color:var(--c2)">P(X &le; x) = 84.13%</strong></div>
+      <div>Xác suất đuôi phải: <strong id="norm-tail-val" style="color:var(--c4)">P(X &gt; x) = 15.87%</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="card c4" id="w7-sec5">
+  <h2>5. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 7)</h2>
+
+  <!-- Câu 1 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 1 (Kỳ vọng và Phương sai của Tổ hợp Tuyến tính):</div>
+    <p>Một công ty giao hàng có hai người vận chuyển $A$ và $B$. Thời gian giao một đơn hàng của $A$ có kỳ vọng 30 phút, độ lệch chuẩn 5 phút. Thời gian của $B$ có kỳ vọng 45 phút, độ lệch chuẩn 8 phút. Giả sử thời gian của $A$ và $B$ là hai biến ngẫu nhiên độc lập.
+    <br>Xét biến ngẫu nhiên $T = 2A - B$. Hãy tính kỳ vọng $E[T]$ và độ lệch chuẩn $\text{SD}(T)$.</p>
+    <ul>
+      <li>A. $E[T] = 15$ phút; $\text{SD}(T) = 2$ phút.</li>
+      <li>B. $E[T] = 15$ phút; $\text{SD}(T) = \sqrt{164} \approx 12.81$ phút.</li>
+      <li>C. $E[T] = 15$ phút; $\text{SD}(T) = 6$ phút.</li>
+      <li>D. $E[T] = 105$ phút; $\text{SD}(T) = \sqrt{164} \approx 12.81$ phút.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w7-ans1')">Xem Lời Giải &amp; Cảnh Báo Bẫy Trừ Phương Sai</button>
+    </div>
+    <div id="w7-ans1" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: B</strong>
+        <p><strong>Các bước giải bài bản:</strong></p>
+        <ol>
+          <li><strong>Tính Kỳ vọng $E[T]$:</strong>
+            $$E[T] = E[2A - B] = 2E[A] - E[B] = 2(30) - 45 = 60 - 45 = \mathbf{15\text{ phút}}$$
+          </li>
+          <li><strong>Tính Phương sai $\text{Var}(T)$:</strong>
+            <p><strong>CẢNH BÁO:</strong> Hệ số của $B$ là $-1$, khi bình phương lên trong phương sai biến thành $(-1)^2 = +1$:</p>
+            $$\text{Var}(T) = \text{Var}(2A - B) = 2^2 \text{Var}(A) + (-1)^2 \text{Var}(B) = 4 \text{Var}(A) + \text{Var}(B)$$
+            Ta có $\text{Var}(A) = 5^2 = 25$ và $\text{Var}(B) = 8^2 = 64$.
+            $$\text{Var}(T) = 4(25) + 64 = 100 + 64 = \mathbf{164}$$
+          </li>
+          <li><strong>Độ lệch chuẩn:</strong>
+            $$\text{SD}(T) = \sqrt{\text{Var}(T)} = \sqrt{164} \approx \mathbf{12.81\text{ phút}}$$
+            <em>(Bẫy sai lầm của đáp án A là lấy $2 \times 5 - 8 = 2$ phút là hoàn toàn sai nguyên lý cộng phương sai!).</em>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Câu 2 -->
+  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+    <div style="font-weight:700;color:var(--c1)">Câu 2 (Định lý Giới hạn Trung tâm CLT &amp; Tải trọng thang máy):</div>
+    <p>Cân nặng của sinh viên UET có kỳ vọng $\mu = 60\,\text{kg}$ và độ lệch chuẩn $\sigma = 12\,\text{kg}$. Một thang máy chở tối đa 36 sinh viên ($n = 36$). Cho biết $\Phi(2.5) \approx 0.9938$. Xác suất để tổng cân nặng của 36 sinh viên này vượt quá mức cảnh báo an toàn $2.340\,\text{kg}$ là:</p>
+    <ul>
+      <li>A. $\approx 0.0062$.</li>
+      <li>B. $\approx 0.9938$.</li>
+      <li>C. $\approx 0.0228$.</li>
+      <li>D. $\approx 0.0500$.</li>
+    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('w7-ans2')">Xem Lời Giải Chi Tiết</button>
+    </div>
+    <div id="w7-ans2" class="panel">
+      <div class="ans">
+        <strong class="ok">Đáp án đúng: A</strong>
+        <p><strong>Giải theo Định lý Giới hạn Trung tâm:</strong></p>
+        <p>Gọi $S = \sum_{i=1}^{36} X_i$ là tổng cân nặng của 36 sinh viên.
+        Vì $n = 36 > 30$, theo CLT, $S$ có phân phối xấp xỉ chuẩn:</p>
+        <ul>
+          <li>Kỳ vọng: $E[S] = n\mu = 36 \times 60 = 2.160\,\text{kg}$.</li>
+          <li>Phương sai: $\text{Var}(S) = n\sigma^2 = 36 \times 12^2 = 36 \times 144 = 5.184$.</li>
+          <li>Độ lệch chuẩn: $\text{SD}(S) = \sigma\sqrt{n} = 12 \times \sqrt{36} = 12 \times 6 = 72\,\text{kg}$.</li>
+        </ul>
+        <p>Chuẩn hóa biến $S$ tại ngưỡng $2.340\,\text{kg}$:</p>
+        $$Z = \frac{2.340 - 2.160}{72} = \frac{180}{72} = \mathbf{2.5}$$
+        <p>Xác suất vượt quá ngưỡng an toàn:</p>
+        $$P(S > 2.340) = P(Z > 2.5) = 1 - \Phi(2.5) \approx 1 - 0.9938 = \mathbf{0.0062 = 0.62\%}$$
+      </div>
+    </div>
+  </div>
+</div>
+
+</template>
+
+<!-- ==========================================
+     SCRIPTS ĐIỀU KHIỂN & MÔ PHỎNG TƯƠNG TÁC
+     ========================================== -->
+<script>
+const $ = id => document.getElementById(id);
+
+/* Đóng/mở khung giải thích bài tập */
+function togglePanel(id) {
+  const el = $(id);
+  if (el) el.classList.toggle('open');
+}
+window.togglePanel = togglePanel;
+
+/* ==========================================================================
+   WIDGET MÔ PHỎNG TUẦN 4: HỒI QUY TUYẾN TÍNH OLS & PHẦN DƯ
+   ========================================================================== */
+function updateOLSSim() {
+  const rEl = $('ols-r-slider');
+  if (!rEl) return;
+  const r = parseFloat(rEl.value);
+  $('ols-r-val').textContent = (r >= 0 ? '+' : '') + r.toFixed(2);
+  const r2 = (r * r * 100).toFixed(2);
+  $('ols-r2-val').textContent = r2 + '%';
+
+  const svg = $('ols-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+
+  const cx = 250, cy = 150;
+  // Trục tọa độ
+  svg.innerHTML += '<line x1="40" y1="260" x2="460" y2="260" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>';
+  svg.innerHTML += '<line x1="40" y1="40" x2="40" y2="260" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>';
+  svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>`;
+  svg.innerHTML += `<text x="${cx + 8}" y="${cy - 6}" fill="#f59e0b" font-size="12" font-weight="bold">(x̄, ȳ)</text>`;
+
+  // 12 điểm cố định tạo xu hướng
+  const basePoints = [
+    [-140, -100], [-110, -70], [-80, -90], [-50, -40],
+    [-20, -10], [10, 20], [40, 10], [70, 60],
+    [90, 80], [120, 70], [140, 110], [-60, -20]
+  ];
+
+  let slope = r * 0.7; // hệ số góc trực quan
+  // Vẽ đường hồi quy đi qua trọng tâm (cx, cy)
+  const x1 = 60, y1 = cy - slope * (x1 - cx);
+  const x2 = 440, y2 = cy - slope * (x2 - cx);
+  svg.innerHTML += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>`;
+
+  // Vẽ các điểm và đường phần dư
+  basePoints.forEach(([dx, dy]) => {
+    const px = cx + dx;
+    const pyTrue = cy - (r * dy + (1 - Math.abs(r)) * dx * 0.4);
+    const pyPred = cy - slope * dx;
+
+    // Đường phần dư màu đỏ/hồng nối điểm thực tế tới đường hồi quy
+    svg.innerHTML += `<line x1="${px}" y1="${pyTrue}" x2="${px}" y2="${pyPred}" stroke="#ec4899" stroke-width="1" stroke-dasharray="2,2"/>`;
+    // Điểm dữ liệu
+    svg.innerHTML += `<circle cx="${px}" cy="${pyTrue}" r="3.5" fill="#38bdf8"/>`;
+  });
+
+  $('ols-desc').innerHTML = 'Đường hồi quy $\\hat{y} = b_0 + b_1 x$ (màu xanh dương) luôn cắt qua điểm trung tâm $(\\bar{x}, \\bar{y})$ (chấm vàng). Các đoạn nét đứt đứt màu hồng là phần dư $e_i$. Tổng $\\sum e_i = 0$!';
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([$('ols-desc')]).catch(() => {});
+}
+window.updateOLSSim = updateOLSSim;
+
+/* ==========================================================================
+   WIDGET MÔ PHỎNG TUẦN 5: ĐỊNH LÝ BAYES & XÉT NGHIỆM Y TẾ
+   ========================================================================== */
+function updateBayesSim() {
+  const prevEl = $('by-prev');
+  if (!prevEl) return;
+  const prev = parseFloat(prevEl.value);
+  const sens = parseFloat($('by-sens').value);
+  const spec = parseFloat($('by-spec').value);
+
+  $('by-prev-val').textContent = (prev * 100).toFixed(1) + '%';
+  $('by-sens-val').textContent = (sens * 100).toFixed(1) + '%';
+  $('by-spec-val').textContent = (spec * 100).toFixed(1) + '%';
+
+  // P(+) = P(Bệnh)*Sens + P(Khỏe)*(1 - Spec)
+  const pPosGivenSick = sens;
+  const pPosGivenHealthy = 1 - spec;
+  const pTotalPos = (prev * pPosGivenSick) + ((1 - prev) * pPosGivenHealthy);
+  const postProb = (prev * pPosGivenSick) / pTotalPos;
+
+  $('by-result').textContent = (postProb * 100).toFixed(1) + '%';
+  const out100kSickPos = Math.round(100000 * prev * sens);
+  const out100kFalsePos = Math.round(100000 * (1 - prev) * (1 - spec));
+  $('by-explain').innerHTML = `Trong 100.000 người, có <b>${out100kSickPos}</b> ca dương tính thật và <b>${out100kFalsePos}</b> ca dương tính giả!`;
+}
+window.updateBayesSim = updateBayesSim;
+
+/* ==========================================================================
+   WIDGET MÔ PHỎNG TUẦN 7: PHÂN PHỐI CHUẨN GAUSS & TRA Z-SCORE
+   ========================================================================== */
+function normalCdf(z) {
+  // Xấp xỉ hàm Gauss sai số < 1e-5
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989422804014327 * Math.exp(-z * z / 2);
+  let p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  if (z > 0) p = 1 - p;
+  return p;
+}
+
+function updateNormSim() {
+  const muEl = $('norm-mu');
+  if (!muEl) return;
+  const mu = parseFloat(muEl.value) || 100;
+  const sigma = Math.max(0.1, parseFloat($('norm-sigma').value) || 15);
+  const x = parseFloat($('norm-x').value) || 115;
+
+  const z = (x - mu) / sigma;
+  const pVal = normalCdf(z);
+
+  $('norm-z-val').textContent = 'Z = ' + (z >= 0 ? '+' : '') + z.toFixed(2);
+  $('norm-p-val').textContent = 'P(X ≤ x) = ' + (pVal * 100).toFixed(2) + '%';
+  $('norm-tail-val').textContent = 'P(X > x) = ' + ((1 - pVal) * 100).toFixed(2) + '%';
+
+  const svg = $('norm-svg');
+  if (!svg) return;
+  svg.innerHTML = '';
+
+  const w = 500, h = 240, baseline = 200;
+  // Trục hoành
+  svg.innerHTML += `<line x1="30" y1="${baseline}" x2="470" y2="${baseline}" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>`;
+
+  // Tạo đường cong chuẩn từ z = -3.5 đến +3.5
+  let pathD = '', areaD = `M 30 ${baseline} `;
+  const zMax = 3.5, zCut = Math.max(-zMax, Math.min(zMax, z));
+
+  for (let px = 30; px <= 470; px += 2) {
+    const currZ = -zMax + (px - 30) / (440) * (2 * zMax);
+    const pdf = Math.exp(-currZ * currZ / 2);
+    const py = baseline - pdf * 150;
+    if (px === 30) pathD += `M ${px} ${py} `;
+    else pathD += `L ${px} ${py} `;
+
+    if (currZ <= zCut) {
+      areaD += `L ${px} ${py} `;
+    }
+  }
+  const cutPx = 30 + ((zCut + zMax) / (2 * zMax)) * 440;
+  areaD += `L ${cutPx} ${baseline} Z`;
+
+  // Tô màu diện tích tích lũy
+  svg.innerHTML += `<path d="${areaD}" fill="rgba(56,189,248,0.35)"/>`;
+  // Vẽ đường cong chuông
+  svg.innerHTML += `<path d="${pathD}" fill="none" stroke="#38bdf8" stroke-width="2.5"/>`;
+  // Vạch đường cắt x
+  svg.innerHTML += `<line x1="${cutPx}" y1="${baseline}" x2="${cutPx}" y2="${30}" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3,3"/>`;
+  svg.innerHTML += `<circle cx="${cutPx}" cy="${baseline}" r="4" fill="#f59e0b"/>`;
+  svg.innerHTML += `<text x="${cutPx}" y="${baseline + 18}" fill="#f59e0b" font-size="11" font-weight="bold" text-anchor="middle">x=${x}</text>`;
+  svg.innerHTML += `<text x="250" y="${baseline + 18}" fill="rgba(255,255,255,0.7)" font-size="11" text-anchor="middle">μ=${mu}</text>`;
+}
+window.updateNormSim = updateNormSim;
+
+/* ==========================================================================
+   RENDER THANH CHỌN BÀI (#ls) & NẠP TEMPLATE BÀI HỌC
+   ========================================================================== */
+function renderLS(activeId) {
+  const lsEl = $('ls');
+  if (!lsEl) return;
+  let html = '';
+  for (let i = 1; i <= 7; i++) {
+    const act = String(i) === String(activeId) ? 'class="on"' : '';
+    html += `<button type="button" data-id="${i}" ${act}>Tuần ${i}</button>`;
+  }
+  lsEl.innerHTML = html;
+}
+
+function buildTOC() {
+  const linksEl = $('toc-links');
+  if (!linksEl) return;
+  linksEl.innerHTML = '';
+  const headers = document.querySelectorAll('#app-content h2');
+  headers.forEach((h, idx) => {
+    const card = h.closest('.card');
+    let id = card ? card.id : '';
+    if (!id) {
+      id = 'sec-hdr-' + idx;
+      h.id = id;
+    }
+    const a = document.createElement('a');
+    a.href = '#' + id;
+    a.textContent = h.textContent.replace(/^[0-9.]+\s*/, '');
+    linksEl.appendChild(a);
+  });
+}
+
+function loadLesson(lessonId) {
+  const mainEl = $('app-content');
+  const tpl = $('tpl-buoi-' + lessonId);
+  if (tpl) {
+    mainEl.innerHTML = tpl.innerHTML;
+    if (lessonId === '4') updateOLSSim();
+    else if (lessonId === '5') updateBayesSim();
+    else if (lessonId === '7') updateNormSim();
+  }
+
+  const sel = $('lesson-select');
+  if (sel) sel.value = String(lessonId);
+  renderLS(lessonId);
+  buildTOC();
+
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([mainEl]);
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.loadLesson = loadLesson;
+
+/* Khởi chạy ứng dụng & cài đặt đóng/mở menu góc trái */
+(function initApp() {
+  const btn = $('mb'), nav = $('mn');
+  const setOpen = open => {
+    nav.hidden = !open;
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Đóng menu' : 'Mở menu chọn bài và mục lục');
+  };
+  btn.onclick = () => setOpen(nav.hidden);
+  nav.onclick = e => {
+    const b = e.target.closest('#ls button');
+    if (b) {
+      loadLesson(b.dataset.id);
+      return;
+    }
+    if (e.target.closest('a')) setOpen(false);
+  };
+  document.addEventListener('click', e => {
+    if (!nav.hidden && !nav.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !nav.hidden) {
+      setOpen(false);
+      btn.focus();
+    }
+  });
+
+  /* Tô sáng mục đang xem trong mục lục */
+  addEventListener('scroll', () => {
+    let cur = null;
+    document.querySelectorAll('#toc-links a').forEach(a => {
+      const t = document.getElementById(a.getAttribute('href').slice(1));
+      if (t && t.getBoundingClientRect().top <= 120) cur = a;
+      a.classList.remove('on');
+    });
+    if (cur) cur.classList.add('on');
+  }, { passive: true });
+
+  // Mặc định mở Tuần 1
+  $('lesson-select').value = '1';
+  loadLesson('1');
+})();
+</script>
+
+<script>
+/* ==========================================================================
+   QUẢN LÝ GIAO DIỆN (THEME MANAGER): MẶC ĐỊNH LIQUID GLASS + HÌNH NỀN IOS
+   ========================================================================== */
+(function themeManager() {
+  const root = document.documentElement;
+  const body = document.body;
+  const st = (k, v) => { try { return v !== undefined ? localStorage.setItem(k, typeof v === 'object' ? JSON.stringify(v) : v) : localStorage.getItem(k); } catch (e) { return null; } };
+
+  const KEY_THEME = 'xstk-theme';
+  const KEY_BG = 'xstk-lg-bg';
+  const KEY_BLUR = 'xstk-lg-blur';
+  const KEY_FILL = 'xstk-lg-fill';
+  const KEY_SAT = 'xstk-lg-sat';
+  const KEY_ORB_BLUR = 'xstk-lg-orb-blur';
+  const KEY_GLOW = 'xstk-lg-glow';
+  const KEY_REFRACT = 'xstk-lg-refract';
+
+  let currentTheme = st(KEY_THEME) || 'liquid-glass';
+  let currentBg = st(KEY_BG) || 'ios';
+
+  const modalOverlay = $('theme-modal-overlay');
+  const btnOpenModal = $('btn-theme-settings');
+  const btnCloseModal = $('theme-modal-close');
+  const optDefault = $('thm-opt-default');
+  const optLiquid = $('thm-opt-liquid');
+  const lgSettingsPanel = $('lg-settings-panel');
+  const defaultNotice = $('default-theme-notice');
+
+  const rBlur = $('r-lg-blur'), oBlur = $('o-lg-blur');
+  const rFill = $('r-lg-fill'), oFill = $('o-lg-fill');
+  const rSat = $('r-lg-sat'), oSat = $('o-lg-sat');
+  const rOrbBlur = $('r-lg-orb-blur'), oOrbBlur = $('o-lg-orb-blur');
+  const bGlow = $('b-lg-glow');
+  const bRefract = $('b-lg-refract');
+  const bReset = $('b-lg-reset');
+  const oBgLabel = $('o-lg-bg');
+  const bgRadios = document.querySelectorAll('input[name="lg-bg-choice"]');
+
+  function openModal(open) {
+    modalOverlay.hidden = !open;
+    if (open) {
+      syncUI();
+      btnCloseModal.focus();
+    }
+  }
+
+  if (btnOpenModal) btnOpenModal.onclick = () => openModal(true);
+  if (btnCloseModal) btnCloseModal.onclick = () => openModal(false);
+  if (modalOverlay) {
+    modalOverlay.onclick = e => {
+      if (e.target === modalOverlay) openModal(false);
+    };
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !modalOverlay.hidden) openModal(false);
+  });
+
+  function setLgBg(bgKey) {
+    currentBg = (bgKey === 'aurora') ? 'aurora' : 'ios';
+    st(KEY_BG, currentBg);
+    body.setAttribute('data-lg-bg', currentBg);
+    bgRadios.forEach(r => { r.checked = (r.value === currentBg); });
+    if (oBgLabel) oBgLabel.textContent = (currentBg === 'aurora') ? 'Aurora' : 'iOS';
+  }
+
+  bgRadios.forEach(r => {
+    r.addEventListener('change', () => { if (r.checked) setLgBg(r.value); });
+  });
+
+  function setTheme(t) {
+    currentTheme = t;
+    st(KEY_THEME, t);
+    const isLg = t === 'liquid-glass';
+
+    if (isLg) {
+      body.classList.add('lg-theme');
+      optLiquid.classList.add('active');
+      optDefault.classList.remove('active');
+      lgSettingsPanel.style.display = '';
+      defaultNotice.style.display = 'none';
+      setLgBg(currentBg);
+    } else {
+      body.classList.remove('lg-theme');
+      optDefault.classList.add('active');
+      optLiquid.classList.remove('active');
+      lgSettingsPanel.style.display = 'none';
+      defaultNotice.style.display = '';
+      body.removeAttribute('data-lg-bg');
+    }
+  }
+
+  function applyTokens() {
+    const blur = st(KEY_BLUR) || '16';
+    const fill = st(KEY_FILL) || '0.14';
+    const sat = st(KEY_SAT) || '200';
+    const orbBlur = st(KEY_ORB_BLUR) || '16';
+    const glow = st(KEY_GLOW) === 'true';
+    const refract = st(KEY_REFRACT) === 'true';
+
+    root.style.setProperty('--lg-blur', blur + 'px');
+    root.style.setProperty('--lg-fill', fill);
+    root.style.setProperty('--lg-tint', (parseFloat(fill) * 1.15).toFixed(2));
+    root.style.setProperty('--lg-sat', sat + '%');
+
+    const orbs = $('lg-orbs');
+    const iosBg = $('lg-bg-ios');
+    const obNum = parseInt(orbBlur, 10);
+    if (obNum === 0) {
+      if (orbs) orbs.classList.add('lg-orbs-hidden');
+      if (iosBg) iosBg.classList.add('lg-orbs-hidden');
+    } else {
+      if (orbs) {
+        orbs.classList.remove('lg-orbs-hidden');
+        orbs.style.filter = `blur(${obNum}px)`;
+      }
+      if (iosBg) {
+        iosBg.classList.remove('lg-orbs-hidden');
+        iosBg.style.filter = `blur(${obNum}px)`;
+      }
+    }
+
+    body.classList.toggle('lg-glow-on', glow);
+    root.classList.toggle('lg-refract', refract);
+
+    if (rBlur) { rBlur.value = blur; oBlur.textContent = blur + 'px'; }
+    if (rFill) { rFill.value = fill; oFill.textContent = fill; }
+    if (rSat) { rSat.value = sat; oSat.textContent = sat + '%'; }
+    if (rOrbBlur) { rOrbBlur.value = orbBlur; oOrbBlur.textContent = obNum === 0 ? 'Ẩn' : orbBlur + 'px'; }
+    if (bGlow) {
+      bGlow.setAttribute('aria-pressed', glow);
+      bGlow.textContent = 'Vệt sáng chuột: ' + (glow ? 'Bật' : 'Tắt');
+      bGlow.classList.toggle('active', glow);
+    }
+    if (bRefract) {
+      bRefract.setAttribute('aria-pressed', refract);
+      bRefract.textContent = 'Khúc xạ (Chrome): ' + (refract ? 'Bật' : 'Tắt');
+      bRefract.classList.toggle('active', refract);
+    }
+  }
+
+  function syncUI() {
+    applyTokens();
+    setLgBg(currentBg);
+  }
+
+  if (optDefault) optDefault.onclick = () => setTheme('default');
+  if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
+
+  if (rBlur) rBlur.oninput = () => { st(KEY_BLUR, rBlur.value); applyTokens(); };
+  if (rFill) rFill.oninput = () => { st(KEY_FILL, rFill.value); applyTokens(); };
+  if (rSat) rSat.oninput = () => { st(KEY_SAT, rSat.value); applyTokens(); };
+  if (rOrbBlur) rOrbBlur.oninput = () => { st(KEY_ORB_BLUR, rOrbBlur.value); applyTokens(); };
+
+  if (bGlow) bGlow.onclick = () => {
+    const cur = st(KEY_GLOW) === 'true';
+    st(KEY_GLOW, !cur);
+    applyTokens();
+  };
+
+  if (bRefract) bRefract.onclick = () => {
+    const cur = st(KEY_REFRACT) === 'true';
+    st(KEY_REFRACT, !cur);
+    applyTokens();
+  };
+
+  if (bReset) bReset.onclick = () => {
+    [KEY_BLUR, KEY_FILL, KEY_SAT, KEY_ORB_BLUR, KEY_GLOW, KEY_REFRACT].forEach(k => localStorage.removeItem(k));
+    applyTokens();
+  };
+
+  // Khởi tạo trạng thái ban đầu
+  setTheme(currentTheme);
+  applyTokens();
+  setLgBg(currentBg);
+
+  // Vệt sáng chuột (Mouse glow)
+  window.addEventListener('pointermove', e => {
+    if (!body.classList.contains('lg-glow-on')) return;
+    const el = e.target.closest && e.target.closest('.card, #mn, .theme-modal-box');
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }, { passive: true });
+})();
+</script>
+
+</body>
+</html>
