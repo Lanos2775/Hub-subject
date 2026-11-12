@@ -223,12 +223,42 @@ body.lg-theme{
 .lg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;transition:filter .25s ease,opacity .25s ease}
 body:not(.lg-theme) .lg-orbs{display:none !important}
 .lg-orbs.lg-orbs-hidden{display:none !important}
+body.lg-theme[data-lg-bg="ios"] .lg-orbs{display:none !important}
 .lg-orbs i{position:absolute;border-radius:50%;display:block}
 .lg-orbs i:nth-child(1){left:6%;top:14%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#9fb4ff,#4f6bff 55%,#2a2fb0)}
 .lg-orbs i:nth-child(2){right:9%;top:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#f0c0ff,#b043ff 55%,#6a1fb8)}
 .lg-orbs i:nth-child(3){left:38%;top:52%;width:280px;height:280px;background:radial-gradient(circle at 32% 28%,#ffc2dd,#ff4f9a 55%,#b01a68)}
 .lg-orbs i:nth-child(4){right:4%;bottom:6%;width:210px;height:210px;background:radial-gradient(circle at 32% 28%,#b4fff2,#12d6c0 55%,#0a7f8f)}
 .lg-orbs i:nth-child(5){left:3%;bottom:8%;width:150px;height:150px;background:radial-gradient(circle at 32% 28%,#fff1b0,#ffc83d 55%,#d98a00)}
+
+/* Nền phong cách iOS Silk Wave */
+.lg-bg-ios{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  transition:filter .25s ease,opacity .3s ease;display:none;
+}
+body.lg-theme[data-lg-bg="ios"] .lg-bg-ios{
+  display:block;
+}
+body:not(.lg-theme) .lg-bg-ios{display:none !important}
+.lg-bg-ios.lg-orbs-hidden{display:none !important}
+.lg-bg-ios svg{
+  background:none !important;border:none !important;border-radius:0 !important;
+  margin:0 !important;padding:0 !important;box-shadow:none !important;
+  width:100% !important;height:100% !important;display:block !important;
+}
+
+/* Thay đổi gradient nền chính khi chọn iOS */
+body.lg-theme[data-lg-bg="ios"]{
+  background-color:#020510 !important;
+  background-image:
+    radial-gradient(circle at 50% 50%,transparent 35%,rgba(2,4,14,.7) 100%),
+    radial-gradient(ellipse 95% 65% at 80% 0%,rgba(56,189,248,.38),transparent 70%),
+    radial-gradient(ellipse 85% 55% at 15% 40%,rgba(168,85,247,.32),transparent 65%),
+    radial-gradient(ellipse 85% 65% at 85% 85%,rgba(59,130,246,.32),transparent 70%),
+    radial-gradient(ellipse 70% 50% at 5% 95%,rgba(20,184,166,.25),transparent 65%),
+    linear-gradient(160deg,#02040d,#070d24 45%,#030614) !important;
+  background-attachment:fixed !important;
+}
 
 body.lg-theme main{position:relative;z-index:1}
 body.lg-theme #mb{z-index:60}
@@ -551,7 +581,7 @@ body.lg-theme .qzp-close:hover,body.lg-theme .fpop-close:hover{
   color:#ffffff !important;
 }
 
-body.lg-theme svg:not(#lg-defs):not(.btn-theme-settings svg):not(.theme-modal-close-btn svg){
+body.lg-theme svg:not(#lg-defs):not(.btn-theme-settings svg):not(.theme-modal-close-btn svg):not(.lg-bg-ios svg){
   background:rgba(8,14,36,.6) !important;
   border:1px solid rgba(255,255,255,.18) !important;
 }
@@ -700,6 +730,87 @@ body.lg-theme .theme-ctrl-item-head output{color:#7dd3fc}
   width:100%;margin:3px 0;accent-color:var(--c5);
 }
 
+/* Bộ chọn hình nền trong modal */
+.theme-bg-selector{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:4px;
+}
+.theme-bg-card{
+  all:unset;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  padding:8px 8px 10px;
+  border-radius:14px;
+  background:var(--tint);
+  border:1.5px solid var(--g);
+  cursor:pointer;
+  transition:all .2s ease;
+  user-select:none;
+}
+body.lg-theme .theme-bg-card{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.16);
+}
+.theme-bg-card:hover{
+  border-color:var(--c5);
+  transform:translateY(-1px);
+}
+body.lg-theme .theme-bg-card:hover{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.35);
+}
+.theme-bg-card.active{
+  border-color:var(--c5);
+  background:var(--card);
+  box-shadow:0 0 0 2px var(--c5);
+}
+body.lg-theme .theme-bg-card.active{
+  background:linear-gradient(180deg,rgba(56,189,248,.22),rgba(14,165,233,.08)) !important;
+  border-color:#38bdf8 !important;
+  box-shadow:0 0 16px rgba(56,189,248,.35),inset 0 1px 1px rgba(255,255,255,.5) !important;
+}
+.theme-bg-preview{
+  width:100%;
+  height:46px;
+  border-radius:9px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+}
+.preview-aurora{
+  background:
+    radial-gradient(circle at 25% 35%,#38bdf8 0%,transparent 45%),
+    radial-gradient(circle at 75% 25%,#6366f1 0%,transparent 45%),
+    radial-gradient(circle at 55% 75%,#06b6d4 0%,transparent 45%),
+    #060b19;
+}
+.preview-ios{
+  background:
+    radial-gradient(circle at 80% 15%,#38bdf8 0%,transparent 50%),
+    radial-gradient(circle at 20% 45%,#ec4899 0%,transparent 50%),
+    radial-gradient(circle at 75% 85%,#6366f1 0%,transparent 50%),
+    linear-gradient(135deg,#02040d,#080d24);
+}
+.preview-ios::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(55deg,transparent 35%,rgba(255,255,255,.4) 48%,rgba(56,189,248,.7) 53%,transparent 66%);
+  filter:blur(1px);
+}
+.theme-bg-name{
+  font-size:12px;
+  font-weight:700;
+  color:inherit;
+  text-align:center;
+}
+body.lg-theme .theme-bg-name{color:#fff}
+
 .theme-modal-actions{
   display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;
 }
@@ -743,8 +854,52 @@ body.lg-theme .theme-btn-action.active{
   </filter>
 </svg>
 
-<!-- Vòng tròn nền Liquid Glass (Crystal Ice Cyan & Sapphire) -->
+<!-- Vòng tròn nền Liquid Glass (Aurora) -->
 <div id="lg-orbs" class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+<!-- Nền phong cách iOS Silk Wave -->
+<div id="lg-bg-ios" class="lg-bg-ios" aria-hidden="true">
+  <svg viewBox="0 0 1440 900" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="ios-cyan-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#38bdf8" />
+        <stop offset="50%" stop-color="#0284c7" />
+        <stop offset="100%" stop-color="#1e3a8a" />
+      </linearGradient>
+      <linearGradient id="ios-magenta-purple" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ec4899" />
+        <stop offset="50%" stop-color="#a855f7" />
+        <stop offset="100%" stop-color="#4338ca" />
+      </linearGradient>
+      <linearGradient id="ios-amber-teal" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#06b6d4" />
+        <stop offset="60%" stop-color="#3b82f6" />
+        <stop offset="100%" stop-color="#6366f1" />
+      </linearGradient>
+      <filter id="ios-glow-heavy" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="65" />
+      </filter>
+      <filter id="ios-glow-mid" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="30" />
+      </filter>
+      <filter id="ios-glow-fine" x="-10%" y="-10%" width="120%" height="120%">
+        <feGaussianBlur stdDeviation="4" />
+      </filter>
+    </defs>
+    <!-- Background Silk Waves -->
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="url(#ios-cyan-blue)" stroke-width="170" fill="none" opacity="0.65" filter="url(#ios-glow-heavy)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="url(#ios-magenta-purple)" stroke-width="160" fill="none" opacity="0.55" filter="url(#ios-glow-heavy)" />
+    <path d="M 180 -120 C 420 320, 720 740, 1320 820 C 1520 860, 1620 740, 1700 680" stroke="url(#ios-amber-teal)" stroke-width="150" fill="none" opacity="0.5" filter="url(#ios-glow-heavy)" />
+    
+    <!-- Mid-layer silk ribbons for crisp optical depth -->
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="#38bdf8" stroke-width="36" fill="none" opacity="0.45" filter="url(#ios-glow-mid)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="#f472b6" stroke-width="32" fill="none" opacity="0.4" filter="url(#ios-glow-mid)" />
+    
+    <!-- Signature Apple silk specular crest lines -->
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="#e0f2fe" stroke-width="2.5" fill="none" opacity="0.75" filter="url(#ios-glow-fine)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="#fce7f3" stroke-width="2" fill="none" opacity="0.7" filter="url(#ios-glow-fine)" />
+  </svg>
+</div>
 
 <!-- Popup Cài đặt Giao diện -->
 <div id="theme-modal-overlay" class="theme-modal-overlay" hidden>
@@ -766,6 +921,23 @@ body.lg-theme .theme-btn-action.active{
 
     <!-- Các thiết lập của Liquid Glass -->
     <div id="lg-settings-panel" class="theme-ctrl-group" style="display:none">
+      <!-- Chọn hình nền Liquid Glass -->
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <label id="lbl-lg-bg" style="font-weight:700">Hình nền Liquid Glass</label>
+          <output id="o-lg-bg">iOS</output>
+        </div>
+        <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-lg-bg">
+          <button type="button" id="btn-bg-ios" class="theme-bg-card active" data-bg="ios" aria-checked="true" role="radio" title="Hình nền iOS phong cách dải lụa neon Apple">
+            <span class="theme-bg-preview preview-ios"></span>
+            <span class="theme-bg-name">iOS</span>
+          </button>
+          <button type="button" id="btn-bg-aurora" class="theme-bg-card" data-bg="aurora" aria-checked="false" role="radio" title="Hình nền Aurora với các khối cầu đa sắc">
+            <span class="theme-bg-preview preview-aurora"></span>
+            <span class="theme-bg-name">Aurora</span>
+          </button>
+        </div>
+      </div>
       <div class="theme-ctrl-item">
         <div class="theme-ctrl-item-head">
           <span>Độ mờ phía sau kính (--lg-blur)</span>
@@ -7102,9 +7274,10 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
                 }
             };
 
-            const DEF_LG = { blur: 14, fill: 12, tint: 16, sat: 200, orbBlur: 16, refract: false, glow: false };
-            let currentTheme = st('tin-hieu-theme') || 'default';
+            const DEF_LG = { blur: 14, fill: 12, tint: 16, sat: 200, orbBlur: 16, refract: false, glow: false, bg: 'ios' };
+            let currentTheme = st('tin-hieu-theme') || 'liquid-glass';
             let lgConfig = Object.assign({}, DEF_LG, st('tin-hieu-lg-settings') || {});
+            if (!lgConfig.bg) lgConfig.bg = 'ios';
 
             const modalOverlay = document.getElementById('theme-modal-overlay');
             const btnSettings = document.getElementById('btn-theme-settings');
@@ -7114,6 +7287,10 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
             const lgSettingsPanel = document.getElementById('lg-settings-panel');
             const defaultNotice = document.getElementById('default-theme-notice');
             const orbsEl = document.getElementById('lg-orbs');
+            const bgIosEl = document.getElementById('lg-bg-ios');
+            const btnBgAurora = document.getElementById('btn-bg-aurora');
+            const btnBgIos = document.getElementById('btn-bg-ios');
+            const oBg = document.getElementById('o-lg-bg');
 
             const rBlur = document.getElementById('r-lg-blur');
             const oBlur = document.getElementById('o-lg-blur');
@@ -7138,17 +7315,34 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
                 s.setProperty('--lg-tint', (lgConfig.tint / 100).toFixed(2));
                 s.setProperty('--lg-sat', lgConfig.sat + '%');
 
-                if (lgConfig.orbBlur === 0) {
+                // Quản lý nền (iOS Silk Wave hoặc Aurora Orbs)
+                const bg = lgConfig.bg || 'ios';
+                body.setAttribute('data-lg-bg', bg);
+                if (bg === 'ios') {
                     if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
-                    s.setProperty('--lg-orb-blur', '0px');
-                } else {
-                    if (orbsEl) {
-                        orbsEl.classList.remove('lg-orbs-hidden');
-                        orbsEl.style.filter = 'blur(' + lgConfig.orbBlur + 'px)';
+                    if (bgIosEl) {
+                        if (lgConfig.orbBlur === 0) {
+                            bgIosEl.classList.add('lg-orbs-hidden');
+                        } else {
+                            bgIosEl.classList.remove('lg-orbs-hidden');
+                            bgIosEl.style.filter = 'blur(' + (lgConfig.orbBlur * 0.4) + 'px)';
+                        }
                     }
-                    s.setProperty('--lg-orb-blur', lgConfig.orbBlur + 'px');
+                } else {
+                    if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
+                    if (lgConfig.orbBlur === 0) {
+                        if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+                        s.setProperty('--lg-orb-blur', '0px');
+                    } else {
+                        if (orbsEl) {
+                            orbsEl.classList.remove('lg-orbs-hidden');
+                            orbsEl.style.filter = 'blur(' + lgConfig.orbBlur + 'px)';
+                        }
+                        s.setProperty('--lg-orb-blur', lgConfig.orbBlur + 'px');
+                    }
                 }
 
+                // Vệt sáng chuột
                 body.classList.toggle('lg-glow-on', !!lgConfig.glow);
                 if (bGlow) {
                     bGlow.classList.toggle('active', !!lgConfig.glow);
@@ -7156,6 +7350,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
                     bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
                 }
 
+                // Refraction
                 root.classList.toggle('lg-refract', !!lgConfig.refract);
                 if (bRefract) {
                     bRefract.classList.toggle('active', !!lgConfig.refract);
@@ -7170,6 +7365,17 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
             }
 
             function syncControlUI() {
+                const bg = lgConfig.bg || 'ios';
+                if (btnBgAurora) {
+                    btnBgAurora.classList.toggle('active', bg === 'aurora');
+                    btnBgAurora.setAttribute('aria-checked', bg === 'aurora' ? 'true' : 'false');
+                }
+                if (btnBgIos) {
+                    btnBgIos.classList.toggle('active', bg === 'ios');
+                    btnBgIos.setAttribute('aria-checked', bg === 'ios' ? 'true' : 'false');
+                }
+                if (oBg) oBg.textContent = bg === 'ios' ? 'iOS' : 'Aurora';
+
                 if (rBlur) { rBlur.value = lgConfig.blur; oBlur.textContent = lgConfig.blur + 'px'; }
                 if (rFill) { rFill.value = lgConfig.fill; oFill.textContent = (lgConfig.fill / 100).toFixed(2); }
                 if (rTint) { rTint.value = lgConfig.tint; oTint.textContent = (lgConfig.tint / 100).toFixed(2); }
@@ -7201,6 +7407,8 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
                     applyLgTokens();
                 } else {
                     if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+                    if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
+                    body.removeAttribute('data-lg-bg');
                     root.classList.remove('lg-refract');
                 }
             }
@@ -7243,6 +7451,15 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
 
             if (optDefault) optDefault.onclick = () => setTheme('default');
             if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
+
+            function setBg(bgKey) {
+                lgConfig.bg = bgKey;
+                st('tin-hieu-lg-settings', lgConfig);
+                syncControlUI();
+                applyLgTokens();
+            }
+            if (btnBgAurora) btnBgAurora.onclick = () => setBg('aurora');
+            if (btnBgIos) btnBgIos.onclick = () => setBg('ios');
 
             function bindSlider(slider, output, key, transformOut, onApply) {
                 if (!slider || !output) return;

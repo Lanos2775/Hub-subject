@@ -62,7 +62,7 @@ body.lg-theme[data-lg-bg="ios"] .lg-orbs{display:none !important}
 .lg-orbs i.orb-indigo{right:6%;bottom:8%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#c7d2fe,#6366f1 55%,#312e81)}
 .lg-orbs i.orb-teal{left:6%;bottom:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#99f6e4,#14b8a6 55%,#0f766e)}
 
-/* Nền phong cách iPhone iOS Silk Wave */
+/* Nền phong cách iOS Silk Wave */
 .lg-bg-ios{
   position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
   transition:filter .25s ease,opacity .3s ease;display:none;
@@ -73,7 +73,7 @@ body.lg-theme[data-lg-bg="ios"] .lg-bg-ios{
 body:not(.lg-theme) .lg-bg-ios{display:none !important}
 .lg-bg-ios.lg-orbs-hidden{display:none !important}
 
-/* Thay đổi gradient nền chính khi chọn iPhone iOS */
+/* Thay đổi gradient nền chính khi chọn iOS */
 body.lg-theme[data-lg-bg="ios"]{
   background-color:#020510 !important;
   background-image:
@@ -930,16 +930,16 @@ html.lg-refract body.lg-theme #hmenu{
       <div class="theme-ctrl-item">
         <div class="theme-ctrl-item-head">
           <label id="lbl-lg-bg" style="font-weight:700">Hình nền Liquid Glass</label>
-          <output id="o-lg-bg">iPhone iOS</output>
+          <output id="o-lg-bg">iOS</output>
         </div>
         <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-lg-bg">
-          <button type="button" id="btn-bg-ios" class="theme-bg-card active" data-bg="ios" aria-checked="true" role="radio" title="Hình nền iPhone iOS phong cách dải lụa neon Apple">
+          <button type="button" id="btn-bg-ios" class="theme-bg-card active" data-bg="ios" aria-checked="true" role="radio" title="Hình nền iOS phong cách dải lụa neon Apple">
             <span class="theme-bg-preview preview-ios"></span>
-            <span class="theme-bg-name">iPhone iOS</span>
+            <span class="theme-bg-name">iOS</span>
           </button>
           <button type="button" id="btn-bg-aurora" class="theme-bg-card" data-bg="aurora" aria-checked="false" role="radio" title="Hình nền Aurora với các khối cầu đa sắc">
             <span class="theme-bg-preview preview-aurora"></span>
-            <span class="theme-bg-name">Aurora Pha lê</span>
+            <span class="theme-bg-name">Aurora</span>
           </button>
         </div>
       </div>
@@ -1453,7 +1453,7 @@ window.addEventListener("keydown",e=>{
       btnBgIos.classList.toggle('active', bg === 'ios');
       btnBgIos.setAttribute('aria-checked', bg === 'ios' ? 'true' : 'false');
     }
-    if (oBg) oBg.textContent = bg === 'ios' ? 'iPhone iOS' : 'Aurora Pha lê';
+    if (oBg) oBg.textContent = bg === 'ios' ? 'iOS' : 'Aurora';
 
     // Orb blur & min=0 ẩn vòng tròn
     if (lgConfig.orbBlur === 0) {
@@ -1504,7 +1504,7 @@ window.addEventListener("keydown",e=>{
       btnBgIos.classList.toggle('active', bg === 'ios');
       btnBgIos.setAttribute('aria-checked', bg === 'ios' ? 'true' : 'false');
     }
-    if (oBg) oBg.textContent = bg === 'ios' ? 'iPhone iOS' : 'Aurora Pha lê';
+    if (oBg) oBg.textContent = bg === 'ios' ? 'iOS' : 'Aurora';
 
     if (rBlur) { rBlur.value = lgConfig.blur; oBlur.textContent = lgConfig.blur + 'px'; }
     if (rFill) { rFill.value = lgConfig.fill; oFill.textContent = (lgConfig.fill / 100).toFixed(2); }
