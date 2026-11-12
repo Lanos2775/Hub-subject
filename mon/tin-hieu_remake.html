@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tín Hiệu &amp; Hệ Thống — Giáo Trình Từ Gốc</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='100%25' stop-color='%231e3a8a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M16 34 Q 24 18 32 34 T 48 34' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='34' r='4' fill='%2367e8f9'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
@@ -191,12 +193,473 @@ html,html *{scrollbar-width:none!important;-ms-overflow-style:none!important}htm
 .fpop-tbl td{padding:5px 8px;border-bottom:1px solid var(--g);vertical-align:middle}
 .fpop-tbl tr:last-child td{border-bottom:0}
 .fpop-tbl td:first-child{white-space:nowrap}
+
+/* ===== LIQUID GLASS THEME (Crystal Ice Cyan & Sapphire Edition) ===== */
+body.lg-theme{
+  --lg-blur:14px;
+  --lg-fill:0.12;
+  --lg-tint:0.16;
+  --lg-sat:200%;
+  --lg-orb-blur:16px;
+  --lg-text:#f0f6fc;
+  --lg-ink:#060a22;
+  --bg:#070b1a;
+  --card:rgba(12,20,50,0.65);
+  --ink:#f0f6fc;
+  --mut:#94a3b8;
+  --c1:#38bdf8;
+  --c2:#34d399;
+  --c3:#fbbf24;
+  --c4:#818cf8;
+  --c5:#60a5fa;
+  --g:rgba(255,255,255,.2);
+  --tint:rgba(255,255,255,.08);
+  background:#070b1a radial-gradient(circle at 50% 20%,#0e1738 0%,#070b1a 80%) fixed !important;
+  color:var(--lg-text) !important;
+}
+
+.lg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;transition:filter .25s ease,opacity .25s ease}
+body:not(.lg-theme) .lg-orbs{display:none !important}
+.lg-orbs.lg-orbs-hidden{display:none !important}
+.lg-orbs i{position:absolute;border-radius:50%;display:block}
+.lg-orbs i:nth-child(1){left:5%;top:12%;width:260px;height:260px;background:radial-gradient(circle at 32% 28%,#5ce1e6,#00a2ff 55%,#0048b3)}
+.lg-orbs i:nth-child(2){right:8%;top:5%;width:230px;height:230px;background:radial-gradient(circle at 32% 28%,#70a6ff,#3b82f6 55%,#1e3a8a)}
+.lg-orbs i:nth-child(3){left:36%;top:50%;width:300px;height:300px;background:radial-gradient(circle at 32% 28%,#a5f3fc,#06b6d4 55%,#0e7490)}
+.lg-orbs i:nth-child(4){right:5%;bottom:6%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#38bdf8,#0284c7 55%,#0369a1)}
+.lg-orbs i:nth-child(5){left:4%;bottom:8%;width:180px;height:180px;background:radial-gradient(circle at 32% 28%,#67e8f9,#22d3ee 55%,#0891b2)}
+
+body.lg-theme main{position:relative;z-index:1}
+body.lg-theme #mb{z-index:60}
+
+/* Hiệu ứng kính cho các khung thẻ và container */
+body.lg-theme .card,
+body.lg-theme .sec-title,
+body.lg-theme .fpop-box,
+body.lg-theme .qzp-box,
+body.lg-theme #mn,
+body.lg-theme .qz-side,
+body.lg-theme .qpx,
+body.lg-theme #qzDlg{
+  position:relative;isolation:isolate;color:var(--lg-text);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(10,18,48,var(--lg-tint)) !important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(255,255,255,.18),
+    inset 0 0 26px rgba(255,255,255,.08),
+    inset 0 -20px 30px -20px rgba(255,255,255,.24),
+    0 26px 54px -20px rgba(2,4,20,.65) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  text-shadow:0 1px 10px rgba(4,8,30,.35);
+}
+
+/* Menu và popups bắt buộc fixed */
+body.lg-theme #mn{
+  position:fixed !important;
+  z-index:60 !important;
+}
+body.lg-theme #mn[hidden]{display:none !important}
+
+body.lg-theme #fPop{
+  position:fixed !important;
+  z-index:70 !important;
+  background:rgba(5,9,28,.65) !important;
+  -webkit-backdrop-filter:blur(12px) !important;
+  backdrop-filter:blur(12px) !important;
+}
+
+body.lg-theme #qzPop{
+  position:fixed !important;
+  z-index:60 !important;
+  background:rgba(5,9,28,.65) !important;
+  -webkit-backdrop-filter:blur(12px) !important;
+  backdrop-filter:blur(12px) !important;
+}
+
+body.lg-theme .card{border-left:7px solid var(--bc,var(--c1)) !important}
+body.lg-theme .c0{--bc:var(--c1)}
+body.lg-theme .c1{--bc:var(--c2)}
+body.lg-theme .c2{--bc:var(--c3)}
+body.lg-theme .c3{--bc:var(--c4)}
+body.lg-theme .c4{--bc:var(--c5)}
+
+/* Vệt sáng chuột chỉ bật khi lg-glow-on */
+body.lg-theme .card::before,
+body.lg-theme .fpop-box::before,
+body.lg-theme .qzp-box::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(circle 200px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.22),transparent 70%),
+    radial-gradient(120% 55% at 50% -8%,rgba(255,255,255,.28),transparent 58%);
+}
+body.lg-theme:not(.lg-glow-on) .card::before,
+body.lg-theme:not(.lg-glow-on) .fpop-box::before,
+body.lg-theme:not(.lg-glow-on) .qzp-box::before{
+  display:none !important;
+}
+body.lg-theme .card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.1) 30%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.7));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+
+body.lg-theme h1#lesson-title{
+  background:linear-gradient(90deg,#7dd3fc,#e0f2fe,#93c5fd);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;text-shadow:none;
+}
+body.lg-theme h2{color:#ffffff;text-shadow:0 2px 12px rgba(4,8,30,.5)}
+body.lg-theme h3{color:#bae6fd;text-shadow:0 1px 8px rgba(4,8,30,.4)}
+body.lg-theme .sec-title{color:#e0f2fe;border-bottom-color:rgba(255,255,255,.2)}
+
+body.lg-theme .bridge,
+body.lg-theme .box,
+body.lg-theme .f,
+body.lg-theme .ans,
+body.lg-theme .tw,
+body.lg-theme .steps>li,
+body.lg-theme .fpop-card,
+body.lg-theme .fpop-eq,
+body.lg-theme .qzx .fm,
+body.lg-theme .qzx .ch li,
+body.lg-theme .qzx .qcheck{
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+}
+body.lg-theme .bridge{border-left:5px solid #38bdf8 !important}
+body.lg-theme .box{border-left:5px solid #fbbf24 !important}
+body.lg-theme .box.warn{border-left-color:#818cf8 !important}
+body.lg-theme .box.analogy{border-left-color:#34d399 !important}
+body.lg-theme .key{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(10,18,48,var(--lg-tint)) !important;
+  border:1.5px solid rgba(129,140,248,.6) !important;
+  box-shadow:0 4px 20px rgba(56,189,248,.18) !important;
+}
+body.lg-theme .key::before{
+  background:linear-gradient(135deg,#38bdf8,#818cf8) !important;
+  color:#fff !important;
+}
+
+body.lg-theme .tab,
+body.lg-theme .pg,
+body.lg-theme #ls button,
+body.lg-theme .qtab,
+body.lg-theme .qo,
+body.lg-theme .qrb,
+body.lg-theme #mb,
+body.lg-theme .btn-theme-settings{
+  color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06)) !important;
+  border:1px solid rgba(255,255,255,.3) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(255,255,255,.1),0 8px 16px -10px rgba(2,4,20,.6) !important;
+  text-shadow:0 1px 8px rgba(4,8,30,.5);
+}
+
+body.lg-theme .tab:hover,
+body.lg-theme .pg:hover,
+body.lg-theme #ls button:hover,
+body.lg-theme .qtab:hover,
+body.lg-theme .qo:hover,
+body.lg-theme #mb:hover,
+body.lg-theme .btn-theme-settings:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.36),rgba(255,255,255,.12)) !important;
+  border-color:rgba(255,255,255,.65) !important;
+}
+
+body.lg-theme .tab.on,
+body.lg-theme #ls button.on,
+body.lg-theme .qtab.on,
+body.lg-theme .qgo,
+body.lg-theme .qo.qon{
+  background:linear-gradient(180deg,#ffffff,#cde9ff) !important;
+  color:var(--lg-ink,#060a22) !important;
+  border-color:#ffffff !important;
+  text-shadow:none !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 #ffffff !important;
+}
+
+body.lg-theme svg:not(#lg-defs):not(.btn-theme-settings svg):not(.theme-modal-close-btn svg){
+  background:rgba(8,14,36,.6) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+}
+body.lg-theme svg text{fill:#f0f6fc !important}
+body.lg-theme th{background:rgba(255,255,255,.12) !important;color:#bae6fd !important}
+body.lg-theme td,body.lg-theme th{border-bottom:1px solid rgba(255,255,255,.12) !important}
+body.lg-theme mjx-container{color:#f0f6fc !important}
+body.lg-theme code{background:rgba(255,255,255,.12) !important;color:#e0f2fe !important}
+
+body.lg-theme #toc a{color:rgba(255,255,255,.85) !important}
+body.lg-theme #toc a:hover{background:rgba(255,255,255,.12) !important;color:#fff !important}
+body.lg-theme #toc a.l1{color:#7dd3fc !important;font-weight:800}
+body.lg-theme #toc a.sub{color:rgba(255,255,255,.6) !important}
+body.lg-theme #toc a.on{background:rgba(255,255,255,.18) !important;color:#38bdf8 !important}
+
+/* Header bar inside menu */
+.nav-view-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 6px 10px;margin-bottom:8px;
+  border-bottom:1px solid var(--g);
+}
+body.lg-theme .nav-view-row{border-bottom-color:rgba(255,255,255,.2)}
+.menu-label{
+  font-size:13.5px;font-weight:800;color:var(--c5);letter-spacing:.02em;
+}
+body.lg-theme .menu-label{color:#7dd3fc}
+.btn-theme-settings{
+  width:32px;height:32px;border-radius:8px;border:1px solid var(--g);
+  background:var(--tint);color:var(--ink);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:all .18s ease;
+}
+.btn-theme-settings:hover{background:var(--c5);color:#fff;border-color:transparent}
+
+/* Khúc xạ trên Chromium */
+html.lg-refract body.lg-theme .card,
+html.lg-refract body.lg-theme #mn,
+html.lg-refract body.lg-theme .fpop-box,
+html.lg-refract body.lg-theme .qzp-box{
+  -webkit-backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
+  backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
+}
+
+/* Modal Popup Cài đặt Giao diện */
+.theme-modal-overlay{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(6,10,30,.65);
+  -webkit-backdrop-filter:blur(10px) saturate(130%);
+  backdrop-filter:blur(10px) saturate(130%);
+  z-index:9999;
+  animation:fadeInModal .2s ease;
+}
+.theme-modal-overlay[hidden]{display:none !important}
+@keyframes fadeInModal{from{opacity:0}to{opacity:1}}
+
+.theme-modal-box{
+  width:min(440px,calc(100vw - 32px));
+  max-height:calc(100vh - 40px);
+  overflow-y:auto;
+  border-radius:24px;
+  padding:22px;
+  background:var(--card);
+  color:var(--ink);
+  border:2px solid var(--c5);
+  box-shadow:0 16px 48px rgba(0,0,0,.35);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  font-family:"Be Vietnam Pro",system-ui,sans-serif;
+  animation:slideUpModal .22s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes slideUpModal{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+body.lg-theme .theme-modal-box{
+  background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 60%,rgba(255,255,255,.12)),rgba(14,24,64,.85) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(180%) !important;
+  backdrop-filter:blur(28px) saturate(180%) !important;
+  border:1px solid rgba(255,255,255,.35) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 24px 60px rgba(2,4,20,.8) !important;
+}
+
+.theme-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:12px;border-bottom:1px solid var(--g);
+}
+body.lg-theme .theme-modal-header{border-bottom-color:rgba(255,255,255,.2)}
+.theme-modal-header h3{margin:0;font-size:18px;font-weight:800;color:inherit}
+.theme-modal-close-btn{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--g);
+  background:var(--tint);color:var(--ink);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;font-weight:700;transition:all .18s ease;
+}
+.theme-modal-close-btn:hover{background:var(--c4);color:#fff;border-color:transparent}
+
+.theme-mode-select{
+  display:flex;gap:4px;padding:4px;border-radius:999px;
+  background:var(--tint);border:1.5px solid var(--g);
+}
+body.lg-theme .theme-mode-select{
+  background:rgba(6,10,30,.45);border-color:rgba(255,255,255,.25);
+}
+.thm-toggle-btn{
+  flex:1;border:0;border-radius:999px;padding:9px 8px;
+  font:700 13.5px "Be Vietnam Pro",sans-serif;
+  color:var(--ink);background:transparent;cursor:pointer;
+  transition:all .2s ease;text-align:center;
+}
+body.lg-theme .thm-toggle-btn{color:rgba(255,255,255,.88)}
+.thm-toggle-btn.active{
+  background:var(--c5);color:#fff;
+  box-shadow:0 3px 10px rgba(112,72,232,.3);
+}
+body.lg-theme .thm-toggle-btn.active{
+  background:linear-gradient(180deg,#ffffff,#cde9ff) !important;
+  color:var(--lg-ink,#060a22) !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.35),inset 0 1px 0 #ffffff !important;
+}
+
+.theme-default-notice{
+  padding:14px 16px;border-radius:14px;background:var(--tint);
+  border:1px dashed var(--g);font-size:13.5px;line-height:1.6;color:var(--mut);text-align:center;
+}
+
+.theme-ctrl-group{
+  display:flex;flex-direction:column;gap:13px;
+}
+.theme-ctrl-item{
+  display:flex;flex-direction:column;gap:5px;
+  font-size:13px;font-weight:600;
+}
+.theme-ctrl-item-head{
+  display:flex;justify-content:space-between;align-items:center;
+  color:var(--ink);
+}
+body.lg-theme .theme-ctrl-item-head{color:#ffffff}
+.theme-ctrl-item-head span{
+  font-size:11.5px;color:var(--mut);font-weight:500;
+}
+body.lg-theme .theme-ctrl-item-head span{color:rgba(255,255,255,.7)}
+.theme-ctrl-item-head output{
+  font-weight:700;color:var(--c5);
+}
+body.lg-theme .theme-ctrl-item-head output{color:#7dd3fc}
+.theme-ctrl-item input[type=range]{
+  width:100%;margin:3px 0;accent-color:var(--c5);
+}
+
+.theme-modal-actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;
+}
+.theme-btn-action{
+  flex:1;min-width:110px;padding:9px 12px;border-radius:999px;
+  font:700 12.5px "Be Vietnam Pro",sans-serif;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1.5px solid var(--g);background:var(--tint);color:var(--ink);
+  transition:all .18s ease;
+}
+.theme-btn-action:hover{border-color:var(--c5);background:var(--card)}
+body.lg-theme .theme-btn-action{
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
+  border-color:rgba(255,255,255,.3);color:#fff;
+}
+body.lg-theme .theme-btn-action:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,.12));
+}
+.theme-btn-action.active{
+  background:var(--c5);color:#fff;border-color:var(--c5);
+}
+body.lg-theme .theme-btn-action.active{
+  background:linear-gradient(180deg,#ffffff,#cde9ff);color:var(--lg-ink,#060a22);
+  border-color:#ffffff;
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.lg-theme .card,body.lg-theme #mn,body.lg-theme .fpop-box,body.lg-theme .qzp-box,.theme-modal-box,.theme-modal-overlay{-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+  .lg-orbs{display:none !important}
+  .btn-theme-settings,.thm-toggle-btn,.theme-btn-action,.theme-modal-overlay,.theme-modal-box{transition:none !important;animation:none !important}
+}
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute;margin:0;border:0;background:none" aria-hidden="true"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c2)"/></marker><marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c4)"/></marker><marker id="ar5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c5)"/></marker></defs></svg>
+<!-- SVG Filter cho hiệu ứng khúc xạ -->
+<svg id="lg-defs" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- Vòng tròn nền Liquid Glass (Crystal Ice Cyan & Sapphire) -->
+<div id="lg-orbs" class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+<!-- Popup Cài đặt Giao diện -->
+<div id="theme-modal-overlay" class="theme-modal-overlay" hidden>
+  <div id="theme-modal" class="theme-modal-box" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
+    <div class="theme-modal-header">
+      <h3 id="theme-modal-title">Cài đặt giao diện</h3>
+      <button type="button" id="theme-modal-close" class="theme-modal-close-btn" aria-label="Đóng popup">✕</button>
+    </div>
+
+    <!-- Chuyển đổi giữa 2 giao diện -->
+    <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
+      <button type="button" id="thm-opt-default" class="thm-toggle-btn active">Dracula</button>
+      <button type="button" id="thm-opt-liquid" class="thm-toggle-btn">Liquid Glass</button>
+    </div>
+
+    <div id="default-theme-notice" class="theme-default-notice">
+      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> để trải nghiệm giao diện kính mờ pha lê và bật các tuỳ chỉnh chi tiết.
+    </div>
+
+    <!-- Các thiết lập của Liquid Glass -->
+    <div id="lg-settings-panel" class="theme-ctrl-group" style="display:none">
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ mờ phía sau kính (--lg-blur)</span>
+          <output id="o-lg-blur">14px</output>
+        </div>
+        <input id="r-lg-blur" type="range" min="0" max="40" value="14" aria-label="Độ mờ phía sau kính">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ sáng của kính (--lg-fill)</span>
+          <output id="o-lg-fill">0.12</output>
+        </div>
+        <input id="r-lg-fill" type="range" min="2" max="40" value="12" aria-label="Độ sáng của kính">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ phủ màu tối (--lg-tint)</span>
+          <output id="o-lg-tint">0.16</output>
+        </div>
+        <input id="r-lg-tint" type="range" min="0" max="60" value="16" aria-label="Độ phủ màu tối">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ rực màu nền (--lg-sat)</span>
+          <output id="o-lg-sat">200%</output>
+        </div>
+        <input id="r-lg-sat" type="range" min="100" max="300" value="200" aria-label="Độ rực màu nền">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Làm mờ nền / Vòng tròn (kéo min = ẩn)</span>
+          <output id="o-lg-orb-blur">16px</output>
+        </div>
+        <input id="r-lg-orb-blur" type="range" min="0" max="50" value="16" aria-label="Làm mờ nền hoặc ẩn vòng tròn">
+      </div>
+
+      <div class="theme-modal-actions">
+        <button type="button" id="b-lg-glow" class="theme-btn-action" aria-pressed="false">Vệt sáng chuột: Tắt</button>
+        <button type="button" id="b-lg-refract" class="theme-btn-action" aria-pressed="false">Khúc xạ (Chrome): Tắt</button>
+        <button type="button" id="b-lg-reset" class="theme-btn-action">Đặt lại</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <button id="mb" type="button" aria-label="Mở menu và mục lục" aria-expanded="false" aria-controls="mn"><span></span><span></span><span></span></button>
-<nav id="mn" hidden aria-label="Mục lục"><div id="ls"></div><div id="toc"></div></nav>
+<nav id="mn" hidden aria-label="Mục lục">
+  <div class="nav-view-row">
+    <div class="menu-label">Tín hiệu &amp; Hệ thống</div>
+    <button type="button" id="btn-theme-settings" class="btn-theme-settings" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </div>
+  <div id="ls"></div><div id="toc"></div>
+</nav>
 <main>
 <header>
 <span class="k" id="lesson-chip"></span>
@@ -6452,6 +6915,237 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
             state.currentLessonIndex = 1;
             renderCurrentLesson();
         });
+
+        // ===== THEME MANAGER (Liquid Glass & Dracula) =====
+        (function themeManager() {
+            const root = document.documentElement;
+            const body = document.body;
+            const st = (k, v) => {
+                try {
+                    if (typeof v !== 'undefined') localStorage.setItem(k, JSON.stringify(v));
+                    const val = localStorage.getItem(k);
+                    return val ? JSON.parse(val) : null;
+                } catch (e) {
+                    return null;
+                }
+            };
+
+            const DEF_LG = { blur: 14, fill: 12, tint: 16, sat: 200, orbBlur: 16, refract: false, glow: false };
+            let currentTheme = st('tin-hieu-theme') || 'default';
+            let lgConfig = Object.assign({}, DEF_LG, st('tin-hieu-lg-settings') || {});
+
+            const modalOverlay = document.getElementById('theme-modal-overlay');
+            const btnSettings = document.getElementById('btn-theme-settings');
+            const btnCloseModal = document.getElementById('theme-modal-close');
+            const optDefault = document.getElementById('thm-opt-default');
+            const optLiquid = document.getElementById('thm-opt-liquid');
+            const lgSettingsPanel = document.getElementById('lg-settings-panel');
+            const defaultNotice = document.getElementById('default-theme-notice');
+            const orbsEl = document.getElementById('lg-orbs');
+
+            const rBlur = document.getElementById('r-lg-blur');
+            const oBlur = document.getElementById('o-lg-blur');
+            const rFill = document.getElementById('r-lg-fill');
+            const oFill = document.getElementById('o-lg-fill');
+            const rTint = document.getElementById('r-lg-tint');
+            const oTint = document.getElementById('o-lg-tint');
+            const rSat = document.getElementById('r-lg-sat');
+            const oSat = document.getElementById('o-lg-sat');
+            const rOrbBlur = document.getElementById('r-lg-orb-blur');
+            const oOrbBlur = document.getElementById('o-lg-orb-blur');
+            const bGlow = document.getElementById('b-lg-glow');
+            const bRefract = document.getElementById('b-lg-refract');
+            const bReset = document.getElementById('b-lg-reset');
+
+            const canRefract = () => /Chrom(e|ium)\//.test(navigator.userAgent) && window.CSS && CSS.supports && CSS.supports('backdrop-filter', 'blur(1px)');
+
+            function applyLgTokens() {
+                const s = root.style;
+                s.setProperty('--lg-blur', lgConfig.blur + 'px');
+                s.setProperty('--lg-fill', (lgConfig.fill / 100).toFixed(2));
+                s.setProperty('--lg-tint', (lgConfig.tint / 100).toFixed(2));
+                s.setProperty('--lg-sat', lgConfig.sat + '%');
+
+                if (lgConfig.orbBlur === 0) {
+                    if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+                    s.setProperty('--lg-orb-blur', '0px');
+                } else {
+                    if (orbsEl) {
+                        orbsEl.classList.remove('lg-orbs-hidden');
+                        orbsEl.style.filter = 'blur(' + lgConfig.orbBlur + 'px)';
+                    }
+                    s.setProperty('--lg-orb-blur', lgConfig.orbBlur + 'px');
+                }
+
+                body.classList.toggle('lg-glow-on', !!lgConfig.glow);
+                if (bGlow) {
+                    bGlow.classList.toggle('active', !!lgConfig.glow);
+                    bGlow.setAttribute('aria-pressed', !!lgConfig.glow);
+                    bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
+                }
+
+                root.classList.toggle('lg-refract', !!lgConfig.refract);
+                if (bRefract) {
+                    bRefract.classList.toggle('active', !!lgConfig.refract);
+                    bRefract.setAttribute('aria-pressed', !!lgConfig.refract);
+                    if (!canRefract()) {
+                        bRefract.disabled = true;
+                        bRefract.textContent = 'Khúc xạ: cần Chrome / Edge';
+                    } else {
+                        bRefract.textContent = 'Khúc xạ (Chrome): ' + (lgConfig.refract ? 'Bật' : 'Tắt');
+                    }
+                }
+            }
+
+            function syncControlUI() {
+                if (rBlur) { rBlur.value = lgConfig.blur; oBlur.textContent = lgConfig.blur + 'px'; }
+                if (rFill) { rFill.value = lgConfig.fill; oFill.textContent = (lgConfig.fill / 100).toFixed(2); }
+                if (rTint) { rTint.value = lgConfig.tint; oTint.textContent = (lgConfig.tint / 100).toFixed(2); }
+                if (rSat) { rSat.value = lgConfig.sat; oSat.textContent = lgConfig.sat + '%'; }
+                if (rOrbBlur) {
+                    rOrbBlur.value = lgConfig.orbBlur;
+                    oOrbBlur.textContent = lgConfig.orbBlur === 0 ? 'Ẩn vòng tròn' : lgConfig.orbBlur + 'px';
+                }
+                if (bGlow) {
+                    bGlow.classList.toggle('active', !!lgConfig.glow);
+                    bGlow.setAttribute('aria-pressed', !!lgConfig.glow);
+                    bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
+                }
+            }
+
+            function setTheme(t) {
+                currentTheme = t;
+                st('tin-hieu-theme', t);
+                const isLg = t === 'liquid-glass';
+
+                body.classList.toggle('lg-theme', isLg);
+                if (optDefault) optDefault.classList.toggle('active', !isLg);
+                if (optLiquid) optLiquid.classList.toggle('active', isLg);
+
+                if (lgSettingsPanel) lgSettingsPanel.style.display = isLg ? 'flex' : 'none';
+                if (defaultNotice) defaultNotice.style.display = isLg ? 'none' : 'block';
+
+                if (isLg) {
+                    applyLgTokens();
+                } else {
+                    if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+                    root.classList.remove('lg-refract');
+                }
+            }
+
+            function openModal() {
+                if (modalOverlay) {
+                    modalOverlay.hidden = false;
+                    syncControlUI();
+                }
+            }
+            function closeModal() {
+                if (modalOverlay) modalOverlay.hidden = true;
+            }
+
+            if (btnSettings) {
+                btnSettings.onclick = (e) => {
+                    e.stopPropagation();
+                    const nav = document.getElementById('mn');
+                    const mb = document.getElementById('mb');
+                    if (nav) nav.hidden = true;
+                    if (mb) {
+                        mb.setAttribute('aria-expanded', 'false');
+                    }
+                    openModal();
+                };
+            }
+            if (btnCloseModal) btnCloseModal.onclick = closeModal;
+            if (modalOverlay) {
+                modalOverlay.onclick = (e) => {
+                    if (e.target === modalOverlay) closeModal();
+                };
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modalOverlay && !modalOverlay.hidden) {
+                    e.stopPropagation();
+                    closeModal();
+                }
+            }, true);
+
+            if (optDefault) optDefault.onclick = () => setTheme('default');
+            if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
+
+            function bindSlider(slider, output, key, transformOut, onApply) {
+                if (!slider || !output) return;
+                slider.oninput = () => {
+                    const v = +slider.value;
+                    lgConfig[key] = v;
+                    output.textContent = transformOut(v);
+                    onApply(v);
+                    st('tin-hieu-lg-settings', lgConfig);
+                };
+            }
+
+            bindSlider(rBlur, oBlur, 'blur', v => v + 'px', v => root.style.setProperty('--lg-blur', v + 'px'));
+            bindSlider(rFill, oFill, 'fill', v => (v / 100).toFixed(2), v => root.style.setProperty('--lg-fill', (v / 100).toFixed(2)));
+            bindSlider(rTint, oTint, 'tint', v => (v / 100).toFixed(2), v => root.style.setProperty('--lg-tint', (v / 100).toFixed(2)));
+            bindSlider(rSat, oSat, 'sat', v => v + '%', v => root.style.setProperty('--lg-sat', v + '%'));
+            bindSlider(rOrbBlur, oOrbBlur, 'orbBlur', v => v === 0 ? 'Ẩn vòng tròn' : v + 'px', v => {
+                if (v === 0) {
+                    if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+                } else {
+                    if (orbsEl) {
+                        orbsEl.classList.remove('lg-orbs-hidden');
+                        orbsEl.style.filter = 'blur(' + v + 'px)';
+                    }
+                }
+                root.style.setProperty('--lg-orb-blur', v + 'px');
+            });
+
+            if (bGlow) {
+                bGlow.onclick = () => {
+                    lgConfig.glow = !lgConfig.glow;
+                    body.classList.toggle('lg-glow-on', lgConfig.glow);
+                    bGlow.classList.toggle('active', lgConfig.glow);
+                    bGlow.setAttribute('aria-pressed', lgConfig.glow);
+                    bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
+                    st('tin-hieu-lg-settings', lgConfig);
+                };
+            }
+
+            if (bRefract) {
+                bRefract.onclick = () => {
+                    if (!canRefract()) return;
+                    lgConfig.refract = !lgConfig.refract;
+                    root.classList.toggle('lg-refract', lgConfig.refract);
+                    bRefract.classList.toggle('active', lgConfig.refract);
+                    bRefract.setAttribute('aria-pressed', lgConfig.refract);
+                    bRefract.textContent = 'Khúc xạ (Chrome): ' + (lgConfig.refract ? 'Bật' : 'Tắt');
+                    st('tin-hieu-lg-settings', lgConfig);
+                };
+            }
+
+            if (bReset) {
+                bReset.onclick = () => {
+                    lgConfig = Object.assign({}, DEF_LG);
+                    st('tin-hieu-lg-settings', lgConfig);
+                    syncControlUI();
+                    applyLgTokens();
+                };
+            }
+
+            // Pointer light tracking (chỉ chạy khi bật vệt sáng chuột)
+            if (window.matchMedia && matchMedia('(pointer:fine)').matches) {
+                document.addEventListener('pointermove', (e) => {
+                    if (!body.classList.contains('lg-theme') || !lgConfig.glow) return;
+                    const el = e.target.closest && e.target.closest('.card, #mn, .theme-modal-box, .fpop-box, .qzp-box');
+                    if (!el) return;
+                    const r = el.getBoundingClientRect();
+                    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+                    el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+                }, { passive: true });
+            }
+
+            syncControlUI();
+            setTheme(currentTheme);
+        })();
     </script>
 </body>
 </html>
