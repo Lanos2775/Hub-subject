@@ -244,7 +244,9 @@ html[data-view=desktop] .f,html[data-view=desktop] .tw,html[data-view=desktop] :
       <option value="3">Buổi 3: Nhập môn Cơ học lượng tử (Phần 2)</option>
       <option value="4">Buổi 4: Lý thuyết lượng tử chất rắn</option>
       <option value="5">Buổi 5: Bán dẫn ở trạng thái cân bằng</option>
-      <option value="6" selected>Buổi 6: Bán dẫn pha tạp & Bán dẫn suy biến</option>
+      <option value="6">Buổi 6: Bán dẫn pha tạp & Bán dẫn suy biến</option>
+      <option value="7">Buổi 7: Vận chuyển hạt tải (Trôi & Khuếch tán)</option>
+      <option value="9" selected>Buổi 9: Bài tập trọng tâm (Vận chuyển hạt tải)</option>
     </select>
   </div>
   <div class="toc-title">Mục lục bài đang mở</div>
@@ -4724,6 +4726,451 @@ html[data-view=desktop] .f,html[data-view=desktop] .tw,html[data-view=desktop] :
 </section>
 </template>
 
+<template id="tpl-buoi-7">
+  <header>
+    <span class="k b2">HỌC PHẦN ENP2209 · BUỔI 7</span>
+    <h1>Hiện Tượng Vận Chuyển Hạt Tải Trong Chất Bán Dẫn</h1>
+    <p class="mut">Chuyển động trôi và khuếch tán, độ linh động, độ dẫn điện, bão hòa vận tốc, hệ thức Einstein, điện trường nội tại khi pha tạp không đều và hiệu ứng Hall.</p>
+    <div class="roadmap"><p><b>Bản đồ Buổi 7 — từ "đếm hạt" sang "hạt chuyển động"</b></p><ol><li><b>Mục 1:</b> Trôi do điện trường, mật độ dòng $J_{drift}$.</li><li><b>Mục 2:</b> Vì sao độ linh động $\mu$ bị giảm (nhiệt độ, tạp chất, quy tắc Matthiessen).</li><li><b>Mục 3:</b> Độ dẫn điện $\sigma$ và điện trở suất $\rho$.</li><li><b>Mục 4:</b> Bão hòa vận tốc khi điện trường quá mạnh.</li><li><b>Mục 5:</b> Khuếch tán và tổng dòng điện.</li><li><b>Mục 6:</b> Hệ thức Einstein nối $D$ với $\mu$.</li><li><b>Mục 7:</b> Pha tạp không đều sinh điện trường nội tại.</li><li><b>Mục 8:</b> Hiệu ứng Hall xác định loại hạt tải.</li></ol></div>
+  </header>
+
+  <section>
+    <h2>Mở đầu: Hai "động cơ" làm hạt tải chuyển động</h2>
+    <p>Chào em! Ở các chương trước, ta đã biết đếm xem trong một miếng bán dẫn có bao nhiêu electron và lỗ trống. Nhưng nếu chúng chỉ đứng yên một chỗ thì không có dòng điện. Để có dòng điện, hạt tải phải <b>di chuyển có hướng</b>. Trong bán dẫn có hai "động cơ" chính:</p>
+    <ol>
+      <li><b>Trôi (Drift):</b> do lực kéo của điện trường.</li>
+      <li><b>Khuếch tán (Diffusion):</b> do chênh lệch nồng độ (chỗ đông đúc tràn sang chỗ vắng).</li>
+    </ol>
+    <p>Hãy cùng mổ xẻ từng "động cơ" một.</p>
+  </section>
+
+  <section>
+    <h2>1. Hiện Tượng Trôi (Carrier Drift)</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Trôi là cơ chế tạo ra dòng điện trong điện trở, và là nửa đầu của phương trình dòng điện trong mọi linh kiện bán dẫn.</div>
+
+    <h3>1.1. Bức tranh toàn cảnh: Khi em đứng trong một đám đông</h3>
+    <div class="box analogy">
+      <b>Ví dụ ẩn dụ: Hành lang đông nghẹt người</b><br>
+      Ở nhiệt độ phòng ($300\text{ K}$), dù không ai đẩy, mọi người (hạt tải) vẫn đi lại hỗn loạn, va chạm nhau và va vào tường, với <b>vận tốc nhiệt cỡ $10^7\text{ cm/s}$</b>. Nhưng người đi tới và kẻ đi lui nhiều như nhau, nên <b>số người di chuyển ròng từ đầu này sang đầu kia bằng 0</b>: chưa có dòng điện.<br><br>
+      Bây giờ em hét: "Cuối hành lang phát tiền miễn phí!". Đám đông dồn về một hướng. Họ vẫn va chạm, nhưng giờ có một <b>hướng ưu tiên</b>. Đó là <b>chuyển động trôi</b> do <b>điện trường $E$</b>.
+    </div>
+    <ul>
+      <li><b>Electron</b> mang điện âm nên bị kéo <b>ngược chiều</b> điện trường.</li>
+      <li><b>Lỗ trống</b> mang điện dương nên bị kéo <b>cùng chiều</b> điện trường.</li>
+    </ul>
+    <p>Vận tốc trôi $v_d$ phụ thuộc độ lớn lực kéo ($E$) và <b>độ linh động $\mu$</b>, tức "khả năng lách đám đông". Hành lang thông thoáng thì $\mu$ cao, chạy vèo vèo; đầy chướng ngại thì $\mu$ thấp, bị kẹt. Khi $E$ còn nhỏ:</p>
+    <div class="f">$$v_d = \mu \cdot E \qquad (\text{electron: } v_{dn} = -\mu_n E,\quad \text{lỗ trống: } v_{dp} = +\mu_p E)$$</div>
+
+    <h3>1.2. Mật độ dòng điện trôi $J$</h3>
+    <p>Dòng điện là lượng điện tích chạy qua một mặt cắt trong 1 giây. Hành lang có cả người mang điện âm lẫn dương cùng chạy, nên dòng tổng là đóng góp của cả hai:</p>
+    <div class="f key">$$J_{drift} = q\,(n\,\mu_n + p\,\mu_p)\,E$$</div>
+    <div class="box legend"><b>Đọc công thức</b><ul>
+      <li>$q = 1.6\times10^{-19}\text{ C}$: độ lớn điện tích (hằng số).</li>
+      <li>$n, p$: nồng độ electron, lỗ trống ($\text{cm}^{-3}$).</li>
+      <li>$\mu_n, \mu_p$: độ linh động ($\text{cm}^2/\text{V·s}$).</li>
+      <li>$E$: điện trường ($\text{V/cm}$). Kết quả $J$ có đơn vị $\text{A/cm}^2$.</li>
+    </ul></div>
+    <div class="box analogy"><b>Mẹo:</b> Bán dẫn loại N có $n \gg p$ nên bỏ qua số hạng lỗ trống: $J = q\,n\,\mu_n\,E$. Bán dẫn loại P thì $J = q\,p\,\mu_p\,E$.</div>
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul><li>Trôi = chuyển động có hướng do điện trường, chồng lên chuyển động nhiệt hỗn loạn.</li><li>$v_d=\mu E$ (khi $E$ còn nhỏ); $J_{drift}=q(n\mu_n+p\mu_p)E$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> $\mu$ không phải hằng số tùy ý. Mục 2 chỉ ra cái gì làm nó giảm.</div>
+  </section>
+
+  <section>
+    <h2>2. Vì Sao Độ Linh Động ($\mu$) Bị Giảm?</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> $\mu$ là "khả năng lách đám đông". Có hai loại chướng ngại vật luôn cản đường hạt tải.</div>
+
+    <h3>2.1. Hai loại chướng ngại vật</h3>
+    <ol>
+      <li><b>Do nhiệt độ (tán xạ mạng tinh thể, độ linh động $\mu_L$):</b> các nguyên tử trong tinh thể không đứng im mà rung động tại chỗ (gọi là <b>phonon</b>). Nhiệt độ càng cao, chúng rung càng mạnh, tạo "cơn bão rung động" cản đường. Vì thế <b>nhiệt độ càng cao, $\mu_L$ càng giảm</b>.</li>
+      <li><b>Do tạp chất (tán xạ tạp chất ion hóa, độ linh động $\mu_I$):</b> donor/acceptor sau khi ion hóa thành các "cục nam châm" điện tích đứng yên. Hạt tải đi ngang bị hút hoặc đẩy, lệch hướng và mất đà. Vì thế <b>nồng độ tạp chất càng cao, $\mu_I$ càng giảm</b>.<br>
+      <i>Thú vị:</i> khi nhiệt độ tăng, hạt tải chạy nhanh hơn (vận tốc nhiệt tăng), lướt qua "nam châm" nhanh đến mức chúng không kịp hút. Nên hiệu ứng tán xạ tạp chất <b>giảm đi khi trời nóng</b>.</li>
+    </ol>
+
+    <h3>2.2. Quy tắc Matthiessen</h3>
+    <p>Khi vừa bị rung động nhiệt cản, vừa bị "nam châm" cản, thì cơ chế cản mạnh hơn quyết định tốc độ. Cách cộng giống hệt mắc điện trở song song:</p>
+    <div class="f key">$$\frac{1}{\mu} = \frac{1}{\mu_L} + \frac{1}{\mu_I}$$</div>
+    <div class="box legend"><b>Hệ quả</b><ul><li>$\mu$ luôn <b>nhỏ hơn cả</b> $\mu_L$ và $\mu_I$, và gần với giá trị <b>nhỏ hơn</b> trong hai giá trị.</li><li>Ở nhiệt độ thấp, tạp chất thường chi phối. Ở nhiệt độ cao, rung động mạng chi phối.</li></ul></div>
+    <div class="box analogy"><b>Ví dụ:</b> $\mu_L = 1500$ và $\mu_I = 5000\text{ cm}^2/\text{V·s}$. Khi đó $\dfrac1\mu=\dfrac1{1500}+\dfrac1{5000}\Rightarrow \mu\approx1154\text{ cm}^2/\text{V·s}$, nhỏ hơn cả hai.</div>
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul><li>$T$ tăng $\Rightarrow$ $\mu_L$ giảm. Nồng độ tạp chất tăng $\Rightarrow$ $\mu_I$ giảm.</li><li>$\dfrac1\mu=\dfrac1{\mu_L}+\dfrac1{\mu_I}$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Có $\mu$ rồi, ta quy về đại lượng đo được của vật liệu: độ dẫn điện.</div>
+  </section>
+
+  <section>
+    <h2>3. Từ Trôi Đến Độ Dẫn Điện &amp; Điện Trở Suất</h2>
+    <div class="bridge"><b>Nối từ Mục 1–2:</b> Áp điện trường $E$ thì có dòng $J$. Tỷ số $J/E$ chính là độ dẫn điện.</div>
+    <p>Độ dẫn điện $\sigma$ đo khả năng dẫn điện của vật liệu; vật liệu càng dễ dẫn thì $\sigma$ càng lớn. Nó phụ thuộc số lượng hạt tải và khả năng lách đám đông:</p>
+    <div class="f key">$$\sigma = q\,(n\,\mu_n + p\,\mu_p) \qquad\Rightarrow\qquad J = \sigma E$$</div>
+    <p><b>Điện trở suất $\rho$</b> là nghịch đảo của độ dẫn điện (đo mức cản trở dòng điện):</p>
+    <div class="f key">$$\rho = \frac{1}{\sigma} = \frac{1}{q\,(n\,\mu_n + p\,\mu_p)}$$</div>
+    <div class="box analogy"><b>Ví dụ:</b> Si loại N, $N_d = 10^{16}\text{ cm}^{-3}$ (ion hóa hoàn toàn nên $n\approx10^{16}$), $\mu_n = 1350\text{ cm}^2/\text{V·s}$, bỏ qua $p$:<br>
+    $\sigma = 1.6\times10^{-19}\times10^{16}\times1350 \approx 2.16\text{ S/cm}$, suy ra $\rho = 1/\sigma \approx 0.46\ \Omega\cdot\text{cm}$.</div>
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul><li>$\sigma=q(n\mu_n+p\mu_p)$, $\rho=1/\sigma$.</li><li>Pha tạp nhiều thì $n$ (hoặc $p$) tăng mạnh nên $\sigma$ tăng, dù $\mu$ giảm một chút.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> $v_d=\mu E$ chỉ đúng khi $E$ nhỏ. Điều gì xảy ra khi $E$ rất lớn?</div>
+  </section>
+
+  <section>
+    <h2>4. Hiện Tượng Bão Hòa Vận Tốc (Velocity Saturation)</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Ở Mục 1, $E$ càng mạnh thì hạt tải chạy càng nhanh ($v_d=\mu E$). Điều này chỉ đúng khi $E$ còn nhỏ.</div>
+    <div class="box analogy"><b>Ví dụ ẩn dụ: Nhảy dù.</b> Ban đầu em rơi nhanh dần, nhưng tốc độ tăng thì sức cản không khí cũng tăng. Đến lúc sức cản bằng trọng lực, em không rơi nhanh hơn được nữa.</div>
+    <p>Bán dẫn cũng vậy. Khi điện trường cực mạnh ($E \gtrsim 10^4\text{ V/cm}$), electron bị gia tốc dữ dội, va đập liên tục với mạng tinh thể và tỏa năng lượng dưới dạng nhiệt. Vận tốc bị "kẹp trần" ở <b>vận tốc bão hòa $v_{sat}$</b>. Với Silicon ở nhiệt độ phòng, $v_{sat}\approx10^7\text{ cm/s}$.</p>
+
+    <h3>4.1. Mô hình tương tác: Đường $v_d(E)$ và vùng bão hòa</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Cách dùng:</b> Chọn loại hạt tải, kéo thanh trượt $E$. Đường nét đứt là $v=\mu E$ (tuyến tính), đường liền là mô hình có bão hòa.</li><li><b>Quan sát:</b> $E$ nhỏ thì hai đường trùng nhau; $E$ lớn thì đường liền "bẹt" về $v_{sat}$.</li></ul></div>
+    <div class="sim-card">
+      <div class="sim-tabs" id="b7-vs-tabs">
+        <button type="button" class="sim-tab active" onclick="setB7VsMu(1350, this)">1. Electron trong Si: $\mu_n = 1350$</button>
+        <button type="button" class="sim-tab" onclick="setB7VsMu(480, this)">2. Lỗ trống trong Si: $\mu_p = 480$</button>
+      </div>
+      <div class="ctrl-row">
+        <div>
+          <label>Điện trường $E$ = <span id="val-b7-e">1000</span> V/cm (kéo theo thang log):</label>
+          <input type="range" id="sl-b7-e" min="2" max="5.5" step="0.05" value="3" oninput="renderB7VsSim()">
+        </div>
+      </div>
+      <div id="b7-vs-desc" class="box"></div>
+      <svg id="b7-vs-svg" viewBox="0 0 680 320"></svg>
+    </div>
+    <p><i>Lưu ý:</i> đường liền dùng công thức xấp xỉ $v=\dfrac{\mu E}{1+\mu E/v_{sat}}$ để minh họa dạng bão hòa, không phải số liệu đo.</p>
+    <div class="box analogy"><b>Ứng dụng:</b> Trong chip hiện đại, kích thước kênh rất nhỏ nên điện trường bên trong rất lớn, hạt tải đã gần bão hòa vận tốc. Tăng điện áp nguồn $V_{DD}$ thêm nữa thì tốc độ tăng không tương xứng, mà chủ yếu tăng công suất tiêu thụ và nhiệt. Đây là một trong các lý do kỹ sư phải tìm hướng khác (vật liệu, kỹ thuật biến dạng mạng, cấu trúc kênh như FinFET để kiểm soát tĩnh điện tốt hơn) thay vì chỉ tăng điện áp.</div>
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul><li>$E$ nhỏ: $v_d=\mu E$. $E$ rất lớn: $v_d\to v_{sat}\approx10^7\text{ cm/s}$ (Si, $300\text{ K}$).</li><li>Khi bão hòa, dòng không còn tăng tỷ lệ với $E$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Giờ bỏ điện trường sang một bên và xét động cơ thứ hai: khuếch tán.</div>
+  </section>
+
+  <section>
+    <h2>5. Hiện Tượng Khuếch Tán (Carrier Diffusion)</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Khuếch tán là cơ chế dòng điện chính trong các tiếp xúc p-n, diode, transistor lưỡng cực. Nắm chắc dấu của $J_n$, $J_p$ là điều kiện để làm đúng các bài sau.</div>
+    <p>Nếu em nhỏ một giọt mực vào ly nước, mực tự loang từ chỗ đậm sang chỗ nhạt. Trong bán dẫn cũng vậy: chỗ A có 1000 electron, chỗ B có 10 electron, thì electron tự động "bỏ chạy" từ A sang B. Đây là <b>khuếch tán</b>.</p>
+    <p>Dòng khuếch tán mạnh hay yếu phụ thuộc <b>độ dốc nồng độ</b> ($dn/dx$ hoặc $dp/dx$): chênh lệch giữa hai điểm liền kề càng gắt thì dòng càng mạnh.</p>
+    <div class="f key">$$J_{p,diff} = - q\,D_p\,\frac{dp}{dx} \qquad\qquad J_{n,diff} = + q\,D_n\,\frac{dn}{dx}$$</div>
+    <div class="box legend"><b>Đọc công thức</b><ul><li>$D_n, D_p$: hệ số khuếch tán ($\text{cm}^2/\text{s}$).</li><li>$dn/dx$, $dp/dx$: độ dốc nồng độ theo vị trí ($\text{cm}^{-4}$).</li></ul></div>
+    <div class="box warn"><b>CỰC KỲ LƯU Ý VỀ DẤU</b><br>
+      Vì sao electron có dấu <b>cộng</b> còn lỗ trống có dấu <b>trừ</b>? Dòng điện quy ước chạy theo chiều chuyển động của điện tích dương. Lỗ trống chạy từ nơi đậm sang nơi nhạt, tức ngược chiều $dp/dx$, nên có dấu trừ. Electron (điện tích âm) cũng chạy từ nơi đậm sang nơi nhạt, nhưng dòng điện thực tế lại chạy <b>ngược lại</b>, nên $J_n$ mang dấu cộng. <b>Đây là bẫy kinh điển trong bài kiểm tra.</b>
+    </div>
+
+    <h3>5.1. Tổng dòng điện trong linh kiện</h3>
+    <p>Trong linh kiện thực (diode, transistor) có cả điện trường (gây trôi) lẫn chênh lệch nồng độ (gây khuếch tán). Dòng tổng là cộng gộp cả hai:</p>
+    <div class="f key">$$J_n = q\,n\,\mu_n\,E + q\,D_n\,\frac{dn}{dx} \qquad\qquad J_p = q\,p\,\mu_p\,E - q\,D_p\,\frac{dp}{dx}$$
+    $$J_{total} = J_n + J_p$$</div>
+    <div class="box key"><b>Mục 5 — Nhớ</b><ul><li>Khuếch tán do chênh lệch nồng độ: hạt tải đi từ đậm sang nhạt.</li><li>$J_{n,diff}=+qD_n\,dn/dx$; $J_{p,diff}=-qD_p\,dp/dx$.</li><li>Dòng tổng = trôi + khuếch tán, cho từng loại hạt rồi cộng lại.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> $D$ (khuếch tán) và $\mu$ (trôi) nghe như hai thứ không liên quan, nhưng lại có một hệ thức đẹp nối chúng.</div>
+  </section>
+
+  <section>
+    <h2>6. Hệ Thức Einstein (Mối Liên Kết Kỳ Diệu)</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> Hệ số khuếch tán $D$ (do chênh lệch nồng độ) và độ linh động $\mu$ (do điện trường) tưởng như không liên quan, vì sao lại xuất hiện cùng lúc?</div>
+    <p>Câu trả lời nằm ở <b>trạng thái cân bằng nhiệt</b>. Em hình dung một hồ có hai ngăn: ngăn A đông nước, ngăn B ít nước. Nước tự chảy từ A sang B (khuếch tán). Khi nước chảy, mực nước ngăn A hạ, ngăn B dâng, tạo áp suất đẩy ngược lại (giống điện trường nội tại). Khi hai tác động cân bằng, nước đứng yên.</p>
+    <p>Trong bán dẫn, khuếch tán và trôi do điện trường nội tại cân bằng nhau ở trạng thái ổn định. Từ sự cân bằng đó, Einstein tìm ra:</p>
+    <div class="f key">$$\frac{D_n}{\mu_n} = \frac{D_p}{\mu_p} = \frac{kT}{q} = V_T$$</div>
+    <div class="box legend"><b>Đọc công thức</b><ul><li>$k$: hằng số Boltzmann, $T$: nhiệt độ (Kelvin), $q$: điện tích.</li><li>$V_T$: <b>điện áp nhiệt</b>. Ở $300\text{ K}$, $V_T\approx0.0259\text{ V}$ ($25.9\text{ mV}$).</li></ul></div>
+    <div class="box analogy"><b>Ứng dụng:</b> Tra bảng $\mu$ rồi nhân với $0.0259$ là ra $D$, không cần đo đạc phức tạp. Ví dụ electron trong Si: $D_n=0.0259\times1350\approx35\text{ cm}^2/\text{s}$.</div>
+    <div class="box key"><b>Mục 6 — Nhớ</b><ul><li>$D/\mu=kT/q=V_T\approx0.0259\text{ V}$ ở $300\text{ K}$.</li><li>Đúng cho cả electron và lỗ trống.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Dùng đúng sự cân bằng trôi–khuếch tán này để hiểu điều xảy ra khi pha tạp không đều.</div>
+  </section>
+
+  <section>
+    <h2>7. Pha Tạp Không Đều &amp; Điện Trường Nội Tại</h2>
+    <div class="bridge"><b>Nối từ Mục 5–6:</b> Khi chế tạo chip, người ta thường pha tạp không đều (chỗ đậm, chỗ nhạt). Chuyện gì xảy ra?</div>
+    <p>Giả sử có thanh bán dẫn loại N với nồng độ donor $N_d$ <b>giảm dần từ trái sang phải</b>.</p>
+    <ol>
+      <li>Bên trái nhiều electron, bên phải ít, nên electron khuếch tán từ trái sang phải.</li>
+      <li>Khi electron rời đi, nó bỏ lại các ion donor dương ($N_d^+$) đứng yên tại chỗ.</li>
+      <li>Kết quả: bên trái tích điện dương, bên phải tích điện âm.</li>
+      <li>Sự chênh lệch này tạo ra <b>điện trường nội tại (built-in electric field)</b> hướng từ trái sang phải.</li>
+      <li>Điện trường này lại kéo electron quay ngược trở lại.</li>
+      <li>Khi lực kéo (trôi) cân bằng với lực đẩy (khuếch tán), electron đứng yên: hệ đạt cân bằng.</li>
+    </ol>
+    <p>Từ điều kiện cân bằng ($J_n=0$), ta tính được điện trường nội tại:</p>
+    <div class="f key">$$E_x = - V_T\,\frac{1}{N_d}\,\frac{dN_d}{dx}$$</div>
+    <p>Dấu trừ thể hiện điện trường hướng <b>ngược chiều với chiều tăng nồng độ tạp chất</b>. Ở thanh trên, $dN_d/dx<0$ nên $E_x>0$, đúng chiều từ trái sang phải.</p>
+    <div class="box analogy"><b>Ví dụ:</b> $N_d(x)=N_0e^{-x/L}$ với $L=1\ \mu\text{m}=10^{-4}\text{ cm}$. Khi đó $\dfrac1{N_d}\dfrac{dN_d}{dx}=-\dfrac1L$ nên $E_x=\dfrac{V_T}{L}=\dfrac{0.0259}{10^{-4}}\approx259\text{ V/cm}$ và <b>không đổi</b> theo $x$.</div>
+    <div class="box key"><b>Mục 7 — Nhớ</b><ul><li>Pha tạp không đều $\Rightarrow$ electron khuếch tán $\Rightarrow$ để lại ion cố định $\Rightarrow$ điện trường nội tại chống lại khuếch tán.</li><li>$E_x=-V_T\dfrac1{N_d}\dfrac{dN_d}{dx}$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Cuối cùng, làm sao biết một miếng bán dẫn là loại N hay P? Hiệu ứng Hall trả lời.</div>
+  </section>
+
+  <section>
+    <h2>8. Hiệu Ứng Hall (Hall Effect): Cách Đo "Danh Tính" Hạt Tải</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Từ một phép đo điện áp, ta biết <b>loại hạt tải</b> (n hay p), <b>nồng độ</b> và <b>độ linh động</b> của mẫu.</div>
+    <div class="box analogy"><b>Ví dụ ẩn dụ:</b> Em ném một quả bowling (hạt tải) dọc đường băng (dòng điện $I_x$). Bỗng một cơn gió mạnh thổi ngang (từ trường $B_z$) làm quả bóng lệch sang một bên. Khi nó đập vào thành rào, nó tạo ra một lực ép lên thành, tương ứng với <b>điện áp Hall $V_H$</b>.</div>
+    <ul>
+      <li>Hạt tải là <b>lỗ trống</b> (điện dương): điện áp Hall đo được là <b>dương (+)</b>.</li>
+      <li>Hạt tải là <b>electron</b> (điện âm): điện áp Hall đo được là <b>âm (−)</b>.</li>
+    </ul>
+    <p>Hệ số Hall $R_H$:</p>
+    <div class="f key">$$\text{Loại P: } R_H = +\frac{1}{q\,p} \qquad\qquad \text{Loại N: } R_H = -\frac{1}{q\,n}$$</div>
+    <p>Điện áp Hall đo được ($d$ là độ dày thanh bán dẫn theo phương từ trường):</p>
+    <div class="f key">$$V_H = \frac{R_H\,I_x\,B_z}{d}$$</div>
+    <p>Từ đó tính được nồng độ hạt tải $n$ hoặc $p$, và <b>độ linh động Hall</b>:</p>
+    <div class="f key">$$\mu_H = \sigma\,|R_H|$$</div>
+    <div class="box key"><b>Mục 8 — Nhớ</b><ul><li>$V_H>0$: loại P. $V_H<0$: loại N.</li><li>$|R_H|=\dfrac1{q\cdot(\text{nồng độ})}$; $\mu_H=\sigma|R_H|$.</li></ul></div>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Buổi 7: Những Điểm Cốt Lõi Cần Nằm Lòng</h2>
+    <ul>
+      <li><b>Trôi (Drift):</b> do điện trường kéo, hạt tải chạy có hướng. $J=q(n\mu_n+p\mu_p)E$.</li>
+      <li><b>Khuếch tán (Diffusion):</b> do chênh lệch nồng độ, hạt tải loang từ đậm sang nhạt. Nhớ dấu: $J_n$ có dấu cộng, $J_p$ có dấu trừ.</li>
+      <li><b>Độ linh động $\mu$:</b> giảm do nhiệt độ (rung động mạng) và tạp chất (tán xạ ion hóa). $\dfrac1\mu=\dfrac1{\mu_L}+\dfrac1{\mu_I}$.</li>
+      <li><b>Độ dẫn &amp; điện trở suất:</b> $\sigma=q(n\mu_n+p\mu_p)$, $\rho=1/\sigma$.</li>
+      <li><b>Bão hòa vận tốc:</b> điện trường quá mạnh thì hạt tải không chạy nhanh hơn $v_{sat}\approx10^7\text{ cm/s}$ (Si), một giới hạn của chip hiện đại.</li>
+      <li><b>Hệ thức Einstein:</b> cầu nối giữa trôi và khuếch tán: $D/\mu=V_T\approx0.0259\text{ V}$ ở $300\text{ K}$.</li>
+      <li><b>Pha tạp không đều:</b> sinh điện trường nội tại chống lại khuếch tán để đưa hệ về cân bằng: $E_x=-V_T\dfrac1{N_d}\dfrac{dN_d}{dx}$.</li>
+      <li><b>Hiệu ứng Hall:</b> dùng từ trường để "bắt mạch" hạt tải. $V_H$ dương là loại P, âm là loại N.</li>
+    </ul>
+    <div class="next"><b>Tiếp theo trong môn học:</b> Với trôi và khuếch tán trong tay, em đã có đủ hai thành phần của phương trình dòng điện để xét tiếp xúc p-n và diode.</div>
+  </section>
+</template>
+
+<template id="tpl-buoi-9">
+  <header>
+    <span class="k b4">HỌC PHẦN ENP2209 · BUỔI 9</span>
+    <h1>Bài Tập Trọng Tâm Buổi 9</h1>
+    <p class="mut">Luyện độ dẫn điện và bão hòa vận tốc, khuếch tán kết hợp trôi, điện trường nội tại khi pha tạp không đều, và xác định vật liệu bằng hiệu ứng Hall.</p>
+  </header>
+
+  <section>
+    <h2>Bài Tập Trọng Tâm Buổi 9 (Có Gợi Ý &amp; Giải Chi Tiết Từng Bước)</h2>
+    <div class="bridge"><b>Nối từ Buổi 7:</b> Cả 4 bài dùng các công thức vận chuyển hạt tải: $\sigma=q(n\mu_n+p\mu_p)$, $J=J_{drift}+J_{diff}$, $D=\mu V_T$, $E_x=-V_T\frac1{N_d}\frac{dN_d}{dx}$ và $V_H=\frac{R_HI_xB_z}{d}$.</div>
+
+    <div class="tw"><table><tr><th>Câu</th><th>Luyện</th><th>Công thức chính</th></tr><tr><td>1</td><td>$\sigma$, $\rho$, $R$; trôi ở $E$ nhỏ và bão hòa vận tốc ở $E$ lớn</td><td>$\sigma=qn\mu_n$, $v_d(E)$</td></tr><tr><td>2</td><td>Khuếch tán, hệ thức Einstein, dòng tổng</td><td>$D_p=\mu_pV_T$, $J_{p,diff}$, $J_{p,drift}$</td></tr><tr><td>3</td><td>Điện trường nội tại, hiệu thế, bẻ cong dải năng lượng</td><td>$E_x=-V_T\frac{1}{N_d}\frac{dN_d}{dx}$</td></tr><tr><td>4</td><td>Hiệu ứng Hall: loại, nồng độ, $R_H$, $\rho$, $\mu_H$</td><td>$R_H=\frac{V_Hd}{I_xB_z}$, $\mu_H=\sigma|R_H|$</td></tr></table></div>
+
+    <div class="box key"><b>Cách làm chung</b><ol><li><b>Bước 1:</b> Đổi mọi đại lượng về hệ $\text{cm}$ (ví dụ $2\ \mu\text{m}=2\times10^{-4}\text{ cm}$).</li><li><b>Bước 2:</b> Xác định cơ chế: trôi (có $E$), khuếch tán (có $dn/dx$) hay cả hai.</li><li><b>Bước 3:</b> Chú ý dấu và chiều của dòng, nhất là $J_n$ (dấu $+$) và $J_p$ (dấu $-$) ở phần khuếch tán.</li></ol></div>
+
+    <!-- CÂU 1 BUỔI 9 -->
+    <div class="formula-card">
+      <h3 id="b9-cau1">Câu 1: Độ dẫn điện, Điện trở và Bão hòa Vận tốc trong Thanh Si loại N</h3>
+      <figure class="fig fr"><svg viewBox="0 0 460 300" role="img" aria-label="Đồ thị vận tốc trôi theo điện trường, so sánh mô hình tuyến tính và mô hình bão hòa"><line x1="66.0" y1="244.0" x2="436.0" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="248.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">0</text><line x1="66.0" y1="209.0" x2="436.0" y2="209.0" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="213.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">2</text><line x1="66.0" y1="174.0" x2="436.0" y2="174.0" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="178.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">4</text><line x1="66.0" y1="139.0" x2="436.0" y2="139.0" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="143.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">6</text><line x1="66.0" y1="104.0" x2="436.0" y2="104.0" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="108.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">8</text><line x1="66.0" y1="69.0" x2="436.0" y2="69.0" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="73.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">10</text><line x1="66.0" y1="34.0" x2="436.0" y2="34.0" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="38.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">12</text><line x1="66.0" y1="34.0" x2="66.0" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="66.0" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0</text><line x1="189.3" y1="34.0" x2="189.3" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="189.3" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">1×10⁴</text><line x1="312.7" y1="34.0" x2="312.7" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="312.7" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">2×10⁴</text><line x1="436.0" y1="34.0" x2="436.0" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="436.0" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">3×10⁴</text><line x1="66.0" y1="34.0" x2="66.0" y2="244.0" style="stroke:var(--ink);stroke-width:1.6"/><line x1="66.0" y1="244.0" x2="436.0" y2="244.0" style="stroke:var(--ink);stroke-width:1.6"/><text x="251.0" y="280.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">E (V/cm)</text><text transform="rotate(-90 22.0 139.0)" x="22.0" y="139.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">v_d (10⁶ cm/s)</text><text x="251.0" y="22.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:800;fill:var(--c5)">Vận tốc trôi theo điện trường (Bài 1)</text><line x1="66.0" y1="69.0" x2="436.0" y2="69.0" style="stroke:var(--c4);stroke-width:1.6" stroke-dasharray="6 4"/><text x="432.0" y="63.0" text-anchor="end" style="fill:var(--ink);font-size:12px;fill:var(--c4);font-weight:700">v_sat = 10 ×10⁶</text><path d="M66.0 244.0 L68.5 240.2 L70.9 236.3 L73.4 232.4 L75.9 228.6 L78.3 224.8 L80.8 220.9 L83.3 217.1 L85.7 213.2 L88.2 209.3 L90.7 205.5 L93.1 201.7 L95.6 197.8 L98.1 193.9 L100.5 190.1 L103.0 186.2 L105.5 182.4 L107.9 178.6 L110.4 174.7 L112.9 170.8 L115.3 167.0 L117.8 163.1 L120.3 159.3 L122.7 155.4 L125.2 151.6 L127.7 147.8 L130.1 143.9 L132.6 140.0 L135.1 136.2 L137.5 132.4 L140.0 128.5 L142.5 124.6 L144.9 120.8 L147.4 117.0 L149.9 113.1 L152.3 109.2 L154.8 105.4 L157.3 101.6 L159.7 97.7 L162.2 93.8 L164.7 90.0 L167.1 86.2 L169.6 82.3 L172.1 78.4 L174.5 74.6 L177.0 70.8 L179.5 66.9 L181.9 63.0 L184.4 59.2 L186.9 55.3 L189.3 51.5 L191.8 47.6 L194.3 43.8 L196.7 39.9 L199.2 36.1" style="fill:none;stroke:var(--mut);stroke-width:2" stroke-dasharray="5 4"/><path d="M66.0 244.0 L69.1 239.2 L72.2 234.4 L75.2 229.6 L78.3 224.9 L81.4 220.2 L84.5 215.5 L87.6 210.9 L90.7 206.4 L93.8 202.0 L96.8 197.6 L99.9 193.3 L103.0 189.2 L106.1 185.1 L109.2 181.1 L112.2 177.3 L115.3 173.5 L118.4 169.9 L121.5 166.4 L124.6 163.0 L127.7 159.7 L130.8 156.5 L133.8 153.4 L136.9 150.5 L140.0 147.6 L143.1 144.9 L146.2 142.2 L149.2 139.7 L152.3 137.2 L155.4 134.9 L158.5 132.6 L161.6 130.5 L164.7 128.4 L167.8 126.4 L170.8 124.5 L173.9 122.6 L177.0 120.9 L180.1 119.2 L183.2 117.6 L186.2 116.0 L189.3 114.5 L192.4 113.1 L195.5 111.7 L198.6 110.4 L201.7 109.1 L204.8 107.9 L207.8 106.7 L210.9 105.6 L214.0 104.5 L217.1 103.5 L220.2 102.5 L223.2 101.5 L226.3 100.6 L229.4 99.7 L232.5 98.8 L235.6 98.0 L238.7 97.2 L241.8 96.5 L244.8 95.7 L247.9 95.0 L251.0 94.3 L254.1 93.7 L257.2 93.0 L260.2 92.4 L263.3 91.8 L266.4 91.3 L269.5 90.7 L272.6 90.2 L275.7 89.7 L278.8 89.2 L281.8 88.7 L284.9 88.2 L288.0 87.8 L291.1 87.4 L294.2 86.9 L297.2 86.5 L300.3 86.1 L303.4 85.8 L306.5 85.4 L309.6 85.0 L312.7 84.7 L315.8 84.4 L318.8 84.0 L321.9 83.7 L325.0 83.4 L328.1 83.1 L331.2 82.8 L334.2 82.5 L337.3 82.3 L340.4 82.0 L343.5 81.7 L346.6 81.5 L349.7 81.3 L352.8 81.0 L355.8 80.8 L358.9 80.6 L362.0 80.3 L365.1 80.1 L368.2 79.9 L371.2 79.7 L374.3 79.5 L377.4 79.3 L380.5 79.2 L383.6 79.0 L386.7 78.8 L389.8 78.6 L392.8 78.5 L395.9 78.3 L399.0 78.1 L402.1 78.0 L405.2 77.8 L408.2 77.7 L411.3 77.6 L414.4 77.4 L417.5 77.3 L420.6 77.1 L423.7 77.0 L426.8 76.9 L429.8 76.8 L432.9 76.6 L436.0 76.5" style="fill:none;stroke:var(--c1);stroke-width:3"/><line x1="78.3" y1="244.0" x2="78.3" y2="224.8" style="stroke:var(--c2);stroke-width:1.2" stroke-dasharray="3 3"/><circle cx="78.3" cy="224.8" r="5.5" style="fill:var(--c2);stroke:var(--card);stroke-width:2"/><text x="92.3" y="236.8" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--c2);font-weight:700">V₁: 1.10×10⁶</text><line x1="312.7" y1="244.0" x2="312.7" y2="84.7" style="stroke:var(--c5);stroke-width:1.2" stroke-dasharray="3 3"/><circle cx="312.7" cy="84.7" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><text x="324.7" y="110.7" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">V₂: 9.10×10⁶</text><text x="72.2" y="48.0" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--mut)">v = μₙE (nét đứt)</text><text x="238.7" y="151.2" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--c1)">mô hình có bão hòa (nét liền)</text></svg><figcaption>Hình 1. Vận tốc trôi theo $E$. Điểm $V_1$ nằm trên đoạn tuyến tính; điểm $V_2$ đã bị bão hòa kéo thấp hơn nhiều so với $\mu_nE$.</figcaption></figure>
+
+      <p><b>Đề bài:</b> Một thanh Silicon loại N ở $T=300\text{ K}$ pha tạp đều với $N_d=2\times10^{16}\text{ cm}^{-3}$ ($N_a=0$), chiều dài $L=2.0\ \mu\text{m}$, tiết diện $A=10^{-5}\text{ cm}^2$. Ở mức pha tạp này, độ linh động electron $\mu_n=1100\text{ cm}^2/\text{V·s}$ và vận tốc bão hòa $v_{sat}=10^7\text{ cm/s}$. Giả sử ion hóa hoàn toàn ($n\approx N_d$).<br>
+      (1) Tính độ dẫn điện $\sigma$, điện trở suất $\rho$ và điện trở $R$ của thanh.<br>
+      (2) Đặt điện áp nhỏ $V_1=0.2\text{ V}$ lên hai đầu thanh. Tính điện trường $E$, vận tốc trôi $v_{dn}$, mật độ dòng trôi $J_{drift}$ và dòng tổng $I$.<br>
+      (3) Tăng điện áp lên $V_2=4.0\text{ V}$. Tìm điện trường $E$ mới. Dùng mô hình thực nghiệm
+      $$v_d(E)=\frac{\mu_nE}{\sqrt{1+\left(\dfrac{\mu_nE}{v_{sat}}\right)^2}}$$
+      tính vận tốc trôi thực $v_d$ và dòng bão hòa $I_{sat}$ tương ứng.</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b9-hint1')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b9-sol1')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b9-hint1" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li><b>Ý (1):</b> $\sigma=qn\mu_n$ (bỏ qua lỗ trống vì loại N), $\rho=1/\sigma$, $R=\rho L/A$. Đổi $L=2\times10^{-4}\text{ cm}$.</li>
+          <li><b>Ý (2):</b> $E=V/L$, $v_{dn}=\mu_nE$, $J=\sigma E$, $I=JA$. Kiểm tra lại bằng $I=V/R$.</li>
+          <li><b>Ý (3):</b> Tính $\mu_nE$ trước, rồi đưa vào công thức bão hòa. Dòng $I_{sat}=q\,n\,v_d\,A$.</li>
+        </ul>
+      </div>
+
+      <div id="b9-sol1" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <b>(1) Độ dẫn điện, điện trở suất và điện trở:</b>
+          <span class="cmt">// Bước 1: Loại N, ion hóa hoàn toàn nên $n\approx N_d=2\times10^{16}\text{ cm}^{-3}$ và $p\approx n_i^2/n$ rất bé, bỏ qua.</span>
+          $$\sigma=q\,n\,\mu_n=(1.6\times10^{-19})(2\times10^{16})(1100)=\mathbf{3.52\text{ S/cm}}$$
+          <span class="cmt">// Bước 2: Điện trở suất là nghịch đảo của độ dẫn:</span>
+          $$\rho=\frac1\sigma=\frac{1}{3.52}\approx\mathbf{0.284\ \Omega\cdot\text{cm}}$$
+          <span class="cmt">// Bước 3: Đổi đơn vị $L=2.0\ \mu\text{m}=2\times10^{-4}\text{ cm}$ rồi tính điện trở:</span>
+          $$R=\rho\frac LA=0.284\times\frac{2\times10^{-4}}{10^{-5}}=0.284\times20\approx\mathbf{5.68\ \Omega}$$
+        </div>
+        <div class="step">
+          <b>(2) Điện áp nhỏ $V_1=0.2\text{ V}$:</b>
+          <span class="cmt">// Bước 1: Điện trường đều dọc thanh:</span>
+          $$E=\frac{V_1}{L}=\frac{0.2}{2\times10^{-4}}=\mathbf{1000\text{ V/cm}}$$
+          <span class="cmt">// Bước 2: $E=10^3\text{ V/cm}$ còn nhỏ so với ngưỡng bão hòa cỡ $10^4\text{ V/cm}$, nên dùng $v_d=\mu E$ (độ lớn; electron chuyển động ngược chiều $E$):</span>
+          $$v_{dn}=\mu_nE=1100\times1000=\mathbf{1.1\times10^6\text{ cm/s}}\ (\approx0.11\,v_{sat})$$
+          <span class="cmt">// Bước 3: Mật độ dòng trôi và dòng tổng:</span>
+          $$J_{drift}=\sigma E=3.52\times1000=\mathbf{3.52\times10^3\text{ A/cm}^2}$$
+          $$I=J_{drift}A=3.52\times10^3\times10^{-5}=\mathbf{3.52\times10^{-2}\text{ A}=35.2\text{ mA}}$$
+          <span class="cmt">// Kiểm tra: $I=V_1/R=0.2/5.68=35.2\text{ mA}$. Khớp.</span>
+        </div>
+        <div class="step">
+          <b>(3) Điện áp lớn $V_2=4.0\text{ V}$ (bão hòa vận tốc):</b>
+          <span class="cmt">// Bước 1: Điện trường mới:</span>
+          $$E=\frac{V_2}{L}=\frac{4.0}{2\times10^{-4}}=\mathbf{2\times10^4\text{ V/cm}}$$
+          <span class="cmt">// Bước 2: Nếu vẫn dùng $v=\mu E$ thì được $\mu_nE=1100\times2\times10^4=2.2\times10^7\text{ cm/s}$, vượt hẳn $v_{sat}=10^7$. Điều này vô lý, nên phải dùng mô hình bão hòa:</span>
+          $$v_d=\frac{2.2\times10^7}{\sqrt{1+(2.2)^2}}=\frac{2.2\times10^7}{\sqrt{5.84}}=\frac{2.2\times10^7}{2.417}\approx\mathbf{9.10\times10^6\text{ cm/s}}$$
+          <span class="cmt">// Bước 3: Dòng bão hòa (mật độ electron vẫn $n=2\times10^{16}\text{ cm}^{-3}$, chỉ có vận tốc bị kẹp):</span>
+          $$I_{sat}=q\,n\,v_d\,A=(1.6\times10^{-19})(2\times10^{16})(9.10\times10^6)(10^{-5})\approx\mathbf{0.291\text{ A}}$$
+          <span class="cmt">// Nhận xét: Nếu bỏ qua bão hòa, $I=\sigma EA=3.52\times2\times10^4\times10^{-5}=0.704\text{ A}$. Dòng thực chỉ bằng khoảng $41\%$. Điện áp tăng 20 lần ($0.2\to4\text{ V}$) nhưng dòng chỉ tăng khoảng 8.3 lần ($35.2\text{ mA}\to0.291\text{ A}$).</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂU 2 BUỔI 9 -->
+    <div class="formula-card">
+      <h3 id="b9-cau2">Câu 2 (LLO 9.1): Khuếch tán Lỗ trống và Dòng điện Tổng hợp</h3>
+      <figure class="fig wide"><svg viewBox="0 0 640 285" role="img" aria-label="Đồ thị nồng độ lỗ trống và mật độ dòng khuếch tán theo vị trí"><line x1="62.0" y1="230.0" x2="292.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="234.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">0</text><line x1="62.0" y1="186.8" x2="292.0" y2="186.8" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="190.8" text-anchor="end" style="fill:var(--ink);font-size:12px;">0.25</text><line x1="62.0" y1="143.6" x2="292.0" y2="143.6" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="147.6" text-anchor="end" style="fill:var(--ink);font-size:12px;">0.5</text><line x1="62.0" y1="100.5" x2="292.0" y2="100.5" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="104.5" text-anchor="end" style="fill:var(--ink);font-size:12px;">0.75</text><line x1="62.0" y1="57.3" x2="292.0" y2="57.3" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="61.3" text-anchor="end" style="fill:var(--ink);font-size:12px;">1.0</text><line x1="62.0" y1="40.0" x2="62.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="62.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0</text><line x1="119.5" y1="40.0" x2="119.5" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="119.5" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.25</text><line x1="177.0" y1="40.0" x2="177.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="177.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.5</text><line x1="234.5" y1="40.0" x2="234.5" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="234.5" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.75</text><line x1="292.0" y1="40.0" x2="292.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="292.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">1.0</text><line x1="62.0" y1="40.0" x2="62.0" y2="230.0" style="stroke:var(--ink);stroke-width:1.6"/><line x1="62.0" y1="230.0" x2="292.0" y2="230.0" style="stroke:var(--ink);stroke-width:1.6"/><text x="177.0" y="266.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">x (µm)</text><text transform="rotate(-90 18.0 135.0)" x="18.0" y="135.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">p (10¹⁷ cm⁻³)</text><text x="177.0" y="28.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:800;fill:var(--c5)">p(x) = 10¹⁷(1 − x/L₀)²</text><path d="M62.0 57.3 L64.3 60.7 L66.6 64.1 L68.9 67.5 L71.2 70.8 L73.5 74.1 L75.8 77.4 L78.1 80.6 L80.4 83.8 L82.7 87.0 L85.0 90.1 L87.3 93.2 L89.6 96.2 L91.9 99.3 L94.2 102.3 L96.5 105.2 L98.8 108.1 L101.1 111.0 L103.4 113.9 L105.7 116.7 L108.0 119.5 L110.3 122.2 L112.6 124.9 L114.9 127.6 L117.2 130.2 L119.5 132.8 L121.8 135.4 L124.1 138.0 L126.4 140.5 L128.7 142.9 L131.0 145.4 L133.3 147.8 L135.6 150.1 L137.9 152.5 L140.2 154.8 L142.5 157.0 L144.8 159.3 L147.1 161.4 L149.4 163.6 L151.7 165.7 L154.0 167.8 L156.3 169.9 L158.6 171.9 L160.9 173.9 L163.2 175.8 L165.5 177.8 L167.8 179.6 L170.1 181.5 L172.4 183.3 L174.7 185.1 L177.0 186.8 L179.3 188.5 L181.6 190.2 L183.9 191.8 L186.2 193.5 L188.5 195.0 L190.8 196.6 L193.1 198.1 L195.4 199.5 L197.7 201.0 L200.0 202.4 L202.3 203.7 L204.6 205.1 L206.9 206.4 L209.2 207.6 L211.5 208.8 L213.8 210.0 L216.1 211.2 L218.4 212.3 L220.7 213.4 L223.0 214.5 L225.3 215.5 L227.6 216.5 L229.9 217.4 L232.2 218.3 L234.5 219.2 L236.8 220.1 L239.1 220.9 L241.4 221.6 L243.7 222.4 L246.0 223.1 L248.3 223.8 L250.6 224.4 L252.9 225.0 L255.2 225.6 L257.5 226.1 L259.8 226.6 L262.1 227.1 L264.4 227.5 L266.7 227.9 L269.0 228.3 L271.3 228.6 L273.6 228.9 L275.9 229.2 L278.2 229.4 L280.5 229.6 L282.8 229.7 L285.1 229.8 L287.4 229.9 L289.7 230.0 L292.0 230.0" style="fill:none;stroke:var(--c1);stroke-width:3"/><circle cx="62.0" cy="57.3" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><circle cx="177.0" cy="186.8" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><text x="74.0" y="49.3" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">1.0</text><text x="187.0" y="176.8" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">0.25</text><line x1="386.0" y1="230.0" x2="616.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="234.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">0</text><line x1="386.0" y1="184.8" x2="616.0" y2="184.8" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="188.8" text-anchor="end" style="fill:var(--ink);font-size:12px;">1000</text><line x1="386.0" y1="139.5" x2="616.0" y2="139.5" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="143.5" text-anchor="end" style="fill:var(--ink);font-size:12px;">2000</text><line x1="386.0" y1="94.3" x2="616.0" y2="94.3" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="98.3" text-anchor="end" style="fill:var(--ink);font-size:12px;">3000</text><line x1="386.0" y1="49.0" x2="616.0" y2="49.0" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="53.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">4000</text><line x1="386.0" y1="40.0" x2="386.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="386.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0</text><line x1="443.5" y1="40.0" x2="443.5" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="443.5" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.25</text><line x1="501.0" y1="40.0" x2="501.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="501.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.5</text><line x1="558.5" y1="40.0" x2="558.5" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="558.5" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.75</text><line x1="616.0" y1="40.0" x2="616.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="616.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">1.0</text><line x1="386.0" y1="40.0" x2="386.0" y2="230.0" style="stroke:var(--ink);stroke-width:1.6"/><line x1="386.0" y1="230.0" x2="616.0" y2="230.0" style="stroke:var(--ink);stroke-width:1.6"/><text x="501.0" y="266.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">x (µm)</text><text transform="rotate(-90 342.0 135.0)" x="342.0" y="135.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">J_p,diff (A/cm²)</text><text x="501.0" y="28.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:800;fill:var(--c5)">J_p,diff(x) = 3730(1 − x/L₀)</text><path d="M386.0 61.3 L616.0 230.0" style="fill:none;stroke:var(--c4);stroke-width:3"/><circle cx="386.0" cy="61.3" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><circle cx="501.0" cy="145.6" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><text x="398.0" y="53.3" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">3730</text><text x="511.0" y="135.6" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">1865</text></svg><figcaption>Hình 2. Trái: nồng độ lỗ trống giảm dần theo $x$. Phải: dòng khuếch tán tương ứng, lớn nhất ở $x=0$ (độ dốc lớn nhất) và về 0 ở $x=L_0$ (nồng độ phẳng).</figcaption></figure>
+
+      <p><b>Đề bài:</b> Trong mẫu Silicon ở $T=300\text{ K}$, nồng độ lỗ trống phân bố phi tuyến trong $0\le x\le1.0\ \mu\text{m}$:
+      $$p(x)=10^{17}\left(1-\frac{x}{L_0}\right)^2\ \text{cm}^{-3},\qquad L_0=1.0\ \mu\text{m}=10^{-4}\text{ cm}$$
+      Độ linh động lỗ trống $\mu_p=450\text{ cm}^2/\text{V·s}$, điện áp nhiệt $V_T=kT/q=0.0259\text{ V}$.<br>
+      (1) Tính hệ số khuếch tán lỗ trống $D_p$ bằng hệ thức Einstein.<br>
+      (2) Dẫn biểu thức mật độ dòng khuếch tán $J_{p,diff}(x)$. Tính $J_{p,diff}$ tại $x=0$ và $x=0.5\ \mu\text{m}$.<br>
+      (3) Đặt thêm điện trường ngoài đều $E=+20\text{ V/cm}$ theo chiều $+x$. Tính mật độ dòng trôi $J_{p,drift}$ và dòng lỗ trống tổng $J_p$ tại $x=0.5\ \mu\text{m}$.</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b9-hint2')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b9-sol2')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b9-hint2" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li><b>Ý (1):</b> $D_p=\mu_pV_T$.</li>
+          <li><b>Ý (2):</b> $J_{p,diff}=-qD_p\,\dfrac{dp}{dx}$. Lấy đạo hàm $p(x)$ theo $x$ (đạo hàm của $(1-x/L_0)^2$ là $-\frac2{L_0}(1-x/L_0)$). Nhớ dấu trừ ở công thức của lỗ trống.</li>
+          <li><b>Ý (3):</b> $J_{p,drift}=q\,p(x)\,\mu_p\,E$ với $p(0.5\ \mu\text{m})=10^{17}\times0.25$; rồi cộng với dòng khuếch tán.</li>
+        </ul>
+      </div>
+
+      <div id="b9-sol2" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <b>(1) Hệ số khuếch tán lỗ trống:</b>
+          <span class="cmt">// Hệ thức Einstein $D_p/\mu_p=V_T$:</span>
+          $$D_p=\mu_pV_T=450\times0.0259=\mathbf{11.66\text{ cm}^2/\text{s}}$$
+        </div>
+        <div class="step">
+          <b>(2) Dòng khuếch tán theo vị trí:</b>
+          <span class="cmt">// Bước 1: Đạo hàm nồng độ:</span>
+          $$\frac{dp}{dx}=10^{17}\cdot2\left(1-\frac x{L_0}\right)\cdot\left(-\frac1{L_0}\right)=-\frac{2\times10^{17}}{10^{-4}}\left(1-\frac x{L_0}\right)=-2\times10^{21}\left(1-\frac x{L_0}\right)\ \text{cm}^{-4}$$
+          <span class="cmt">// Bước 2: Thay vào $J_{p,diff}=-qD_p\,dp/dx$. Hai dấu trừ triệt tiêu nên dòng dương (theo $+x$), hợp lý vì $p$ giảm theo $x$ nên lỗ trống khuếch tán về phía $+x$:</span>
+          $$J_{p,diff}(x)=qD_p\cdot2\times10^{21}\left(1-\frac x{L_0}\right)=(1.6\times10^{-19})(11.66)(2\times10^{21})\left(1-\frac x{L_0}\right)\approx\mathbf{3.73\times10^3\left(1-\frac{x}{L_0}\right)\ \text{A/cm}^2}$$
+          <span class="cmt">// Bước 3: Tính tại hai điểm:</span>
+          $$J_{p,diff}(0)=\mathbf{3.73\times10^3\text{ A/cm}^2},\qquad J_{p,diff}(0.5\ \mu\text{m})=3.73\times10^3\times0.5\approx\mathbf{1.86\times10^3\text{ A/cm}^2}$$
+        </div>
+        <div class="step">
+          <b>(3) Thêm điện trường ngoài $E=+20\text{ V/cm}$ tại $x=0.5\ \mu\text{m}$:</b>
+          <span class="cmt">// Bước 1: Nồng độ lỗ trống tại điểm xét: $p(0.5\ \mu\text{m})=10^{17}(0.5)^2=2.5\times10^{16}\text{ cm}^{-3}$. Lỗ trống trôi cùng chiều $E$, tức theo $+x$:</span>
+          $$J_{p,drift}=q\,p\,\mu_pE=(1.6\times10^{-19})(2.5\times10^{16})(450)(20)=\mathbf{36\text{ A/cm}^2}$$
+          <span class="cmt">// Bước 2: Cả hai thành phần cùng chiều $+x$ nên cộng thẳng:</span>
+          $$J_p=J_{p,drift}+J_{p,diff}=36+1865\approx\mathbf{1.90\times10^3\text{ A/cm}^2}$$
+          <span class="cmt">// Nhận xét: Dòng trôi chỉ chiếm khoảng $2\%$ tổng. Ở trường hợp này khuếch tán chi phối vì độ dốc nồng độ rất lớn.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂU 3 BUỔI 9 -->
+    <div class="formula-card">
+      <h3 id="b9-cau3">Câu 3 (LLO 9.2): Pha tạp Không đều và Điện trường Cảm ứng</h3>
+      <figure class="fig wide"><svg viewBox="0 0 640 285" role="img" aria-label="Đồ thị nồng độ donor theo thang log và độ dịch đáy dải dẫn theo vị trí"><line x1="62.0" y1="230.0" x2="292.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="234.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">10¹⁵</text><line x1="62.0" y1="166.7" x2="292.0" y2="166.7" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="170.7" text-anchor="end" style="fill:var(--ink);font-size:12px;">10¹⁶</text><line x1="62.0" y1="103.3" x2="292.0" y2="103.3" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="107.3" text-anchor="end" style="fill:var(--ink);font-size:12px;">10¹⁷</text><line x1="62.0" y1="40.0" x2="292.0" y2="40.0" style="stroke:var(--g);stroke-width:1"/><text x="55.0" y="44.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">10¹⁸</text><line x1="62.0" y1="40.0" x2="62.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="62.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0</text><line x1="119.5" y1="40.0" x2="119.5" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="119.5" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.5</text><line x1="177.0" y1="40.0" x2="177.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="177.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">1.0</text><line x1="234.5" y1="40.0" x2="234.5" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="234.5" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">1.5</text><line x1="292.0" y1="40.0" x2="292.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="292.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">2.0</text><line x1="62.0" y1="40.0" x2="62.0" y2="230.0" style="stroke:var(--ink);stroke-width:1.6"/><line x1="62.0" y1="230.0" x2="292.0" y2="230.0" style="stroke:var(--ink);stroke-width:1.6"/><text x="177.0" y="266.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">x (µm)</text><text transform="rotate(-90 18.0 135.0)" x="18.0" y="135.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">N_d (cm⁻³, thang log)</text><text x="177.0" y="28.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:800;fill:var(--c5)">N_d(x) = 5×10¹⁷ e^(−x/λ)</text><path d="M62.0 59.1 L64.3 60.4 L66.6 61.8 L68.9 63.2 L71.2 64.6 L73.5 65.9 L75.8 67.3 L78.1 68.7 L80.4 70.1 L82.7 71.4 L85.0 72.8 L87.3 74.2 L89.6 75.6 L91.9 76.9 L94.2 78.3 L96.5 79.7 L98.8 81.1 L101.1 82.4 L103.4 83.8 L105.7 85.2 L108.0 86.6 L110.3 87.9 L112.6 89.3 L114.9 90.7 L117.2 92.1 L119.5 93.4 L121.8 94.8 L124.1 96.2 L126.4 97.6 L128.7 98.9 L131.0 100.3 L133.3 101.7 L135.6 103.1 L137.9 104.4 L140.2 105.8 L142.5 107.2 L144.8 108.6 L147.1 110.0 L149.4 111.3 L151.7 112.7 L154.0 114.1 L156.3 115.5 L158.6 116.8 L160.9 118.2 L163.2 119.6 L165.5 121.0 L167.8 122.3 L170.1 123.7 L172.4 125.1 L174.7 126.5 L177.0 127.8 L179.3 129.2 L181.6 130.6 L183.9 132.0 L186.2 133.3 L188.5 134.7 L190.8 136.1 L193.1 137.5 L195.4 138.8 L197.7 140.2 L200.0 141.6 L202.3 143.0 L204.6 144.3 L206.9 145.7 L209.2 147.1 L211.5 148.5 L213.8 149.8 L216.1 151.2 L218.4 152.6 L220.7 154.0 L223.0 155.3 L225.3 156.7 L227.6 158.1 L229.9 159.5 L232.2 160.8 L234.5 162.2 L236.8 163.6 L239.1 165.0 L241.4 166.3 L243.7 167.7 L246.0 169.1 L248.3 170.5 L250.6 171.8 L252.9 173.2 L255.2 174.6 L257.5 176.0 L259.8 177.3 L262.1 178.7 L264.4 180.1 L266.7 181.5 L269.0 182.8 L271.3 184.2 L273.6 185.6 L275.9 187.0 L278.2 188.3 L280.5 189.7 L282.8 191.1 L285.1 192.5 L287.4 193.8 L289.7 195.2 L292.0 196.6" style="fill:none;stroke:var(--c1);stroke-width:3"/><circle cx="62.0" cy="59.1" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><circle cx="292.0" cy="196.6" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><text x="74.0" y="51.1" text-anchor="start" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">5×10¹⁷</text><text x="282.0" y="184.6" text-anchor="end" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">3.4×10¹⁵</text><line x1="386.0" y1="230.0" x2="616.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="234.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">0</text><line x1="386.0" y1="182.5" x2="616.0" y2="182.5" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="186.5" text-anchor="end" style="fill:var(--ink);font-size:12px;">0.04</text><line x1="386.0" y1="135.0" x2="616.0" y2="135.0" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="139.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">0.08</text><line x1="386.0" y1="87.5" x2="616.0" y2="87.5" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="91.5" text-anchor="end" style="fill:var(--ink);font-size:12px;">0.12</text><line x1="386.0" y1="40.0" x2="616.0" y2="40.0" style="stroke:var(--g);stroke-width:1"/><text x="379.0" y="44.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">0.16</text><line x1="386.0" y1="40.0" x2="386.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="386.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0</text><line x1="443.5" y1="40.0" x2="443.5" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="443.5" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.5</text><line x1="501.0" y1="40.0" x2="501.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="501.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">1.0</text><line x1="558.5" y1="40.0" x2="558.5" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="558.5" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">1.5</text><line x1="616.0" y1="40.0" x2="616.0" y2="230.0" style="stroke:var(--g);stroke-width:1"/><text x="616.0" y="247.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">2.0</text><line x1="386.0" y1="40.0" x2="386.0" y2="230.0" style="stroke:var(--ink);stroke-width:1.6"/><line x1="386.0" y1="230.0" x2="616.0" y2="230.0" style="stroke:var(--ink);stroke-width:1.6"/><text x="501.0" y="266.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">x (µm)</text><text transform="rotate(-90 342.0 135.0)" x="342.0" y="135.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">E_c(x) − E_c(0)  (eV)</text><text x="501.0" y="28.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:800;fill:var(--c5)">Bẻ cong dải dẫn: ΔE_c = qE_x·x</text><path d="M386.0 230.0 L616.0 76.2" style="fill:none;stroke:var(--c4);stroke-width:3"/><circle cx="386.0" cy="230.0" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><circle cx="616.0" cy="76.2" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><text x="604.0" y="68.2" text-anchor="end" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">0.1295 eV</text></svg><figcaption>Hình 3. Trái: $N_d$ giảm hàm mũ nên là đường thẳng trên thang log. Phải: đáy dải dẫn $E_c$ tăng tuyến tính theo $x$, tổng cộng $0.1295\text{ eV}$ trên $2\ \mu\text{m}$.</figcaption></figure>
+
+      <p><b>Đề bài:</b> Mẫu Silicon loại N ở trạng thái cân bằng nhiệt ($T=300\text{ K}$) có nồng độ donor giảm hàm mũ trong vùng $0\le x\le2.0\ \mu\text{m}$:
+      $$N_d(x)=5\times10^{17}\exp\left(-\frac x\lambda\right)\ \text{cm}^{-3},\qquad \lambda=0.4\ \mu\text{m}=0.4\times10^{-4}\text{ cm}$$
+      Giả sử ion hóa hoàn toàn ($n(x)\approx N_d(x)$), $V_T=0.0259\text{ V}$.<br>
+      (1) Chứng minh điện trường nội tại $E_x$ là <b>đều</b> (hằng số) trong toàn mẫu. Tính độ lớn và nêu chiều.<br>
+      (2) Tính hiệu điện thế tĩnh điện $\Delta V=V(2.0\ \mu\text{m})-V(0)$ qua vùng pha tạp biến thiên.<br>
+      (3) Giải thích cơ chế bẻ cong dải năng lượng. Tính độ dịch đáy dải dẫn $\Delta E_c=E_c(2.0\ \mu\text{m})-E_c(0)$ theo đơn vị $\text{eV}$.</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b9-hint3')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b9-sol3')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b9-hint3" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li><b>Ý (1):</b> Dùng $E_x=-V_T\dfrac1{N_d}\dfrac{dN_d}{dx}$. Với hàm mũ, tỷ số $\frac1{N_d}\frac{dN_d}{dx}$ là hằng số.</li>
+          <li><b>Ý (2):</b> $E$ đều nên $\Delta V=-E_x\cdot\Delta x$ (điện thế giảm theo chiều điện trường).</li>
+          <li><b>Ý (3):</b> Năng lượng thế của electron là $-qV$, nên $\Delta E_c=-q\Delta V$. Kiểm tra bằng $\Delta E_c=kT\ln\dfrac{N_d(0)}{N_d(2\ \mu\text{m})}$.</li>
+        </ul>
+      </div>
+
+      <div id="b9-sol3" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <b>(1) Chứng minh điện trường đều, tính độ lớn và chiều:</b>
+          <span class="cmt">// Bước 1: Ở cân bằng, dòng electron tổng bằng 0: trôi và khuếch tán triệt tiêu nhau:</span>
+          $$J_n=q\,n\,\mu_nE_x+q\,D_n\frac{dn}{dx}=0\ \Rightarrow\ E_x=-\frac{D_n}{\mu_n}\cdot\frac1n\frac{dn}{dx}=-V_T\frac1n\frac{dn}{dx}$$
+          <span class="cmt">// Bước 2: Thay $n(x)=N_d(x)=N_0e^{-x/\lambda}$. Đạo hàm theo $x$ cho $dN_d/dx=-N_d/\lambda$, nên:</span>
+          $$\frac1{N_d}\frac{dN_d}{dx}=-\frac1\lambda\ \Rightarrow\ E_x=-V_T\left(-\frac1\lambda\right)=\frac{V_T}{\lambda}$$
+          <span class="cmt">// Kết quả không còn chứa $x$, nên $E_x$ là hằng số: điện trường đều. Đó là điều phải chứng minh.</span>
+          $$E_x=\frac{0.0259}{0.4\times10^{-4}}=\mathbf{647.5\text{ V/cm}}$$
+          <span class="cmt">// Chiều: $E_x>0$ nên hướng theo $+x$, tức từ vùng pha tạp đậm (trái) sang vùng nhạt (phải). Đúng với bức tranh: electron khuếch tán sang phải, bỏ lại donor dương bên trái; điện trường này đẩy electron ngược lại về bên trái.</span>
+        </div>
+        <div class="step">
+          <b>(2) Hiệu điện thế qua vùng $0\to2.0\ \mu\text{m}$:</b>
+          <span class="cmt">// Vì $E_x$ đều nên $V(x)$ giảm tuyến tính theo $x$:</span>
+          $$\Delta V=-\int_0^{2\ \mu\text{m}}E_x\,dx=-E_x\cdot\Delta x=-647.5\times2\times10^{-4}=\mathbf{-0.1295\text{ V}}$$
+          <span class="cmt">// Kiểm tra: $\Delta V=V_T\ln\dfrac{N_d(2\ \mu\text{m})}{N_d(0)}=V_T\ln e^{-5}=-5V_T=-0.1295\text{ V}$ (vì $\Delta x/\lambda=2.0/0.4=5$). Điện thế ở phía nhạt thấp hơn phía đậm.</span>
+        </div>
+        <div class="step">
+          <b>(3) Cơ chế bẻ cong dải và $\Delta E_c$:</b>
+          <span class="cmt">// Cơ chế: Mức Fermi $E_F$ phải nằm ngang ở cân bằng nhiệt. Nhưng $n(x)=N_c\exp[-(E_c-E_F)/kT]$ giảm về phía phải, nên khoảng $E_c-E_F$ phải tăng dần theo $x$. Vì $E_F$ cố định nên $E_c(x)$ (cùng $E_v$) bị bẻ cong lên về phía vùng nhạt. Cũng có thể nhìn là electron có năng lượng thế $-qV(x)$ và $V$ giảm theo $x$.</span>
+          $$\Delta E_c=-q\,\Delta V=-q(-0.1295\text{ V})=\mathbf{+0.1295\text{ eV}}$$
+          <span class="cmt">// Kiểm tra: $\Delta E_c=kT\ln\dfrac{N_d(0)}{N_d(2\ \mu\text{m})}=0.0259\times\ln(e^{5})=5\times0.0259=0.1295\text{ eV}$. Khớp. Đáy dải dẫn ở $x=2.0\ \mu\text{m}$ cao hơn ở $x=0$ là $0.1295\text{ eV}$.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÂU 4 BUỔI 9 -->
+    <div class="formula-card">
+      <h3 id="b9-cau4">Câu 4 (LLO 9.2): Xác định Đặc trưng Vật liệu bằng Hiệu ứng Hall</h3>
+      <figure class="fig fr"><svg viewBox="0 0 460 300" role="img" aria-label="Đồ thị điện áp Hall theo từ trường với điểm đo được âm"><line x1="66.0" y1="232.3" x2="436.0" y2="232.3" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="236.3" text-anchor="end" style="fill:var(--ink);font-size:12px;">-8</text><line x1="66.0" y1="185.7" x2="436.0" y2="185.7" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="189.7" text-anchor="end" style="fill:var(--ink);font-size:12px;">-4</text><line x1="66.0" y1="139.0" x2="436.0" y2="139.0" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="143.0" text-anchor="end" style="fill:var(--ink);font-size:12px;">0</text><line x1="66.0" y1="92.3" x2="436.0" y2="92.3" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="96.3" text-anchor="end" style="fill:var(--ink);font-size:12px;">4</text><line x1="66.0" y1="45.7" x2="436.0" y2="45.7" style="stroke:var(--g);stroke-width:1"/><text x="59.0" y="49.7" text-anchor="end" style="fill:var(--ink);font-size:12px;">8</text><line x1="66.0" y1="34.0" x2="66.0" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="66.0" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0</text><line x1="158.5" y1="34.0" x2="158.5" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="158.5" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.05</text><line x1="251.0" y1="34.0" x2="251.0" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="251.0" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.10</text><line x1="343.5" y1="34.0" x2="343.5" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="343.5" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.15</text><line x1="436.0" y1="34.0" x2="436.0" y2="244.0" style="stroke:var(--g);stroke-width:1"/><text x="436.0" y="261.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;">0.20</text><line x1="66.0" y1="34.0" x2="66.0" y2="244.0" style="stroke:var(--ink);stroke-width:1.6"/><line x1="66.0" y1="244.0" x2="436.0" y2="244.0" style="stroke:var(--ink);stroke-width:1.6"/><text x="251.0" y="280.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">B_z (T)</text><text transform="rotate(-90 22.0 139.0)" x="22.0" y="139.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:700">V_H (mV)</text><text x="251.0" y="22.0" text-anchor="middle" style="fill:var(--ink);font-size:12px;font-weight:800;fill:var(--c5)">V_H theo B_z: dấu của V_H cho biết loại bán dẫn (Bài 4)</text><line x1="66.0" y1="139.0" x2="436.0" y2="139.0" style="stroke:var(--ink);stroke-width:1.2"/><line x1="66.0" y1="139.0" x2="436.0" y2="69.0" style="stroke:var(--mut);stroke-width:2" stroke-dasharray="6 4"/><text x="432.0" y="61.0" text-anchor="end" style="fill:var(--ink);font-size:12px;fill:var(--mut)">nếu là loại P: V_H &gt; 0</text><line x1="66.0" y1="139.0" x2="436.0" y2="209.0" style="stroke:var(--c1);stroke-width:3"/><text x="432.0" y="229.0" text-anchor="end" style="fill:var(--ink);font-size:12px;fill:var(--c1);font-weight:700">loại N: V_H &lt; 0</text><line x1="343.5" y1="139.0" x2="343.5" y2="191.5" style="stroke:var(--c5);stroke-width:1.2" stroke-dasharray="3 3"/><circle cx="343.5" cy="191.5" r="5.5" style="fill:var(--c5);stroke:var(--card);stroke-width:2"/><text x="335.5" y="213.5" text-anchor="end" style="fill:var(--ink);font-size:12px;fill:var(--c5);font-weight:700">đo được: −4.5 mV</text></svg><figcaption>Hình 4. Điện áp Hall tỷ lệ với $B_z$. Hạt tải electron cho độ dốc âm, lỗ trống cho độ dốc dương. Điểm đo $-4.5\text{ mV}$ ở $0.15\text{ T}$ nằm trên đường loại N.</figcaption></figure>
+
+      <p><b>Đề bài:</b> Mẫu GaAs hình thanh chữ nhật, chiều dài $L=0.5\text{ cm}$, chiều rộng $W=0.05\text{ cm}$, độ dày $d=5.0\ \mu\text{m}=5\times10^{-4}\text{ cm}$. Cho dòng $I_x=2.0\text{ mA}$ chạy dọc chiều dài, đặt từ trường đều $B_z=0.15\text{ T}$ ($=1.5\times10^{-5}\text{ Wb/cm}^2$) vuông góc mặt trên. Đo được: điện áp dọc $V_x=1.20\text{ V}$ và điện áp Hall ngang $V_H=-4.50\text{ mV}$.<br>
+      (1) Xác định loại bán dẫn (N hay P) và giải thích theo vật lý vận chuyển điện tích.<br>
+      (2) Tính nồng độ hạt tải đa số.<br>
+      (3) Xác định hệ số Hall $R_H$.<br>
+      (4) Tính điện trở suất $\rho$, độ dẫn điện $\sigma$ và độ linh động Hall $\mu_H$ của hạt tải đa số.</p>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-hint" onclick="togglePanel('b9-hint4')">Xem Gợi ý</button>
+        <button type="button" class="btn btn-sol" onclick="togglePanel('b9-sol4')">Xem Lời giải chi tiết</button>
+      </div>
+
+      <div id="b9-hint4" class="panel">
+        <b>Hướng đi &amp; Công thức cần dùng:</b>
+        <ul>
+          <li><b>Ý (1):</b> Theo quy ước Buổi 7: $V_H<0$ là electron (loại N), $V_H>0$ là lỗ trống (loại P).</li>
+          <li><b>Ý (2), (3):</b> $V_H=\dfrac{R_HI_xB_z}{d}\Rightarrow R_H=\dfrac{V_Hd}{I_xB_z}$, và $|R_H|=\dfrac1{q\,n}$. Chú ý đơn vị: $\text{V·cm}/(\text{A}\cdot\text{Wb/cm}^2)=\text{cm}^3/\text{C}$.</li>
+          <li><b>Ý (4):</b> $R=V_x/I_x$, rồi $\rho=R\dfrac{Wd}{L}$ (tiết diện là $W\times d$), $\sigma=1/\rho$, $\mu_H=\sigma|R_H|$.</li>
+        </ul>
+      </div>
+
+      <div id="b9-sol4" class="panel">
+        <b>Lời giải chi tiết từng bước:</b>
+        <div class="step">
+          <b>(1) Loại bán dẫn:</b>
+          <span class="cmt">// Từ trường $B_z$ làm lệch các hạt tải đang chạy theo $x$ về cùng một cạnh bên. Cạnh đó tích điện cùng dấu với hạt tải: electron làm cạnh âm, lỗ trống làm cạnh dương. Điện áp Hall đo được là <b>âm</b> ($V_H=-4.50\text{ mV}$), nghĩa là hạt tải đa số mang điện âm.</span>
+          $$V_H<0\ \Rightarrow\ \textbf{bán dẫn loại N (hạt đa số là electron)}$$
+        </div>
+        <div class="step">
+          <b>(3) Hệ số Hall $R_H$:</b>
+          <span class="cmt">// Bước 1: Từ $V_H=R_HI_xB_z/d$, đổi mọi đại lượng về $\text{A, cm, Wb/cm}^2$:</span>
+          $$R_H=\frac{V_H\,d}{I_x\,B_z}=\frac{(-4.5\times10^{-3})(5\times10^{-4})}{(2\times10^{-3})(1.5\times10^{-5})}=\frac{-2.25\times10^{-6}}{3\times10^{-8}}=\mathbf{-75\text{ cm}^3/\text{C}}$$
+          <span class="cmt">// $R_H<0$, đúng với loại N.</span>
+        </div>
+        <div class="step">
+          <b>(2) Nồng độ hạt tải đa số:</b>
+          <span class="cmt">// Với loại N, $R_H=-1/(qn)$ nên:</span>
+          $$n=\frac1{q\,|R_H|}=\frac{1}{(1.6\times10^{-19})(75)}=\frac1{1.2\times10^{-17}}\approx\mathbf{8.33\times10^{16}\text{ cm}^{-3}}$$
+        </div>
+        <div class="step">
+          <b>(4) Điện trở suất, độ dẫn điện và độ linh động Hall:</b>
+          <span class="cmt">// Bước 1: Điện trở của thanh theo phép đo dọc:</span>
+          $$R=\frac{V_x}{I_x}=\frac{1.20}{2\times10^{-3}}=600\ \Omega$$
+          <span class="cmt">// Bước 2: Tiết diện dòng chảy là $A=W\,d=0.05\times5\times10^{-4}=2.5\times10^{-5}\text{ cm}^2$, nên:</span>
+          $$\rho=R\frac AL=600\times\frac{2.5\times10^{-5}}{0.5}=\mathbf{0.030\ \Omega\cdot\text{cm}},\qquad \sigma=\frac1\rho=\mathbf{33.3\text{ S/cm}}$$
+          <span class="cmt">// Bước 3: Độ linh động Hall:</span>
+          $$\mu_H=\sigma\,|R_H|=33.3\times75=\mathbf{2.5\times10^{3}\text{ cm}^2/\text{V·s}}$$
+          <span class="cmt">// Kiểm tra chéo: $\sigma=qn\mu_H=(1.6\times10^{-19})(8.33\times10^{16})(2500)=33.3\text{ S/cm}$. Khớp.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Buổi 9: Những Điểm Cốt Lõi Cần Nhớ</h2>
+    <ul>
+      <li><b>Độ dẫn &amp; điện trở:</b> $\sigma=qn\mu_n$ (loại N), $R=\rho L/A$. Luôn đổi $\mu\text{m}\to\text{cm}$ trước khi tính.</li>
+      <li><b>Bão hòa vận tốc:</b> khi $E\sim10^4\text{ V/cm}$ trở lên, $v_d$ bị kẹp về $v_{sat}$ nên dòng không còn tỷ lệ với điện áp. Câu 1: $I$ chỉ bằng khoảng $41\%$ so với dự đoán tuyến tính.</li>
+      <li><b>Khuếch tán + trôi:</b> $D=\mu V_T$; $J_{p,diff}=-qD_p\,dp/dx$; cộng dòng trôi và khuếch tán theo đúng chiều (Câu 2: $J_p\approx1.90\times10^3\text{ A/cm}^2$).</li>
+      <li><b>Pha tạp hàm mũ:</b> $E_x=V_T/\lambda$ là hằng số; $\Delta V=-5V_T$ và $\Delta E_c=+5kT\approx0.1295\text{ eV}$ khi $\Delta x/\lambda=5$.</li>
+      <li><b>Hiệu ứng Hall:</b> $V_H<0$ là loại N; $R_H=V_Hd/(I_xB_z)$; $n=1/(q|R_H|)$; $\mu_H=\sigma|R_H|$. Cẩn thận: tiết diện để tính $\rho$ là $W\times d$.</li>
+    </ul>
+  </section>
+</template>
+
 <template id="tpl-buoi-pending">
   <header>
     <span class="k b3" id="pending-badge">ĐANG CHỜ NỐI TIẾP</span>
@@ -6791,6 +7238,65 @@ function renderB6ContactSim(stage, btn) {
 window.renderB6ContactSim = renderB6ContactSim;
 
 /* =========================================================
+   BUỔI 7: MÔ HÌNH BÃO HÒA VẬN TỐC v_d(E)
+   ========================================================= */
+let b7VsMu = 1350;
+function setB7VsMu(mu, btn) {
+  b7VsMu = mu;
+  if (btn) {
+    document.querySelectorAll('#b7-vs-tabs .sim-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderB7VsSim();
+}
+window.setB7VsMu = setB7VsMu;
+
+function renderB7VsSim() {
+  const svgEl = $('b7-vs-svg'), descEl = $('b7-vs-desc'), sl = $('sl-b7-e');
+  if (!svgEl || !descEl || !sl) return;
+  const vsat = 1e7, mu = b7VsMu;
+  const logE = +sl.value, E = Math.pow(10, logE);
+  $('val-b7-e').textContent = E >= 1e4 ? E.toExponential(1) : Math.round(E);
+  const vLin = mu * E, vSat = vLin / (1 + vLin / vsat);
+  descEl.innerHTML = `• Tuyến tính $v=\\mu E = ${vLin.toExponential(2)}\\text{ cm/s}$<br>` +
+    `• Có bão hòa $v \\approx ${vSat.toExponential(2)}\\text{ cm/s}$ (bằng ${(vSat / vsat * 100).toFixed(0)}% của $v_{sat}=10^7$)<br>` +
+    (vLin > vsat ? '<b>Tuyến tính đã vượt $v_{sat}$: mô hình $v=\\mu E$ không còn đúng.</b>' : (vSat / vsat > 0.5 ? '<b>Vùng chuyển tiếp: $v_d$ bắt đầu bẹt dần.</b>' : '<b>Vùng điện trường nhỏ: $v_d \\approx \\mu E$.</b>'));
+
+  const gx = 70, gy = 270, gw = 570, gh = 220;
+  const xMin = 2, xMax = 5.5, yMin = 4, yMax = 8;
+  const X = l => gx + (l - xMin) / (xMax - xMin) * gw;
+  const Y = v => gy - (Math.log10(Math.max(v, 1e4)) - yMin) / (yMax - yMin) * gh;
+  let s = `<line x1="${gx}" y1="${gy - gh}" x2="${gx}" y2="${gy}" stroke="var(--ink)" stroke-width="2"/>` +
+          `<line x1="${gx}" y1="${gy}" x2="${gx + gw}" y2="${gy}" stroke="var(--ink)" stroke-width="2"/>`;
+  s += `<text x="${gx + gw / 2}" y="22" text-anchor="middle" style="font-weight:800;fill:var(--c5)">Vận tốc trôi v_d theo điện trường E (thang log–log)</text>`;
+  for (let l = 2; l <= 5; l++) {
+    s += `<text x="${X(l)}" y="${gy + 18}" text-anchor="middle" style="font-size:12px">10^${l}</text>`;
+  }
+  for (let l = 4; l <= 8; l++) {
+    s += `<text x="${gx - 8}" y="${Y(Math.pow(10, l)) + 4}" text-anchor="end" style="font-size:12px">10^${l}</text>` +
+         `<line x1="${gx}" y1="${Y(Math.pow(10, l))}" x2="${gx + gw}" y2="${Y(Math.pow(10, l))}" stroke="var(--g)" stroke-width="1"/>`;
+  }
+  s += `<text x="${gx + gw / 2}" y="${gy + 44}" text-anchor="middle" style="font-weight:700">E (V/cm)</text>`;
+  s += `<text x="16" y="${gy - gh / 2}" text-anchor="middle" transform="rotate(-90 16 ${gy - gh / 2})" style="font-weight:700">v_d (cm/s)</text>`;
+  s += `<line x1="${gx}" y1="${Y(vsat)}" x2="${gx + gw}" y2="${Y(vsat)}" stroke="var(--c4)" stroke-width="1.5" stroke-dasharray="6 4"/>` +
+       `<text x="${gx + gw - 4}" y="${Y(vsat) - 6}" text-anchor="end" style="fill:var(--c4);font-weight:700;font-size:12px">v_sat = 10^7</text>`;
+  let pLin = '', pSat = '';
+  for (let l = xMin; l <= xMax + 1e-9; l += 0.05) {
+    const e = Math.pow(10, l), vl = mu * e, vs = vl / (1 + vl / vsat);
+    const yl = Math.min(Math.max(Y(vl), gy - gh), gy);
+    pLin += (pLin ? 'L' : 'M') + X(l).toFixed(1) + ' ' + yl.toFixed(1);
+    pSat += (pSat ? 'L' : 'M') + X(l).toFixed(1) + ' ' + Y(vs).toFixed(1);
+  }
+  s += `<path d="${pLin}" fill="none" stroke="var(--mut)" stroke-width="2" stroke-dasharray="5 4"/>`;
+  s += `<path d="${pSat}" fill="none" stroke="var(--c1)" stroke-width="3"/>`;
+  s += `<circle cx="${X(logE)}" cy="${Y(vSat)}" r="6" fill="var(--c5)" stroke="#fff" stroke-width="2"/>`;
+  s += `<text x="${gx + 12}" y="${gy - gh + 16}" style="font-size:12px;fill:var(--mut)">nét đứt: v = μE · nét liền: có bão hòa</text>`;
+  svgEl.innerHTML = s;
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
+}
+window.renderB7VsSim = renderB7VsSim;
+
+/* =========================================================
    HỆ THỐNG TẢI BÀI HỌC THEO YÊU CẦU (ON-DEMAND LOADER) & MỤC LỤC
    ========================================================= */
 function buildTOC() {
@@ -6934,6 +7440,14 @@ function loadLesson(lessonId) {
     renderB6CompSim();
     renderB6TempRegimesSim();
     renderB6ContactSim('before');
+  } else if (lessonId === '7') {
+    const tpl = $('tpl-buoi-7');
+    mainEl.innerHTML = tpl.innerHTML;
+    // Khởi tạo mô hình tương tác của Buổi 7
+    renderB7VsSim();
+  } else if (lessonId === '9') {
+    const tpl = $('tpl-buoi-9');
+    mainEl.innerHTML = tpl.innerHTML;
   } else {
     const tpl = $('tpl-buoi-pending');
     mainEl.innerHTML = tpl.innerHTML;
@@ -6976,8 +7490,8 @@ window.loadLesson = loadLesson;
     }
   });
 
-  $('lesson-select').value = '6';
-  loadLesson('6');
+  $('lesson-select').value = '9';
+  loadLesson('9');
 })();
 
 (function viewMode(){
