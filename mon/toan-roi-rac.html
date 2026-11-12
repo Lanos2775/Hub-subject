@@ -557,19 +557,15 @@ figcaption { font-size: 14.5px; color: var(--mut); margin-top: 8px; line-height:
 .ans { background: var(--card); border: 2px solid var(--c2); border-radius: 12px; padding: 10px 16px; margin: 12px 0 2px; }
 
 /* ==========================================================================
-   4. CHẾ ĐỘ XEM: ĐIỆN THOẠI / MÁY TÍNH
+   4. BỐ CỤC CHUẨN MÁY TÍNH & ĐIỀU HƯỚNG
    ========================================================================== */
-.vs { display: flex; gap: 4px; padding: 4px; background: var(--tint); border: 1.5px solid var(--g); border-radius: 12px; margin-bottom: 12px; }
-.vs b { font-size: 11px; color: var(--mut); padding: 0 6px; align-self: center; text-transform: uppercase; }
-.vb { flex: 1; border: 0; border-radius: 9px; padding: 7px; background: 0; color: var(--ink); font: 700 12.5px "Be Vietnam Pro", sans-serif; cursor: pointer; }
-.vb[aria-pressed=true] { background: var(--c5); color: #fff; }
 #toc-links a.on { background: var(--tint); color: var(--c5); }
-html[data-view=desktop] body { font-size: 18px; }
-html[data-view=desktop] main { max-width: none; padding: 26px clamp(18px, 2.6vw, 60px) 90px; }
-html[data-view=desktop] section { display: flow-root; padding: 34px clamp(24px, 2.8vw, 58px); }
-html[data-view=desktop] p, html[data-view=desktop] li { max-width: 165ch; }
-html[data-view=desktop] table { min-width: 0; }
-html[data-view=desktop] #mn { width: min(420px, calc(100vw - 28px)); }
+body { font-size: 18px; }
+main { max-width: none; width: 100%; margin: 0 auto; padding: 26px clamp(18px, 2.6vw, 60px) 90px; }
+section { display: flow-root; padding: 34px clamp(24px, 2.8vw, 58px); }
+p, li { max-width: 165ch; }
+table { min-width: 0; }
+#mn { width: min(340px, calc(100vw - 28px)); }
 
 /* ==========================================================================
    5. BỐ CỤC MÔ HÌNH: MÀN HÌNH MÔ PHỎNG 60% | THÔNG SỐ + DỮ LIỆU 40%
@@ -603,116 +599,623 @@ html[data-view=desktop] #mn { width: min(420px, calc(100vw - 28px)); }
 }
 
 ol.steps,.ans,.f{display:flow-root}figure.fl{margin:14px 0}figure.fl svg{margin:0}
-@media(min-width:900px){html[data-view=desktop] figure.fl{float:right;clear:right;width:min(46%,560px);margin:6px 0 14px 28px}}
+@media(min-width:900px){figure.fl{float:right;clear:right;width:min(46%,560px);margin:6px 0 14px 28px}}
 
 /* ==========================================================================
-   5. CÀI ĐẶT GIAO DIỆN: nút bánh răng + popup, và giao diện "Kính mờ" (Liquid Glass)
+   6. CÀI ĐẶT GIAO DIỆN & LIQUID GLASS THEME
    ========================================================================== */
-.vrow { display: flex; gap: 8px; margin-bottom: 12px; align-items: stretch; }
-.vrow .vs { flex: 1; margin: 0; min-width: 0; }
-.st-gear { flex: 0 0 44px; width: 44px; border: 1.5px solid var(--g); border-radius: 12px; background: var(--tint); color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
-.st-gear:hover { border-color: var(--c5); color: var(--c5); }
-.st-gear:focus-visible, .st-pop button:focus-visible { outline: 3px solid var(--c3); outline-offset: 2px; }
-.st-ov { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(10,12,40,.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-.st-ov[hidden], #glass-opts[hidden] { display: none; }
-.st-pop { width: min(460px, 100%); max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); overflow-y: auto; background: var(--card); color: var(--ink); border: 1px solid var(--g); border-radius: 22px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.4); font: 600 14.5px/1.5 "Be Vietnam Pro", system-ui, sans-serif; letter-spacing: 0; }
-.st-h { display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 17px; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--g); }
-.st-x { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--g); background: var(--tint); color: var(--ink); font: 700 14px/1 sans-serif; cursor: pointer; }
-.st-lab { font-size: 12px; font-weight: 800; color: var(--mut); text-transform: uppercase; margin: 0 0 8px; letter-spacing: .4px; }
-.st-seg { display: flex; gap: 4px; padding: 4px; background: var(--tint); border: 1.5px solid var(--g); border-radius: 14px; margin-bottom: 16px; }
-.st-seg button { flex: 1; border: 0; border-radius: 10px; padding: 10px 6px; background: transparent; color: var(--ink); font: 700 13.5px "Be Vietnam Pro", sans-serif; cursor: pointer; }
-.st-seg button[aria-pressed=true] { background: var(--c5); color: #fff; }
-.st-row { display: flex; flex-direction: column; gap: 6px; margin: 0 0 14px; font-size: 13.5px; }
-.st-row > span { display: flex; justify-content: space-between; gap: 10px; }
-.st-row > span em { font-style: normal; color: var(--mut); font-weight: 500; font-size: 12px; }
-.st-row > span output { color: var(--mut); font-weight: 600; }
-.st-row input[type=range] { width: 100%; accent-color: var(--c5); }
-.st-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-.st-btns button { border: 1.5px solid var(--g); border-radius: 999px; padding: 9px 16px; background: var(--tint); color: var(--ink); font: 700 13px "Be Vietnam Pro", sans-serif; cursor: pointer; }
-.st-btns button:disabled { opacity: .5; cursor: not-allowed; }
-.st-btns button[aria-pressed=true] { background: var(--c5); color: #fff; border-color: var(--c5); }
-.st-note { font-size: 12.5px; color: var(--mut); font-weight: 500; margin: 12px 0 0; }
+.nav-view-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 6px 10px;margin-bottom:8px;
+  border-bottom:1px solid var(--g);
+}
+body.lg-theme .nav-view-row{border-bottom-color:rgba(255,255,255,.2)}
+.menu-label{
+  font-size:13.5px;font-weight:800;color:var(--c5);letter-spacing:.02em;
+}
+body.lg-theme .menu-label{color:#7dd3fc}
+.btn-theme-settings{
+  width:34px;height:34px;border-radius:9px;border:1.5px solid var(--g);
+  background:var(--tint);color:var(--ink);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;transition:all .2s ease;
+}
+.btn-theme-settings:hover{border-color:var(--c5);transform:rotate(30deg)}
 
-/* --- Các viên ngọc nằm sau kính (chỉ hiện ở giao diện Kính mờ) --- */
-.lg-orbs { display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; filter: blur(var(--lg-orb-blur, 0px)); }
-.lg-orbs i { position: absolute; border-radius: 50%; display: block; }
+#ls{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;margin-bottom:8px}
+#ls button{border:0;border-radius:8px;padding:8px 0;background:var(--tint);color:var(--ink);font:700 12.5px/1 "Be Vietnam Pro",sans-serif;cursor:pointer;transition:all .15s ease}
+#ls button.on{background:var(--c5);color:#fff}
+
+/* Nền phong cách iOS Silk Wave */
+.lg-bg-ios{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  transition:filter .25s ease,opacity .3s ease;display:none;
+}
+body.lg-theme[data-lg-bg="ios"] .lg-bg-ios{
+  display:block;
+}
+body:not(.lg-theme) .lg-bg-ios{display:none !important}
+.lg-bg-ios.lg-orbs-hidden{display:none !important}
+.lg-bg-ios svg{
+  background:none !important;border:none !important;border-radius:0 !important;
+  margin:0 !important;padding:0 !important;box-shadow:none !important;
+  width:100% !important;height:100% !important;display:block !important;
+}
+
+/* Thay đổi gradient nền chính khi chọn iOS */
+body.lg-theme[data-lg-bg="ios"]{
+  background-color:#020510 !important;
+  background-image:
+    radial-gradient(circle at 50% 50%,transparent 35%,rgba(2,4,14,.7) 100%),
+    radial-gradient(ellipse 95% 65% at 80% 0%,rgba(56,189,248,.38),transparent 70%),
+    radial-gradient(ellipse 85% 55% at 15% 40%,rgba(168,85,247,.32),transparent 65%),
+    radial-gradient(ellipse 85% 65% at 85% 85%,rgba(59,130,246,.32),transparent 70%),
+    radial-gradient(ellipse 70% 50% at 5% 95%,rgba(20,184,166,.25),transparent 65%),
+    linear-gradient(160deg,#02040d,#070d24 45%,#030614) !important;
+  background-attachment:fixed !important;
+}
+
+/* Các viên ngọc nằm sau kính (Aurora) */
+.lg-orbs{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  transition:filter .25s ease,opacity .3s ease;display:none;
+}
+body.lg-theme[data-lg-bg="aurora"] .lg-orbs{
+  display:block;
+}
+body:not(.lg-theme) .lg-orbs{display:none !important}
+.lg-orbs.lg-orbs-hidden{display:none !important}
+.lg-orbs i{position:absolute;border-radius:50%;display:block}
 .lg-orbs i:nth-child(1){left:6%;top:14%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#9fb4ff,#4f6bff 55%,#2a2fb0)}
 .lg-orbs i:nth-child(2){right:9%;top:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#f0c0ff,#b043ff 55%,#6a1fb8)}
 .lg-orbs i:nth-child(3){left:38%;top:52%;width:280px;height:280px;background:radial-gradient(circle at 32% 28%,#ffc2dd,#ff4f9a 55%,#b01a68)}
 .lg-orbs i:nth-child(4){right:4%;bottom:6%;width:210px;height:210px;background:radial-gradient(circle at 32% 28%,#b4fff2,#12d6c0 55%,#0a7f8f)}
 .lg-orbs i:nth-child(5){left:3%;bottom:8%;width:150px;height:150px;background:radial-gradient(circle at 32% 28%,#fff1b0,#ffc83d 55%,#d98a00)}
 
-/* --- Giao diện Kính mờ: đổi bảng màu sang tông tối trong suốt, rồi thêm nền + kính --- */
-html:root[data-skin="glass"] {
-  --lg-blur: 14px; --lg-sat: 200%; --lg-fill: .12; --lg-tint: .16;
-  --bg: #14183f; --card: rgba(255,255,255,.08); --ink: #ffffff; --mut: rgba(255,255,255,.82);
-  --g: rgba(255,255,255,.28); --tint: rgba(255,255,255,.1);
-  --c1: #6ea0ff; --c2: #38d9a9; --c3: #ffd43b; --c4: #ff8fb8; --c5: #a78bfa;
-  color-scheme: dark;
-}
-html:root[data-skin="glass"] body {
-  background-color: #14183f;
+/* Giao diện Kính mờ chính */
+body.lg-theme{
+  --lg-blur:14px;--lg-sat:200%;--lg-fill:0.12;--lg-tint:0.16;
+  --bg:#070a24;
+  --card:rgba(255,255,255,.08);
+  --ink:#ffffff;
+  --mut:rgba(255,255,255,.82);
+  --g:rgba(255,255,255,.24);
+  --tint:rgba(255,255,255,.1);
+  --c1:#6ea0ff;--c2:#38d9a9;--c3:#ffd43b;--c4:#ff8fb8;--c5:#a78bfa;
+  --lg-text:#ffffff;--lg-ink:#0d1140;
+  color-scheme:dark;
+  background-color:#070a24 !important;
   background-image:
-    radial-gradient(60% 55% at 8% 0%,rgba(63,107,255,.85),transparent 70%),
-    radial-gradient(50% 50% at 100% 12%,rgba(176,67,255,.7),transparent 70%),
-    radial-gradient(55% 55% at 42% 108%,rgba(255,79,154,.6),transparent 70%),
-    radial-gradient(40% 40% at 92% 96%,rgba(18,214,192,.5),transparent 70%),
-    linear-gradient(160deg,#14183f,#1c1b52 45%,#2a1650);
-  background-attachment: fixed; -webkit-font-smoothing: antialiased;
-}
-html:root[data-skin="glass"] .lg-orbs { display: block; }
-html:root[data-skin="glass"][data-orbs="off"] .lg-orbs { display: none; }
-html:root[data-skin="glass"] main { position: relative; z-index: 1; }
-html:root[data-skin="glass"] section, html:root[data-skin="glass"] #mn, html:root[data-skin="glass"] .st-pop {
-  background:
-    radial-gradient(circle 170px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.2),transparent 70%),
-    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
-    rgba(14,16,70,var(--lg-tint));
-  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
-          backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(255,255,255,.18), inset 0 0 26px rgba(255,255,255,.07), 0 26px 54px -20px rgba(4,6,36,.65);
-  border-color: rgba(255,255,255,.3);
-}
-html:root[data-skin="glass"] section { border-radius: 28px; text-shadow: 0 1px 10px rgba(8,10,56,.3); }
-html:root[data-skin="glass"] #mn, html:root[data-skin="glass"] .st-pop { background:
-    radial-gradient(circle 170px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.2),transparent 70%),
-    linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 60%,rgba(255,255,255,.12)), rgba(22,26,98,.66);
-  -webkit-backdrop-filter: blur(max(var(--lg-blur),22px)) saturate(var(--lg-sat)); backdrop-filter: blur(max(var(--lg-blur),22px)) saturate(var(--lg-sat)); }
-html:root[data-skin="glass"] #mn { border-radius: 24px; }
-html:root[data-skin="glass"] .st-ov { background: rgba(8,10,44,.5); }
-html:root[data-skin="glass"] #mb, html:root[data-skin="glass"] .st-gear, html:root[data-skin="glass"] .st-x {
-  background: linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.06));
-  border: 1px solid rgba(255,255,255,.4); color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 8px 16px -10px rgba(4,6,36,.6);
-}
-html:root[data-skin="glass"] .vb[aria-pressed=true], html:root[data-skin="glass"] .st-seg button[aria-pressed=true], html:root[data-skin="glass"] .st-btns button[aria-pressed=true] {
-  background: linear-gradient(180deg,#fff,#dfe5ff); color: #0d1140; border-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.28);
-}
-html:root[data-skin="glass"] .vs, html:root[data-skin="glass"] .st-seg { background: rgba(8,10,50,.28); border-color: rgba(255,255,255,.22); box-shadow: inset 0 1px 3px rgba(0,0,0,.3); }
-html:root[data-skin="glass"] .st-btns button { background: linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.06)); border-color: rgba(255,255,255,.34); color: #fff; }
-html:root[data-skin="glass"] .csel-menu { background: rgba(24,28,100,.96); }
-html:root[data-skin="glass"] .steps > li::before, html:root[data-skin="glass"] .k { color: #0d1140; }
-html:root[data-skin="glass"].lg-refract section, html:root[data-skin="glass"].lg-refract #mn, html:root[data-skin="glass"].lg-refract .st-pop {
-  -webkit-backdrop-filter: url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
-          backdrop-filter: url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
-}
-@media (prefers-reduced-transparency: reduce) {
-  html:root[data-skin="glass"] section, html:root[data-skin="glass"] #mn, html:root[data-skin="glass"] .st-pop { -webkit-backdrop-filter: none; backdrop-filter: none; background: #262a72; }
+    radial-gradient(60% 55% at 8% 0%,rgba(63,107,255,.75),transparent 70%),
+    radial-gradient(50% 50% at 100% 12%,rgba(176,67,255,.6),transparent 70%),
+    radial-gradient(55% 55% at 42% 108%,rgba(255,79,154,.5),transparent 70%),
+    radial-gradient(40% 40% at 92% 96%,rgba(18,214,192,.45),transparent 70%),
+    linear-gradient(160deg,#070a24,#0d1139 45%,#170e30) !important;
+  background-attachment:fixed !important;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* Thu nhỏ thanh chế độ xem + nút setting */
-.vrow { gap: 6px; margin-bottom: 10px; }
-.vrow .vs { padding: 2px; gap: 2px; border-radius: 9px; border-width: 1px; flex: 0 1 auto; }
-.vrow .vb { flex: 0 0 auto; padding: 3px 9px; font-size: 11px; border-radius: 7px; }
-.vrow .st-gear { flex: 0 0 28px; width: 28px; border-width: 1px; border-radius: 9px; }
-.vrow .st-gear svg { width: 14px; height: 14px; }
+body.lg-theme main,body.lg-theme #app-content{position:relative;z-index:1}
+body.lg-theme #mb{z-index:60}
+
+body.lg-theme section,
+body.lg-theme .formula-card,
+body.lg-theme .sim-card,
+body.lg-theme .key{
+  position:relative;isolation:isolate;color:var(--lg-text);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(14,16,70,var(--lg-tint)) !important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(255,255,255,.18),
+    inset 0 0 26px rgba(255,255,255,.08),
+    inset 0 -20px 30px -20px rgba(255,255,255,.24),
+    0 26px 54px -20px rgba(4,6,36,.65);
+  border:1px solid rgba(255,255,255,.22) !important;
+  text-shadow:0 1px 10px rgba(8,10,56,.35);
+}
+
+body.lg-theme #mn{
+  position:fixed !important;
+  z-index:60 !important;
+  color:var(--lg-text);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(14,16,70,var(--lg-tint)) !important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(255,255,255,.18),
+    inset 0 0 26px rgba(255,255,255,.08),
+    inset 0 -20px 30px -20px rgba(255,255,255,.24),
+    0 26px 54px -20px rgba(4,6,36,.65);
+  border:1px solid rgba(255,255,255,.22) !important;
+  text-shadow:0 1px 10px rgba(8,10,56,.35);
+}
+body.lg-theme #mn[hidden]{display:none !important}
+
+body.lg-theme section{border-left:6px solid var(--c1) !important}
+body.lg-theme section:nth-of-type(5n+2){border-left-color:var(--c2) !important}
+body.lg-theme section:nth-of-type(5n+3){border-left-color:var(--c3) !important}
+body.lg-theme section:nth-of-type(5n+4){border-left-color:var(--c4) !important}
+body.lg-theme section:nth-of-type(5n+5){border-left-color:var(--c5) !important}
+
+body.lg-theme section::before,
+body.lg-theme .formula-card::before,
+body.lg-theme .sim-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(circle 200px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.22),transparent 70%),
+    radial-gradient(120% 55% at 50% -8%,rgba(255,255,255,.28),transparent 58%);
+}
+body.lg-theme:not(.lg-glow-on) section::before,
+body.lg-theme:not(.lg-glow-on) .formula-card::before,
+body.lg-theme:not(.lg-glow-on) .sim-card::before{
+  display:none !important;
+}
+
+body.lg-theme section::after,
+body.lg-theme .formula-card::after,
+body.lg-theme .sim-card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.1) 30%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.7));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+
+body.lg-theme h1{background:linear-gradient(90deg,#9fb4ff,#d4ddff,#ffc2dd);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+body.lg-theme h2{color:#fff;text-shadow:0 2px 12px rgba(8,10,56,.5)}
+body.lg-theme h3{color:#c4b5fd;text-shadow:0 1px 8px rgba(8,10,56,.4)}
+
+body.lg-theme .box,
+body.lg-theme .f,
+body.lg-theme .panel,
+body.lg-theme .ans{
+  background:rgba(255,255,255,.08) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+}
+body.lg-theme .ctrl-row,
+body.lg-theme .sim-tabs{
+  background:rgba(8,10,50,.32) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+}
+
+body.lg-theme .btn,
+body.lg-theme .sim-tab,
+body.lg-theme #ls button,
+body.lg-theme .btn-theme-settings,
+body.lg-theme #mb{
+  color:#fff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.06)) !important;
+  border:1px solid rgba(255,255,255,.32) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -1px 0 rgba(255,255,255,.1),0 8px 16px -10px rgba(4,6,36,.6) !important;
+  text-shadow:0 1px 8px rgba(8,10,56,.5);
+}
+body.lg-theme .btn:hover,
+body.lg-theme .sim-tab:hover,
+body.lg-theme #ls button:hover,
+body.lg-theme .btn-theme-settings:hover,
+body.lg-theme #mb:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.12)) !important;
+  border-color:rgba(255,255,255,.65) !important;
+}
+body.lg-theme #ls button.on,
+body.lg-theme .sim-tab.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  border-color:#ffffff !important;
+  text-shadow:none !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.28),inset 0 1px 0 #ffffff !important;
+}
+body.lg-theme .btn-sol{
+  background:linear-gradient(180deg,#d4ddff,#9fb4ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  text-shadow:none !important;
+  border-color:rgba(255,255,255,.75) !important;
+}
+body.lg-theme .btn-sol::before{background:var(--lg-ink,#0d1140) !important}
+body.lg-theme .btn-hint{
+  background:rgba(245,159,0,.22) !important;
+  border-color:rgba(255,214,102,.6) !important;
+  color:#ffe9a8 !important;
+}
+body.lg-theme .btn-hint::before{background:#ffd43b !important}
+
+body.lg-theme svg:not(#lg-defs):not(.btn-theme-settings svg):not(.theme-modal-close-btn svg):not(.lg-bg-ios svg){
+  background:rgba(14,18,56,.55) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+}
+body.lg-theme svg text{fill:#ffffff !important}
+body.lg-theme .ax{stroke:rgba(255,255,255,.25) !important}
+body.lg-theme th{background:rgba(255,255,255,.12) !important;color:#c4b5fd !important}
+body.lg-theme td,body.lg-theme th{border-bottom:1px solid rgba(255,255,255,.12) !important}
+body.lg-theme mjx-container{color:#ffffff !important}
+body.lg-theme #toc-links a{color:rgba(255,255,255,.88) !important}
+body.lg-theme #toc-links a:hover{background:rgba(255,255,255,.14) !important;color:#ffffff !important}
+body.lg-theme #toc-links a.sub{color:rgba(255,255,255,.65) !important}
+body.lg-theme .toc-title{color:rgba(255,255,255,.6) !important}
+body.lg-theme .steps > li::before, body.lg-theme .k{color:#0d1140 !important}
+
+/* Khúc xạ trên Chromium */
+html.lg-refract body.lg-theme section,
+html.lg-refract body.lg-theme .formula-card,
+html.lg-refract body.lg-theme .sim-card,
+html.lg-refract body.lg-theme #mn{
+  -webkit-backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
+  backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
+}
+
+/* Modal Popup Cài đặt Giao diện */
+.theme-modal-overlay{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(8,10,44,.6);
+  -webkit-backdrop-filter:blur(10px) saturate(130%);
+  backdrop-filter:blur(10px) saturate(130%);
+  z-index:9999;
+  animation:fadeInModal .2s ease;
+}
+.theme-modal-overlay[hidden]{display:none !important}
+@keyframes fadeInModal{from{opacity:0}to{opacity:1}}
+
+.theme-modal-box{
+  width:min(440px,calc(100vw - 32px));
+  max-height:calc(100vh - 40px);
+  overflow-y:auto;
+  border-radius:24px;
+  padding:22px;
+  background:var(--card);
+  color:var(--ink);
+  border:2px solid var(--c5);
+  box-shadow:0 16px 48px rgba(0,0,0,.35);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  font-family:"Be Vietnam Pro",system-ui,sans-serif;
+  animation:slideUpModal .22s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes slideUpModal{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+body.lg-theme .theme-modal-box{
+  background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 60%,rgba(255,255,255,.12)),rgba(22,26,98,.82) !important;
+  -webkit-backdrop-filter:blur(28px) saturate(180%) !important;
+  backdrop-filter:blur(28px) saturate(180%) !important;
+  border:1px solid rgba(255,255,255,.35) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 24px 60px rgba(4,6,36,.8) !important;
+}
+
+.theme-modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:12px;border-bottom:1px solid var(--g);
+}
+body.lg-theme .theme-modal-header{border-bottom-color:rgba(255,255,255,.2)}
+.theme-modal-header h3{margin:0;font-size:18px;font-weight:800;color:inherit}
+.theme-modal-close-btn{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--g);
+  background:var(--tint);color:var(--ink);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;font-weight:700;transition:all .18s ease;
+}
+.theme-modal-close-btn:hover{background:var(--c4);color:#fff;border-color:transparent}
+
+.theme-mode-select{
+  display:flex;gap:4px;padding:4px;border-radius:999px;
+  background:var(--tint);border:1.5px solid var(--g);
+}
+body.lg-theme .theme-mode-select{
+  background:rgba(8,10,50,.45);border-color:rgba(255,255,255,.25);
+}
+.thm-toggle-btn{
+  flex:1;border:0;border-radius:999px;padding:9px 8px;
+  font:700 13.5px "Be Vietnam Pro",sans-serif;
+  color:var(--ink);background:transparent;cursor:pointer;
+  transition:all .2s ease;text-align:center;
+}
+body.lg-theme .thm-toggle-btn{color:rgba(255,255,255,.88)}
+.thm-toggle-btn.active{
+  background:var(--c5);color:#fff;
+  box-shadow:0 3px 10px rgba(112,72,232,.3);
+}
+body.lg-theme .thm-toggle-btn.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff) !important;
+  color:var(--lg-ink,#0d1140) !important;
+  box-shadow:0 3px 12px rgba(0,0,0,.35),inset 0 1px 0 #ffffff !important;
+}
+
+.theme-default-notice{
+  padding:14px 16px;border-radius:14px;background:var(--tint);
+  border:1px dashed var(--g);font-size:13.5px;line-height:1.6;color:var(--mut);text-align:center;
+}
+
+.theme-ctrl-group{
+  display:flex;flex-direction:column;gap:13px;
+}
+.theme-ctrl-item{
+  display:flex;flex-direction:column;gap:5px;
+  font-size:13px;font-weight:600;
+}
+.theme-ctrl-item-head{
+  display:flex;justify-content:space-between;align-items:center;
+  color:var(--ink);
+}
+body.lg-theme .theme-ctrl-item-head{color:#ffffff}
+.theme-ctrl-item-head span{
+  font-size:11.5px;color:var(--mut);font-weight:500;
+}
+body.lg-theme .theme-ctrl-item-head span{color:rgba(255,255,255,.7)}
+.theme-ctrl-item-head output{
+  font-weight:700;color:var(--c5);
+}
+body.lg-theme .theme-ctrl-item-head output{color:#a78bfa}
+.theme-ctrl-item input[type=range]{
+  width:100%;margin:3px 0;accent-color:var(--c5);
+}
+
+.theme-bg-selector{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:4px;
+}
+.theme-bg-card{
+  all:unset;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  padding:8px 8px 10px;
+  border-radius:14px;
+  background:var(--tint);
+  border:1.5px solid var(--g);
+  cursor:pointer;
+  transition:all .2s ease;
+  user-select:none;
+}
+body.lg-theme .theme-bg-card{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.16);
+}
+.theme-bg-card:hover{
+  border-color:var(--c5);
+  transform:translateY(-1px);
+}
+body.lg-theme .theme-bg-card:hover{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.35);
+}
+.theme-bg-card.active{
+  border-color:var(--c5);
+  background:var(--card);
+  box-shadow:0 0 0 2px var(--c5);
+}
+body.lg-theme .theme-bg-card.active{
+  background:linear-gradient(180deg,rgba(56,189,248,.22),rgba(14,165,233,.08)) !important;
+  border-color:#38bdf8 !important;
+  box-shadow:0 0 16px rgba(56,189,248,.35),inset 0 1px 1px rgba(255,255,255,.5) !important;
+}
+.theme-bg-preview{
+  width:100%;
+  height:46px;
+  border-radius:9px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+}
+.preview-aurora{
+  background:
+    radial-gradient(circle at 25% 35%,#38bdf8 0%,transparent 45%),
+    radial-gradient(circle at 75% 25%,#6366f1 0%,transparent 45%),
+    radial-gradient(circle at 55% 75%,#06b6d4 0%,transparent 45%),
+    #060b19;
+}
+.preview-ios{
+  background:
+    radial-gradient(circle at 80% 15%,#38bdf8 0%,transparent 50%),
+    radial-gradient(circle at 20% 45%,#ec4899 0%,transparent 50%),
+    radial-gradient(circle at 75% 85%,#6366f1 0%,transparent 50%),
+    linear-gradient(135deg,#02040d,#080d24);
+}
+.preview-ios::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(55deg,transparent 35%,rgba(255,255,255,.4) 48%,rgba(56,189,248,.7) 53%,transparent 66%);
+  filter:blur(1px);
+}
+.theme-bg-name{
+  font-size:12px;
+  font-weight:700;
+  color:inherit;
+  text-align:center;
+}
+body.lg-theme .theme-bg-name{color:#fff}
+
+.theme-modal-actions{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;
+}
+.theme-btn-action{
+  flex:1;min-width:110px;padding:9px 12px;border-radius:999px;
+  font:700 12.5px "Be Vietnam Pro",sans-serif;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1.5px solid var(--g);background:var(--tint);color:var(--ink);
+  transition:all .18s ease;
+}
+.theme-btn-action:hover{border-color:var(--c5);background:var(--card)}
+body.lg-theme .theme-btn-action{
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
+  border-color:rgba(255,255,255,.3);color:#fff;
+}
+body.lg-theme .theme-btn-action:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,.12));
+}
+.theme-btn-action.active{
+  background:var(--c5);color:#fff;border-color:var(--c5);
+}
+body.lg-theme .theme-btn-action.active{
+  background:linear-gradient(180deg,#ffffff,#dfe5ff);color:var(--lg-ink,#0d1140);
+  border-color:#ffffff;
+}
+
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn{background:#262a72 !important}
+}
+@media (prefers-reduced-transparency:reduce){
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn,.theme-modal-box,.theme-modal-overlay{-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+  body.lg-theme section,body.lg-theme .formula-card,body.lg-theme .sim-card,body.lg-theme #mn{background:#262a72 !important}
+}
+@media (prefers-reduced-motion:reduce){
+  .btn-theme-settings,.thm-toggle-btn,.theme-btn-action,.theme-modal-overlay,.theme-modal-box{transition:none !important;animation:none !important}
+}
 </style>
 </head>
 <body>
 
-<!-- Nền kính mờ: bộ lọc khúc xạ + viên ngọc (chỉ hiện khi chọn giao diện Kính mờ) -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
-<div class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+<!-- Bộ lọc khúc xạ SVG cho Liquid Glass -->
+<svg id="lg-defs" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- Vòng tròn nền Liquid Glass (Aurora) -->
+<div id="lg-orbs" class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+<!-- Nền phong cách iOS Silk Wave -->
+<div id="lg-bg-ios" class="lg-bg-ios" aria-hidden="true">
+  <svg viewBox="0 0 1440 900" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="ios-cyan-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#38bdf8" />
+        <stop offset="50%" stop-color="#0284c7" />
+        <stop offset="100%" stop-color="#1e3a8a" />
+      </linearGradient>
+      <linearGradient id="ios-magenta-purple" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ec4899" />
+        <stop offset="50%" stop-color="#a855f7" />
+        <stop offset="100%" stop-color="#4338ca" />
+      </linearGradient>
+      <linearGradient id="ios-amber-teal" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#06b6d4" />
+        <stop offset="60%" stop-color="#3b82f6" />
+        <stop offset="100%" stop-color="#6366f1" />
+      </linearGradient>
+      <filter id="ios-glow-heavy" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="65" />
+      </filter>
+      <filter id="ios-glow-mid" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="30" />
+      </filter>
+      <filter id="ios-glow-fine" x="-10%" y="-10%" width="120%" height="120%">
+        <feGaussianBlur stdDeviation="4" />
+      </filter>
+    </defs>
+    <!-- Background Silk Waves -->
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="url(#ios-cyan-blue)" stroke-width="170" fill="none" opacity="0.65" filter="url(#ios-glow-heavy)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="url(#ios-magenta-purple)" stroke-width="160" fill="none" opacity="0.55" filter="url(#ios-glow-heavy)" />
+    <path d="M 180 -120 C 420 320, 720 740, 1320 820 C 1520 860, 1620 740, 1700 680" stroke="url(#ios-amber-teal)" stroke-width="150" fill="none" opacity="0.5" filter="url(#ios-glow-heavy)" />
+    
+    <!-- Mid-layer silk ribbons for crisp optical depth -->
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="#38bdf8" stroke-width="36" fill="none" opacity="0.45" filter="url(#ios-glow-mid)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="#f472b6" stroke-width="32" fill="none" opacity="0.4" filter="url(#ios-glow-mid)" />
+    
+    <!-- Signature Apple silk specular crest lines -->
+    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="#e0f2fe" stroke-width="2.5" fill="none" opacity="0.75" filter="url(#ios-glow-fine)" />
+    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="#fce7f3" stroke-width="2" fill="none" opacity="0.7" filter="url(#ios-glow-fine)" />
+  </svg>
+</div>
+
+<!-- Popup Cài đặt Giao diện -->
+<div id="theme-modal-overlay" class="theme-modal-overlay" hidden>
+  <div id="theme-modal" class="theme-modal-box" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
+    <div class="theme-modal-header">
+      <h3 id="theme-modal-title">Cài đặt giao diện</h3>
+      <button type="button" id="theme-modal-close" class="theme-modal-close-btn" aria-label="Đóng popup">✕</button>
+    </div>
+
+    <!-- Chuyển đổi giữa 2 giao diện -->
+    <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
+      <button type="button" id="thm-opt-default" class="thm-toggle-btn">Dracula</button>
+      <button type="button" id="thm-opt-liquid" class="thm-toggle-btn active">Liquid Glass</button>
+    </div>
+
+    <div id="default-theme-notice" class="theme-default-notice" style="display:none">
+      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> để trải nghiệm giao diện kính mờ pha lê và bật các tuỳ chỉnh chi tiết.
+    </div>
+
+    <!-- Các thiết lập của Liquid Glass -->
+    <div id="lg-settings-panel" class="theme-ctrl-group">
+      <!-- Chọn hình nền Liquid Glass -->
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <label id="lbl-lg-bg" style="font-weight:700">Hình nền Liquid Glass</label>
+          <output id="o-lg-bg">iOS</output>
+        </div>
+        <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-lg-bg">
+          <button type="button" id="btn-bg-ios" class="theme-bg-card active" data-bg="ios" aria-checked="true" role="radio" title="Hình nền iOS phong cách dải lụa neon Apple">
+            <span class="theme-bg-preview preview-ios"></span>
+            <span class="theme-bg-name">iOS</span>
+          </button>
+          <button type="button" id="btn-bg-aurora" class="theme-bg-card" data-bg="aurora" aria-checked="false" role="radio" title="Hình nền Aurora với các khối cầu đa sắc">
+            <span class="theme-bg-preview preview-aurora"></span>
+            <span class="theme-bg-name">Aurora</span>
+          </button>
+        </div>
+      </div>
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ mờ phía sau kính (--lg-blur)</span>
+          <output id="o-lg-blur">14px</output>
+        </div>
+        <input id="r-lg-blur" type="range" min="0" max="40" value="14" aria-label="Độ mờ phía sau kính">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ sáng của kính (--lg-fill)</span>
+          <output id="o-lg-fill">0.12</output>
+        </div>
+        <input id="r-lg-fill" type="range" min="2" max="40" value="12" aria-label="Độ sáng của kính">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ phủ màu tối (--lg-tint)</span>
+          <output id="o-lg-tint">0.16</output>
+        </div>
+        <input id="r-lg-tint" type="range" min="0" max="60" value="16" aria-label="Độ phủ màu tối">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Độ rực màu nền (--lg-sat)</span>
+          <output id="o-lg-sat">200%</output>
+        </div>
+        <input id="r-lg-sat" type="range" min="100" max="300" value="200" aria-label="Độ rực màu nền">
+      </div>
+
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <span>Làm mờ nền / Vòng tròn (kéo min = ẩn)</span>
+          <output id="o-lg-orb-blur">16px</output>
+        </div>
+        <input id="r-lg-orb-blur" type="range" min="0" max="50" value="16" aria-label="Làm mờ nền hoặc ẩn vòng tròn">
+      </div>
+
+      <div class="theme-modal-actions">
+        <button type="button" id="b-lg-glow" class="theme-btn-action" aria-pressed="false">Vệt sáng chuột: Tắt</button>
+        <button type="button" id="b-lg-refract" class="theme-btn-action" aria-pressed="false">Khúc xạ (Chrome): Tắt</button>
+        <button type="button" id="b-lg-reset" class="theme-btn-action">Đặt lại</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Nút 3 gạch ở góc trên bên trái -->
 <button id="mb" type="button" aria-label="Mở menu chọn bài và mục lục" aria-expanded="false" aria-controls="mn">
@@ -721,41 +1224,29 @@ html:root[data-skin="glass"].lg-refract section, html:root[data-skin="glass"].lg
 
 <!-- Menu điều hướng chứa bộ chọn bài học và mục lục tự động -->
 <nav id="mn" hidden aria-label="Menu bài học và mục lục">
-  <div class="vrow"><div class="vs" role="group" aria-label="Chế độ xem"><button type="button" id="vm" class="vb" aria-pressed="true">Điện thoại</button><button type="button" id="vd" class="vb" aria-pressed="false">Máy tính</button></div><button type="button" id="st-open" class="st-gear" aria-label="Cài đặt giao diện" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button></div>
-  <div class="menu-selector-wrap">
-    <label for="lesson-select">Chọn bài học Toán Rời Rạc:</label>
-    <select id="lesson-select" onchange="loadLesson(this.value)">
-      <option value="1">Phần 1 (Bài 1 & 2): Tương đương Mệnh đề, Vị từ & Lượng từ (Tóm tắt)</option>
-      <option value="2">Phần 2 (Bài 3 & 4): Lượng từ lồng nhau & Quy tắc suy luận (Tóm tắt)</option>
-      <option value="3">Phần 3 (Bài 5 - Trọng tâm): Đại số Bool, Big-O & Thuật toán Euclid</option>
-      <option value="4">Phần 4 (Bài 6 - Chuyên sâu): Lý thuyết số & Mật mã hóa RSA</option>
-      <option value="5">Phần 5 (Mục 3.2, 3.3, 3.4 - Mới): Quy nạp Toán học & Đệ quy</option>
-      <option value="6">Phần 6 (Bài 7): Phép đếm & Nguyên lý Dirichlet (Tổ bồ câu)</option>
-      <option value="7">Phần 7 (Bài 8): Hoán vị, Tổ hợp, Nhị thức & Pascal</option>
-      <option value="8" selected>Phần 8 (Bài 12): Đếm nâng cao: Truy hồi, Chia để trị, Quy hoạch động & Hàm sinh</option>
-      <option value="9">Phần 9 (Bài 13): Lý thuyết đồ thị: Bậc, Đường đi, Euler & Hamilton</option>
-      <option value="10">Phần 10 (Bài 14): Đường đi ngắn nhất, Đồ thị phẳng & Tô màu đồ thị</option>
-      <option value="11">Phần 11 (Bài 15): Cây, Huffman, Duyệt cây & Cây khung nhỏ nhất</option>
-    </select>
+  <div class="nav-view-row">
+    <div class="menu-label">Toán rời rạc</div>
+    <button type="button" id="btn-theme-settings" class="btn-theme-settings" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
   </div>
+  <div id="ls"></div>
+  <select id="lesson-select" style="display:none" onchange="loadLesson(this.value)">
+    <option value="1">Phần 1: Mệnh đề, Vị từ & Lượng từ</option>
+    <option value="2">Phần 2: Lượng từ lồng nhau & Suy luận</option>
+    <option value="3">Phần 3: Đại số Bool, Big-O & Euclid</option>
+    <option value="4">Phần 4: Lý thuyết số & Mật mã RSA</option>
+    <option value="5">Phần 5: Quy nạp Toán học & Đệ quy</option>
+    <option value="6">Phần 6: Phép đếm & Dirichlet</option>
+    <option value="7">Phần 7: Hoán vị, Tổ hợp & Nhị thức</option>
+    <option value="8">Phần 8: Đếm nâng cao, Truy hồi & Hàm sinh</option>
+    <option value="9">Phần 9: Đồ thị, Bậc, Euler & Hamilton</option>
+    <option value="10">Phần 10: Đường đi ngắn nhất, Đồ thị phẳng & Tô màu</option>
+    <option value="11">Phần 11: Cây, Huffman, Duyệt cây & Cây khung</option>
+  </select>
   <div class="toc-title">Mục lục bài đang mở</div>
   <div id="toc-links"></div>
 </nav>
-
-<!-- Popup chỉnh giao diện -->
-<div class="st-ov" id="st-ov" hidden>
-  <div class="st-pop" role="dialog" aria-modal="true" aria-labelledby="st-title">
-    <div class="st-h"><span id="st-title">Cài đặt giao diện</span><button type="button" class="st-x" id="st-close" aria-label="Đóng">✕</button></div>
-    <p class="st-lab">Giao diện</p>
-    <div class="st-seg" role="group" aria-label="Chọn giao diện"><button type="button" data-skin="classic" aria-pressed="true">Dracula</button><button type="button" data-skin="glass" aria-pressed="false">Kính mờ (Liquid Glass)</button></div>
-    <div id="glass-opts" hidden>
-      <p class="st-lab">Điều chỉnh độ kính</p>
-<label class="st-row"><span>Độ mờ phía sau <em>--lg-blur</em><output id="so-blur"></output></span><input id="sr-blur" type="range" min="0" max="40" value="14"></label><label class="st-row"><span>Độ sáng của kính <em>--lg-fill</em><output id="so-fill"></output></span><input id="sr-fill" type="range" min="2" max="40" value="12"></label><label class="st-row"><span>Độ phủ màu tối <em>--lg-tint</em><output id="so-tint"></output></span><input id="sr-tint" type="range" min="0" max="60" value="16"></label><label class="st-row"><span>Độ rực màu nền <em>--lg-sat</em><output id="so-sat"></output></span><input id="sr-sat" type="range" min="100" max="300" value="200"></label><label class="st-row"><span>Làm mờ nền (kéo về 0 để ẩn các vòng tròn) <em></em><output id="so-bg"></output></span><input id="sr-bg" type="range" min="0" max="40" value="1"></label>
-      <div class="st-btns"><button type="button" id="st-refract" aria-pressed="false">Khúc xạ (Chrome): tắt</button><button type="button" id="st-reset">Đặt lại</button></div>
-      <p class="st-note">Cài đặt được lưu lại trên trình duyệt này.</p>
-    </div>
-  </div>
-</div>
 
 <!-- Khu vực chứa nội dung bài học được nạp động -->
 <main id="app-content"></main>
@@ -3233,6 +3724,7 @@ function buildTOC() {
 
 function upgradeCustomSelects(root = document) {
   root.querySelectorAll('select').forEach(sel => {
+    if (sel.id === 'lesson-select' || sel.style.display === 'none') return;
     if (sel.dataset.customized === 'true') {
       if (sel._syncCustomUI) sel._syncCustomUI();
       return;
@@ -3302,6 +3794,28 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.csel-wrap.open').forEach(w => w.classList.remove('open'));
 });
 
+const TRR_LESSONS = [
+  { id: '1', title: 'Phần 1: Mệnh đề, Vị từ & Lượng từ' },
+  { id: '2', title: 'Phần 2: Lượng từ lồng nhau & Suy luận' },
+  { id: '3', title: 'Phần 3: Đại số Bool, Big-O & Euclid' },
+  { id: '4', title: 'Phần 4: Lý thuyết số & Mật mã RSA' },
+  { id: '5', title: 'Phần 5: Quy nạp Toán học & Đệ quy' },
+  { id: '6', title: 'Phần 6: Phép đếm & Dirichlet' },
+  { id: '7', title: 'Phần 7: Hoán vị, Tổ hợp & Nhị thức' },
+  { id: '8', title: 'Phần 8: Đếm nâng cao, Truy hồi & Hàm sinh' },
+  { id: '9', title: 'Phần 9: Đồ thị, Bậc, Euler & Hamilton' },
+  { id: '10', title: 'Phần 10: Đường đi ngắn nhất, Đồ thị phẳng & Tô màu' },
+  { id: '11', title: 'Phần 11: Cây, Huffman, Duyệt cây & Cây khung' }
+];
+
+function renderLS(curId) {
+  const lsEl = $('ls');
+  if (!lsEl) return;
+  lsEl.innerHTML = TRR_LESSONS.map(l =>
+    `<button type="button" data-id="${l.id}" title="${l.title}" aria-label="${l.title}" class="${String(l.id) === String(curId) ? 'on' : ''}">${l.id}</button>`
+  ).join('');
+}
+
 function loadLesson(lessonId) {
   const mainEl = $('app-content');
   const tpl = $('tpl-buoi-' + lessonId);
@@ -3316,6 +3830,10 @@ function loadLesson(lessonId) {
       renderIndSim();
     }
   }
+
+  const sel = $('lesson-select');
+  if (sel) sel.value = String(lessonId);
+  renderLS(lessonId);
 
   upgradeCustomSelects(document);
   buildTOC();
@@ -3336,6 +3854,11 @@ window.loadLesson = loadLesson;
   };
   btn.onclick = () => setOpen(nav.hidden);
   nav.onclick = e => {
+    const b = e.target.closest('#ls button');
+    if (b) {
+      loadLesson(b.dataset.id);
+      return;
+    }
     if (e.target.closest('a')) setOpen(false);
   };
   document.addEventListener('click', e => {
@@ -3348,19 +3871,6 @@ window.loadLesson = loadLesson;
     }
   });
 
-  /* Chế độ xem Điện thoại / Máy tính (lưu lại lựa chọn) */
-  const store = (k, v) => { try { return v ? localStorage.setItem(k, v) : localStorage.getItem(k); } catch (e) { return null; } };
-  const applyView = v => {
-    document.documentElement.dataset.view = v;
-    $('vm').setAttribute('aria-pressed', v === 'mobile');
-    $('vd').setAttribute('aria-pressed', v === 'desktop');
-    store('toan-roi-rac-view', v);
-  };
-  $('vm').onclick = () => applyView('mobile');
-  $('vd').onclick = () => applyView('desktop');
-  const savedView = store('toan-roi-rac-view');
-  applyView(savedView === 'desktop' || savedView === 'mobile' ? savedView : (window.innerWidth >= 1000 ? 'desktop' : 'mobile'));
-
   /* Tô sáng mục đang xem trong mục lục */
   addEventListener('scroll', () => {
     let cur = null;
@@ -3372,67 +3882,290 @@ window.loadLesson = loadLesson;
     if (cur) cur.classList.add('on');
   }, { passive: true });
 
-  // Mặc định mở Phần 4 (Bài 6 - Lý thuyết số & Mật mã hóa RSA) để xem ngay Mục 5.1 vừa bổ sung
   $('lesson-select').value = '8';
   loadLesson('8');
 })();
 </script>
 <script>
-/* Cài đặt giao diện: Hiện tại / Kính mờ + popup chỉnh kính */
-(function () {
-  var KEY = 'toan-roi-rac-skin', root = document.documentElement, st = root.style;
-  var DEF = { blur: 14, fill: 12, tint: 16, sat: 200, bg: 1 };
-  var S = { skin: 'classic', refract: false };
-  Object.keys(DEF).forEach(function (k) { S[k] = DEF[k]; });
-  try { var raw = localStorage.getItem(KEY); if (raw) { var o = JSON.parse(raw); Object.keys(S).forEach(function (k) { if (o[k] !== undefined && typeof o[k] === typeof S[k]) S[k] = o[k]; }); } } catch (e) {}
-  if (S.skin !== 'glass') S.skin = 'classic';
-  var $ = function (id) { return document.getElementById(id); };
-  var canRefract = /Chrom(e|ium)\//.test(navigator.userAgent) && window.CSS && CSS.supports('backdrop-filter', 'blur(1px)');
-  var FMT = {
-    blur: function (v) { return v + 'px'; }, fill: function (v) { return (v / 100).toFixed(2); },
-    tint: function (v) { return (v / 100).toFixed(2); }, sat: function (v) { return v + '%'; },
-    bg: function (v) { return v === 0 ? 'ẩn' : v === 1 ? 'rõ nét' : 'mờ ' + (v - 1) + 'px'; }
+/* ==========================================================================
+   QUẢN LÝ GIAO DIỆN (THEME MANAGER): MẶC ĐỊNH LIQUID GLASS + HÌNH NỀN IOS
+   ========================================================================== */
+(function themeManager() {
+  const root = document.documentElement;
+  const body = document.body;
+  const st = (k, v) => { try { return v !== undefined ? localStorage.setItem(k, typeof v === 'object' ? JSON.stringify(v) : v) : localStorage.getItem(k); } catch (e) { return null; } };
+
+  const KEY_THEME = 'toan-roi-rac-theme';
+  const KEY_SETTINGS = 'toan-roi-rac-lg-settings';
+
+  const DEF_LG = {
+    blur: 14,
+    fill: 12,
+    tint: 16,
+    sat: 200,
+    orbBlur: 16,
+    glow: false,
+    refract: false,
+    bg: 'ios'
   };
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
-  function apply() {
-    root.setAttribute('data-skin', S.skin);
-    st.setProperty('--lg-blur', S.blur + 'px');
-    st.setProperty('--lg-fill', (S.fill / 100).toFixed(2));
-    st.setProperty('--lg-tint', (S.tint / 100).toFixed(2));
-    st.setProperty('--lg-sat', S.sat + '%');
-    st.setProperty('--lg-orb-blur', Math.max(0, S.bg - 1) + 'px');
-    root.setAttribute('data-orbs', S.bg === 0 ? 'off' : 'on');
-    root.classList.toggle('lg-refract', !!(S.refract && canRefract && S.skin === 'glass'));
-    document.querySelectorAll('.st-seg button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.skin === S.skin); });
-    $('glass-opts').hidden = S.skin !== 'glass';
-    Object.keys(DEF).forEach(function (k) { $('sr-' + k).value = S[k]; $('so-' + k).textContent = FMT[k](S[k]); });
-    var rb = $('st-refract');
-    rb.setAttribute('aria-pressed', !!S.refract);
-    rb.textContent = canRefract ? 'Khúc xạ (Chrome): ' + (S.refract ? 'bật' : 'tắt') : 'Khúc xạ: cần Chrome / Edge';
-    rb.disabled = !canRefract;
+
+  let currentTheme = st(KEY_THEME) || 'liquid-glass';
+  let lgConfig = Object.assign({}, DEF_LG);
+
+  try {
+    const saved = JSON.parse(st(KEY_SETTINGS));
+    if (saved && typeof saved === 'object') {
+      lgConfig = Object.assign({}, DEF_LG, saved);
+    }
+  } catch (e) {}
+
+  const modalOverlay = document.getElementById('theme-modal-overlay');
+  const btnOpenModal = document.getElementById('btn-theme-settings');
+  const btnCloseModal = document.getElementById('theme-modal-close');
+  const optDefault = document.getElementById('thm-opt-default');
+  const optLiquid = document.getElementById('thm-opt-liquid');
+  const lgSettingsPanel = document.getElementById('lg-settings-panel');
+  const defaultNotice = document.getElementById('default-theme-notice');
+  const orbsEl = document.getElementById('lg-orbs');
+  const bgIosEl = document.getElementById('lg-bg-ios');
+  const btnBgAurora = document.getElementById('btn-bg-aurora');
+  const btnBgIos = document.getElementById('btn-bg-ios');
+  const oBg = document.getElementById('o-lg-bg');
+
+  const rBlur = document.getElementById('r-lg-blur');
+  const oBlur = document.getElementById('o-lg-blur');
+  const rFill = document.getElementById('r-lg-fill');
+  const oFill = document.getElementById('o-lg-fill');
+  const rTint = document.getElementById('r-lg-tint');
+  const oTint = document.getElementById('o-lg-tint');
+  const rSat = document.getElementById('r-lg-sat');
+  const oSat = document.getElementById('o-lg-sat');
+  const rOrbBlur = document.getElementById('r-lg-orb-blur');
+  const oOrbBlur = document.getElementById('o-lg-orb-blur');
+  const bGlow = document.getElementById('b-lg-glow');
+  const bRefract = document.getElementById('b-lg-refract');
+  const bReset = document.getElementById('b-lg-reset');
+
+  const canRefract = () => /Chrom(e|ium)\//.test(navigator.userAgent) && window.CSS && CSS.supports && CSS.supports('backdrop-filter', 'blur(1px)');
+
+  function applyLgTokens() {
+    const s = root.style;
+    s.setProperty('--lg-blur', lgConfig.blur + 'px');
+    s.setProperty('--lg-fill', (lgConfig.fill / 100).toFixed(2));
+    s.setProperty('--lg-tint', (lgConfig.tint / 100).toFixed(2));
+    s.setProperty('--lg-sat', lgConfig.sat + '%');
+
+    const bg = lgConfig.bg || 'ios';
+    body.setAttribute('data-lg-bg', bg);
+    if (bg === 'ios') {
+      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+      if (bgIosEl) {
+        if (lgConfig.orbBlur === 0) {
+          bgIosEl.classList.add('lg-orbs-hidden');
+        } else {
+          bgIosEl.classList.remove('lg-orbs-hidden');
+          bgIosEl.style.filter = 'blur(' + (lgConfig.orbBlur * 0.4) + 'px)';
+        }
+      }
+    } else {
+      if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
+      if (lgConfig.orbBlur === 0) {
+        if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+        s.setProperty('--lg-orb-blur', '0px');
+      } else {
+        if (orbsEl) {
+          orbsEl.classList.remove('lg-orbs-hidden');
+          orbsEl.style.filter = 'blur(' + lgConfig.orbBlur + 'px)';
+        }
+        s.setProperty('--lg-orb-blur', lgConfig.orbBlur + 'px');
+      }
+    }
+
+    body.classList.toggle('lg-glow-on', !!lgConfig.glow);
+    if (bGlow) {
+      bGlow.classList.toggle('active', !!lgConfig.glow);
+      bGlow.setAttribute('aria-pressed', !!lgConfig.glow);
+      bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
+    }
+
+    root.classList.toggle('lg-refract', !!lgConfig.refract);
+    if (bRefract) {
+      bRefract.classList.toggle('active', !!lgConfig.refract);
+      bRefract.setAttribute('aria-pressed', !!lgConfig.refract);
+      if (!canRefract()) {
+        bRefract.disabled = true;
+        bRefract.textContent = 'Khúc xạ: cần Chrome / Edge';
+      } else {
+        bRefract.textContent = 'Khúc xạ (Chrome): ' + (lgConfig.refract ? 'Bật' : 'Tắt');
+      }
+    }
   }
-  document.querySelectorAll('.st-seg button').forEach(function (b) { b.onclick = function () { S.skin = b.dataset.skin; apply(); save(); }; });
-  Object.keys(DEF).forEach(function (k) { $('sr-' + k).addEventListener('input', function (e) { S[k] = +e.target.value; apply(); save(); }); });
-  $('st-refract').onclick = function () { S.refract = !S.refract; apply(); save(); };
-  $('st-reset').onclick = function () { Object.keys(DEF).forEach(function (k) { S[k] = DEF[k]; }); S.refract = false; apply(); save(); };
-  var ov = $('st-ov'), opener = $('st-open');
-  function open() { ov.hidden = false; $('st-close').focus(); }
-  function close() { ov.hidden = true; opener.focus(); }
-  opener.onclick = open; $('st-close').onclick = close;
-  ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ov.hidden) { e.stopPropagation(); close(); } }, true);
-  /* Đèn sáng chạy theo con trỏ trên các khung kính */
+
+  function syncControlUI() {
+    const bg = lgConfig.bg || 'ios';
+    if (btnBgAurora) {
+      btnBgAurora.classList.toggle('active', bg === 'aurora');
+      btnBgAurora.setAttribute('aria-checked', bg === 'aurora' ? 'true' : 'false');
+    }
+    if (btnBgIos) {
+      btnBgIos.classList.toggle('active', bg === 'ios');
+      btnBgIos.setAttribute('aria-checked', bg === 'ios' ? 'true' : 'false');
+    }
+    if (oBg) oBg.textContent = bg === 'ios' ? 'iOS' : 'Aurora';
+
+    if (rBlur) { rBlur.value = lgConfig.blur; oBlur.textContent = lgConfig.blur + 'px'; }
+    if (rFill) { rFill.value = lgConfig.fill; oFill.textContent = (lgConfig.fill / 100).toFixed(2); }
+    if (rTint) { rTint.value = lgConfig.tint; oTint.textContent = (lgConfig.tint / 100).toFixed(2); }
+    if (rSat) { rSat.value = lgConfig.sat; oSat.textContent = lgConfig.sat + '%'; }
+    if (rOrbBlur) {
+      rOrbBlur.value = lgConfig.orbBlur;
+      oOrbBlur.textContent = lgConfig.orbBlur === 0 ? 'Ẩn vòng tròn' : lgConfig.orbBlur + 'px';
+    }
+    if (bGlow) {
+      bGlow.classList.toggle('active', !!lgConfig.glow);
+      bGlow.setAttribute('aria-pressed', !!lgConfig.glow);
+      bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
+    }
+  }
+
+  function setTheme(t) {
+    currentTheme = t;
+    st(KEY_THEME, t);
+    const isLg = t === 'liquid-glass';
+
+    body.classList.toggle('lg-theme', isLg);
+    if (optDefault) optDefault.classList.toggle('active', !isLg);
+    if (optLiquid) optLiquid.classList.toggle('active', isLg);
+
+    if (lgSettingsPanel) lgSettingsPanel.style.display = isLg ? 'flex' : 'none';
+    if (defaultNotice) defaultNotice.style.display = isLg ? 'none' : 'block';
+
+    if (isLg) {
+      applyLgTokens();
+    } else {
+      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+      if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
+      body.removeAttribute('data-lg-bg');
+      root.classList.remove('lg-refract');
+    }
+  }
+
+  function openModal() {
+    if (modalOverlay) {
+      syncControlUI();
+      modalOverlay.hidden = false;
+      if (btnCloseModal) btnCloseModal.focus();
+    }
+  }
+
+  function closeModal() {
+    if (modalOverlay) {
+      modalOverlay.hidden = true;
+      if (btnOpenModal) btnOpenModal.focus();
+    }
+  }
+
+  if (btnOpenModal) btnOpenModal.onclick = openModal;
+  if (btnCloseModal) btnCloseModal.onclick = closeModal;
+  if (modalOverlay) {
+    modalOverlay.onclick = (e) => {
+      if (e.target === modalOverlay) closeModal();
+    };
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay && !modalOverlay.hidden) {
+      e.stopPropagation();
+      closeModal();
+    }
+  }, true);
+
+  if (optDefault) optDefault.onclick = () => setTheme('default');
+  if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
+
+  function setBg(bgKey) {
+    lgConfig.bg = bgKey;
+    st(KEY_SETTINGS, lgConfig);
+    syncControlUI();
+    applyLgTokens();
+  }
+  if (btnBgAurora) btnBgAurora.onclick = () => setBg('aurora');
+  if (btnBgIos) btnBgIos.onclick = () => setBg('ios');
+
+  function bindSlider(slider, output, key, transformOut, onApply) {
+    if (!slider || !output) return;
+    slider.oninput = () => {
+      const v = +slider.value;
+      lgConfig[key] = v;
+      output.textContent = transformOut(v);
+      onApply(v);
+      st(KEY_SETTINGS, lgConfig);
+    };
+  }
+
+  bindSlider(rBlur, oBlur, 'blur', v => v + 'px', v => root.style.setProperty('--lg-blur', v + 'px'));
+  bindSlider(rFill, oFill, 'fill', v => (v / 100).toFixed(2), v => root.style.setProperty('--lg-fill', (v / 100).toFixed(2)));
+  bindSlider(rTint, oTint, 'tint', v => (v / 100).toFixed(2), v => root.style.setProperty('--lg-tint', (v / 100).toFixed(2)));
+  bindSlider(rSat, oSat, 'sat', v => v + '%', v => root.style.setProperty('--lg-sat', v + '%'));
+  bindSlider(rOrbBlur, oOrbBlur, 'orbBlur', v => v === 0 ? 'Ẩn vòng tròn' : v + 'px', v => {
+    if (lgConfig.bg === 'ios') {
+      if (bgIosEl) {
+        if (v === 0) bgIosEl.classList.add('lg-orbs-hidden');
+        else {
+          bgIosEl.classList.remove('lg-orbs-hidden');
+          bgIosEl.style.filter = 'blur(' + (v * 0.4) + 'px)';
+        }
+      }
+    } else {
+      if (orbsEl) {
+        if (v === 0) orbsEl.classList.add('lg-orbs-hidden');
+        else {
+          orbsEl.classList.remove('lg-orbs-hidden');
+          orbsEl.style.filter = 'blur(' + v + 'px)';
+        }
+      }
+    }
+    root.style.setProperty('--lg-orb-blur', v + 'px');
+  });
+
+  if (bGlow) {
+    bGlow.onclick = () => {
+      lgConfig.glow = !lgConfig.glow;
+      st(KEY_SETTINGS, lgConfig);
+      applyLgTokens();
+    };
+  }
+
+  if (bRefract) {
+    bRefract.onclick = () => {
+      if (!canRefract()) return;
+      lgConfig.refract = !lgConfig.refract;
+      st(KEY_SETTINGS, lgConfig);
+      applyLgTokens();
+    };
+  }
+
+  if (bReset) {
+    bReset.onclick = () => {
+      lgConfig = Object.assign({}, DEF_LG);
+      st(KEY_SETTINGS, lgConfig);
+      syncControlUI();
+      applyLgTokens();
+    };
+  }
+
   if (window.matchMedia && matchMedia('(pointer:fine)').matches) {
-    document.addEventListener('pointermove', function (e) {
-      if (S.skin !== 'glass') return;
-      var el = e.target.closest && e.target.closest('section, #mn, .st-pop');
+    document.addEventListener('pointermove', (e) => {
+      if (currentTheme !== 'liquid-glass' || !lgConfig.glow) return;
+      const el = e.target.closest && e.target.closest('section, .formula-card, .sim-card, #mn, .theme-modal-box');
       if (!el) return;
-      var r = el.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
       el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
       el.style.setProperty('--my', (e.clientY - r.top) + 'px');
     }, { passive: true });
   }
-  apply();
+
+  setTheme(currentTheme);
 })();
 </script>
 </body>

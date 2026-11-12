@@ -148,37 +148,51 @@ section,h3[id]{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 64px)}
 .roadmap{background:var(--tint);border-radius:16px;padding:6px 22px;margin:16px 0;border:1px solid var(--g)}
 .roadmap ol{padding-left:22px}
 .ans{background:var(--card);border:2px solid var(--c2);border-radius:12px;padding:10px 16px;margin:12px 0 2px}
-.nav-view-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-.nav-view-row .vs{flex:1;margin-bottom:0}
-.btn-theme-settings{flex:0 0 38px;width:38px;height:36px;padding:0;border-radius:10px;border:1.5px solid var(--g);background:var(--tint);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .2s ease}
-.btn-theme-settings:hover{background:var(--card);border-color:var(--c5);color:var(--c5);transform:translateY(-1px);box-shadow:0 4px 12px rgba(112,72,232,.18)}
-.btn-theme-settings:active{transform:scale(.95)}
-.vs{display:flex;gap:4px;padding:4px;background:var(--tint);border:1.5px solid var(--g);border-radius:12px}
-.vs b{display:none}
-.vb{flex:1;border:0;border-radius:9px;padding:8px;background:transparent;color:var(--ink);font:700 12.5px "Be Vietnam Pro",sans-serif;cursor:pointer}
-.vb[aria-pressed=true]{background:var(--c5);color:#fff}
-html[data-view=desktop] body{font-size:18px}
-html[data-view=desktop] main{max-width:none;padding:26px clamp(18px,2.6vw,60px) 90px}
-html[data-view=desktop] section{display:flow-root;padding:34px clamp(24px,2.8vw,58px)}
-html[data-view=desktop] p,html[data-view=desktop] li{max-width:150ch}
-html[data-view=desktop] table{min-width:0}
-html[data-view=desktop] .formula-meta{grid-template-columns:1fr 1fr}
-html[data-view=desktop] .sim-card svg{max-height:640px}
+.nav-view-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 6px 10px;margin-bottom:8px;
+  border-bottom:1px solid var(--g);
+}
+body.lg-theme .nav-view-row{border-bottom-color:rgba(255,255,255,.2)}
+.menu-label{
+  font-size:13.5px;font-weight:800;color:var(--c5);letter-spacing:.02em;
+}
+body.lg-theme .menu-label{color:#7dd3fc}
+.btn-theme-settings{
+  width:32px;height:32px;border-radius:8px;border:1px solid var(--g);
+  background:var(--tint);color:var(--ink);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:all .18s ease;
+}
+.btn-theme-settings:hover{background:var(--c5);color:#fff;border-color:transparent}
+
+#ls{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px}
+#ls button{border:0;border-radius:8px;padding:8px 0;background:var(--tint);color:var(--ink);font:700 12.5px/1 "Be Vietnam Pro",sans-serif;cursor:pointer;transition:all .18s ease;text-align:center}
+#ls button:hover{background:var(--c5);color:#fff}
+#ls button.on{background:var(--c5);color:#fff}
+
+body{font-size:18px}
+main{max-width:none;padding:26px clamp(18px,2.6vw,60px) 90px}
+section{display:flow-root;padding:34px clamp(24px,2.8vw,58px)}
+p,li{max-width:150ch}
+table{min-width:0}
+.formula-meta{grid-template-columns:1fr 1fr}
+.sim-card svg{max-height:640px}
 
 /* ===== Mô hình thu nhỏ, đặt ngang hàng với chữ; bảng chỉnh nằm cạnh hình ===== */
 .sim-card{padding:16px 18px}
 .sim-card>svg{max-height:min(60vh,400px);margin:12px 0}
 section>svg{max-height:420px}
 @media(min-width:760px){
- html[data-view=desktop] .sim-card:has(>svg){display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);column-gap:20px;align-content:start}
- html[data-view=desktop] .sim-card:has(>svg)>svg{grid-column:1;grid-row:1/span 12;align-self:start;margin:0;max-height:640px}
- html[data-view=desktop] .sim-card:has(>svg)>*:not(svg){grid-column:2;min-width:0}
- html[data-view=desktop] .sim-tabs{flex-direction:column;flex-wrap:nowrap;padding:8px}
- html[data-view=desktop] .sim-tab{flex:0 0 auto}
- html[data-view=desktop] .ctrl-row{grid-template-columns:1fr;margin:8px 0}
+ .sim-card:has(>svg){display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);column-gap:20px;align-content:start}
+ .sim-card:has(>svg)>svg{grid-column:1;grid-row:1/span 12;align-self:start;margin:0;max-height:640px}
+ .sim-card:has(>svg)>*:not(svg){grid-column:2;min-width:0}
+ .sim-tabs{flex-direction:column;flex-wrap:nowrap;padding:8px}
+ .sim-tab{flex:0 0 auto}
+ .ctrl-row{grid-template-columns:1fr;margin:8px 0}
 }
 @media(min-width:1200px){
- html[data-view=desktop] .box,html[data-view=desktop] .bridge,html[data-view=desktop] .next,html[data-view=desktop] .roadmap,html[data-view=desktop] .tw,html[data-view=desktop] .formula-card,html[data-view=desktop] ul,html[data-view=desktop] ol{display:flow-root}
+ .box,.bridge,.next,.roadmap,.tw,.formula-card,ul,ol{display:flow-root}
 }
 
 /* ===== Hình SVG minh họa đặt ngang hàng với chữ ===== */
@@ -187,8 +201,8 @@ section>svg{max-height:420px}
 .fig svg{margin:0;max-height:none}
 .fig figcaption{font-size:14.5px;color:var(--mut);margin-top:8px;line-height:1.7;padding:0 6px}
 @media(min-width:1200px){
- html[data-view=desktop] .fig{width:min(40%,470px);margin:6px 0 16px 30px;float:right}
- html[data-view=desktop] .fig.fl{float:left;margin:6px 30px 16px 0}
+ .fig{width:min(40%,470px);margin:6px 0 16px 30px;float:right}
+ .fig.fl{float:left;margin:6px 30px 16px 0}
 }
 
 .explain{border-left:5px solid var(--c3)}
@@ -227,11 +241,13 @@ section>svg{max-height:420px}
 body.fp-pick,body.fp-pick *{cursor:crosshair !important}
 body.fp-pick #fp .fp-h,body.fp-pick #fp .fp-h *{cursor:pointer !important}
 .fp-hl{outline:2px solid var(--c1) !important;outline-offset:2px}
-html[data-view] .fig.wide{float:none;width:100%;margin:16px 0}
-  html[data-view=desktop] .fig.big{width:min(58%,720px)}
-  html[data-view=desktop] .box,html[data-view=desktop] .tw,html[data-view=desktop] .f,html[data-view=desktop] .bridge,html[data-view=desktop] .next{min-width:52%}
-html[data-view=desktop] .f,html[data-view=desktop] .tw,html[data-view=desktop] :is(.box,.bridge,.next,.roadmap,.formula-card,.key,ul,ol):has(.f,.tw,table){clear:both}
-@media(max-width:1399px){html[data-view=desktop] .f{font-size:15px}}
+.fig.wide{float:none;width:100%;margin:16px 0}
+@media(min-width:1400px){
+  .fig.big{width:min(58%,720px)}
+  .box,.tw,.f,.bridge,.next{min-width:52%}
+}
+.f,.tw,:is(.box,.bridge,.next,.roadmap,.formula-card,.key,ul,ol):has(.f,.tw,table){clear:both}
+@media(max-width:1399px){.f{font-size:15px}}
 
 /* =====================================================================
    LIQUID GLASS INTEGRATION & THEME STYLES
@@ -412,8 +428,7 @@ body.lg-theme .cmt{
   color:rgba(255,255,255,.88) !important;
 }
 body.lg-theme .ctrl-row,
-body.lg-theme .sim-tabs,
-body.lg-theme .vs{
+body.lg-theme .sim-tabs{
   background:rgba(8,10,50,.32) !important;
   border:1px solid rgba(255,255,255,.22) !important;
   box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
@@ -421,7 +436,7 @@ body.lg-theme .vs{
 
 body.lg-theme .btn,
 body.lg-theme .sim-tab,
-body.lg-theme .vb,
+body.lg-theme #ls button,
 body.lg-theme .btn-theme-settings,
 body.lg-theme #mb{
   color:#fff !important;
@@ -432,13 +447,13 @@ body.lg-theme #mb{
 }
 body.lg-theme .btn:hover,
 body.lg-theme .sim-tab:hover,
-body.lg-theme .vb:hover,
+body.lg-theme #ls button:hover,
 body.lg-theme .btn-theme-settings:hover,
 body.lg-theme #mb:hover{
   background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.12)) !important;
   border-color:rgba(255,255,255,.65) !important;
 }
-body.lg-theme .vb[aria-pressed=true],
+body.lg-theme #ls button.on,
 body.lg-theme .sim-tab.active{
   background:linear-gradient(180deg,#ffffff,#dfe5ff) !important;
   color:var(--lg-ink,#0d1140) !important;
@@ -868,29 +883,24 @@ body.lg-theme .theme-btn-action.active{
   <span></span><span></span><span></span>
 </button>
 
-<!-- Menu điều hướng chứa bộ chọn bài học (On-demand loader) và mục lục bài đang mở -->
-<nav id="mn" hidden aria-label="Menu bài học và mục lục">
+<!-- Menu điều hướng chứa bộ chọn bài học và mục lục bài đang mở -->
+<nav id="mn" hidden aria-label="Mục lục">
   <div class="nav-view-row">
-    <div class="vs" role="group" aria-label="Chế độ xem">
-      <button type="button" id="vm" class="vb" aria-pressed="true">Điện thoại</button>
-      <button type="button" id="vd" class="vb" aria-pressed="false">Máy tính</button>
-    </div>
+    <div class="menu-label">Vật lý Bán dẫn</div>
     <button type="button" id="btn-theme-settings" class="btn-theme-settings" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
     </button>
   </div>
-  <div class="menu-selector-wrap">
-    <label for="lesson-select">Chọn buổi học cần tải:</label>
-    <select id="lesson-select" onchange="loadLesson(this.value)">
-      <option value="1">Buổi 1: Cấu trúc tinh thể chất rắn</option>
-      <option value="2">Buổi 2: Nhập môn Cơ học lượng tử (Phần 1)</option>
-      <option value="3">Buổi 3: Nhập môn Cơ học lượng tử (Phần 2)</option>
-      <option value="4">Buổi 4: Lý thuyết lượng tử chất rắn</option>
-      <option value="5">Buổi 5: Bán dẫn ở trạng thái cân bằng</option>
-      <option value="6">Buổi 6: Bán dẫn pha tạp & Bán dẫn suy biến</option>
-      <option value="7" selected>Buổi 7: Vận chuyển hạt tải (Trôi & Khuếch tán)</option>
-    </select>
-  </div>
+  <div id="ls"></div>
+  <select id="lesson-select" style="display:none" onchange="loadLesson(this.value)">
+    <option value="1">Buổi 1: Cấu trúc tinh thể chất rắn</option>
+    <option value="2">Buổi 2: Nhập môn Cơ học lượng tử (Phần 1)</option>
+    <option value="3">Buổi 3: Nhập môn Cơ học lượng tử (Phần 2)</option>
+    <option value="4">Buổi 4: Lý thuyết lượng tử chất rắn</option>
+    <option value="5">Buổi 5: Bán dẫn ở trạng thái cân bằng</option>
+    <option value="6">Buổi 6: Bán dẫn pha tạp & Bán dẫn suy biến</option>
+    <option value="7" selected>Buổi 7: Vận chuyển hạt tải (Trôi & Khuếch tán)</option>
+  </select>
   <div class="toc-title">Mục lục bài đang mở</div>
   <div id="toc-links"></div>
 </nav>
@@ -8095,16 +8105,41 @@ function loadLesson(lessonId) {
 }
 window.loadLesson = loadLesson;
 
-// Khởi chạy menu 3 gạch góc trên bên trái và nạp Buổi 6 vừa mới hoàn thành để tiện kiểm thử
+const BAN_DAN_LESSONS = [
+  { id: '1', title: 'Buổi 1: Cấu trúc tinh thể chất rắn' },
+  { id: '2', title: 'Buổi 2: Nhập môn Cơ học lượng tử (Phần 1)' },
+  { id: '3', title: 'Buổi 3: Nhập môn Cơ học lượng tử (Phần 2)' },
+  { id: '4', title: 'Buổi 4: Lý thuyết lượng tử chất rắn' },
+  { id: '5', title: 'Buổi 5: Bán dẫn ở trạng thái cân bằng' },
+  { id: '6', title: 'Buổi 6: Bán dẫn pha tạp & Bán dẫn suy biến' },
+  { id: '7', title: 'Buổi 7: Vận chuyển hạt tải (Trôi & Khuếch tán)' }
+];
+function renderLS(curId) {
+  const lsEl = $('ls');
+  if (!lsEl) return;
+  lsEl.innerHTML = BAN_DAN_LESSONS.map(l =>
+    `<button type="button" data-id="${l.id}" title="${l.title}" aria-label="${l.title}" class="${String(l.id) === String(curId) ? 'on' : ''}">${l.id}</button>`
+  ).join('');
+}
+
+// Khởi chạy menu 3 gạch góc trên bên trái và nạp Buổi 7
 (function initApp() {
   const btn = $('mb'), nav = $('mn');
   const setOpen = open => {
     nav.hidden = !open;
     btn.setAttribute('aria-expanded', open);
-    btn.setAttribute('aria-label', open ? 'Đóng menu' : 'Mở menu chọn bài và mục lục');
+    btn.setAttribute('aria-label', open ? 'Đóng menu' : 'Mở menu và mục lục');
   };
   btn.onclick = () => setOpen(nav.hidden);
   nav.onclick = e => {
+    const b = e.target.closest('#ls button');
+    if (b) {
+      const id = b.dataset.id;
+      if ($('lesson-select')) $('lesson-select').value = id;
+      loadLesson(id);
+      renderLS(id);
+      return;
+    }
     if (e.target.closest('a')) setOpen(false);
   };
   document.addEventListener('click', e => {
@@ -8117,17 +8152,9 @@ window.loadLesson = loadLesson;
     }
   });
 
-  $('lesson-select').value = '7';
+  if ($('lesson-select')) $('lesson-select').value = '7';
   loadLesson('7');
-})();
-
-(function viewMode(){
-  const R=document.documentElement;
-  const st=(k,v)=>{try{return v?localStorage.setItem(k,v):localStorage.getItem(k)}catch(e){return null}};
-  const ap=v=>{R.dataset.view=v;document.getElementById('vm').setAttribute('aria-pressed',v==='mobile');document.getElementById('vd').setAttribute('aria-pressed',v==='desktop');st('ban-dan-view',v)};
-  document.getElementById('vm').onclick=()=>ap('mobile');
-  document.getElementById('vd').onclick=()=>ap('desktop');
-  ap(st('ban-dan-view')==='desktop'?'desktop':'mobile');
+  renderLS('7');
 })();
 
 (function themeManager() {
