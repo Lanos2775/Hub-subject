@@ -194,39 +194,41 @@ html,html *{scrollbar-width:none!important;-ms-overflow-style:none!important}htm
 .fpop-tbl tr:last-child td{border-bottom:0}
 .fpop-tbl td:first-child{white-space:nowrap}
 
-/* ===== LIQUID GLASS THEME (Deep Jewel Nebula & High Contrast Edition) ===== */
+/* ===== LIQUID GLASS THEME (Apple Ambient Glow Edition - Chuẩn ban-dan.html) ===== */
 body.lg-theme{
-  --lg-blur:16px;
-  --lg-fill:0.10;
-  --lg-tint:0.28;
-  --lg-sat:170%;
-  --lg-orb-blur:20px;
-  --lg-text:#f0f6fc;
-  --lg-ink:#060a22;
-  --bg:#070b1a;
-  --card:rgba(10,14,35,0.72);
-  --ink:#f0f6fc;
-  --mut:#94a3b8;
-  --c1:#38bdf8;
-  --c2:#34d399;
-  --c3:#fbbf24;
-  --c4:#818cf8;
-  --c5:#60a5fa;
+  min-height:100vh;
+  color:var(--lg-text,#fff);
+  letter-spacing:-.005em;
+  background-color:#14183f;
+  background-image:
+    radial-gradient(60% 55% at 8% 0%,rgba(63,107,255,.85),transparent 70%),
+    radial-gradient(50% 50% at 100% 12%,rgba(176,67,255,.7),transparent 70%),
+    radial-gradient(55% 55% at 42% 108%,rgba(255,79,154,.6),transparent 70%),
+    radial-gradient(40% 40% at 92% 96%,rgba(18,214,192,.5),transparent 70%),
+    linear-gradient(160deg,#14183f,#1c1b52 45%,#2a1650);
+  background-attachment:fixed;
+  --bg:transparent;
+  --card:rgba(18,22,68,.45);
+  --ink:#ffffff;
+  --mut:rgba(255,255,255,.78);
+  --c1:#6ea0ff;
+  --c2:#38d9a9;
+  --c3:#ffd43b;
+  --c4:#ff8fb8;
+  --c5:#a78bfa;
   --g:rgba(255,255,255,.2);
   --tint:rgba(255,255,255,.08);
-  background:#070b1a radial-gradient(circle at 50% 20%,#0e1738 0%,#070b1a 80%) fixed !important;
-  color:var(--lg-text) !important;
 }
 
 .lg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;transition:filter .25s ease,opacity .25s ease}
 body:not(.lg-theme) .lg-orbs{display:none !important}
 .lg-orbs.lg-orbs-hidden{display:none !important}
-.lg-orbs i{position:absolute;border-radius:50%;display:block;opacity:0.85}
-.lg-orbs i:nth-child(1){left:5%;top:12%;width:280px;height:280px;background:radial-gradient(circle at 35% 30%,#4c1d95,#2e1065 55%,#12032b)}
-.lg-orbs i:nth-child(2){right:8%;top:6%;width:250px;height:250px;background:radial-gradient(circle at 35% 30%,#78350f,#451a03 55%,#1a0800)}
-.lg-orbs i:nth-child(3){left:35%;top:48%;width:320px;height:320px;background:radial-gradient(circle at 35% 30%,#312e81,#1e1b4b 55%,#0a0826)}
-.lg-orbs i:nth-child(4){right:5%;bottom:6%;width:260px;height:260px;background:radial-gradient(circle at 35% 30%,#064e3b,#022c22 55%,#01130e)}
-.lg-orbs i:nth-child(5){left:4%;bottom:8%;width:200px;height:200px;background:radial-gradient(circle at 35% 30%,#581c87,#3b0764 55%,#170228)}
+.lg-orbs i{position:absolute;border-radius:50%;display:block}
+.lg-orbs i:nth-child(1){left:6%;top:14%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#9fb4ff,#4f6bff 55%,#2a2fb0)}
+.lg-orbs i:nth-child(2){right:9%;top:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#f0c0ff,#b043ff 55%,#6a1fb8)}
+.lg-orbs i:nth-child(3){left:38%;top:52%;width:280px;height:280px;background:radial-gradient(circle at 32% 28%,#ffc2dd,#ff4f9a 55%,#b01a68)}
+.lg-orbs i:nth-child(4){right:4%;bottom:6%;width:210px;height:210px;background:radial-gradient(circle at 32% 28%,#b4fff2,#12d6c0 55%,#0a7f8f)}
+.lg-orbs i:nth-child(5){left:3%;bottom:8%;width:150px;height:150px;background:radial-gradient(circle at 32% 28%,#fff1b0,#ffc83d 55%,#d98a00)}
 
 body.lg-theme main{position:relative;z-index:1}
 body.lg-theme #mb{z-index:60}
@@ -241,17 +243,17 @@ body.lg-theme #qzDlg{
   position:relative;isolation:isolate;color:var(--lg-text);
   background:
     linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
-    rgba(10,14,35,var(--lg-tint)) !important;
-  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.02);
-  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.02);
+    rgba(14,16,70,var(--lg-tint)) !important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.75),
     inset 0 -1px 0 rgba(255,255,255,.18),
     inset 0 0 26px rgba(255,255,255,.08),
     inset 0 -20px 30px -20px rgba(255,255,255,.24),
-    0 26px 54px -20px rgba(2,4,20,.65) !important;
+    0 26px 54px -20px rgba(4,6,36,.65) !important;
   border:1px solid rgba(255,255,255,.22) !important;
-  text-shadow:0 1px 10px rgba(4,8,30,.45);
+  text-shadow:0 1px 10px rgba(8,10,56,.35);
 }
 
 /* Menu điều hướng bắt buộc fixed */
@@ -767,41 +769,41 @@ body.lg-theme .theme-btn-action.active{
       <div class="theme-ctrl-item">
         <div class="theme-ctrl-item-head">
           <span>Độ mờ phía sau kính (--lg-blur)</span>
-          <output id="o-lg-blur">16px</output>
+          <output id="o-lg-blur">14px</output>
         </div>
-        <input id="r-lg-blur" type="range" min="0" max="40" value="16" aria-label="Độ mờ phía sau kính">
+        <input id="r-lg-blur" type="range" min="0" max="40" value="14" aria-label="Độ mờ phía sau kính">
       </div>
 
       <div class="theme-ctrl-item">
         <div class="theme-ctrl-item-head">
           <span>Độ sáng của kính (--lg-fill)</span>
-          <output id="o-lg-fill">0.10</output>
+          <output id="o-lg-fill">0.12</output>
         </div>
-        <input id="r-lg-fill" type="range" min="2" max="40" value="10" aria-label="Độ sáng của kính">
+        <input id="r-lg-fill" type="range" min="2" max="40" value="12" aria-label="Độ sáng của kính">
       </div>
 
       <div class="theme-ctrl-item">
         <div class="theme-ctrl-item-head">
           <span>Độ phủ màu tối (--lg-tint)</span>
-          <output id="o-lg-tint">0.28</output>
+          <output id="o-lg-tint">0.16</output>
         </div>
-        <input id="r-lg-tint" type="range" min="0" max="60" value="28" aria-label="Độ phủ màu tối">
+        <input id="r-lg-tint" type="range" min="0" max="60" value="16" aria-label="Độ phủ màu tối">
       </div>
 
       <div class="theme-ctrl-item">
         <div class="theme-ctrl-item-head">
           <span>Độ rực màu nền (--lg-sat)</span>
-          <output id="o-lg-sat">170%</output>
+          <output id="o-lg-sat">200%</output>
         </div>
-        <input id="r-lg-sat" type="range" min="100" max="300" value="170" aria-label="Độ rực màu nền">
+        <input id="r-lg-sat" type="range" min="100" max="300" value="200" aria-label="Độ rực màu nền">
       </div>
 
       <div class="theme-ctrl-item">
         <div class="theme-ctrl-item-head">
           <span>Làm mờ nền / Vòng tròn (kéo min = ẩn)</span>
-          <output id="o-lg-orb-blur">20px</output>
+          <output id="o-lg-orb-blur">16px</output>
         </div>
-        <input id="r-lg-orb-blur" type="range" min="0" max="50" value="20" aria-label="Làm mờ nền hoặc ẩn vòng tròn">
+        <input id="r-lg-orb-blur" type="range" min="0" max="50" value="16" aria-label="Làm mờ nền hoặc ẩn vòng tròn">
       </div>
 
       <div class="theme-modal-actions">
@@ -7100,7 +7102,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
                 }
             };
 
-            const DEF_LG = { blur: 16, fill: 10, tint: 28, sat: 170, orbBlur: 20, refract: false, glow: false };
+            const DEF_LG = { blur: 14, fill: 12, tint: 16, sat: 200, orbBlur: 16, refract: false, glow: false };
             let currentTheme = st('tin-hieu-theme') || 'default';
             let lgConfig = Object.assign({}, DEF_LG, st('tin-hieu-lg-settings') || {});
 
