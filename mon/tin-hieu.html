@@ -234,8 +234,6 @@ body.lg-theme #mb{z-index:60}
 /* Hiệu ứng kính cho các khung thẻ và container */
 body.lg-theme .card,
 body.lg-theme .sec-title,
-body.lg-theme .fpop-box,
-body.lg-theme .qzp-box,
 body.lg-theme #mn,
 body.lg-theme .qz-side,
 body.lg-theme .qpx,
@@ -256,27 +254,92 @@ body.lg-theme #qzDlg{
   text-shadow:0 1px 10px rgba(4,8,30,.45);
 }
 
-/* Menu và popups bắt buộc fixed */
+/* Menu điều hướng bắt buộc fixed */
 body.lg-theme #mn{
   position:fixed !important;
   z-index:60 !important;
 }
 body.lg-theme #mn[hidden]{display:none !important}
 
+/* Popup Bảng tra công thức (Fourier) chuẩn Apple Liquid Glass */
 body.lg-theme #fPop{
   position:fixed !important;
-  z-index:70 !important;
-  background:rgba(5,9,28,.65) !important;
-  -webkit-backdrop-filter:blur(12px) !important;
-  backdrop-filter:blur(12px) !important;
+  inset:0 !important;
+  z-index:80 !important;
+  background:rgba(4,7,24,.48) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(130%) !important;
+  backdrop-filter:blur(16px) saturate(130%) !important;
+}
+body.lg-theme .fpop-box{
+  position:relative !important;
+  isolation:isolate;
+  width:min(1100px,90vw) !important;
+  height:min(820px,85vh) !important;
+  border-radius:26px !important;
+  overflow:hidden !important;
+  border:1.5px solid rgba(255,255,255,.32) !important;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.8)),rgba(255,255,255,calc(var(--lg-fill)*.35)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.9))),
+    rgba(10,16,42,calc(var(--lg-tint)*0.85)) !important;
+  -webkit-backdrop-filter:blur(calc(var(--lg-blur) + 8px)) saturate(calc(var(--lg-sat) + 20%)) brightness(1.06) !important;
+  backdrop-filter:blur(calc(var(--lg-blur) + 8px)) saturate(calc(var(--lg-sat) + 20%)) brightness(1.06) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.85),
+    inset 0 -1px 0 rgba(255,255,255,.2),
+    inset 0 0 32px rgba(255,255,255,.08),
+    inset 0 -24px 36px -20px rgba(255,255,255,.22),
+    0 32px 80px -15px rgba(0,0,0,.75) !important;
+  color:var(--lg-text) !important;
 }
 
+/* Popup Quiz chuẩn Apple Liquid Glass */
 body.lg-theme #qzPop{
   position:fixed !important;
-  z-index:60 !important;
-  background:rgba(5,9,28,.65) !important;
-  -webkit-backdrop-filter:blur(12px) !important;
-  backdrop-filter:blur(12px) !important;
+  inset:0 !important;
+  z-index:80 !important;
+  background:rgba(4,7,24,.48) !important;
+  -webkit-backdrop-filter:blur(16px) saturate(130%) !important;
+  backdrop-filter:blur(16px) saturate(130%) !important;
+}
+body.lg-theme .qzp-box{
+  position:relative !important;
+  isolation:isolate;
+  width:min(1080px,90vw) !important;
+  height:min(780px,85vh) !important;
+  border-radius:26px !important;
+  overflow:hidden !important;
+  border:1.5px solid rgba(255,255,255,.32) !important;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.8)),rgba(255,255,255,calc(var(--lg-fill)*.35)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.9))),
+    rgba(10,16,42,calc(var(--lg-tint)*0.85)) !important;
+  -webkit-backdrop-filter:blur(calc(var(--lg-blur) + 8px)) saturate(calc(var(--lg-sat) + 20%)) brightness(1.06) !important;
+  backdrop-filter:blur(calc(var(--lg-blur) + 8px)) saturate(calc(var(--lg-sat) + 20%)) brightness(1.06) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.85),
+    inset 0 -1px 0 rgba(255,255,255,.2),
+    inset 0 0 32px rgba(255,255,255,.08),
+    inset 0 -24px 36px -20px rgba(255,255,255,.22),
+    0 32px 80px -15px rgba(0,0,0,.75) !important;
+  color:var(--lg-text) !important;
+}
+body.lg-theme .qzp-rail{
+  background:rgba(255,255,255,.04) !important;
+  border-right:1px solid rgba(255,255,255,.16) !important;
+  -webkit-backdrop-filter:blur(16px);
+  backdrop-filter:blur(16px);
+  padding:14px 8px !important;
+}
+body.lg-theme .qzp-main{
+  background:transparent !important;
+  padding:16px 24px 28px !important;
+}
+body.lg-theme .qzp-main .qz-q{
+  background:rgba(255,255,255,.05) !important;
+  border:1px solid rgba(255,255,255,.15) !important;
+  border-radius:18px !important;
+  padding:18px 22px !important;
+  margin:10px 0 16px !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 8px 24px -10px rgba(0,0,0,.4) !important;
 }
 
 body.lg-theme .card{border-left:7px solid var(--bc,var(--c1)) !important}
@@ -367,7 +430,7 @@ body.lg-theme .tab:hover,
 body.lg-theme .pg:hover,
 body.lg-theme #ls button:hover,
 body.lg-theme .qtab:hover,
-body.lg-theme .qo:hover,
+body.lg-theme .qo:hover:not(:disabled),
 body.lg-theme #mb:hover,
 body.lg-theme .btn-theme-settings:hover{
   background:linear-gradient(180deg,rgba(255,255,255,.36),rgba(255,255,255,.12)) !important;
@@ -384,6 +447,106 @@ body.lg-theme .qo.qon{
   border-color:#ffffff !important;
   text-shadow:none !important;
   box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 #ffffff !important;
+}
+
+/* ===== QUIZ ANSWERS (ĐÚNG & SAI) - HIỂN THỊ PHÂN BIỆT RÕ RÀNG VỚI HIỆU ỨNG KÍNH ===== */
+/* Lựa chọn ĐÚNG (Màu xanh ngọc lục bảo / Emerald Glass) */
+body.lg-theme .qo.qok,
+body.lg-theme .qrb.qok{
+  background-color:rgba(16,185,129,.7) !important;
+  background-image:linear-gradient(135deg,rgba(16,185,129,.75),rgba(5,150,105,.58)) !important;
+  border:2px solid #34d399 !important;
+  color:#ffffff !important;
+  font-weight:700 !important;
+  box-shadow:0 0 20px rgba(16,185,129,.6),inset 0 1px 0 rgba(255,255,255,.7) !important;
+  text-shadow:0 1px 6px rgba(2,44,28,.9) !important;
+}
+
+/* Lựa chọn SAI (Màu đỏ Ruby / Crimson Glass) */
+body.lg-theme .qo.qbad,
+body.lg-theme .qrb.qbad{
+  background-color:rgba(239,68,68,.75) !important;
+  background-image:linear-gradient(135deg,rgba(239,68,68,.78),rgba(185,28,28,.6)) !important;
+  border:2px solid #f87171 !important;
+  color:#ffffff !important;
+  font-weight:700 !important;
+  box-shadow:0 0 20px rgba(239,68,68,.6),inset 0 1px 0 rgba(255,255,255,.7) !important;
+  text-shadow:0 1px 6px rgba(69,10,10,.9) !important;
+}
+
+/* Lựa chọn bị bỏ sót (Multi-choice) */
+body.lg-theme .qo.qmiss{
+  border:2px dashed #34d399 !important;
+  color:#6ee7b7 !important;
+  background:rgba(16,185,129,.22) !important;
+  box-shadow:inset 0 0 12px rgba(16,185,129,.25) !important;
+}
+
+/* Câu đang chọn trong thanh rail */
+body.lg-theme .qrb.qcur{
+  outline:2.5px solid #38bdf8 !important;
+  outline-offset:2px !important;
+  box-shadow:0 0 14px #38bdf8 !important;
+}
+
+/* Chữ kết quả Đúng / Sai */
+body.lg-theme .qv.qok{
+  color:#34d399 !important;
+  font-weight:800 !important;
+  text-shadow:0 0 12px rgba(52,211,153,.6) !important;
+}
+body.lg-theme .qv.qbad{
+  color:#f87171 !important;
+  font-weight:800 !important;
+  text-shadow:0 0 12px rgba(248,113,113,.6) !important;
+}
+
+/* Nút Giải thích */
+body.lg-theme .qo.qex{
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.06)) !important;
+  border-color:rgba(255,255,255,.32) !important;
+  color:#e0f2fe !important;
+}
+body.lg-theme .qo.qex.qon{
+  background:linear-gradient(135deg,rgba(56,189,248,.38),rgba(2,132,199,.28)) !important;
+  border-color:#38bdf8 !important;
+  color:#ffffff !important;
+  box-shadow:0 0 14px rgba(56,189,248,.4),inset 0 1px 0 rgba(255,255,255,.6) !important;
+}
+
+/* Ô nhập số câu hỏi điền số */
+body.lg-theme .qnum{
+  background:rgba(8,12,32,.55) !important;
+  border:1px solid rgba(255,255,255,.3) !important;
+  color:#ffffff !important;
+  border-radius:10px !important;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.3) !important;
+}
+body.lg-theme .qnum:focus{
+  border-color:#38bdf8 !important;
+  outline:none !important;
+  box-shadow:0 0 12px rgba(56,189,248,.4) !important;
+}
+
+/* Nút đóng popup ✕ */
+.qzp-close,.fpop-close{
+  position:absolute;top:14px;right:16px;z-index:30;
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--g);background:var(--tint);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;cursor:pointer;transition:all .18s ease;
+}
+.qzp-close:hover,.fpop-close:hover{background:var(--c4);color:#fff;border-color:transparent}
+body.lg-theme .qzp-close,body.lg-theme .fpop-close{
+  border:1px solid rgba(255,255,255,.32) !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.08)) !important;
+  color:#ffffff !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 4px 12px rgba(0,0,0,.35) !important;
+}
+body.lg-theme .qzp-close:hover,body.lg-theme .fpop-close:hover{
+  background:linear-gradient(180deg,rgba(239,68,68,.75),rgba(185,28,28,.75)) !important;
+  border-color:#f87171 !important;
+  color:#ffffff !important;
 }
 
 body.lg-theme svg:not(#lg-defs):not(.btn-theme-settings svg):not(.theme-modal-close-btn svg){
@@ -675,11 +838,18 @@ body.lg-theme .theme-btn-action.active{
 <div class="pager"><button type="button" class="pg" id="btn-prev"></button><button type="button" class="pg" id="btn-next"></button></div>
 </main>
 
-    <div id="qzPop" aria-hidden="true"><div class="qzp-box"><div class="qzp-rail" id="qzpRail"></div><div class="qzp-main" id="qzpMain"></div></div></div>
+    <div id="qzPop" aria-hidden="true">
+      <div class="qzp-box">
+        <button type="button" class="qzp-close" id="qzpClose" aria-label="Đóng quiz (Esc)">✕</button>
+        <div class="qzp-rail" id="qzpRail"></div>
+        <div class="qzp-main" id="qzpMain"></div>
+      </div>
+    </div>
 <div class="qz-rail" id="qzRail"></div>
 
 <div id="fPop" role="dialog" aria-modal="true" aria-label="Bảng tra công thức Fourier">
   <div class="fpop-box">
+    <button type="button" class="fpop-close" id="fpopClose" aria-label="Đóng bảng tra (Esc)">✕</button>
     <div class="fpop-body">
       <div class="fpop-grid">
 
@@ -6743,7 +6913,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
             document.addEventListener('DOMContentLoaded', () => {
                 g('qzRail').onclick = e => { const b = e.target.closest('[data-r]'); if (b) goto(b.dataset.r); };
                 g('qzPop').onclick = e => {
-                    if (e.target === g('qzPop')) { toggle(false); return; }
+                    if (e.target === g('qzPop') || e.target.closest('#qzpClose')) { toggle(false); return; }
                     const r = e.target.closest('[data-r]'); if (r) { pi = D.findIndex(q => q.id == r.dataset.r); popRender(); return; }
                     act(e, true);
                 };
@@ -6874,7 +7044,7 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
         document.addEventListener('DOMContentLoaded', () => {
             const fp = document.getElementById('fPop');
             if (fp) {
-                fp.onclick = e => { if (e.target === fp) toggleFPop(false); };
+                fp.onclick = e => { if (e.target === fp || e.target.closest('#fpopClose')) toggleFPop(false); };
             }
         });
 
