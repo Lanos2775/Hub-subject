@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Xác Suất Thống Kê (MAT1052) — Nền Tảng &amp; Ôn Thi Giữa Kỳ UET</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23f59e0b'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M16 46 Q 32 16 48 46' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='28' r='4' fill='%23fef3c7'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
@@ -545,7 +544,7 @@ section, h3[id] { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
 .bridge, .next { border-radius: 12px; padding: 12px 18px; margin: 0 0 18px; background: var(--tint); border-left: 5px solid var(--c5); font-size: 16px; line-height: 1.8; }
 .next { border-color: var(--c2); margin: 24px 0 0; }
 .key { border: 2px solid var(--c4); background: var(--card); position: relative; padding-top: 30px; box-shadow: 0 4px 16px rgba(230,73,128,.14); }
-.key::before { content: "★ PHẢI NHỚ"; position: absolute; top: -2px; left: 16px; background: var(--c4); color: #fff; font: 800 12px/1 "Be Vietnam Pro", sans-serif; padding: 6px 10px; border-radius: 0 0 8px 8px; }
+.key::before { content: "TRỌNG TÂM KIẾN THỨC"; position: absolute; top: -2px; left: 16px; background: var(--c4); color: #fff; font: 800 12px/1 "Be Vietnam Pro", sans-serif; padding: 6px 10px; border-radius: 0 0 8px 8px; }
 figcaption { font-size: 14.5px; color: var(--mut); margin-top: 8px; line-height: 1.7; padding: 0 8px; }
 .steps { counter-reset: s; list-style: none; padding: 0; margin: 12px 0; }
 .steps > li { counter-increment: s; position: relative; padding: 11px 14px 11px 54px; margin: 10px 0; background: var(--card); border: 1px solid var(--g); border-radius: 12px; line-height: 1.85; }
@@ -1072,19 +1071,146 @@ body.lg-theme .theme-btn-action.active{
 }
 
 
-/* Bổ sung thêm style cho widget tương tác tuần 4, 5, 7 */
-.sim-widget {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  padding: 20px;
-  margin: 18px 0;
+/* TỐI ƯU HÓA BO TRÒN VÀ KHOẢNG ĐỆM RỘNG RÃI, KHÔNG BỊ CẮT XÉN NỘI DUNG */
+.card {
+  border-radius: 24px !important;
+  padding: 34px clamp(20px, 2.8vw, 56px) !important;
+  margin: 28px 0 !important;
+  scroll-margin-top: 75px;
+}
+.key {
+  border-radius: 20px !important;
+  padding: 38px clamp(20px, 2.5vw, 36px) 26px !important;
+  margin: 26px 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.22) !important;
+}
+.key::before {
+  content: "TRỌNG TÂM KIẾN THỨC" !important;
+  position: absolute !important;
+  top: -2px !important;
+  left: 20px !important;
+  background: var(--c4) !important;
+  color: #fff !important;
+  font: 800 11.5px/1 "Be Vietnam Pro",sans-serif !important;
+  letter-spacing: 0.04em !important;
+  padding: 7px 14px !important;
+  border-radius: 0 0 10px 10px !important;
+}
+.box, .box.analogy, .box.warn {
+  border-radius: 18px !important;
+  padding: 22px 26px !important;
+  margin: 22px 0 !important;
+  overflow-x: auto !important;
+  line-height: 1.8 !important;
+}
+.bridge {
+  border-radius: 16px !important;
+  padding: 18px 24px !important;
+  margin: 20px 0 !important;
+  line-height: 1.8 !important;
+}
+.f {
+  border-radius: 18px !important;
+  padding: 20px 24px !important;
+  margin: 22px 0 !important;
+  overflow-x: auto !important;
+}
+.ans {
+  border-radius: 16px !important;
+  padding: 18px 24px !important;
+  margin: 18px 0 !important;
+  line-height: 1.8 !important;
+}
+.panel {
+  border-radius: 18px !important;
+  padding: 24px 28px !important;
+  margin-top: 18px !important;
+  overflow-x: auto !important;
 }
 .quiz-box {
-  border-left: 5px solid var(--c1);
-  background: var(--card);
-  padding: 20px clamp(16px, 2vw, 32px);
-  border-radius: 14px;
+  border-radius: 20px !important;
+  padding: 26px clamp(20px, 2.5vw, 36px) !important;
+  margin: 24px 0 !important;
+  border-left: 6px solid var(--c1) !important;
+}
+.sim-widget {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 20px !important;
+  padding: 26px !important;
+  margin: 24px 0 !important;
+}
+.tw {
+  border-radius: 16px !important;
+  overflow-x: auto !important;
+  margin: 20px 0 !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+}
+.tw table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+.tw th, .tw td {
+  padding: 14px 18px !important;
+}
+
+/* THANH NÚT CHỌN TUẦN #ls (CHỈ ĐỂ MỖI SỐ THÔI) */
+#ls {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 14px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.14) !important;
+}
+#ls button {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  padding: 0 !important;
+  border-radius: 11px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+  transition: all 0.2s ease !important;
+}
+#ls button:hover {
+  background: rgba(255,255,255,0.2) !important;
+  border-color: rgba(255,255,255,0.38) !important;
+  transform: translateY(-1px);
+}
+#ls button.on {
+  background: var(--c5) !important;
+  border-color: var(--c5) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(112,72,232,0.45) !important;
+}
+
+/* NÚT CÀI ĐẶT TRANG NHÃ (KHÔNG DÙNG ICON) */
+.btn-theme-settings {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 6px 14px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+.btn-theme-settings:hover {
+  background: rgba(255,255,255,0.18) !important;
+  border-color: rgba(255,255,255,0.35) !important;
 }
 </style>
 </head>
@@ -1145,7 +1271,7 @@ body.lg-theme .theme-btn-action.active{
   <div id="theme-modal" class="theme-modal-box" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
     <div class="theme-modal-header">
       <h3 id="theme-modal-title">Cài đặt giao diện</h3>
-      <button type="button" id="theme-modal-close" class="theme-modal-close-btn" aria-label="Đóng popup">✕</button>
+      <button type="button" id="theme-modal-close" class="theme-modal-close-btn" aria-label="Đóng popup" style="font-size:12px;font-weight:700;width:auto;padding:4px 10px;border-radius:8px">Đóng</button>
     </div>
 
     <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
@@ -1226,7 +1352,7 @@ body.lg-theme .theme-btn-action.active{
   <div class="nav-view-row">
     <div class="menu-label">Xác suất Thống kê</div>
     <button type="button" id="btn-theme-settings" class="btn-theme-settings" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      Cài đặt
     </button>
   </div>
   <div id="ls"></div>
@@ -1263,7 +1389,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box analogy">
-    <strong>💡 Trực giác đời sống:</strong> Hãy tưởng tượng bạn khảo sát 100 bạn cùng lớp và thấy 80 bạn thích uống trà sữa.
+    <strong>Trực quan thực tế:</strong> Hãy tưởng tượng bạn khảo sát 100 bạn cùng lớp và thấy 80 bạn thích uống trà sữa.
     <ul>
       <li>Nếu bạn nói: <em>"Trong lớp mình, 80% thích trà sữa"</em> &rarr; Bạn đang <strong>Tóm tắt</strong> dữ liệu thực tế trước mắt.</li>
       <li>Nếu bạn nói: <em>"80% sinh viên UET thích trà sữa"</em> &rarr; Bạn đang <strong>Khái quát hóa</strong> ra toàn trường (cần mẫu ngẫu nhiên đại diện!).</li>
@@ -1274,46 +1400,48 @@ body.lg-theme .theme-btn-action.active{
 
   <div class="key">
     <h3 style="margin-top:0">Bảng Đối Chiếu 4 Loại Khẳng Định (Trọng Tâm Thi Giữa Kỳ)</h3>
-    <table class="tw">
-      <thead>
-        <tr>
-          <th>Loại khẳng định</th>
-          <th>Bản chất &amp; Phạm vi nói đến</th>
-          <th>Ví dụ chuẩn xác</th>
-          <th>Bẫy thi thường gặp (Sai lầm)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>1. Tóm tắt (Summary)</strong></td>
-          <td>Chỉ mô tả đúng tập dữ liệu hiện có trong tay, không suy diễn ra bên ngoài.</td>
-          <td><em>"Trong 50 email được khảo sát, có 13 email chứa từ khóa 'free'."</em></td>
-          <td>Nói quá đà sang những cá thể chưa được khảo sát.</td>
-        </tr>
-        <tr>
-          <td><strong>2. Khái quát hóa (Generalization)</strong></td>
-          <td>Suy rộng từ một tập mẫu (sample) sang toàn bộ quần thể (population). Yêu cầu mẫu phải ngẫu nhiên và không thiên lệch.</td>
-          <td><em>"Ước tính khoảng 24% đến 28% toàn bộ email gửi đến hòm thư sinh viên là thư rác."</em></td>
-          <td>Khái quát hóa từ một nhóm tự chọn (ví dụ: khảo sát sinh viên IT rồi suy ra sinh viên toàn quốc).</td>
-        </tr>
-        <tr>
-          <td><strong>3. Nhân quả (Causal)</strong></td>
-          <td>Khẳng định việc chủ động can thiệp / thay đổi biến $X$ sẽ làm biến $Y$ thay đổi theo.</td>
-          <td><em>"Thêm bộ lọc spam dựa trên danh sách đen làm giảm 90% số thư rác lọt vào Inbox."</em></td>
-          <td><strong>Bẫy chết người:</strong> Thấy $X$ và $Y$ tương quan với nhau đã vội vàng kết luận $X$ gây ra $Y$ (Correlation $\neq$ Causation)!</td>
-        </tr>
-        <tr>
-          <td><strong>4. Dự đoán (Prediction)</strong></td>
-          <td>Dùng dữ liệu đã biết trong quá khứ để gán nhãn hoặc đoán giá trị của một đối tượng cụ thể trong tương lai.</td>
-          <td><em>"Email vừa nhận này có xác suất 95% là thư lừa đảo tài chính."</em></td>
-          <td>Nhầm lẫn giữa xác suất dự đoán của một cá thể với tỉ lệ trung bình của quần thể.</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Loại khẳng định</th>
+            <th>Bản chất &amp; Phạm vi nói đến</th>
+            <th>Ví dụ chuẩn xác</th>
+            <th>Bẫy thi thường gặp (Sai lầm)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Tóm tắt (Summary)</strong></td>
+            <td>Chỉ mô tả đúng tập dữ liệu hiện có trong tay, không suy diễn ra bên ngoài.</td>
+            <td><em>"Trong 50 email được khảo sát, có 13 email chứa từ khóa 'free'."</em></td>
+            <td>Nói quá đà sang những cá thể chưa được khảo sát.</td>
+          </tr>
+          <tr>
+            <td><strong>2. Khái quát hóa (Generalization)</strong></td>
+            <td>Suy rộng từ một tập mẫu (sample) sang toàn bộ quần thể (population). Yêu cầu mẫu phải ngẫu nhiên và không thiên lệch.</td>
+            <td><em>"Ước tính khoảng 24% đến 28% toàn bộ email gửi đến hòm thư sinh viên là thư rác."</em></td>
+            <td>Khái quát hóa từ một nhóm tự chọn (ví dụ: khảo sát sinh viên IT rồi suy ra sinh viên toàn quốc).</td>
+          </tr>
+          <tr>
+            <td><strong>3. Nhân quả (Causal)</strong></td>
+            <td>Khẳng định việc chủ động can thiệp / thay đổi biến $X$ sẽ làm biến $Y$ thay đổi theo.</td>
+            <td><em>"Thêm bộ lọc spam dựa trên danh sách đen làm giảm 90% số thư rác lọt vào Inbox."</em></td>
+            <td><strong>Bẫy chết người:</strong> Thấy $X$ và $Y$ tương quan với nhau đã vội vàng kết luận $X$ gây ra $Y$ (Correlation $\neq$ Causation)!</td>
+          </tr>
+          <tr>
+            <td><strong>4. Dự đoán (Prediction)</strong></td>
+            <td>Dùng dữ liệu đã biết trong quá khứ để gán nhãn hoặc đoán giá trị của một đối tượng cụ thể trong tương lai.</td>
+            <td><em>"Email vừa nhận này có xác suất 95% là thư lừa đảo tài chính."</em></td>
+            <td>Nhầm lẫn giữa xác suất dự đoán của một cá thể với tỉ lệ trung bình của quần thể.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="box warn">
-    <strong>⚠️ CẢNH BÁO BẪY THI GIỮA KỲ:</strong>
+    <strong>CẢNH BÁO BẪY THI GIỮA KỲ:</strong>
     Đề thi thường đưa ra một kết quả nghiên cứu quan sát (Observational study), ví dụ: <em>"Người uống nhiều cà phê có tỷ lệ mắc bệnh tim thấp hơn người không uống"</em>, rồi hỏi câu nào sau đây đúng.
     <br>&rarr; <strong>SAI:</strong> "Uống cà phê giúp chữa bệnh tim" (Đây là khẳng định nhân quả, nghiên cứu quan sát không chứng minh được vì có biến gây nhiễu như lối sống, vận động).
     <br>&rarr; <strong>ĐÚNG:</strong> "Có mối liên hệ nghịch giữa mức tiêu thụ cà phê và bệnh tim trong mẫu khảo sát" (Khẳng định tóm tắt / liên hệ). Muốn kết luận nhân quả, bắt buộc phải có <strong>Thử nghiệm ngẫu nhiên có đối chứng (Randomized Controlled Trial - RCT)</strong>!
@@ -1331,9 +1459,9 @@ body.lg-theme .theme-btn-action.active{
 
   <h3>2.2 Phân loại biến: Bản chất quyết định phép tính</h3>
   <div class="key">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
-      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
-        <h4 style="color:var(--c1);margin:0 0 8px">1. BIẾN SỐ (Định lượng - Numerical)</h4>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:6px 0">
+      <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c1);margin:0 0 10px;font-size:18px">1. BIẾN SỐ (Định lượng - Numerical)</h4>
         <p>Giá trị là các con số có độ lớn toán học thực sự (cộng, trừ, tính trung bình có nghĩa).</p>
         <ul>
           <li><strong>Rời rạc (Discrete):</strong> Nhận các giá trị đếm nguyên, có bước nhảy. Ví dụ: số lượng email gửi đi ($0, 1, 2,\dots$), số lỗi code, số anh chị em.</li>
@@ -1341,8 +1469,8 @@ body.lg-theme .theme-btn-action.active{
         </ul>
       </div>
 
-      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
-        <h4 style="color:var(--c4);margin:0 0 8px">2. BIẾN PHÂN LOẠI (Định tính - Categorical)</h4>
+      <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c4);margin:0 0 10px;font-size:18px">2. BIẾN PHÂN LOẠI (Định tính - Categorical)</h4>
         <p>Giá trị chia đối tượng vào các nhóm hoặc danh mục rời nhau.</p>
         <ul>
           <li><strong>Danh nghĩa (Nominal):</strong> Các nhóm không có thứ tự tự nhiên hơn kém. Ví dụ: Giới tính, Hệ điều hành (Linux/Mac/Windows), Loài chim cánh cụt.</li>
@@ -1353,7 +1481,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box warn">
-    <strong>⚠️ BẪY THI KINH ĐIỂN: "CỘT CHỨA SỐ" CHƯA CHẮC LÀ "BIẾN SỐ"!</strong>
+    <strong>BẪY THI KINH ĐIỂN: CỘT CHỨA SỐ CHƯA CHẮC LÀ BIẾN SỐ!</strong>
     <ul>
       <li><strong>Mã định danh (ID, Mã SV, Số CCCD):</strong> Dù toàn là số nguyên nhưng chỉ dùng để phân biệt đối tượng. Bạn không thể tính "trung bình mã sinh viên"! Đây là <strong>Biến phân loại danh nghĩa</strong> (hoặc khóa định danh).</li>
       <li><strong>Mã bưu điện (Zip Code, 100000):</strong> Toàn số nhưng là <strong>Danh nghĩa</strong> vì không thể cộng trừ mã bưu điện.</li>
@@ -1363,13 +1491,13 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c2" id="w1-sec3">
-  <h2>3. Cấu Trúc Khung Dữ Liệu (Data Frame) &amp; Khái Niệm Cỡ Mẫu $n$</h2>
+  <h2>3. Cấu Trúc Khung Dữ Liệu và Ý Nghĩa Cỡ Mẫu n</h2>
   <div class="bridge">
     Khi làm việc với các bảng dữ liệu thực tế như <code>email50</code> hay <code>loan50</code>, ta cần hiểu rõ: số hàng trong bảng có luôn bằng cỡ mẫu độc lập $n$?
   </div>
 
   <div class="box analogy">
-    <strong>💡 Câu chuyện $100.000$ hàng log server:</strong>
+    <strong>Ví dụ về 100.000 hàng log server:</strong>
     Một kỹ sư tự hào: <em>"Tôi có bộ dữ liệu với $n = 100.000$ quan sát để nghiên cứu thời gian người dùng tương tác ứng dụng!"</em>
     <br>Nhưng khi soi kỹ: 100.000 hàng đó chỉ được ghi lại từ <strong>50 người dùng thử nghiệm</strong>, mỗi người bấm 2.000 lần!
     <br>&rarr; <strong>Phân tích:</strong> Các hành động của cùng một người là <em>phép đo lặp</em> (repeated measures), chúng phụ thuộc lẫn nhau mật thiết (thói quen, tốc độ bấm của người đó). Cỡ mẫu độc lập thực tế chỉ là $n = 50$, không phải $100.000$! Nếu giả định các quan sát độc lập để tính phương sai, bạn sẽ phạm sai lầm nghiêm trọng!
@@ -1389,7 +1517,7 @@ body.lg-theme .theme-btn-action.active{
   <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 1)</h2>
   
   <!-- Câu 1 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 1 (Mức độ Nhận biết):</div>
     <p>Một nhà nghiên cứu khảo sát 200 bệnh nhân tiểu đường và nhận thấy những người đi bộ trên 10.000 bước/ngày có chỉ số đường huyết thấp hơn rõ rệt so với người ít vận động. Ông đưa ra phát biểu: <em>"Đi bộ 10.000 bước mỗi ngày giúp hạ đường huyết ở người tiểu đường"</em>. Phát biểu này thuộc loại khẳng định nào và có được hỗ trợ đầy đủ bởi dữ liệu quan sát không?</p>
     <ul>
@@ -1410,7 +1538,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <!-- Câu 2 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 2 (Mức độ Thông hiểu - Bẫy Phân loại biến):</div>
     <p>Trong một bảng cơ sở dữ liệu quản lý sinh viên của UET, xét 4 cột sau: (1) <code>Mã số sinh viên</code> (ví dụ: 23020150); (2) <code>Năm học</code> (năm 1, năm 2, năm 3, năm 4); (3) <code>Điểm GPA</code> (thang điểm 4.0); (4) <code>Số tín chỉ đã tích lũy</code>. Phân loại chuẩn xác cho 4 biến này lần lượt là:</p>
     <ul>
@@ -1447,16 +1575,16 @@ body.lg-theme .theme-btn-action.active{
 </header>
 
 <div class="card c0" id="w2-sec1">
-  <h2>1. Hình Dạng Phân Phối Dữ Liệu (Distribution Shape)</h2>
+  <h2>1. Hình Dạng Phân Phối Dữ Liệu</h2>
   <div class="bridge">
     Khi nhìn vào một biểu đồ tần số (Histogram), điều đầu tiên người làm thống kê cần nhận diện không phải là con số cụ thể, mà là <strong>hình dạng phân phối</strong>. Hình dạng sẽ quyết định phương pháp tính toán nào là đúng đắn và công bằng nhất.
   </div>
 
   <div class="key">
     <h3 style="margin-top:0">Hai Thuộc Tính Nhận Dạng Hình Dạng Phân Phối</h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
-      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
-        <h4 style="color:var(--c1);margin:0 0 8px">1. SỐ ĐỈNH (Modality)</h4>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:6px 0">
+      <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c1);margin:0 0 10px;font-size:18px">1. SỐ ĐỈNH (Modality)</h4>
         <ul>
           <li><strong>Đơn đỉnh (Unimodal):</strong> Đồ thị chỉ có 1 đỉnh duy nhất (ví dụ: chiều cao, điểm thi chuẩn).</li>
           <li><strong>Song đỉnh (Bimodal):</strong> Đồ thị có 2 đỉnh tách biệt &rarr; Dấu hiệu dữ liệu gồm hai nhóm khác nhau bị gộp chung (ví dụ: thời gian đi làm gồm nhóm đi xe bus và nhóm đi xe máy).</li>
@@ -1464,8 +1592,8 @@ body.lg-theme .theme-btn-action.active{
         </ul>
       </div>
 
-      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
-        <h4 style="color:var(--c4);margin:0 0 8px">2. ĐỘ LỆCH (Skewness)</h4>
+      <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c4);margin:0 0 10px;font-size:18px">2. ĐỘ LỆCH (Skewness)</h4>
         <ul>
           <li><strong>Đối xứng (Symmetric):</strong> Nửa trái và nửa phải cân bằng như tấm gương soi.</li>
           <li><strong>Lệch phải (Right-skewed / Lệch dương):</strong> Đuôi kéo dài sang bên phải (chiều giá trị lớn). Đa số dữ liệu tập trung ở bên trái.</li>
@@ -1476,7 +1604,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box analogy">
-    <strong>💡 Mẹo nhớ chiều lệch siêu dễ:</strong>
+    <strong>Mẹo nhớ chiều lệch:</strong>
     <em>"Đuôi dài về phía nào thì gọi là lệch về phía đó!"</em>
     <ul>
       <li><strong>Thu nhập dân cư:</strong> Đa số người có thu nhập từ 5–15 triệu, nhưng có một vài tỷ phú thu nhập hàng trăm tỷ &rarr; Đuôi kéo dài sang bên phải &rarr; <strong>Lệch phải (Right-skewed)</strong>.</li>
@@ -1493,40 +1621,42 @@ body.lg-theme .theme-btn-action.active{
 
   <div class="key">
     <h3 style="margin-top:0">Bảng So Sánh 3 Đại Lượng Trung Tâm (Trọng Tâm Thi)</h3>
-    <table class="tw">
-      <thead>
-        <tr>
-          <th>Đại lượng</th>
-          <th>Công thức &amp; Bản chất</th>
-          <th>Ưu điểm &amp; Nhược điểm</th>
-          <th>Tính bền vững (Robustness)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Trung bình (Mean) $\bar{x}$</strong></td>
-          <td>$\bar{x} = \dfrac{1}{n} \sum_{i=1}^n x_i$<br>Bản chất: <strong>Trọng tâm vật lý</strong> của dữ liệu. Tổng độ lệch quanh trung bình luôn triệt tiêu: $\sum (x_i - \bar{x}) = 0$.</td>
-          <td>Tận dụng thông tin của mọi điểm dữ liệu. Nhưng <strong>cực kỳ nhạy cảm với giá trị ngoại lai (outliers)</strong> và phân phối lệch.</td>
-          <td><span class="no">KHÔNG BỀN VỮNG</span><br>(Chỉ cần 1 tỷ phú bước vào phòng, lương trung bình nhảy vọt).</td>
-        </tr>
-        <tr>
-          <td><strong>Trung vị (Median) $M$</strong></td>
-          <td>Giá trị nằm chính giữa sau khi đã sắp xếp dãy số theo thứ tự tăng dần.<br>Nếu $n$ lẻ: lấy số ở vị trí $\frac{n+1}{2}$.<br>Nếu $n$ chẵn: lấy trung bình cộng của 2 số giữa.</td>
-          <td>Chia đôi tập dữ liệu: 50% số quan sát nhỏ hơn hoặc bằng nó, 50% lớn hơn nó.</td>
-          <td><span class="ok">RẤT BỀN VỮNG (ROBUST)</span><br>(Dù người giàu nhất có giàu lên gấp 1000 lần, trung vị vẫn giữ nguyên).</td>
-        </tr>
-        <tr>
-          <td><strong>Yếu vị (Mode / Mốt)</strong></td>
-          <td>Giá trị có tần số xuất hiện nhiều lần nhất trong tập dữ liệu.</td>
-          <td>Dùng tốt cho cả biến phân loại (ví dụ: cỡ áo bán chạy nhất). Một tập dữ liệu có thể không có mốt hoặc có nhiều mốt.</td>
-          <td>Ít dùng cho dữ liệu số liên tục vì các giá trị đo thường không trùng nhau từng chữ số thập phân.</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Đại lượng</th>
+            <th>Công thức &amp; Bản chất</th>
+            <th>Ưu điểm &amp; Nhược điểm</th>
+            <th>Tính bền vững (Robustness)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Trung bình (Mean) $\bar{x}$</strong></td>
+            <td>$\bar{x} = \dfrac{1}{n} \sum_{i=1}^n x_i$<br>Bản chất: <strong>Trọng tâm vật lý</strong> của dữ liệu. Tổng độ lệch quanh trung bình luôn triệt tiêu: $\sum (x_i - \bar{x}) = 0$.</td>
+            <td>Tận dụng thông tin của mọi điểm dữ liệu. Nhưng <strong>cực kỳ nhạy cảm với giá trị ngoại lai (outliers)</strong> và phân phối lệch.</td>
+            <td><span class="no">KHÔNG BỀN VỮNG</span><br>(Chỉ cần 1 tỷ phú bước vào phòng, lương trung bình nhảy vọt).</td>
+          </tr>
+          <tr>
+            <td><strong>Trung vị (Median) $M$</strong></td>
+            <td>Giá trị nằm chính giữa sau khi đã sắp xếp dãy số theo thứ tự tăng dần.<br>Nếu $n$ lẻ: lấy số ở vị trí $\frac{n+1}{2}$.<br>Nếu $n$ chẵn: lấy trung bình cộng của 2 số giữa.</td>
+            <td>Chia đôi tập dữ liệu: 50% số quan sát nhỏ hơn hoặc bằng nó, 50% lớn hơn nó.</td>
+            <td><span class="ok">RẤT BỀN VỮNG (ROBUST)</span><br>(Dù người giàu nhất có giàu lên gấp 1000 lần, trung vị vẫn giữ nguyên).</td>
+          </tr>
+          <tr>
+            <td><strong>Yếu vị (Mode / Mốt)</strong></td>
+            <td>Giá trị có tần số xuất hiện nhiều lần nhất trong tập dữ liệu.</td>
+            <td>Dùng tốt cho cả biến phân loại (ví dụ: cỡ áo bán chạy nhất). Một tập dữ liệu có thể không có mốt hoặc có nhiều mốt.</td>
+            <td>Ít dùng cho dữ liệu số liên tục vì các giá trị đo thường không trùng nhau từng chữ số thập phân.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="box warn">
-    <strong>⚠️ MỐI QUAN HỆ VÀNG GIỮA MEAN VÀ MEDIAN (CÂU HỎI THI KINH ĐIỂN):</strong>
+    <strong>MỐI QUAN HỆ GIỮA MEAN VÀ MEDIAN (CÂU HỎI THI KINH ĐIỂN):</strong>
     <ul>
       <li><strong>Phân phối đối xứng:</strong> $\text{Mean} \approx \text{Median} \approx \text{Mode}$.</li>
       <li><strong>Phân phối lệch phải (Right-skewed):</strong> Các giá trị cực lớn ở đuôi phải kéo mạnh giá trị trung bình về phía nó &rarr; $\mathbf{\text{Mean} > \text{Median}}$.</li>
@@ -1537,23 +1667,23 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c2" id="w2-sec3">
-  <h2>3. Đo Lường Độ Phân Tán &amp; Quy Tắc Hộp $1.5 \times \text{IQR}$</h2>
+  <h2>3. Đo Lường Độ Phân Tán và Biểu Đồ Hộp</h2>
   <div class="bridge">
     Hai lớp học cùng có điểm trung bình là 7.0, nhưng một lớp toàn điểm 6.5 đến 7.5, lớp kia có người 0 điểm và người 10 điểm. Trung tâm giống nhau, nhưng <strong>độ phân tán (sự biến động)</strong> hoàn toàn khác nhau!
   </div>
 
   <div class="key">
-    <h3 style="margin-top:0">Các Thước Đo Độ Phân Tán Bắt Buộc Phải Nhớ</h3>
+    <h3 style="margin-top:0">Các Thước Đo Độ Phân Tán Cốt Lõi</h3>
     <ol>
       <li>
         <strong>Phương sai mẫu (Sample Variance) $s^2$:</strong>
         <div class="f">$$s^2 = \frac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})^2$$</div>
-        <em>Tại sao chia cho $n-1$ mà không phải $n$?</em> Vì ta đã dùng trung bình mẫu $\bar{x}$ (vốn đã tính từ $n$ quan sát) làm điểm đối chiếu, khiến tập dữ liệu mất đi 1 bậc tự do (Degrees of Freedom). Chia cho $n-1$ (hiệu chỉnh Bessel) giúp $s^2$ trở thành ước lượng <strong>không chệch (unbiased)</strong> cho phương sai $\sigma^2$ của cả quần thể!
+        <em>Tại sao chia cho $n-1$ mà không phải $n$?</em> Vì ta đã dùng trung bình mẫu $\bar{x}$ (vốn đã tính từ $n$ quan sát) làm điểm đối chiếu, khiến tập dữ liệu mất đi 1 bậc tự do. Chia cho $n-1$ (hiệu chỉnh Bessel) giúp $s^2$ trở thành ước lượng <strong>không chệch (unbiased)</strong> cho phương sai $\sigma^2$ của cả quần thể!
       </li>
       <li>
         <strong>Độ lệch chuẩn mẫu (Standard Deviation) $s$:</strong>
         <div class="f">$$s = \sqrt{s^2}$$</div>
-        Đưa mức độ dao động về <strong>cùng đơn vị đo</strong> với biến ban đầu (ví dụ: nếu $x$ đo bằng mét, $s^2$ là $\text{m}^2$ khó hình dung, thì $s$ là mét). $s \ge 0$, và $s = 0$ khi và chỉ khi mọi quan sát đều bằng nhau chằn chặn.
+        Đưa mức độ dao động về <strong>cùng đơn vị đo</strong> với biến ban đầu. $s \ge 0$, và $s = 0$ khi và chỉ khi mọi quan sát đều bằng nhau chằn chặn.
       </li>
       <li>
         <strong>Tứ phân vị &amp; Khoảng tứ phân vị (Interquartile Range - IQR):</strong>
@@ -1568,13 +1698,13 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box warn">
-    <strong>⚠️ QUY TẮC $1.5 \times \text{IQR}$ ĐỂ PHÁT HIỆN GIÁ TRỊ NGOẠI LAI (OUTLIERS):</strong>
+    <strong>QUY TẮC 1.5 IQR ĐỂ PHÁT HIỆN GIÁ TRỊ NGOẠI LAI (OUTLIERS):</strong>
     Trên biểu đồ hộp (Boxplot), một quan sát $x$ bị coi là <em>ngoại lai tiềm năng</em> nếu rơi ra ngoài khoảng hai "hàng rào" (fences):
     <div class="f">
       $$\text{Hàng rào dưới} = Q_1 - 1.5 \times \text{IQR}$$
       $$\text{Hàng rào trên} = Q_3 + 1.5 \times \text{IQR}$$
     </div>
-    Râu của biểu đồ hộp (Whiskers) chỉ kéo dài tới điểm dữ liệu thực tế xa nhất <em>vẫn còn nằm bên trong</em> hai hàng rào này. Mọi điểm nằm ngoài hàng rào đều được vẽ riêng thành các dấu chấm tròn rời rạc (outliers).
+    Râu của biểu đồ hộp (Whiskers) chỉ kéo dài tới điểm dữ liệu thực tế xa nhất <em>vẫn còn nằm bên trong</em> hai hàng rào này. Mọi điểm nằm ngoài hàng rào đều được vẽ riêng thành các dấu chấm rời rạc.
   </div>
 
   <h3>3.1 Tác động của Biến Đổi Tuyến Tính $Y = aX + b$</h3>
@@ -1582,7 +1712,7 @@ body.lg-theme .theme-btn-action.active{
     Nếu nhân mọi quan sát với $a$ rồi cộng thêm hằng số $b$:
     <ul>
       <li><strong>Trung tâm (Mean, Median):</strong> Bị tịnh tiến và co giãn hoàn toàn: $\bar{y} = a\bar{x} + b$, $M_y = a M_x + b$.</li>
-      <li><strong>Độ phân tán (SD, IQR):</strong> <em>Không bị ảnh hưởng bởi phép cộng $b$</em> (cộng thêm chỉ trượt vị trí, độ rộng giữ nguyên!), chỉ bị nhân với giá trị tuyệt đối $|a|$:
+      <li><strong>Độ phân tán (SD, IQR):</strong> <em>Không bị ảnh hưởng bởi phép cộng $b$</em>, chỉ bị nhân với giá trị tuyệt đối $|a|$:
         <div class="f">$$s_Y = |a| \cdot s_X \quad \text{và} \quad \text{IQR}_Y = |a| \cdot \text{IQR}_X$$</div>
         Phương sai nhân với $a^2$: $\mathbf{s_Y^2 = a^2 s_X^2}$.
       </li>
@@ -1594,7 +1724,7 @@ body.lg-theme .theme-btn-action.active{
   <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 2)</h2>
 
   <!-- Câu 1 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 1 (Tính toán 5 số tóm tắt &amp; Outlier):</div>
     <p>Cho dãy số liệu điểm kiểm tra của 9 sinh viên: $3, 5, 6, 7, 8, 8, 9, 10, 19$. Hãy xác định Trung vị, $Q_1$, $Q_3$, IQR và chỉ ra giá trị nào là ngoại lai theo quy tắc $1.5 \times \text{IQR}$.</p>
     <ul>
@@ -1633,7 +1763,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <!-- Câu 2 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 2 (Biến đổi tuyến tính):</div>
     <p>Một tập dữ liệu nhiệt độ đo bằng độ Celsius ($X$) có nhiệt độ trung bình $\bar{x} = 20^\circ\text{C}$ và độ lệch chuẩn $s_X = 5^\circ\text{C}$. Nếu đổi toàn bộ dữ liệu sang độ Fahrenheit ($Y$) theo công thức $Y = 1.8X + 32$, thì nhiệt độ trung bình $\bar{y}$ và độ lệch chuẩn $s_Y$ mới lần lượt là:</p>
     <ul>
@@ -1651,8 +1781,8 @@ body.lg-theme .theme-btn-action.active{
         <p><strong>Giải thích chi tiết:</strong></p>
         <ul>
           <li>Trung bình mới: $\bar{y} = 1.8 \cdot \bar{x} + 32 = 1.8 \cdot 20 + 32 = 36 + 32 = \mathbf{68^\circ\text{F}}$.</li>
-          <li>Độ lệch chuẩn mới: <strong>CẢNH BÁO BẪY:</strong> Phép cộng hằng số $+32$ KHÔNG làm thay đổi độ phân tán! Chỉ nhân hệ số co giãn $1.8$:<br>
-          $s_Y = |1.8| \cdot s_X = 1.8 \cdot 5 = \mathbf{9^\circ\text{F}}$. (Rất nhiều sinh viên lấy $1.8 \cdot 5 + 32 = 41$ là hoàn toàn sai lầm!).</li>
+          <li>Độ lệch chuẩn mới: <strong>LƯU Ý:</strong> Phép cộng hằng số $+32$ KHÔNG làm thay đổi độ phân tán! Chỉ nhân hệ số co giãn $1.8$:<br>
+          $s_Y = |1.8| \cdot s_X = 1.8 \cdot 5 = \mathbf{9^\circ\text{F}}$. (Không được cộng thêm 32 vào độ lệch chuẩn!).</li>
         </ul>
       </div>
     </div>
@@ -1669,7 +1799,7 @@ body.lg-theme .theme-btn-action.active{
 </header>
 
 <div class="card c0" id="w3-sec1">
-  <h2>1. Ngữ Pháp Đồ Họa (Grammar of Graphics)</h2>
+  <h2>1. Ngữ Pháp Đồ Họa</h2>
   <div class="bridge">
     Thay vì học vẹt từng loại biểu đồ rời rạc, khoa học dữ liệu hiện đại coi biểu đồ như một <strong>ngôn ngữ có ngữ pháp</strong> (nền tảng của thư viện <code>ggplot2</code> trong R và <code>seaborn / plotnine</code> trong Python). Khi nắm vững ngữ pháp, bạn có thể tạo ra bất kỳ biểu đồ trực quan nào!
   </div>
@@ -1699,20 +1829,20 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c1" id="w3-sec2">
-  <h2>2. Bảng Tiếp Liên (Contingency Table) &amp; Điều Kiện Hóa</h2>
+  <h2>2. Bảng Tiếp Liên và Điều Kiện Hóa</h2>
   <div class="bridge">
-    Khi muốn tìm hiểu mối liên hệ giữa <strong>hai biến phân loại</strong> (ví dụ: <code>Giới tính</code> và <code>Tình trạng việc làm</code>, hoặc <code>Loại email</code> và <code>Có chứa từ 'spam'</code>), ta dùng bảng tiếp liên 2 chiều.
+    Khi muốn tìm hiểu mối liên hệ giữa <strong>hai biến phân loại</strong> (ví dụ: <code>Giới tính</code> và <code>Tình trạng việc làm</code>, hoặc <code>Loại email</code> và <code>Có chứa từ spam</code>), ta dùng bảng tiếp liên 2 chiều.
   </div>
 
   <div class="box analogy">
-    <strong>💡 "Một ô, Ba mẫu số, Ba câu hỏi hoàn toàn khác nhau":</strong>
+    <strong>Một ô, Ba mẫu số, Ba câu hỏi hoàn toàn khác nhau:</strong>
     Xét ô giao giữa hàng <em>Nữ</em> và cột <em>Đã có việc</em> có số lượng $20$ người, tổng số nữ là $40$, tổng số người có việc là $50$, tổng toàn trường là $100$.
     <ul>
       <li><strong>Mẫu số 100 (Tỉ lệ đồng thời):</strong> $20/100 = 20\%$ &rarr; Trả lời: <em>"Trong toàn trường, tỉ lệ sinh viên vừa là Nữ vừa Đã có việc là bao nhiêu?"</em></li>
       <li><strong>Mẫu số 40 (Tỉ lệ có điều kiện theo Hàng):</strong> $20/40 = 50\%$ &rarr; Trả lời: <em>"BÊN TRONG nhóm Nữ, tỉ lệ đã có việc là bao nhiêu?"</em></li>
       <li><strong>Mẫu số 50 (Tỉ lệ có điều kiện theo Cột):</strong> $20/50 = 40\%$ &rarr; Trả lời: <em>"BÊN TRONG nhóm Đã có việc, tỉ lệ là Nữ là bao nhiêu?"</em></li>
     </ul>
-    <strong>Lời dặn của giảng viên:</strong> Luôn đọc kỹ câu hỏi thi xem <em>"nhóm làm chuẩn (mẫu số)"</em> là ai trước khi bấm máy tính!
+    <strong>Ghi nhớ:</strong> Luôn đọc kỹ câu hỏi thi xem <em>"nhóm làm chuẩn (mẫu số)"</em> là ai trước khi bấm máy tính!
   </div>
 
   <div class="key">
@@ -1720,36 +1850,36 @@ body.lg-theme .theme-btn-action.active{
     <ul>
       <li><strong>Phân phối biên (Marginal distribution):</strong> Phân phối của riêng một biến ở cột Tổng (lề bảng), hoàn toàn phớt lờ biến kia.</li>
       <li><strong>Phân phối có điều kiện (Conditional distribution):</strong> Phân phối của một biến khi ta <strong>cố định</strong> một nhóm cụ thể của biến kia (xem từng hàng hoặc từng cột riêng rẽ).</li>
-      <li><strong>Khi nào hai biến KHÔNG CÓ MỐI LIÊN HỆ (Độc lập)?</strong> Khi phân phối có điều kiện của biến này <em>giống hệt nhau</em> ở mọi mức của biến kia! (Ví dụ: tỷ lệ có việc của Nam là 50% và Nữ cũng là 50% &rarr; Giới tính không liên quan đến việc làm).</li>
+      <li><strong>Khi nào hai biến ĐỘC LẬP (Không có mối liên hệ)?</strong> Khi phân phối có điều kiện của biến này <em>giống hệt nhau</em> ở mọi mức của biến kia! (Ví dụ: tỷ lệ có việc của Nam là 50% và Nữ cũng là 50% &rarr; Giới tính không liên quan đến việc làm).</li>
     </ul>
   </div>
 </div>
 
 <div class="card c2" id="w3-sec3">
-  <h2>3. Nghịch Lý Simpson (Simpson's Paradox)</h2>
+  <h2>3. Nghịch Lý Simpson Trong Phân Tích Dữ Liệu</h2>
   <div class="bridge">
     Nghịch lý Simpson là một trong những hiện tượng kỳ lạ và cuốn hút nhất của khoa học dữ liệu, chứng minh rằng: <strong>Một cái nhìn hời hợt gộp chung dữ liệu có thể dẫn tới kết luận hoàn toàn trái ngược với sự thật bên trong!</strong>
   </div>
 
   <div class="key">
-    <h3 style="margin-top:0">Định Nghĩa &amp; Trực Giác Bản Chất</h3>
+    <h3 style="margin-top:0">Định Nghĩa và Bản Chất</h3>
     <p><strong>Nghịch lý Simpson</strong> xảy ra khi một xu hướng hoặc mối liên hệ xuất hiện ở nhiều nhóm dữ liệu con, nhưng lại <strong>bị đảo ngược hoàn toàn</strong> khi gộp các nhóm con đó lại với nhau!</p>
     <p>Nguyên nhân là do sự tồn tại của một <strong>biến gây nhiễu (Confounder / Lurking variable)</strong> có liên quan mạnh mẽ tới cả hai biến đang nghiên cứu và phân bố không đồng đều giữa các nhóm.</p>
   </div>
 
   <div class="box analogy">
-    <strong>💡 Ví dụ kinh điển: Tuyển sinh tại UC Berkeley (1973)</strong>
+    <strong>Ví dụ kinh điển: Tuyển sinh tại UC Berkeley (1973)</strong>
     <p>Nhìn vào số liệu gộp chung toàn trường: Tỷ lệ trúng tuyển của Nam là <strong>44%</strong>, trong khi của Nữ chỉ là <strong>35%</strong>. Dư luận dậy sóng vì nghi vấn trường thiên vị nam giới.</p>
     <p>Tuy nhiên, khi các nhà thống kê tách dữ liệu ra phân tích <strong>bên trong từng khoa (điều kiện hóa theo khoa)</strong>:</p>
     <ul>
       <li>Ở hầu hết các khoa, tỷ lệ trúng tuyển của Nữ thậm chí còn <strong>cao hơn hoặc bằng</strong> Nam!</li>
-      <li><strong>Tại sao gộp lại Nữ lại thấp hơn?</strong> Vì các ứng viên nữ có xu hướng nộp hồ sơ nhiều vào các ngành Khoa học Xã hội và Nhân văn (những khoa có tỷ lệ chọi cực kỳ khốc liệt, tỷ lệ trúng tuyển chung chỉ 5–10%). Ngược lại, nam giới nộp nhiều vào các khoa Kỹ thuật (tỷ lệ trúng tuyển chung rất cao, khoảng 60–80%).</li>
+      <li><strong>Tại sao gộp lại Nữ lại thấp hơn?</strong> Vì các ứng viên nữ có xu hướng nộp hồ sơ nhiều vào các ngành Khoa học Xã hội và Nhân văn (những khoa có tỷ lệ chọi khốc liệt, tỷ lệ trúng tuyển chung chỉ 5–10%). Ngược lại, nam giới nộp nhiều vào các khoa Kỹ thuật (tỷ lệ trúng tuyển chung rất cao, khoảng 60–80%).</li>
       <li><em>Biến gây nhiễu ở đây chính là: <strong>Khoa nộp hồ sơ</strong>!</em></li>
     </ul>
   </div>
 
   <div class="box warn">
-    <strong>⚠️ BÀI HỌC CHO PHÂN TÍCH DỮ LIỆU:</strong>
+    <strong>LƯU Ý KHI PHÂN TÍCH DỮ LIỆU:</strong>
     Không bao giờ vội vàng đưa ra quyết định chính sách hay khẳng định nhân quả chỉ dựa trên số liệu gộp bề mặt. Luôn tự hỏi: <em>"Liệu có biến nhóm con nào đang chi phối kết quả này không?"</em>
   </div>
 </div>
@@ -1758,19 +1888,21 @@ body.lg-theme .theme-btn-action.active{
   <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 3)</h2>
 
   <!-- Câu 1 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 1 (Đọc bảng tiếp liên &amp; Phân phối có điều kiện):</div>
     <p>Khảo sát 200 khách hàng vay vốn tại một ngân hàng về <code>Hình thức sở hữu nhà</code> và <code>Tình trạng trả nợ</code> thu được bảng tiếp liên sau:</p>
-    <table class="tw" style="margin:10px 0">
-      <thead>
-        <tr><th>Nhà ở \ Nợ</th><th>Đúng hạn</th><th>Quá hạn</th><th>Tổng</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Sở hữu (Own)</td><td>70</td><td>10</td><td>80</td></tr>
-        <tr><td>Thuê (Rent)</td><td>90</td><td>30</td><td>120</td></tr>
-        <tr><td><strong>Tổng</strong></td><td><strong>160</strong></td><td><strong>40</strong></td><td><strong>200</strong></td></tr>
-      </tbody>
-    </table>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Nhà ở \ Nợ</th><th>Đúng hạn</th><th>Quá hạn</th><th>Tổng</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sở hữu (Own)</td><td>70</td><td>10</td><td>80</td></tr>
+          <tr><td>Thuê (Rent)</td><td>90</td><td>30</td><td>120</td></tr>
+          <tr><td><strong>Tổng</strong></td><td><strong>160</strong></td><td><strong>40</strong></td><td><strong>200</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
     <p>Tính: (1) Tỉ lệ khách hàng trả nợ đúng hạn trong nhóm khách hàng đang đi thuê nhà; và (2) Tỉ lệ khách hàng sở hữu nhà trong nhóm những khách hàng bị quá hạn nợ.</p>
     <ul>
       <li>A. (1) 75.0%; (2) 25.0%.</li>
@@ -1796,7 +1928,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <!-- Câu 2 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 2 (Bản chất Nghịch lý Simpson):</div>
     <p>Khi nào một nhà phân tích dữ liệu cần nghi ngờ có sự xuất hiện của Nghịch lý Simpson?</p>
     <ul>
@@ -1827,13 +1959,13 @@ body.lg-theme .theme-btn-action.active{
 </header>
 
 <div class="card c0" id="w4-sec1">
-  <h2>1. Hệ Số Tương Quan Tuyến Tính Pearson ($r$)</h2>
+  <h2>1. Hệ Số Tương Quan Tuyến Tính Pearson</h2>
   <div class="bridge">
     Khi hai biến số cùng tăng hoặc cùng giảm, làm sao để lượng hóa mức độ gắn kết giữa chúng bằng một con số chuẩn mực từ $-1$ đến $+1$? Đó chính là <strong>hệ số tương quan Pearson $r$</strong>.
   </div>
 
   <div class="key">
-    <h3 style="margin-top:0">Công Thức &amp; Bản Chất Của Pearson $r$</h3>
+    <h3 style="margin-top:0">Công Thức &amp; Bản Chất Của Pearson r</h3>
     <div class="f">
       $$r = \frac{1}{n-1} \sum_{i=1}^n \left(\frac{x_i - \bar{x}}{s_x}\right)\left(\frac{y_i - \bar{y}}{s_y}\right) = \frac{1}{n-1}\sum_{i=1}^n z_{x,i} \cdot z_{y,i} = \frac{S_{xy}}{\sqrt{S_{xx} S_{yy}}}$$
     </div>
@@ -1842,38 +1974,38 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box warn">
-    <strong>⚠️ NĂM TÍNH CHẤT BẮT BUỘC PHẢI NHỚ CỦA $r$ (THI RẤT HAY HỎI):</strong>
+    <strong>NĂM TÍNH CHẤT BẮT BUỘC PHẢI NHỚ CỦA r (THI RẤT HAY HỎI):</strong>
     <ol>
       <li><strong>Giới hạn:</strong> $-1 \le r \le 1$. $r = +1$ hoặc $r = -1$ khi và chỉ khi <em>mọi điểm dữ liệu nằm chính xác tuyệt đối trên một đường thẳng</em>.</li>
       <li><strong>Không có đơn vị đo:</strong> Vì được tính từ các biến đã chuẩn hóa $z$, $r$ là số thuần túy không mang đơn vị.</li>
       <li><strong>Bất biến trước đổi đơn vị tuyến tính:</strong> Nếu chuyển $x' = ax + b$ (với $a > 0$), hệ số tương quan $r(x', y) = r(x, y)$ không hề đổi! Chỉ khi $a < 0$ thì $r$ mới đổi dấu.</li>
-      <li><strong>Chỉ đo quan hệ TUYẾN TÍNH:</strong> $r = 0$ chỉ có nghĩa là <em>không có liên hệ đường thẳng</em>, KHÔNG có nghĩa là hai biến độc lập! (Ví dụ: quan hệ parabol hoàn hảo $y = x^2$ đối xứng qua 0 sẽ cho $r \approx 0$).</li>
+      <li><strong>Chỉ đo quan hệ TUYẾN TÍNH:</strong> $r = 0$ chỉ có nghĩa là <em>không có liên hệ đường thẳng</em>, KHÔNG có nghĩa là hai biến độc lập! (Ví dụ: quan hệ parabol $y = x^2$ đối xứng qua 0 sẽ cho $r \approx 0$).</li>
       <li><strong>Nhạy cảm với ngoại lai (Outliers):</strong> Chỉ cần một điểm đơn lẻ nằm xa cụm dữ liệu có thể bẻ cong hoặc phá hủy hoàn toàn giá trị của $r$.</li>
     </ol>
   </div>
 </div>
 
 <div class="card c1" id="w4-sec2">
-  <h2>2. Mô Hình Hồi Quy Tuyến Tính Đơn Biến OLS (Ordinary Least Squares)</h2>
+  <h2>2. Mô Hình Hồi Quy Tuyến Tính Đơn Biến OLS</h2>
   <div class="bridge">
     Nếu $r$ chỉ cho biết hai biến gắn bó mạnh hay yếu, thì <strong>phương trình hồi quy tuyến tính</strong> cho phép chúng ta <em>dự đoán giá trị của $y$ khi biết trước $x$</em>: $\hat{y} = b_0 + b_1 x$.
   </div>
 
   <div class="key">
-    <h3 style="margin-top:0">Công Thức Vàng Của Đường Hồi Quy Tuyến Tính OLS</h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
-      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
-        <h4 style="color:var(--c1);margin:0 0 8px">1. HỆ SỐ GÓC (Slope) $b_1$</h4>
+    <h3 style="margin-top:0">Công Thức Cốt Lõi Của Đường Hồi Quy Tuyến Tính OLS</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:6px 0">
+      <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c1);margin:0 0 10px;font-size:18px">1. HỆ SỐ GÓC (Slope) $b_1$</h4>
         <div class="f">$$b_1 = r \cdot \frac{s_y}{s_x} = \frac{S_{xy}}{S_{xx}}$$</div>
         <p><strong>Ý nghĩa kinh tế/kỹ thuật:</strong> Khi $x$ tăng thêm 1 đơn vị, giá trị dự báo $\hat{y}$ sẽ thay đổi trung bình $b_1$ đơn vị.<br>
         <em>Góc nhìn chuẩn hóa:</em> Khi $x$ tăng thêm 1 độ lệch chuẩn ($s_x$), $\hat{y}$ thay đổi $r$ lần độ lệch chuẩn của $y$ ($s_y$).</p>
       </div>
 
-      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
-        <h4 style="color:var(--c4);margin:0 0 8px">2. HỆ SỐ CHẶN (Intercept) $b_0$</h4>
+      <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c4);margin:0 0 10px;font-size:18px">2. HỆ SỐ CHẶN (Intercept) $b_0$</h4>
         <div class="f">$$b_0 = \bar{y} - b_1 \bar{x}$$</div>
         <p><strong>ĐIỀU CỐT TỬ:</strong> Đường hồi quy OLS <strong>luôn luôn đi qua điểm trọng tâm $(\bar{x}, \bar{y})$</strong>!<br>
-        Hệ số chặn $b_0$ là giá trị dự báo của $y$ khi $x = 0$. (Lưu ý: nếu $x = 0$ vô lý trong thực tế, $b_0$ chỉ có ý nghĩa toán học để neo đường thẳng, không có ý nghĩa thực tiễn).</p>
+        Hệ số chặn $b_0$ là giá trị dự báo của $y$ khi $x = 0$.</p>
       </div>
     </div>
   </div>
@@ -1890,7 +2022,7 @@ body.lg-theme .theme-btn-action.active{
           <li>Phần dư không còn tương quan tuyến tính với biến giải thích: $\mathbf{\sum_{i=1}^n x_i e_i = 0}$.</li>
         </ol>
       </li>
-      <li><strong>Hệ số xác định (Coefficient of Determination) $R^2$:</strong>
+      <li><strong>Hệ số xác định $R^2$:</strong>
         Trong hồi quy đơn biến: $\mathbf{R^2 = r^2}$.
         <br><strong>Ý nghĩa:</strong> $R^2$ đo lường <em>tỷ lệ phần trăm sự biến thiên của biến phản hồi $y$ được giải thích bởi quan hệ tuyến tính với biến $x$</em>. Ví dụ: $r = 0.8 \implies R^2 = 0.64 = 64\%$ biến thiên của $y$ do $x$ quyết định, còn lại 36% do các yếu tố ngẫu nhiên khác.
       </li>
@@ -1898,7 +2030,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box warn">
-    <strong>⚠️ BẪY THI CẦN TRÁNH:</strong>
+    <strong>BẪY THI CẦN TRÁNH:</strong>
     <ul>
       <li><strong>Ngoại suy (Extrapolation):</strong> Dùng đường hồi quy để dự đoán giá trị của $y$ tại một điểm $x$ nằm ngoài phạm vi dữ liệu đã thu thập là cực kỳ nguy hiểm và thiếu tin cậy!</li>
       <li><strong>Nhầm lẫn $b_1$ với $r$:</strong> $b_1$ phụ thuộc vào đơn vị đo của $x$ và $y$ (ví dụ: triệu đồng / mét vuông), còn $r$ là đại lượng vô hướng không đổi!</li>
@@ -1907,29 +2039,29 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c2" id="w4-sec3">
-  <h2>3. Mô Phỏng Tương Tác: Khám Phá Đường Hồi Quy OLS &amp; Phần Dư</h2>
+  <h2>3. Mô Phỏng Tương Tác Đường Hồi Quy và Phần Dư OLS</h2>
   <div class="bridge">
     Hãy thử kéo thanh trượt bên dưới để thay đổi hệ số tương quan $r$ và độ dốc của đám mây dữ liệu. Quan sát cách đường thẳng hồi quy luôn đi qua điểm trung tâm $(\bar{x}, \bar{y})$ và cách tổng bình phương phần dư thay đổi!
   </div>
 
-  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:20px;margin:16px 0">
+  <div class="sim-widget">
     <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:16px">
       <div>
-        <label for="ols-r-slider" style="font-weight:700">Hệ số tương quan ($r$): </label>
+        <label for="ols-r-slider" style="font-weight:700">Hệ số tương quan (r): </label>
         <input type="range" id="ols-r-slider" min="-0.98" max="0.98" step="0.02" value="0.75" oninput="updateOLSSim()" style="vertical-align:middle;width:180px">
         <span id="ols-r-val" style="font-weight:800;color:var(--c1);margin-left:8px">+0.75</span>
       </div>
       <div>
-        <span>$R^2 = \mathbf{r^2}$: </span>
+        <span>$R^2 = r^2$: </span>
         <span id="ols-r2-val" style="font-weight:800;color:var(--c2)">56.25%</span>
       </div>
     </div>
 
     <!-- Canvas SVG đồ họa trực quan -->
     <div style="text-align:center">
-      <svg id="ols-svg" viewBox="0 0 500 300" style="width:100%;max-width:550px;background:rgba(0,0,0,0.25);border-radius:12px;border:1px solid rgba(255,255,255,0.1)"></svg>
+      <svg id="ols-svg" viewBox="0 0 500 300" style="width:100%;max-width:550px;background:rgba(0,0,0,0.25);border-radius:16px;border:1px solid rgba(255,255,255,0.1)"></svg>
     </div>
-    <div id="ols-desc" style="font-size:14px;margin-top:10px;text-align:center;color:var(--mut)"></div>
+    <div id="ols-desc" style="font-size:14.5px;margin-top:14px;text-align:center;color:var(--mut);line-height:1.7"></div>
   </div>
 </div>
 
@@ -1937,7 +2069,7 @@ body.lg-theme .theme-btn-action.active{
   <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 4)</h2>
 
   <!-- Câu 1 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 1 (Tính toán phương trình hồi quy OLS):</div>
     <p>Khảo sát một mẫu gồm 25 căn hộ cho thuê, ta thu được các thống kê mô tả sau:
     <br>Diện tích căn hộ ($x$, đơn vị $\text{m}^2$): $\bar{x} = 60$, $s_x = 10$.
@@ -1977,8 +2109,8 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <!-- Câu 2 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
-    <div style="font-weight:700;color:var(--c1)">Câu 2 (Ý nghĩa của phần dư và $R^2$):</div>
+  <div class="card quiz-box">
+    <div style="font-weight:700;color:var(--c1)">Câu 2 (Ý nghĩa của phần dư và R^2):</div>
     <p>Một căn hộ trong mẫu có diện tích $x = 70\,\text{m}^2$ và giá thuê thực tế là $y = 19.5$ triệu đồng. Dựa vào phương trình hồi quy ở Câu 1 ($\hat{y} = -3.0 + 0.30x$), hãy tính phần dư của căn hộ này và giải thích ý nghĩa.</p>
     <ul>
       <li>A. Phần dư $e = -1.5$ triệu đồng; căn hộ này cho thuê rẻ hơn kỳ vọng của mô hình.</li>
@@ -1996,7 +2128,7 @@ body.lg-theme .theme-btn-action.active{
         <ul>
           <li>Giá thuê dự báo từ mô hình: $\hat{y} = -3.0 + 0.30 \cdot 70 = 18.0$ triệu đồng.</li>
           <li>Phần dư: $e = y - \hat{y} = 19.5 - 18.0 = \mathbf{+1.5}$ triệu đồng.</li>
-          <li><strong>Ý nghĩa:</strong> Vì $e > 0$, giá thuê thực tế cao hơn giá trị dự đoán trung bình của các căn hộ cùng diện tích $70\,\text{m}^2$ một khoản là 1.5 triệu đồng (có thể do căn này có view đẹp hơn, nội thất xịn hơn).</li>
+          <li><strong>Ý nghĩa:</strong> Vì $e > 0$, giá thuê thực tế cao hơn giá trị dự đoán trung bình của các căn hộ cùng diện tích $70\,\text{m}^2$ một khoản là 1.5 triệu đồng.</li>
         </ul>
       </div>
     </div>
@@ -2013,7 +2145,7 @@ body.lg-theme .theme-btn-action.active{
 </header>
 
 <div class="card c0" id="w5-sec1">
-  <h2>1. Không Gian Mẫu, Biến Cố &amp; Quy Tắc Cộng</h2>
+  <h2>1. Không Gian Mẫu, Biến Cố và Quy Tắc Cộng</h2>
   <div class="bridge">
     Xác suất là công cụ toán học dùng để định lượng <strong>sự bất định (uncertainty)</strong>. Mọi bài toán xác suất đều bắt đầu từ một phép thử ngẫu nhiên và một danh sách đầy đủ tất cả những gì có thể xảy ra.
   </div>
@@ -2028,22 +2160,22 @@ body.lg-theme .theme-btn-action.active{
       </li>
       <li><strong>Biến cố phần bù ($\overline{A}$ hoặc $A^c$):</strong> Biến cố "$A$ không xảy ra".
         <div class="f">$$P(\overline{A}) = 1 - P(A)$$</div>
-        <em>Chiến thuật làm bài thi:</em> Khi đề bài có cụm từ <strong>"có ít nhất một..."</strong>, 99% trường hợp dùng biến cố phần bù là cách giải nhanh nhất: $P(\text{Ít nhất 1 lần xảy ra}) = 1 - P(\text{Không lần nào xảy ra})$.
+        <em>Chiến thuật làm bài thi:</em> Khi đề bài có cụm từ <strong>"có ít nhất một..."</strong>, dùng biến cố phần bù là cách giải nhanh nhất: $P(\text{Ít nhất 1 lần xảy ra}) = 1 - P(\text{Không lần nào xảy ra})$.
       </li>
     </ul>
   </div>
 
   <h3>1.1 Quy Tắc Cộng Xác Suất</h3>
   <div class="key">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
-      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
-        <h4 style="color:var(--c1);margin:0 0 8px">1. Hai biến cố Xung khắc (Rời nhau)</h4>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:6px 0">
+      <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c1);margin:0 0 10px;font-size:18px">1. Hai biến cố Xung khắc (Rời nhau)</h4>
         <p>Nếu $A$ và $B$ không thể cùng xảy ra ($A \cap B = \emptyset$):</p>
         <div class="f">$$P(A \cup B) = P(A) + P(B)$$</div>
       </div>
 
-      <div style="background:rgba(255,255,255,0.05);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15)">
-        <h4 style="color:var(--c4);margin:0 0 8px">2. Quy tắc cộng tổng quát</h4>
+      <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
+        <h4 style="color:var(--c4);margin:0 0 10px;font-size:18px">2. Quy tắc cộng tổng quát</h4>
         <p>Nếu $A$ và $B$ có thể cùng xảy ra (phần giao bị tính 2 lần):</p>
         <div class="f">$$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$</div>
       </div>
@@ -2052,7 +2184,7 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c1" id="w5-sec2">
-  <h2>2. Xác Suất Có Điều Kiện &amp; Sự Độc Lập Thống Kê</h2>
+  <h2>2. Xác Suất Có Điều Kiện và Biến Cố Độc Lập</h2>
   <div class="bridge">
     Khi nhận thêm một thông tin mới $B$, khả năng xảy ra của $A$ thay đổi như thế nào? Đây là trái tim của việc ra quyết định dựa trên dữ liệu.
   </div>
@@ -2070,8 +2202,8 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box warn">
-    <strong>⚠️ BẪY THI CỰC LỚN: XUNG KHẮC (MUTUALLY EXCLUSIVE) $\neq$ ĐỘC LẬP (INDEPENDENT)!</strong>
-    <p>Đây là câu hỏi "bẫy rớt môn" phổ biến nhất trong các đề thi trắc nghiệm:</p>
+    <strong>BẪY THI CỰC LỚN: XUNG KHẮC (MUTUALLY EXCLUSIVE) KHÔNG PHẢI LÀ ĐỘC LẬP (INDEPENDENT)!</strong>
+    <p>Đây là câu hỏi bẫy rất phổ biến trong các đề thi trắc nghiệm:</p>
     <ul>
       <li><strong>Định nghĩa Độc lập:</strong> $A$ và $B$ độc lập khi việc biết $B$ xảy ra không làm thay đổi xác suất của $A$:
         <div class="f">$$P(A \mid B) = P(A) \iff P(A \cap B) = P(A) \cdot P(B)$$</div>
@@ -2087,7 +2219,7 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c2" id="w5-sec3">
-  <h2>3. Công Thức Xác Suất Toàn Phần &amp; Định Lý Bayes</h2>
+  <h2>3. Công Thức Xác Suất Toàn Phần và Định Lý Bayes</h2>
   <div class="bridge">
     Định lý Bayes cho phép chúng ta <strong>đảo ngược điều kiện</strong>: Từ xác suất thuận $P(\text{Bằng chứng} \mid \text{Nguyên nhân})$ suy ra xác suất nghịch $P(\text{Nguyên nhân} \mid \text{Bằng chứng})$.
   </div>
@@ -2114,12 +2246,12 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box analogy">
-    <strong>💡 Nghịch Lý Xét Nghiệm Y Tế (Tại sao dương tính vẫn chưa chắc có bệnh?):</strong>
+    <strong>Nghịch lý Xét nghiệm Y tế (Tại sao dương tính vẫn chưa chắc có bệnh?):</strong>
     <p>Giả sử một căn bệnh hiếm gặp có tỷ lệ mắc trong cộng đồng là $0.1\%$ ($1$ người trong $1000$ người).
     Một bộ kit xét nghiệm cực tốt có:
     <br>- <strong>Độ nhạy (Sensitivity):</strong> $99\%$ (người có bệnh xét nghiệm sẽ dương tính với xác suất $99\%$).
     <br>- <strong>Độ đặc hiệu (Specificity):</strong> $98\%$ (người không có bệnh xét nghiệm sẽ âm tính với xác suất $98\%$, tức tỷ lệ dương tính giả là $2\%$).</p>
-    <p>Nếu bạn đi khám ngẫu nhiên và nhận kết quả <strong>Dương tính ($+$)</strong>, xác suất bạn thật sự bị bệnh là bao nhiêu? $99\%$ ư?
+    <p>Nếu bạn đi khám ngẫu nhiên và nhận kết quả <strong>Dương tính ($+$)</strong>, xác suất bạn thật sự bị bệnh là bao nhiêu?
     <br>&rarr; <strong>Đáp án sốc: Chỉ khoảng $4.7\%$!</strong></p>
     <p><strong>Giải thích trực quan trên $100.000$ người:</strong>
     <ul>
@@ -2134,34 +2266,34 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c3" id="w5-sec4">
-  <h2>4. Mô Phỏng Tương Tác: Khám Phá Định Lý Bayes &amp; Xét Nghiệm</h2>
+  <h2>4. Mô Phỏng Tương Tác Định Lý Bayes và Xét Nghiệm</h2>
   <div class="bridge">
     Hãy tự tay điều chỉnh Tỷ lệ mắc bệnh cơ sở, Độ nhạy và Độ đặc hiệu để xem xác suất hậu nghiệm $P(\text{Bệnh} \mid +)$ biến đổi kỳ diệu như thế nào!
   </div>
 
-  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:20px;margin:16px 0">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px">
+  <div class="sim-widget">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:20px">
       <div>
-        <label for="by-prev">Tỷ lệ bệnh cơ sở ($P(\text{Bệnh})$): </label><br>
-        <input type="range" id="by-prev" min="0.001" max="0.1" step="0.001" value="0.01" oninput="updateBayesSim()" style="width:100%">
+        <label for="by-prev" style="font-weight:600">Tỷ lệ bệnh cơ sở ($P(\text{Bệnh})$): </label><br>
+        <input type="range" id="by-prev" min="0.001" max="0.1" step="0.001" value="0.01" oninput="updateBayesSim()" style="width:100%;margin-top:6px">
         <span id="by-prev-val" style="font-weight:800;color:var(--c1)">1.0%</span>
       </div>
       <div>
-        <label for="by-sens">Độ nhạy ($P(+ \mid \text{Bệnh})$): </label><br>
-        <input type="range" id="by-sens" min="0.8" max="0.999" step="0.005" value="0.98" oninput="updateBayesSim()" style="width:100%">
+        <label for="by-sens" style="font-weight:600">Độ nhạy ($P(+ \mid \text{Bệnh})$): </label><br>
+        <input type="range" id="by-sens" min="0.8" max="0.999" step="0.005" value="0.98" oninput="updateBayesSim()" style="width:100%;margin-top:6px">
         <span id="by-sens-val" style="font-weight:800;color:var(--c2)">98.0%</span>
       </div>
       <div>
-        <label for="by-spec">Độ đặc hiệu ($P(- \mid \text{Khỏe})$): </label><br>
-        <input type="range" id="by-spec" min="0.8" max="0.999" step="0.005" value="0.95" oninput="updateBayesSim()" style="width:100%">
+        <label for="by-spec" style="font-weight:600">Độ đặc hiệu ($P(- \mid \text{Khỏe})$): </label><br>
+        <input type="range" id="by-spec" min="0.8" max="0.999" step="0.005" value="0.95" oninput="updateBayesSim()" style="width:100%;margin-top:6px">
         <span id="by-spec-val" style="font-weight:800;color:var(--c4)">95.0%</span>
       </div>
     </div>
 
-    <div style="text-align:center;padding:16px;background:rgba(0,0,0,0.3);border-radius:12px;border:1px solid rgba(255,255,255,0.1)">
+    <div style="text-align:center;padding:22px;background:rgba(0,0,0,0.3);border-radius:16px;border:1px solid rgba(255,255,255,0.1)">
       <div style="font-size:16px;margin-bottom:8px">Xác suất người xét nghiệm dương tính thực sự mắc bệnh:</div>
-      <div id="by-result" style="font-size:32px;font-weight:800;color:var(--c3)">16.5%</div>
-      <div id="by-explain" style="margin-top:8px;font-size:14px;color:var(--mut)"></div>
+      <div id="by-result" style="font-size:34px;font-weight:800;color:var(--c3)">16.5%</div>
+      <div id="by-explain" style="margin-top:10px;font-size:14.5px;color:var(--mut);line-height:1.6"></div>
     </div>
   </div>
 </div>
@@ -2170,7 +2302,7 @@ body.lg-theme .theme-btn-action.active{
   <h2>5. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 5)</h2>
 
   <!-- Câu 1 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 1 (Xác suất toàn phần &amp; Bayes):</div>
     <p>Một xưởng sản xuất chip bán dẫn có ba dây chuyền máy $M_1, M_2, M_3$ với tỷ lệ sản lượng lần lượt là 50%, 30%, và 20%. Tỷ lệ phế phẩm của ba máy lần lượt là 2%, 3%, và 5%. Lấy ngẫu nhiên một con chip từ kho và thấy nó là phế phẩm ($F$).
     <br>(1) Tính xác suất để một con chip ngẫu nhiên của xưởng là phế phẩm $P(F)$;
@@ -2202,7 +2334,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <!-- Câu 2 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 2 (Bẫy quan hệ Xung khắc vs. Độc lập):</div>
     <p>Cho hai biến cố $A$ và $B$ thỏa mãn $P(A) = 0.4$ và $P(B) = 0.5$. Khẳng định nào sau đây là <strong>ĐÚNG</strong>?</p>
     <ul>
@@ -2239,7 +2371,7 @@ body.lg-theme .theme-btn-action.active{
 </header>
 
 <div class="card c0" id="w6-sec1">
-  <h2>1. Biến Ngẫu Nhiên, Hàm PMF &amp; Hàm CDF</h2>
+  <h2>1. Biến Ngẫu Nhiên và Hàm Phân Phối PMF CDF</h2>
   <div class="bridge">
     Trong thực tế, ta không chỉ quan tâm đến biến cố chữ (như "mặt ngửa", "hỏng máy") mà muốn <strong>gán cho mỗi kết quả một con số toán học</strong> để tính toán đại số. Ánh xạ biến thế giới thực thành con số đó gọi là <strong>Biến ngẫu nhiên (Random Variable)</strong>.
   </div>
@@ -2257,25 +2389,27 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <div class="box warn">
-    <strong>⚠️ BẪY TÍNH XÁC SUẤT ĐẦU MÚT VỚI BIẾN RỜI RẠC NGUYÊN (THI CỰC HAY BẪY):</strong>
+    <strong>BẪY TÍNH XÁC SUẤT ĐẦU MÚT VỚI BIẾN RỜI RẠC NGUYÊN (THI CỰC HAY BẪY):</strong>
     <p>Khác với biến liên tục (nơi dấu $<$ và $\le$ cho cùng kết quả), với biến rời rạc nguyên, từng điểm nguyên đều chứa một "khối" xác suất:</p>
-    <table class="tw">
-      <thead>
-        <tr><th>Câu hỏi thành lời</th><th>Ký hiệu</th><th>Công thức tính qua CDF $F(x)$</th><th>Bẫy sai lầm phổ biến</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Không quá $k$ (tối đa $k$)</td><td>$P(X \le k)$</td><td>$\mathbf{F(k)}$</td><td>Nhầm sang $F(k-1)$</td></tr>
-        <tr><td>Ít hơn $k$ (nhỏ hơn $k$)</td><td>$P(X < k)$</td><td>$\mathbf{F(k - 1)}$</td><td>Nhầm sang $F(k)$ (quên bỏ điểm $k$)</td></tr>
-        <tr><td>Không dưới $k$ (ít nhất $k$)</td><td>$P(X \ge k)$</td><td>$\mathbf{1 - F(k - 1)}$</td><td>Lấy $1 - F(k)$ (làm mất điểm $k$!)</td></tr>
-        <tr><td>Nhiều hơn $k$ (lớn hơn $k$)</td><td>$P(X > k)$</td><td>$\mathbf{1 - F(k)}$</td><td>Lấy $1 - F(k-1)$</td></tr>
-        <tr><td>Từ $a$ đến $b$ (gồm hai đầu)</td><td>$P(a \le X \le b)$</td><td>$\mathbf{F(b) - F(a - 1)}$</td><td>Lấy $F(b) - F(a)$ (bị trừ mất điểm $a$!)</td></tr>
-      </tbody>
-    </table>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Câu hỏi thành lời</th><th>Ký hiệu</th><th>Công thức tính qua CDF $F(x)$</th><th>Bẫy sai lầm phổ biến</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Không quá $k$ (tối đa $k$)</td><td>$P(X \le k)$</td><td>$\mathbf{F(k)}$</td><td>Nhầm sang $F(k-1)$</td></tr>
+          <tr><td>Ít hơn $k$ (nhỏ hơn $k$)</td><td>$P(X < k)$</td><td>$\mathbf{F(k - 1)}$</td><td>Nhầm sang $F(k)$ (quên bỏ điểm $k$)</td></tr>
+          <tr><td>Không dưới $k$ (ít nhất $k$)</td><td>$P(X \ge k)$</td><td>$\mathbf{1 - F(k - 1)}$</td><td>Lấy $1 - F(k)$ (làm mất điểm $k$!)</td></tr>
+          <tr><td>Nhiều hơn $k$ (lớn hơn $k$)</td><td>$P(X > k)$</td><td>$\mathbf{1 - F(k)}$</td><td>Lấy $1 - F(k-1)$</td></tr>
+          <tr><td>Từ $a$ đến $b$ (gồm hai đầu)</td><td>$P(a \le X \le b)$</td><td>$\mathbf{F(b) - F(a - 1)}$</td><td>Lấy $F(b) - F(a)$ (bị trừ mất điểm $a$!)</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <div class="card c1" id="w6-sec2">
-  <h2>2. Bốn Phân Phối Rời Rạc Kinh Điển (Bộ Khung Thi Giữa Kỳ)</h2>
+  <h2>2. Bốn Phân Phối Xác Suất Rời Rạc Kinh Điển</h2>
   <div class="bridge">
     Khi đọc một bài toán xác suất, chìa khóa để giải quyết trong 30 giây là: <strong>Nhận diện đúng mô hình phân phối</strong> từ các dấu hiệu đặc trưng trong đề bài.
   </div>
@@ -2289,7 +2423,7 @@ body.lg-theme .theme-btn-action.active{
     <p><em>Ý nghĩa từng thành phần:</em> $p^k(1-p)^{n-k}$ là xác suất xảy ra của một chuỗi cụ thể gồm $k$ thành công và $n-k$ thất bại; còn tổ hợp $\binom{n}{k} = \frac{n!}{k!(n-k)!}$ là số cách sắp xếp vị trí của $k$ lần thành công đó trong $n$ lần thử.</p>
   </div>
 
-  <div class="key" style="margin-top:18px">
+  <div class="key" style="margin-top:24px">
     <h3 style="margin-top:0">2. Phân Phối Hình Học: $\text{Geometric}(p)$</h3>
     <p><strong>Dấu hiệu:</strong> Thực hiện các phép thử Bernoulli độc lập cho đến khi <strong>lần đầu tiên thành công</strong> thì dừng lại. Biến ngẫu nhiên $X$ là <em>số lần thử cần thiết</em>.</p>
     <div class="f">
@@ -2299,7 +2433,7 @@ body.lg-theme .theme-btn-action.active{
     <strong>Tính chất không nhớ (Memoryless):</strong> Nếu đã thất bại 10 lần, xác suất để cần thêm 3 lần nữa mới thành công vẫn bằng xác suất cần 3 lần từ đầu: $P(X > s + t \mid X > s) = P(X > t) = (1-p)^t$.</p>
   </div>
 
-  <div class="key" style="margin-top:18px">
+  <div class="key" style="margin-top:24px">
     <h3 style="margin-top:0">3. Phân Phối Siêu Bội: $\text{Hypergeometric}(N, K, n)$</h3>
     <p><strong>Dấu hiệu:</strong> Rút <strong>KHÔNG HOÀN LẠI</strong> $n$ phần tử từ một chiếc hộp hữu hạn gồm $N$ phần tử (trong đó có sẵn $K$ phần tử loại 1 và $N-K$ phần tử loại 2).</p>
     <div class="f">
@@ -2314,7 +2448,7 @@ body.lg-theme .theme-btn-action.active{
     </p>
   </div>
 
-  <div class="key" style="margin-top:18px">
+  <div class="key" style="margin-top:24px">
     <h3 style="margin-top:0">4. Phân Phối Poisson: $\text{Poisson}(\lambda)$</h3>
     <p><strong>Dấu hiệu:</strong> Đếm số lần xuất hiện của một <em>sự kiện hiếm</em> trong một khoảng thời gian hoặc không gian liên tục cố định (ví dụ: số cuộc gọi đến tổng đài trong 1 phút, số lỗi chính tả trên 1 trang sách, số hạt phóng xạ phát ra trong 1 giây).</p>
     <div class="f">
@@ -2327,49 +2461,51 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c2" id="w6-sec3">
-  <h2>3. Bảng Tra Cứu Nhanh: Đọc Đề Thi &rarr; Chọn Đúng Mô Hình</h2>
+  <h2>3. Bảng Tra Cứu Nhanh và Nhận Dạng Mô Hình</h2>
   <div class="bridge">
     Khi làm bài thi trắc nghiệm, hãy dùng bảng đối chiếu sau để nhận diện ngay công thức cần bấm:
   </div>
 
-  <table class="tw">
-    <thead>
-      <tr><th>Đề bài mô tả tình huống</th><th>Mô hình áp dụng</th><th>Tham số cần tìm</th><th>Công thức tính</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Rút $n$ lá <strong>có hoàn lại</strong> (hoặc tỉ lệ $p$ cố định từ quần thể vô hạn), đếm số lá thành công.</td>
-        <td><strong>Nhị thức</strong> $\text{Binomial}(n, p)$</td>
-        <td>$n$ (số lần thử), $p$ (xác suất 1 lần)</td>
-        <td>$\binom{n}{k} p^k (1-p)^{n-k}$</td>
-      </tr>
-      <tr>
-        <td>Rút $n$ lá <strong>không hoàn lại</strong> từ hộp có $N$ lá (trong đó $K$ lá loại A).</td>
-        <td><strong>Siêu bội</strong> $\text{Hyper}(N, K, n)$</td>
-        <td>$N$ (tổng hộp), $K$ (số lá A), $n$ (số lá rút)</td>
-        <td>$\dfrac{\binom{K}{k}\binom{N-K}{n-k}}{\binom{N}{n}}$</td>
-      </tr>
-      <tr>
-        <td>Thử lặp lại độc lập cho đến khi <strong>lần đầu tiên thành công</strong> thì dừng.</td>
-        <td><strong>Hình học</strong> $\text{Geometric}(p)$</td>
-        <td>$p$ (xác suất thành công)</td>
-        <td>$(1-p)^{k-1} p$</td>
-      </tr>
-      <tr>
-        <td>Đếm số sự kiện xảy ra trong một <strong>khoảng thời gian / diện tích</strong> với tốc độ trung bình $\lambda$.</td>
-        <td><strong>Poisson</strong> $\text{Poisson}(\lambda)$</td>
-        <td>$\lambda$ (trung bình trong khoảng)</td>
-        <td>$\dfrac{e^{-\lambda}\lambda^k}{k!}$</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr><th>Đề bài mô tả tình huống</th><th>Mô hình áp dụng</th><th>Tham số cần tìm</th><th>Công thức tính</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Rút $n$ lá <strong>có hoàn lại</strong> (hoặc tỉ lệ $p$ cố định từ quần thể vô hạn), đếm số lá thành công.</td>
+          <td><strong>Nhị thức</strong> $\text{Binomial}(n, p)$</td>
+          <td>$n$ (số lần thử), $p$ (xác suất 1 lần)</td>
+          <td>$\binom{n}{k} p^k (1-p)^{n-k}$</td>
+        </tr>
+        <tr>
+          <td>Rút $n$ lá <strong>không hoàn lại</strong> từ hộp có $N$ lá (trong đó $K$ lá loại A).</td>
+          <td><strong>Siêu bội</strong> $\text{Hyper}(N, K, n)$</td>
+          <td>$N$ (tổng hộp), $K$ (số lá A), $n$ (số lá rút)</td>
+          <td>$\dfrac{\binom{K}{k}\binom{N-K}{n-k}}{\binom{N}{n}}$</td>
+        </tr>
+        <tr>
+          <td>Thử lặp lại độc lập cho đến khi <strong>lần đầu tiên thành công</strong> thì dừng.</td>
+          <td><strong>Hình học</strong> $\text{Geometric}(p)$</td>
+          <td>$p$ (xác suất thành công)</td>
+          <td>$(1-p)^{k-1} p$</td>
+        </tr>
+        <tr>
+          <td>Đếm số sự kiện xảy ra trong một <strong>khoảng thời gian / diện tích</strong> với tốc độ trung bình $\lambda$.</td>
+          <td><strong>Poisson</strong> $\text{Poisson}(\lambda)$</td>
+          <td>$\lambda$ (trung bình trong khoảng)</td>
+          <td>$\dfrac{e^{-\lambda}\lambda^k}{k!}$</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <div class="card c3" id="w6-sec4">
   <h2>4. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 6)</h2>
 
   <!-- Câu 1 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 1 (Nhị thức vs. Siêu bội):</div>
     <p>Một hộp chứa 10 con chip, trong đó có 4 con chip hỏng và 6 con chip tốt. Lấy ngẫu nhiên ra 3 con chip không hoàn lại. Xác suất để lấy được đúng 2 con chip hỏng là:</p>
     <ul>
@@ -2387,13 +2523,13 @@ body.lg-theme .theme-btn-action.active{
         <p><strong>Phân tích cặn kẽ:</strong></p>
         <p>Vì đây là rút <strong>không hoàn lại</strong> từ hộp nhỏ ($N=10$, $K=4$ hỏng, $n=3$ rút), ta áp dụng phân phối <strong>Siêu bội</strong>:</p>
         <div class="f">$$P(X = 2) = \frac{\binom{4}{2} \cdot \binom{6}{1}}{\binom{10}{3}} = \frac{6 \cdot 6}{120} = \frac{36}{120} = \mathbf{0.300 = 30\%}$$</div>
-        <em>Lưu ý bẫy:</em> Nếu vội vàng dùng công thức Nhị thức $\binom{3}{2}(0.4)^2(0.6)^1 = 3 \times 0.16 \times 0.6 = 0.288$ (đáp án A) là SAI vì rút không hoàn lại xác suất bị thay đổi qua từng lượt rút!
+        <em>Lưu ý bẫy:</em> Nếu dùng công thức Nhị thức $\binom{3}{2}(0.4)^2(0.6)^1 = 3 \times 0.16 \times 0.6 = 0.288$ (đáp án A) là SAI vì rút không hoàn lại xác suất bị thay đổi qua từng lượt rút!
       </div>
     </div>
   </div>
 
   <!-- Câu 2 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 2 (Phân phối Poisson):</div>
     <p>Một máy chủ web nhận các yêu cầu truy cập độc lập với tốc độ trung bình 2 yêu cầu mỗi giây ($\lambda = 2$). Xác suất để trong một giây máy chủ nhận được <strong>ít nhất 1 yêu cầu</strong> là:</p>
     <ul>
@@ -2427,44 +2563,46 @@ body.lg-theme .theme-btn-action.active{
 </header>
 
 <div class="card c0" id="w7-sec1">
-  <h2>1. Kỳ Vọng &amp; Phương Sai Của Biến Ngẫu Nhiên</h2>
+  <h2>1. Kỳ Vọng và Phương Sai Của Biến Ngẫu Nhiên</h2>
   <div class="bridge">
     Kỳ vọng $E[X]$ và Phương sai $\text{Var}(X)$ là hai "trụ cột" định lượng quan trọng nhất của toàn bộ môn Xác suất Thống kê. Nắm vững hai đại lượng này, bạn đã nắm được một nửa điểm số của bài thi giữa kỳ!
   </div>
 
   <div class="key">
     <h3 style="margin-top:0">Định Nghĩa Toán Học Chuẩn Xác</h3>
-    <table class="tw">
-      <thead>
-        <tr><th>Đại lượng</th><th>Biến ngẫu nhiên Rời rạc</th><th>Biến ngẫu nhiên Liên tục</th><th>Bản chất ý nghĩa</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Kỳ vọng $E[X]$ ($\mu$)</strong></td>
-          <td>$$E[X] = \sum_x x \cdot p_X(x)$$</td>
-          <td>$$E[X] = \int_{-\infty}^\infty x \cdot f_X(x)\,dx$$</td>
-          <td><strong>Trọng tâm vật lý</strong> của phân phối xác suất. Trung bình của các kết quả trong dài hạn khi lặp lại vô hạn lần.</td>
-        </tr>
-        <tr>
-          <td><strong>Phương sai $\text{Var}(X)$ ($\sigma^2$)</strong></td>
-          <td colspan="2">$$\text{Var}(X) = E\left[(X - \mu)^2\right] = E[X^2] - \left(E[X]\right)^2$$</td>
-          <td>Trung bình của bình phương khoảng cách tới kỳ vọng. Đo <strong>mức độ rủi ro / dao động</strong> quanh tâm.</td>
-        </tr>
-        <tr>
-          <td><strong>Độ lệch chuẩn $\text{SD}(X)$ ($\sigma$)</strong></td>
-          <td colspan="2">$$\sigma = \text{SD}(X) = \sqrt{\text{Var}(X)}$$</td>
-          <td>Đo độ phân tán ở <strong>cùng đơn vị đo</strong> với biến $X$.</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Đại lượng</th><th>Biến ngẫu nhiên Rời rạc</th><th>Biến ngẫu nhiên Liên tục</th><th>Bản chất ý nghĩa</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Kỳ vọng $E[X]$ ($\mu$)</strong></td>
+            <td>$$E[X] = \sum_x x \cdot p_X(x)$$</td>
+            <td>$$E[X] = \int_{-\infty}^\infty x \cdot f_X(x)\,dx$$</td>
+            <td><strong>Trọng tâm vật lý</strong> của phân phối xác suất. Trung bình của các kết quả trong dài hạn khi lặp lại vô hạn lần.</td>
+          </tr>
+          <tr>
+            <td><strong>Phương sai $\text{Var}(X)$ ($\sigma^2$)</strong></td>
+            <td colspan="2">$$\text{Var}(X) = E\left[(X - \mu)^2\right] = E[X^2] - \left(E[X]\right)^2$$</td>
+            <td>Trung bình của bình phương khoảng cách tới kỳ vọng. Đo <strong>mức độ rủi ro / dao động</strong> quanh tâm.</td>
+          </tr>
+          <tr>
+            <td><strong>Độ lệch chuẩn $\text{SD}(X)$ ($\sigma$)</strong></td>
+            <td colspan="2">$$\sigma = \text{SD}(X) = \sqrt{\text{Var}(X)}$$</td>
+            <td>Đo độ phân tán ở <strong>cùng đơn vị đo</strong> với biến $X$.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="box warn">
-    <strong>⚠️ NĂM TÍNH CHẤT ĐẠI SỐ BẮT BUỘC PHẢI NHỚ (CỰC HAY GẶP BẪY):</strong>
+    <strong>NĂM TÍNH CHẤT ĐẠI SỐ BẮT BUỘC PHẢI NHỚ (CỰC HAY GẶP BẪY):</strong>
     <ol>
       <li><strong>Tính tuyến tính tuyệt đối của Kỳ vọng:</strong>
         <div class="f">$$E[aX + b] = aE[X] + b \quad \text{và} \quad \mathbf{E[X + Y] = E[X] + E[Y]}$$</div>
-        <em>ĐIỀU CỰC KỲ ĐẶC BIỆT:</em> Công thức $E[X+Y] = E[X] + E[Y]$ <strong>luôn đúng trong mọi trường hợp</strong>, kể cả khi $X$ và $Y$ có quan hệ phụ thuộc chằng chịt vào nhau!
+        <em>ĐIỀU ĐẶC BIỆT:</em> Công thức $E[X+Y] = E[X] + E[Y]$ <strong>luôn đúng trong mọi trường hợp</strong>, kể cả khi $X$ và $Y$ có quan hệ phụ thuộc chằng chịt vào nhau!
       </li>
       <li><strong>Phương sai với phép biến đổi tuyến tính:</strong>
         <div class="f">$$\text{Var}(aX + b) = a^2 \text{Var}(X) \quad \text{và} \quad \text{SD}(aX + b) = |a|\,\text{SD}(X)$$</div>
@@ -2475,37 +2613,39 @@ body.lg-theme .theme-btn-action.active{
           $$\text{Var}(X + Y) = \text{Var}(X) + \text{Var}(Y)$$
           $$\mathbf{\text{Var}(X - Y) = \text{Var}(X) + \text{Var}(Y)} \quad (\text{VẪN LÀ DẤU CỘNG!})$$
         </div>
-        <strong>CẢNH BÁO BẪY:</strong> Nhiều sinh viên viết $\text{Var}(X - Y) = \text{Var}(X) - \text{Var}(Y)$ là SAI HOÀN TOÀN! Hiệu của hai biến ngẫu nhiên độc lập thì độ bất định tích tụ nhiều hơn, không thể giảm đi!
+        <strong>CẢNH BÁO BẪY:</strong> Nhiều sinh viên viết $\text{Var}(X - Y) = \text{Var}(X) - \text{Var}(Y)$ là SAI! Hiệu của hai biến ngẫu nhiên độc lập thì độ bất định tích tụ nhiều hơn, không thể giảm đi!
       </li>
       <li><strong>Độ lệch chuẩn KHÔNG CỘNG ĐƯỢC:</strong> $\text{SD}(X+Y) \neq \text{SD}(X) + \text{SD}(Y)$. Muốn tìm SD của tổng, bắt buộc phải cộng phương sai rồi mới lấy căn: $\mathbf{\text{SD}(X+Y) = \sqrt{\text{Var}(X) + \text{Var}(Y)}}$.</li>
     </ol>
   </div>
 
   <h3>1.1 Bảng Tra Cứu Kỳ Vọng &amp; Phương Sai Của Các Phân Phối</h3>
-  <table class="tw">
-    <thead>
-      <tr><th>Phân phối</th><th>Ký hiệu</th><th>Kỳ vọng $E[X]$</th><th>Phương sai $\text{Var}(X)$</th><th>Ghi chú thi</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Bernoulli</td><td>$\text{Ber}(p)$</td><td>$p$</td><td>$p(1-p)$</td><td>Cơ sở của phép thử nhị thức</td></tr>
-      <tr><td>Nhị thức</td><td>$\text{Bin}(n, p)$</td><td>$np$</td><td>$np(1-p)$</td><td>Tổng $n$ biến Bernoulli độc lập</td></tr>
-      <tr><td>Hình học</td><td>$\text{Geom}(p)$</td><td>$\dfrac{1}{p}$</td><td>$\dfrac{1-p}{p^2}$</td><td>Số lần thử đến thành công đầu tiên</td></tr>
-      <tr><td>Poisson</td><td>$\text{Pois}(\lambda)$</td><td>$\lambda$</td><td>$\lambda$</td><td>Đặc biệt: <strong>Kỳ vọng = Phương sai</strong>!</td></tr>
-      <tr><td>Đều liên tục</td><td>$U(a, b)$</td><td>$\dfrac{a+b}{2}$</td><td>$\dfrac{(b-a)^2}{12}$</td><td>Tâm là trung điểm khoảng</td></tr>
-      <tr><td>Mũ</td><td>$\text{Exp}(\lambda)$</td><td>$\dfrac{1}{\lambda}$</td><td>$\dfrac{1}{\lambda^2}$</td><td>Thời gian chờ đợi, $\text{SD} = E[X] = \frac{1}{\lambda}$</td></tr>
-      <tr><td>Chuẩn</td><td>$\mathcal{N}(\mu, \sigma^2)$</td><td>$\mu$</td><td>$\sigma^2$</td><td>Đường cong hình chuông Gauss</td></tr>
-    </tbody>
-  </table>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr><th>Phân phối</th><th>Ký hiệu</th><th>Kỳ vọng $E[X]$</th><th>Phương sai $\text{Var}(X)$</th><th>Ghi chú thi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Bernoulli</td><td>$\text{Ber}(p)$</td><td>$p$</td><td>$p(1-p)$</td><td>Cơ sở của phép thử nhị thức</td></tr>
+        <tr><td>Nhị thức</td><td>$\text{Bin}(n, p)$</td><td>$np$</td><td>$np(1-p)$</td><td>Tổng $n$ biến Bernoulli độc lập</td></tr>
+        <tr><td>Hình học</td><td>$\text{Geom}(p)$</td><td>$\dfrac{1}{p}$</td><td>$\dfrac{1-p}{p^2}$</td><td>Số lần thử đến thành công đầu tiên</td></tr>
+        <tr><td>Poisson</td><td>$\text{Pois}(\lambda)$</td><td>$\lambda$</td><td>$\lambda$</td><td>Đặc biệt: <strong>Kỳ vọng = Phương sai</strong>!</td></tr>
+        <tr><td>Đều liên tục</td><td>$U(a, b)$</td><td>$\dfrac{a+b}{2}$</td><td>$\dfrac{(b-a)^2}{12}$</td><td>Tâm là trung điểm khoảng</td></tr>
+        <tr><td>Mũ</td><td>$\text{Exp}(\lambda)$</td><td>$\dfrac{1}{\lambda}$</td><td>$\dfrac{1}{\lambda^2}$</td><td>Thời gian chờ đợi, $\text{SD} = E[X] = \frac{1}{\lambda}$</td></tr>
+        <tr><td>Chuẩn</td><td>$\mathcal{N}(\mu, \sigma^2)$</td><td>$\mu$</td><td>$\sigma^2$</td><td>Đường cong hình chuông Gauss</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <div class="card c1" id="w7-sec2">
-  <h2>2. Biến Ngẫu Nhiên Liên Tục &amp; Phân Phối Chuẩn $\mathcal{N}(\mu, \sigma^2)$</h2>
+  <h2>2. Biến Ngẫu Nhiên Liên Tục và Phân Phối Chuẩn Gauss</h2>
   <div class="bridge">
     Với biến ngẫu nhiên liên tục, ta không thể hỏi <em>"Xác suất để sinh viên nặng chính xác 65.000000 kg là bao nhiêu?"</em> (vì xác suất tại một điểm toán học bằng 0 tuyệt đối!). Thay vào đó, ta hỏi xác suất rơi vào một khoảng: <strong>Xác suất là diện tích dưới đường cong hàm mật độ (PDF)!</strong>
   </div>
 
   <div class="key">
-    <h3 style="margin-top:0">Quy Tắc Thực Nghiệm 68 – 95 – 99.7 &amp; Điểm Chuẩn Hóa $Z$</h3>
+    <h3 style="margin-top:0">Quy Tắc Thực Nghiệm 68 – 95 – 99.7 &amp; Điểm Chuẩn Hóa Z</h3>
     <p>Mọi phân phối chuẩn $\mathcal{N}(\mu, \sigma^2)$ đều có hình chuông đối xứng quanh $\mu$:</p>
     <ul>
       <li>Khoảng $[\mu - \sigma, \mu + \sigma]$ chứa khoảng <strong>68.3%</strong> tổng diện tích xác suất.</li>
@@ -2525,7 +2665,7 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c2" id="w7-sec3">
-  <h2>3. Định Lý Giới Hạn Trung Tâm (CLT) &amp; Xấp Xỉ Chuẩn</h2>
+  <h2>3. Định Lý Giới Hạn Trung Tâm và Xấp Xỉ Chuẩn</h2>
   <div class="bridge">
     Định lý Giới hạn Trung tâm (CLT) được tôn vinh là một trong những thành tựu vĩ đại nhất của lịch sử toán học: <strong>Nó giải thích tại sao thế giới tự nhiên và xã hội tràn ngập hình ảnh quả chuông phân phối chuẩn!</strong>
   </div>
@@ -2544,14 +2684,14 @@ body.lg-theme .theme-btn-action.active{
         $$\mathbf{\bar{X}_n \approx \mathcal{N}\left(\mu, \; \frac{\sigma^2}{n}\right)}$$</div>
       </li>
     </ol>
-    <p><strong>Sự kỳ diệu của CLT:</strong> <em>Bất kể phân phối gốc ban đầu của từng biến $X_i$ là gì</em> (phân phối đều, phân phối lệch, hay xúc xắc), chỉ cần lấy trung bình của nhiều lần rút độc lập, đồ thị phân phối của $\bar{X}$ sẽ tự động bo tròn thành hình chuông chuẩn!</p>
+    <p><strong>Sự kỳ diệu của CLT:</strong> <em>Bất kể phân phối gốc ban đầu của từng biến $X_i$ là gì</em>, chỉ cần lấy trung bình của nhiều lần rút độc lập, đồ thị phân phối của $\bar{X}$ sẽ tự động bo tròn thành hình chuông chuẩn!</p>
   </div>
 
   <h3>3.1 Xấp Xỉ Chuẩn Cho Phân Phối Nhị Thức &amp; Hiệu Chỉnh Liên Tục</h3>
   <div class="key">
     <p>Khi $X \sim \text{Binomial}(n, p)$ với điều kiện <strong>$np \ge 10$ và $n(1-p) \ge 10$</strong>, ta có thể dùng phân phối chuẩn $Y \sim \mathcal{N}(\mu = np, \; \sigma^2 = np(1-p))$ để xấp xỉ:</p>
     <div class="box warn">
-      <strong>⚠️ KỸ THUẬT HIỆU CHỈNH LIÊN TỤC (CONTINUITY CORRECTION):</strong>
+      <strong>KỸ THUẬT HIỆU CHỈNH LIÊN TỤC (CONTINUITY CORRECTION):</strong>
       Do biến nhị thức $X$ là rời rạc (cột chữ nhật rộng 1 đơn vị từ $k - 0.5$ đến $k + 0.5$), còn biến chuẩn $Y$ là đường cong liên tục, ta phải mở rộng khoảng nửa đơn vị $\pm 0.5$:
       <ul>
         <li>$P(X = k) \approx P(k - 0.5 \le Y \le k + 0.5)$</li>
@@ -2564,32 +2704,32 @@ body.lg-theme .theme-btn-action.active{
 </div>
 
 <div class="card c3" id="w7-sec4">
-  <h2>4. Công Cụ Tương Tác: Khám Phá Phân Phối Chuẩn &amp; Tra Diện Tích Z-Score</h2>
+  <h2>4. Công Cụ Tương Tác Phân Phối Chuẩn và Diện Tích Z-Score</h2>
   <div class="bridge">
     Nhập giá trị kỳ vọng $\mu$, độ lệch chuẩn $\sigma$ và điểm $X$ để tự động quan sát đồ thị đường cong Gauss, chuẩn hóa điểm số $Z = \frac{X-\mu}{\sigma}$ và tô màu diện tích xác suất $P(X \le x)$ tương ứng!
   </div>
 
-  <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:16px;padding:20px;margin:16px 0">
-    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:16px">
+  <div class="sim-widget">
+    <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center;margin-bottom:18px">
       <div>
-        <label for="norm-mu">Kỳ vọng ($\mu$): </label>
-        <input type="number" id="norm-mu" value="100" step="5" style="width:70px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
+        <label for="norm-mu" style="font-weight:600">Kỳ vọng ($\mu$): </label>
+        <input type="number" id="norm-mu" value="100" step="5" style="width:75px;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
       </div>
       <div>
-        <label for="norm-sigma">Độ lệch chuẩn ($\sigma$): </label>
-        <input type="number" id="norm-sigma" value="15" min="1" step="1" style="width:60px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
+        <label for="norm-sigma" style="font-weight:600">Độ lệch chuẩn ($\sigma$): </label>
+        <input type="number" id="norm-sigma" value="15" min="1" step="1" style="width:65px;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
       </div>
       <div>
-        <label for="norm-x">Giá trị cần tính ($x$): </label>
-        <input type="number" id="norm-x" value="115" step="1" style="width:70px;padding:4px;border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
+        <label for="norm-x" style="font-weight:600">Giá trị cần tính ($x$): </label>
+        <input type="number" id="norm-x" value="115" step="1" style="width:75px;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid var(--g)" oninput="updateNormSim()">
       </div>
     </div>
 
     <div style="text-align:center">
-      <svg id="norm-svg" viewBox="0 0 500 240" style="width:100%;max-width:550px;background:rgba(0,0,0,0.25);border-radius:12px;border:1px solid rgba(255,255,255,0.1)"></svg>
+      <svg id="norm-svg" viewBox="0 0 500 240" style="width:100%;max-width:550px;background:rgba(0,0,0,0.25);border-radius:16px;border:1px solid rgba(255,255,255,0.1)"></svg>
     </div>
 
-    <div style="display:flex;justify-content:space-around;margin-top:12px;padding:12px;background:rgba(0,0,0,0.2);border-radius:8px">
+    <div style="display:flex;justify-content:space-around;margin-top:16px;padding:16px;background:rgba(0,0,0,0.2);border-radius:14px">
       <div>Điểm chuẩn hóa: <strong id="norm-z-val" style="color:var(--c1)">Z = +1.00</strong></div>
       <div>Xác suất tích lũy: <strong id="norm-p-val" style="color:var(--c2)">P(X &le; x) = 84.13%</strong></div>
       <div>Xác suất đuôi phải: <strong id="norm-tail-val" style="color:var(--c4)">P(X &gt; x) = 15.87%</strong></div>
@@ -2601,7 +2741,7 @@ body.lg-theme .theme-btn-action.active{
   <h2>5. Bài Tập Ôn Thi Trắc Nghiệm Giữa Kỳ (Tuần 7)</h2>
 
   <!-- Câu 1 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 1 (Kỳ vọng và Phương sai của Tổ hợp Tuyến tính):</div>
     <p>Một công ty giao hàng có hai người vận chuyển $A$ và $B$. Thời gian giao một đơn hàng của $A$ có kỳ vọng 30 phút, độ lệch chuẩn 5 phút. Thời gian của $B$ có kỳ vọng 45 phút, độ lệch chuẩn 8 phút. Giả sử thời gian của $A$ và $B$ là hai biến ngẫu nhiên độc lập.
     <br>Xét biến ngẫu nhiên $T = 2A - B$. Hãy tính kỳ vọng $E[T]$ và độ lệch chuẩn $\text{SD}(T)$.</p>
@@ -2638,7 +2778,7 @@ body.lg-theme .theme-btn-action.active{
   </div>
 
   <!-- Câu 2 -->
-  <div class="card quiz-box" style="margin-top:16px;background:rgba(255,255,255,0.03)">
+  <div class="card quiz-box">
     <div style="font-weight:700;color:var(--c1)">Câu 2 (Định lý Giới hạn Trung tâm CLT &amp; Tải trọng thang máy):</div>
     <p>Cân nặng của sinh viên UET có kỳ vọng $\mu = 60\,\text{kg}$ và độ lệch chuẩn $\sigma = 12\,\text{kg}$. Một thang máy chở tối đa 36 sinh viên ($n = 36$). Cho biết $\Phi(2.5) \approx 0.9938$. Xác suất để tổng cân nặng của 36 sinh viên này vượt quá mức cảnh báo an toàn $2.340\,\text{kg}$ là:</p>
     <ul>
@@ -2714,25 +2854,21 @@ function updateOLSSim() {
     [90, 80], [120, 70], [140, 110], [-60, -20]
   ];
 
-  let slope = r * 0.7; // hệ số góc trực quan
-  // Vẽ đường hồi quy đi qua trọng tâm (cx, cy)
+  let slope = r * 0.7;
   const x1 = 60, y1 = cy - slope * (x1 - cx);
   const x2 = 440, y2 = cy - slope * (x2 - cx);
   svg.innerHTML += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>`;
 
-  // Vẽ các điểm và đường phần dư
   basePoints.forEach(([dx, dy]) => {
     const px = cx + dx;
     const pyTrue = cy - (r * dy + (1 - Math.abs(r)) * dx * 0.4);
     const pyPred = cy - slope * dx;
 
-    // Đường phần dư màu đỏ/hồng nối điểm thực tế tới đường hồi quy
     svg.innerHTML += `<line x1="${px}" y1="${pyTrue}" x2="${px}" y2="${pyPred}" stroke="#ec4899" stroke-width="1" stroke-dasharray="2,2"/>`;
-    // Điểm dữ liệu
     svg.innerHTML += `<circle cx="${px}" cy="${pyTrue}" r="3.5" fill="#38bdf8"/>`;
   });
 
-  $('ols-desc').innerHTML = 'Đường hồi quy $\\hat{y} = b_0 + b_1 x$ (màu xanh dương) luôn cắt qua điểm trung tâm $(\\bar{x}, \\bar{y})$ (chấm vàng). Các đoạn nét đứt đứt màu hồng là phần dư $e_i$. Tổng $\\sum e_i = 0$!';
+  $('ols-desc').innerHTML = 'Đường hồi quy $\\hat{y} = b_0 + b_1 x$ (màu xanh dương) luôn cắt qua điểm trung tâm $(\\bar{x}, \\bar{y})$ (chấm vàng). Các đoạn nét đứt màu hồng là phần dư $e_i$. Tổng $\\sum e_i = 0$!';
   if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([$('ols-desc')]).catch(() => {});
 }
 window.updateOLSSim = updateOLSSim;
@@ -2751,7 +2887,6 @@ function updateBayesSim() {
   $('by-sens-val').textContent = (sens * 100).toFixed(1) + '%';
   $('by-spec-val').textContent = (spec * 100).toFixed(1) + '%';
 
-  // P(+) = P(Bệnh)*Sens + P(Khỏe)*(1 - Spec)
   const pPosGivenSick = sens;
   const pPosGivenHealthy = 1 - spec;
   const pTotalPos = (prev * pPosGivenSick) + ((1 - prev) * pPosGivenHealthy);
@@ -2768,7 +2903,6 @@ window.updateBayesSim = updateBayesSim;
    WIDGET MÔ PHỎNG TUẦN 7: PHÂN PHỐI CHUẨN GAUSS & TRA Z-SCORE
    ========================================================================== */
 function normalCdf(z) {
-  // Xấp xỉ hàm Gauss sai số < 1e-5
   const t = 1 / (1 + 0.2316419 * Math.abs(z));
   const d = 0.3989422804014327 * Math.exp(-z * z / 2);
   let p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
@@ -2795,10 +2929,8 @@ function updateNormSim() {
   svg.innerHTML = '';
 
   const w = 500, h = 240, baseline = 200;
-  // Trục hoành
   svg.innerHTML += `<line x1="30" y1="${baseline}" x2="470" y2="${baseline}" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>`;
 
-  // Tạo đường cong chuẩn từ z = -3.5 đến +3.5
   let pathD = '', areaD = `M 30 ${baseline} `;
   const zMax = 3.5, zCut = Math.max(-zMax, Math.min(zMax, z));
 
@@ -2816,11 +2948,8 @@ function updateNormSim() {
   const cutPx = 30 + ((zCut + zMax) / (2 * zMax)) * 440;
   areaD += `L ${cutPx} ${baseline} Z`;
 
-  // Tô màu diện tích tích lũy
   svg.innerHTML += `<path d="${areaD}" fill="rgba(56,189,248,0.35)"/>`;
-  // Vẽ đường cong chuông
   svg.innerHTML += `<path d="${pathD}" fill="none" stroke="#38bdf8" stroke-width="2.5"/>`;
-  // Vạch đường cắt x
   svg.innerHTML += `<line x1="${cutPx}" y1="${baseline}" x2="${cutPx}" y2="${30}" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3,3"/>`;
   svg.innerHTML += `<circle cx="${cutPx}" cy="${baseline}" r="4" fill="#f59e0b"/>`;
   svg.innerHTML += `<text x="${cutPx}" y="${baseline + 18}" fill="#f59e0b" font-size="11" font-weight="bold" text-anchor="middle">x=${x}</text>`;
@@ -2837,9 +2966,21 @@ function renderLS(activeId) {
   let html = '';
   for (let i = 1; i <= 7; i++) {
     const act = String(i) === String(activeId) ? 'class="on"' : '';
-    html += `<button type="button" data-id="${i}" ${act}>Tuần ${i}</button>`;
+    html += `<button type="button" data-id="${i}" ${act} aria-label="Tuần ${i}">${i}</button>`;
   }
   lsEl.innerHTML = html;
+}
+
+/* LỌC BỎ HOÀN TOÀN CÔNG THỨC TOÁN CHO TIÊU ĐỀ MỤC LỤC TRÁNH LỖI FORMAT */
+function cleanTitleForTOC(raw) {
+  return raw
+    .replace(/\$[^\$]*\$/g, '')      // Xóa sạch công thức trong dấu $...$
+    .replace(/\\\(.*?\\\)/g, '')  // Xóa \(...\)
+    .replace(/\\[a-zA-Z]+/g, '')      // Xóa lệnh latex như 	imes, \mu
+    .replace(/[\\_{}^]/g, '')         // Xóa ký tự latex đặc biệt
+    .replace(/^[0-9.]+\s*/, '')        // Xóa số thứ tự đầu dòng
+    .replace(/\s+/g, ' ')              // Thu gọn khoảng trắng
+    .trim();
 }
 
 function buildTOC() {
@@ -2856,7 +2997,7 @@ function buildTOC() {
     }
     const a = document.createElement('a');
     a.href = '#' + id;
-    a.textContent = h.textContent.replace(/^[0-9.]+\s*/, '');
+    a.textContent = cleanTitleForTOC(h.textContent);
     linksEl.appendChild(a);
   });
 }
