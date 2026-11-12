@@ -4,59 +4,62 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Axolotl</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='100%25' stop-color='%230284c7'/%3E%3C/linearGradient%3E%3CradialGradient id='faceG' cx='40%25' cy='30%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='65%25' stop-color='%23e0f2fe'/%3E%3Cstop offset='100%25' stop-color='%23bae6fd'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='19' fill='url(%23bg)'/%3E%3Cg fill='%2300f2fe'%3E%3Cpath d='M12 24 C5 17 14 14 18 19'/%3E%3Cpath d='M10 32 C3 28 12 25 17 28'/%3E%3Cpath d='M12 40 C6 41 12 34 18 36'/%3E%3Cpath d='M52 24 C59 17 50 14 46 19'/%3E%3Cpath d='M54 32 C61 28 52 25 47 28'/%3E%3Cpath d='M52 40 C58 41 52 34 46 36'/%3E%3C/g%3E%3Cellipse cx='32' cy='35' rx='19' ry='15' fill='url(%23faceG)'/%3E%3Cellipse cx='20' cy='37' rx='3.5' ry='2' fill='%2338bdf8' opacity='0.6'/%3E%3Cellipse cx='44' cy='37' rx='3.5' ry='2' fill='%2338bdf8' opacity='0.6'/%3E%3Ccircle cx='24' cy='33' r='3.2' fill='%230f172a'/%3E%3Ccircle cx='22.8' cy='31.8' r='1.1' fill='%23ffffff'/%3E%3Ccircle cx='40' cy='33' r='3.2' fill='%230f172a'/%3E%3Ccircle cx='38.8' cy='31.8' r='1.1' fill='%23ffffff'/%3E%3Cpath d='M28 39 Q32 43 36 39' stroke='%230f172a' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style id="axolotl-css">
 /* ---------- 1. THEME TOKENS ---------- */
 :root{
-  --bg:#f6f8ff;--card:#ffffff;--ink:#1d2350;--mut:#58608a;--g:#c9cfe8;--tint:#eaf0ff;--accent:#ff5588;--danger:#c23a4b;
-  --lg-blur:16px;--lg-sat:200%;--lg-fill:.14;--lg-tint:.16;--lg-ink:#0d1140;--lg-text:#ffffff;
+  --bg:#f6f8ff;--card:#ffffff;--ink:#1d2350;--mut:#58608a;--g:#c9cfe8;--tint:#eaf0ff;--accent:#0ea5e9;--danger:#c23a4b;
+  --lg-blur:16px;--lg-sat:200%;--lg-fill:.14;--lg-tint:.16;--lg-ink:#060b19;--lg-text:#ffffff;
   --lg-orb-blur:18px;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#10142e;--card:#1a2046;--ink:#e8ebff;--mut:#9aa3d1;--g:#323a6e;--tint:#222a5c;--accent:#ff75a0;--danger:#ff7a8a;
+    --bg:#0b1120;--card:#111c38;--ink:#e8ebff;--mut:#94a3b8;--g:#1e293b;--tint:#172554;--accent:#38bdf8;--danger:#ff7a8a;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#10142e;--card:#1a2046;--ink:#e8ebff;--mut:#9aa3d1;--g:#323a6e;--tint:#222a5c;--accent:#ff75a0;--danger:#ff7a8a;
+  --bg:#0b1120;--card:#111c38;--ink:#e8ebff;--mut:#94a3b8;--g:#1e293b;--tint:#172554;--accent:#38bdf8;--danger:#ff7a8a;
   color-scheme:dark;
 }
 
-/* ---------- 2. LIQUID GLASS AXOLOTL THEME ---------- */
+/* ---------- 2. CRYSTAL LIQUID GLASS THEME (NO PINK) ---------- */
 body.lg-theme{
   min-height:100vh;
   color:var(--lg-text,#ffffff);
-  background-color:#0f1334;
+  background-color:#060b19;
   background-image:
-    radial-gradient(60% 55% at 8% 0%,rgba(255,107,157,.65),transparent 70%),
-    radial-gradient(50% 50% at 100% 12%,rgba(255,51,119,.55),transparent 70%),
-    radial-gradient(55% 55% at 42% 108%,rgba(168,85,247,.5),transparent 70%),
-    radial-gradient(40% 40% at 92% 96%,rgba(24,226,204,.4),transparent 70%),
-    linear-gradient(160deg,#0f1334,#1c133a 45%,#2b1236);
+    radial-gradient(55% 50% at 10% 0%,rgba(56,189,248,.42),transparent 70%),
+    radial-gradient(50% 50% at 95% 10%,rgba(14,165,233,.38),transparent 70%),
+    radial-gradient(60% 60% at 50% 100%,rgba(99,102,241,.32),transparent 75%),
+    radial-gradient(45% 45% at 85% 90%,rgba(0,242,254,.28),transparent 70%),
+    linear-gradient(165deg,#060b19,#0c1630 45%,#0a1f3d);
   background-attachment:fixed;
   --bg:transparent;
-  --card:rgba(20,22,66,.52);
+  --card:rgba(12,22,48,.52);
   --ink:#ffffff;
   --mut:rgba(255,255,255,.78);
-  --accent:#ff75a0;
+  --accent:#38bdf8;
   --g:rgba(255,255,255,.2);
   --tint:rgba(255,255,255,.08);
 }
 
-/* Orbs Axolotl Lagoon */
+/* Orbs Crystal Liquid Glass */
 .lg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;transition:filter .25s ease,opacity .25s ease}
 body:not(.lg-theme) .lg-orbs{display:none !important}
 .lg-orbs.lg-orbs-hidden{display:none !important}
 .lg-orbs i{position:absolute;border-radius:50%;display:block}
-.lg-orbs i.orb-pink{left:5%;top:12%;width:260px;height:260px;background:radial-gradient(circle at 32% 28%,#ffb8d2,#ff6b9d 55%,#b51a52)}
-.lg-orbs i.orb-rose{right:8%;top:8%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#ffa0c5,#ff3377 55%,#8c0d38)}
-.lg-orbs i.orb-cyan{left:36%;top:50%;width:300px;height:300px;background:radial-gradient(circle at 32% 28%,#a6fff2,#18e2cc 55%,#087f88)}
-.lg-orbs i.orb-violet{right:6%;bottom:8%;width:220px;height:220px;background:radial-gradient(circle at 32% 28%,#e1c4ff,#a855f7 55%,#581c87)}
-.lg-orbs i.orb-gold{left:4%;bottom:6%;width:180px;height:180px;background:radial-gradient(circle at 32% 28%,#ffe4b5,#ffb347 55%,#cc6600)}
+.lg-orbs i.orb-cyan{left:4%;top:12%;width:280px;height:280px;background:radial-gradient(circle at 32% 28%,#a5f3fc,#06b6d4 55%,#0369a1)}
+.lg-orbs i.orb-ice{right:8%;top:6%;width:260px;height:260px;background:radial-gradient(circle at 32% 28%,#e0f2fe,#38bdf8 55%,#0284c7)}
+.lg-orbs i.orb-sapphire{left:38%;top:45%;width:320px;height:320px;background:radial-gradient(circle at 32% 28%,#93c5fd,#3b82f6 55%,#1e3a8a)}
+.lg-orbs i.orb-indigo{right:6%;bottom:8%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#c7d2fe,#6366f1 55%,#312e81)}
+.lg-orbs i.orb-teal{left:6%;bottom:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#99f6e4,#14b8a6 55%,#0f766e)}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -66,221 +69,177 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-/* ---------- 3. APPLE NAVIGATION HEADER ---------- */
-.apple-nav{
-  position:sticky;top:0;z-index:40;
-  width:100%;
-  background:rgba(246,248,255,.82);
+/* ---------- 3. FLOATING BRAND & CONTROLS ---------- */
+.brand-float{
+  position:fixed;top:22px;left:24px;z-index:40;
+  display:inline-flex;align-items:center;gap:12px;
+  padding:8px 18px 8px 10px;border-radius:999px;
+  background:rgba(255,255,255,.08);
   -webkit-backdrop-filter:blur(24px) saturate(160%);
   backdrop-filter:blur(24px) saturate(160%);
-  border-bottom:1px solid var(--g);
-  transition:background .25s ease,border-color .25s ease;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 24px rgba(0,0,0,.25);
+  color:#fff;user-select:none;transition:all .25s ease;
 }
-body.lg-theme .apple-nav{
-  background:rgba(15,19,52,.75);
-  border-bottom-color:rgba(255,255,255,.15);
+.brand-float:hover{
+  background:rgba(255,255,255,.14);
+  border-color:rgba(255,255,255,.32);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 12px 30px rgba(0,242,254,.2);
 }
-body.viewing .apple-nav{display:none}
-.apple-nav-inner{
-  max-width:1120px;margin:0 auto;padding:12px 20px;
-  display:flex;align-items:center;justify-content:space-between;gap:14px;
+body:not(.lg-theme) .brand-float{
+  background:var(--card);border-color:var(--g);color:var(--ink);
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
 }
-.brand-group{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+body.viewing .brand-float{display:none}
+
 .brand-icon{
-  width:40px;height:40px;border-radius:12px;
-  background:linear-gradient(135deg,#ff9ebb,#ff4785);
+  width:36px;height:36px;border-radius:12px;
+  background:linear-gradient(135deg,#38bdf8,#0284c7);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 16px rgba(255,71,133,.35);
+  box-shadow:0 4px 14px rgba(2,132,199,.35);
   flex-shrink:0;
 }
-.brand-text{display:flex;flex-direction:column;line-height:1.15}
-.brand-title{font-size:20px;font-weight:800;letter-spacing:-.03em;color:inherit}
-.brand-subtitle{font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.05em;text-transform:uppercase}
-body.lg-theme .brand-subtitle{color:rgba(255,255,255,.72)}
-.apple-nav-actions{display:flex;align-items:center;gap:10px}
-.stat-pill{
-  padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:700;
-  background:var(--tint);border:1px solid var(--g);color:var(--ink);
-}
-body.lg-theme .stat-pill{
-  background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff;
-}
-.apple-btn-icon{
-  width:38px;height:38px;border-radius:12px;border:1.5px solid var(--g);
-  background:var(--tint);color:var(--ink);cursor:pointer;
-  display:inline-flex;align-items:center;justify-content:center;
-  transition:all .2s ease;padding:0;
-}
-.apple-btn-icon:hover{
-  background:var(--card);border-color:var(--accent);color:var(--accent);transform:translateY(-1px);
-  box-shadow:0 4px 14px rgba(0,0,0,.15);
-}
-body.lg-theme .apple-btn-icon{
-  background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.06));
-  border-color:rgba(255,255,255,.32);color:#fff;
-}
-body.lg-theme .apple-btn-icon:hover{
-  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.12));
-  border-color:rgba(255,255,255,.7);
-}
+.brand-title{font-size:18px;font-weight:800;letter-spacing:-.025em;color:inherit}
 
-/* ---------- 4. MAIN LAYOUT & HERO ---------- */
-.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 80px;position:relative;z-index:1}
+.floating-settings-btn{
+  position:fixed;bottom:24px;right:24px;z-index:45;
+  width:48px;height:48px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(255,255,255,.06));
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(255,255,255,.3);
+  color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 10px 28px rgba(0,0,0,.35);
+  cursor:pointer;
+  transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+  padding:0;
+}
+.floating-settings-btn:hover{
+  transform:scale(1.08) rotate(20deg);
+  background:linear-gradient(135deg,rgba(255,255,255,.35),rgba(255,255,255,.12));
+  border-color:rgba(255,255,255,.6);
+  box-shadow:inset 0 1px 0 #fff,0 14px 34px rgba(56,189,248,.35);
+}
+body:not(.lg-theme) .floating-settings-btn{
+  background:var(--card);border-color:var(--g);color:var(--ink);
+  box-shadow:0 8px 24px rgba(0,0,0,.15);
+}
+body.viewing .floating-settings-btn{display:none}
+
+/* ---------- 4. MAIN LAYOUT & LIQUID GLASS CARD GRID ---------- */
+.wrap{
+  max-width:1180px;margin:0 auto;padding:92px 24px 96px;position:relative;z-index:1;
+}
 body.viewing .wrap{display:none}
 
-.apple-hero{
-  margin-bottom:32px;padding:34px 32px;border-radius:28px;
-  background:var(--card);border:1px solid var(--g);
-  display:flex;flex-direction:column;gap:10px;
-  box-shadow:0 6px 24px rgba(16,20,46,.05);
-  position:relative;isolation:isolate;
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:24px}
+@media (max-width:640px){
+  .grid{grid-template-columns:1fr;gap:18px}
+  .wrap{padding:84px 16px 80px}
+  .brand-float{top:16px;left:16px}
+  .floating-settings-btn{bottom:18px;right:18px}
 }
-body.lg-theme .apple-hero{
-  background:
-    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
-    rgba(20,18,62,var(--lg-tint)) !important;
-  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
-  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
-  border:1px solid rgba(255,255,255,.22);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 20px 48px -16px rgba(4,6,36,.6);
-}
-body.lg-theme.lg-glow-on .apple-hero::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
-  background:
-    radial-gradient(circle 240px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.18),transparent 70%),
-    radial-gradient(120% 55% at 50% -8%,rgba(255,255,255,.24),transparent 58%);
-}
-.hero-badge{
-  align-self:flex-start;padding:5px 14px;border-radius:999px;font-size:12px;font-weight:800;
-  background:rgba(255,71,133,.12);color:#ff4785;border:1px solid rgba(255,71,133,.28);
-}
-body.lg-theme .hero-badge{
-  background:rgba(255,107,157,.25);color:#ffb8d2;border-color:rgba(255,107,157,.5);
-}
-.apple-hero h2{margin:0;font-size:clamp(24px,3.8vw,34px);font-weight:800;letter-spacing:-.025em;line-height:1.2}
-body.lg-theme .apple-hero h2{
-  background:linear-gradient(90deg,#ffb8d2,#ffe4b5,#a6fff2);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.apple-hero p{margin:0;color:var(--mut);font-size:15px;line-height:1.6;max-width:65ch}
-body.lg-theme .apple-hero p{color:rgba(255,255,255,.82)}
-
-/* ---------- 5. APPLE CARD GRID ---------- */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px}
 
 .tile{
   position:relative;background:var(--card);border:1px solid var(--g);
-  border-radius:26px;display:flex;flex-direction:column;
-  box-shadow:0 4px 18px rgba(0,0,0,.04);
-  transition:transform .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s ease,border-color .24s ease;
-  overflow:hidden;
+  border-radius:24px;display:flex;flex-direction:column;
+  box-shadow:0 4px 20px rgba(0,0,0,.04);
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease,border-color .28s ease;
+  overflow:hidden;padding:24px 22px 20px;gap:16px;
 }
-.tile:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.08)}
+.tile:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(0,0,0,.08)}
 
 body.lg-theme .tile{
   position:relative;isolation:isolate;
   background:
+    radial-gradient(130px circle at 95% 0%, color-mix(in srgb, var(--c, #38bdf8) 26%, transparent), transparent 70%),
     linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
-    rgba(16,18,66,var(--lg-tint)) !important;
+    rgba(12,22,48,var(--lg-tint)) !important;
   -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
   backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  border:1px solid rgba(255,255,255,.22);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.75),
-    inset 0 -1px 0 rgba(255,255,255,.18),
-    inset 0 0 24px rgba(255,255,255,.06),
-    0 20px 48px -16px rgba(4,6,36,.6);
-  border:1px solid rgba(255,255,255,.22);
+    inset 0 -1px 0 rgba(255,255,255,.12),
+    inset 0 0 24px rgba(255,255,255,.05),
+    0 16px 40px -12px rgba(4,6,36,.55);
   color:#fff;
 }
 body.lg-theme .tile:hover{
-  transform:translateY(-4px);
-  border-color:rgba(255,150,180,.6);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 26px 54px -14px rgba(255,75,140,.35);
+  transform:translateY(-5px);
+  border-color:rgba(56,189,248,.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 24px 50px -12px rgba(14,165,233,.25),
+    0 12px 24px -8px rgba(0,0,0,.5);
 }
 body.lg-theme.lg-glow-on .tile::before{
   content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
   background:
-    radial-gradient(circle 200px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.22),transparent 70%),
+    radial-gradient(circle 220px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.24),transparent 70%),
     radial-gradient(120% 55% at 50% -8%,rgba(255,255,255,.28),transparent 58%);
 }
 
-.cover{
-  all:unset;box-sizing:border-box;display:flex;flex-direction:column;
-  justify-content:space-between;gap:20px;min-height:136px;padding:18px 20px;
-  background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 80%,#000));
-  color:#fff;border-radius:24px 24px 0 0;cursor:pointer;position:relative;
-}
-.cover-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.cover .ic{font-size:32px;line-height:1}
+.tile-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .pill-code{
-  font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
-  padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.25);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.3);color:#fff;
+  font-size:11.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  padding:4px 11px;border-radius:999px;background:var(--tint);border:1px solid var(--g);
+  color:var(--ink);
 }
-.cover .cd{font-size:21px;font-weight:800;line-height:1.2;letter-spacing:-.015em;overflow-wrap:anywhere}
-.tile .body{padding:14px 20px 4px;flex:1}
-.tile .desc{margin:0;font-size:13.5px;line-height:1.55;color:var(--mut)}
-body.lg-theme .tile .desc{color:rgba(255,255,255,.76)}
+body.lg-theme .pill-code{
+  background:rgba(255,255,255,.14);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border-color:rgba(255,255,255,.28);color:#fff;
+}
 
-.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:10px 20px 0}
 .chip{
-  background:var(--tint);color:var(--ink);padding:3px 12px;
-  border-radius:99px;font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:6px;
+  background:var(--tint);color:var(--ink);padding:3.5px 11px;border-radius:999px;
+  font-weight:700;font-size:12px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--g);
 }
 .chip-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
-body.lg-theme .chip{background:rgba(255,255,255,.12);color:#fff}
-body.lg-theme .chip-dot{background:#5ff0b5;box-shadow:0 0 6px #5ff0b5}
+body.lg-theme .chip{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#fff}
+body.lg-theme .chip-dot{background:#38bdf8;box-shadow:0 0 8px #38bdf8}
 
-.acts{display:flex;gap:10px;padding:14px 20px 18px;align-items:center}
+.tile-body{display:flex;flex-direction:column;gap:8px;flex:1}
+.tile-title-btn{all:unset;display:block;cursor:pointer;text-align:left}
+.tile-title-btn:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
+.tile .cd{
+  margin:0;font-size:20px;font-weight:800;line-height:1.32;letter-spacing:-.02em;
+  color:var(--ink);transition:color .18s ease;
+}
+body.lg-theme .tile .cd{color:#ffffff}
+.tile:hover .cd{color:var(--accent)}
+body.lg-theme .tile:hover .cd{color:#38bdf8}
+
+.tile .desc{margin:0;font-size:13.5px;line-height:1.6;color:var(--mut)}
+body.lg-theme .tile .desc{color:rgba(255,255,255,.76)}
+
+.acts{display:flex;gap:10px;align-items:center;margin-top:auto;padding-top:6px}
 .btn{border:1px solid var(--g);background:var(--card);padding:9px 16px;border-radius:999px;font-weight:700;transition:all .2s ease}
 .btn:hover{background:var(--tint)}
 .acts .btn.pri{
-  flex:1;background:var(--accent);border-color:var(--accent);color:#fff;
-  border-radius:999px;padding:11px 20px;font-size:14px;letter-spacing:.01em;
-  box-shadow:0 4px 14px rgba(47,91,234,.25);
+  width:100%;flex:1;background:var(--accent);border-color:var(--accent);color:#fff;
+  border-radius:999px;padding:11px 18px;font-size:14px;font-weight:700;letter-spacing:.01em;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 14px rgba(2,132,199,.25);
 }
 .acts .btn.pri:hover{filter:brightness(1.08);transform:translateY(-1px)}
 body.lg-theme .acts .btn.pri{
-  background:linear-gradient(180deg,#ffb8d2,#ff4785) !important;
-  color:#1b1542 !important;border:1px solid rgba(255,255,255,.7) !important;
-  box-shadow:0 4px 16px rgba(255,71,133,.4),inset 0 1px 0 #fff !important;
-  font-weight:700 !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.08)) !important;
+  -webkit-backdrop-filter:blur(16px);
+  backdrop-filter:blur(16px);
+  color:#ffffff !important;border:1px solid rgba(255,255,255,.45) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 8px 24px rgba(0,0,0,.35) !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
 }
 body.lg-theme .acts .btn.pri:hover{
-  background:linear-gradient(180deg,#ffd0e0,#ff5a93) !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.15)) !important;
+  border-color:rgba(255,255,255,.8) !important;
+  box-shadow:inset 0 1px 0 #fff,0 12px 30px rgba(56,189,248,.35) !important;
 }
-
-details.more{position:relative}
-details.more summary{
-  list-style:none;border:1px solid var(--g);background:var(--card);
-  border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;
-  font-weight:800;cursor:pointer;line-height:1;transition:all .2s ease;
-}
-details.more summary::-webkit-details-marker{display:none}
-details.more summary:hover{background:var(--tint);transform:scale(1.05)}
-body.lg-theme details.more summary{
-  background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff;
-}
-body.lg-theme details.more summary:hover{background:rgba(255,255,255,.25)}
-
-.menu{
-  position:absolute;right:0;bottom:calc(100% + 8px);z-index:25;min-width:210px;
-  background:var(--card);border:1px solid var(--g);border-radius:16px;padding:6px;
-  display:flex;flex-direction:column;box-shadow:0 12px 36px rgba(0,0,0,.2);
-  animation:fadeInModal .18s ease;
-}
-body.lg-theme .menu{
-  background:rgba(18,22,68,.95) !important;
-  -webkit-backdrop-filter:blur(24px) !important;backdrop-filter:blur(24px) !important;
-  border-color:rgba(255,255,255,.3) !important;color:#fff !important;
-}
-.menu button{all:unset;box-sizing:border-box;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:600}
-.menu button:hover,.menu button:focus-visible{background:var(--tint)}
-body.lg-theme .menu button:hover,body.lg-theme .menu button:focus-visible{background:rgba(255,255,255,.14)}
-.menu button.dng{color:var(--danger)}
-.menu hr{border:0;border-top:1px solid var(--g);margin:4px 2px;width:auto}
-body.lg-theme .menu hr{border-top-color:rgba(255,255,255,.15)}
+.acts .btn.pri svg{flex-shrink:0;transition:transform .18s ease}
+.acts .btn.pri:hover svg{transform:translateX(2px)}
 
 .empty{border:1.5px dashed var(--g);border-radius:24px;padding:48px 20px;text-align:center}
 .empty h2{margin:0;color:var(--ink);font-size:20px}
@@ -356,9 +315,9 @@ body.lg-theme .thm-toggle-btn{color:rgba(255,255,255,.88)}
   box-shadow:0 3px 10px rgba(0,0,0,.2);
 }
 body.lg-theme .thm-toggle-btn.active{
-  background:linear-gradient(180deg,#ffb8d2,#ff4785) !important;
-  color:#1b1542 !important;
-  box-shadow:0 3px 12px rgba(255,71,133,.4),inset 0 1px 0 #ffffff !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.1)) !important;
+  color:#ffffff !important;border:1px solid rgba(255,255,255,.5) !important;
+  box-shadow:0 4px 16px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.8) !important;
 }
 
 .theme-default-notice{
@@ -373,7 +332,7 @@ body.lg-theme .theme-ctrl-item-head{color:#ffffff}
 .theme-ctrl-item-head span{font-size:11.5px;color:var(--mut);font-weight:500}
 body.lg-theme .theme-ctrl-item-head span{color:rgba(255,255,255,.7)}
 .theme-ctrl-item-head output{font-weight:700;color:var(--accent)}
-body.lg-theme .theme-ctrl-item-head output{color:#ff9ebb}
+body.lg-theme .theme-ctrl-item-head output{color:#38bdf8}
 .theme-ctrl-item input[type=range]{width:100%;margin:3px 0;accent-color:var(--accent)}
 
 .theme-modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
@@ -394,7 +353,8 @@ body.lg-theme .theme-btn-action:hover{
 }
 .theme-btn-action.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 body.lg-theme .theme-btn-action.active{
-  background:linear-gradient(180deg,#ffb8d2,#ff4785);color:#1b1542;border-color:#fff;
+  background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,.1));color:#fff;border-color:rgba(255,255,255,.6);
+  box-shadow:inset 0 1px 0 #fff,0 4px 14px rgba(56,189,248,.3);
 }
 
 dialog{
@@ -507,18 +467,16 @@ body.viewing #cpRail:not([hidden]){display:block}
 
 /* Khúc xạ trên Chromium */
 html.lg-refract body.lg-theme .tile,
-html.lg-refract body.lg-theme .apple-hero,
 html.lg-refract body.lg-theme .apple-nav{
   -webkit-backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
   backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08) !important;
 }
 
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  body.lg-theme .tile,body.lg-theme .apple-hero{background:#1f1638 !important}
+  body.lg-theme .tile{background:#1f1638 !important}
 }
 @media (max-width:560px){
   .row,.row3{grid-template-columns:1fr}
-  .apple-hero{padding:24px 20px}
   .grid{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){
@@ -536,53 +494,39 @@ html.lg-refract body.lg-theme .apple-nav{
   </filter>
 </svg>
 
-<!-- Vòng tròn nền Axolotl Liquid Glass -->
+<!-- Vòng tròn nền Crystal Liquid Glass -->
 <div id="lg-orbs" class="lg-orbs" aria-hidden="true">
-  <i class="orb-pink"></i>
-  <i class="orb-rose"></i>
   <i class="orb-cyan"></i>
-  <i class="orb-violet"></i>
-  <i class="orb-gold"></i>
+  <i class="orb-ice"></i>
+  <i class="orb-sapphire"></i>
+  <i class="orb-indigo"></i>
+  <i class="orb-teal"></i>
 </div>
 
-<!-- Apple Navigation Header Bar -->
-<header class="apple-nav">
-  <div class="apple-nav-inner">
-    <div class="brand-group">
-      <div class="brand-icon" aria-hidden="true">
-        <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
-          <ellipse cx="16" cy="18" rx="11" ry="8" fill="#ff9ebb" />
-          <circle cx="12" cy="17" r="1.8" fill="#1b1542" />
-          <circle cx="20" cy="17" r="1.8" fill="#1b1542" />
-          <path d="M14 20 Q16 22 18 20" stroke="#1b1542" stroke-width="1.2" stroke-linecap="round" fill="none" />
-          <!-- Axolotl gills -->
-          <path d="M5 14 Q3 10 7 11 Q4 15 6 17" fill="#ff4785" />
-          <path d="M27 14 Q29 10 25 11 Q28 15 26 17" fill="#ff4785" />
-          <path d="M5 18 Q2 18 4 21" fill="#ff6b9d" />
-          <path d="M27 18 Q30 18 28 21" fill="#ff6b9d" />
-        </svg>
-      </div>
-      <div class="brand-text">
-        <span class="brand-title">Axolotl</span>
-        <span class="brand-subtitle">UET Subject Hub</span>
-      </div>
-    </div>
-
-    <div class="apple-nav-actions">
-      <div class="stat-pill" id="hub-stat-pill">4 môn học</div>
-      <button type="button" id="btn-theme-settings" class="apple-btn-icon" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-      </button>
-    </div>
+<!-- Floating Brand (Icon & Tên web ở góc trái) -->
+<aside class="brand-float" aria-label="Tên ứng dụng">
+  <div class="brand-icon" aria-hidden="true">
+    <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+      <ellipse cx="16" cy="18" rx="11" ry="8" fill="#e0f2fe" />
+      <circle cx="12" cy="17" r="1.8" fill="#0f172a" />
+      <circle cx="20" cy="17" r="1.8" fill="#0f172a" />
+      <path d="M14 20 Q16 22 18 20" stroke="#0f172a" stroke-width="1.2" stroke-linecap="round" fill="none" />
+      <!-- Gills (Aqua cyan) -->
+      <path d="M5 14 Q3 10 7 11 Q4 15 6 17" fill="#00f2fe" />
+      <path d="M27 14 Q29 10 25 11 Q28 15 26 17" fill="#00f2fe" />
+      <path d="M5 18 Q2 18 4 21" fill="#38bdf8" />
+      <path d="M27 18 Q30 18 28 21" fill="#38bdf8" />
+    </svg>
   </div>
-</header>
+  <span class="brand-title">Axolotl</span>
+</aside>
+
+<!-- Floating Settings Button (Nút setting ở góc dưới bên phải) -->
+<button type="button" id="btn-theme-settings" class="floating-settings-btn" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+</button>
 
 <div class="wrap">
-  <div class="apple-hero">
-    <div class="hero-badge">🌸 Axolotl Experience</div>
-    <h2>Khám phá các học phần</h2>
-    <p>Không gian lưu trữ bài giảng số, ghi chú checkpoint thông minh và mô hình mô phỏng tương tác.</p>
-  </div>
   <main id="list"></main>
 </div>
 
@@ -687,10 +631,8 @@ html.lg-refract body.lg-theme .apple-nav{
     <div class="dh"><h2>Sửa thông tin</h2></div>
     <div class="db">
       <label class="f">Tên môn<input id="fName" required maxlength="120"></label>
-      <div class="row3">
-        <label class="f">Biểu tượng<input id="fIcon" maxlength="4" value="📘"></label>
-        <label class="f">Mã môn<input id="fCode" maxlength="24" placeholder="vd. ENP2209"></label>
-      </div>
+      <input id="fIcon" type="hidden" value="">
+      <label class="f">Mã môn<input id="fCode" maxlength="24" placeholder="vd. ENP2209"></label>
       <label class="f">Mô tả ngắn<textarea id="fDesc" rows="2" maxlength="240"></textarea></label>
       <div class="row">
         <label class="f">Trạng thái
@@ -750,47 +692,47 @@ html.lg-refract body.lg-theme .apple-nav{
  {
   "id": "ban-dan",
   "title": "Vật lý bán dẫn và linh kiện",
-  "icon": "⚡",
+  "icon": "",
   "code": "ENP2209",
   "desc": "Cấu trúc tinh thể, cơ học lượng tử, vùng năng lượng, bán dẫn ở trạng thái cân bằng (Buổi 1–5).",
   "status": "Đang học",
-  "color": "#2f5bea",
+  "color": "#6366f1",
   "src": "mon/ban-dan.html"
  },
  {
   "id": "toan-roi-rac",
   "title": "Toán rời rạc",
-  "icon": "📐",
+  "icon": "",
   "code": "MAT1093",
   "desc": "Logic, vị từ và lượng từ, phương pháp chứng minh, đại số Bool, Big-O, Euclid, RSA (Bài 1–6).",
   "status": "Đang học",
-  "color": "#7a4fd6",
+  "color": "#a855f7",
   "src": "mon/toan-roi-rac.html"
  },
  {
   "id": "lap-trinh-nang-cao",
   "title": "Lập trình nâng cao",
-  "icon": "💻",
+  "icon": "",
   "code": "INT2215",
   "desc": "Con trỏ, quản lý bộ nhớ động, struct, hướng đối tượng C++, cấu trúc dữ liệu và giải thuật.",
   "status": "Đang học",
-  "color": "#E3163C",
+  "color": "#34d399",
   "src": "mon/lap-trinh-nang-cao.html"
  },
  {
   "id": "tin-hieu",
   "title": "Tín hiệu và hệ thống",
-  "icon": "📡",
+  "icon": "",
   "code": "EMA2020",
   "desc": "Biểu diễn tín hiệu, hệ thống LTI, biến đổi Fourier, chuỗi Fourier, tích chập và miền tần số.",
   "status": "Đang học",
-  "color": "#E02F2D",
+  "color": "#06b6d4",
   "src": "mon/tin-hieu_remake.html"
  }
 ]</script>
 <script>
 const DB_NAME="hub-mon-hoc",STORE="subjects",REM="hub-mon-hoc-removed",CP_KEY="phucxo-checkpoints-v1",POS_KEY="phucxo-pos-v1";
-const COLORS=["#2f5bea","#0b7f72","#c2336b","#b86a00","#7a4fd6","#4a5578","#ff4785"];
+const COLORS=["#38bdf8","#818cf8","#34d399","#06b6d4","#a78bfa","#f59e0b","#e2e8f0"];
 const SANDBOX="allow-scripts allow-same-origin allow-popups allow-downloads allow-modals";
 
 let db=null,mem=new Map(),subjects=[],viewing=null,curUrl=null,editingId=null,codeId=null,replaceId=null;
@@ -828,46 +770,29 @@ async function load(){subjects=(await dbAll()).sort((a,b)=>a.order-b.order)}
 async function persist(s){s.updated=Date.now();await dbPut(s)}
 async function renumber(){for(let i=0;i<subjects.length;i++){if(subjects[i].order!==i){subjects[i].order=i;await dbPut(subjects[i])}}}
 
-/* ===== Hub Render (Apple Style) ===== */
+/* ===== Hub Render (Crystal Liquid Glass) ===== */
 function render(){
   const el=$("#list");
   if(!subjects.length){el.innerHTML='<div class="empty"><h2>Chưa có môn nào</h2></div>';return}
   el.innerHTML='<div class="grid">'+subjects.map(s=>`
   <article class="tile" style="--c:${esc(s.color)}" data-id="${s.id}">
-    <button class="cover" data-a="open" aria-label="Mở ${esc(s.title)}">
-      <div class="cover-top">
-        <span class="ic" aria-hidden="true">${esc(s.icon||"📘")}</span>
-        <span class="pill-code">${esc(s.code||"UET")}</span>
-      </div>
-      <span class="cd">${esc(s.title)}</span>
-    </button>
-    <div class="body">
-      <p class="desc">${esc(s.desc||"Học phần chuyên sâu với tài liệu và bài tập tương tác.")}</p>
-    </div>
-    <div class="meta">
+    <div class="tile-top">
+      <span class="pill-code">${esc(s.code||"UET")}</span>
       <span class="chip"><i class="chip-dot"></i>${esc(s.status)}</span>
     </div>
+    <div class="tile-body">
+      <button type="button" class="tile-title-btn" data-a="open" aria-label="Mở ${esc(s.title)}">
+        <h2 class="cd">${esc(s.title)}</h2>
+      </button>
+      <p class="desc">${esc(s.desc||"Học phần chuyên sâu với tài liệu và bài tập tương tác.")}</p>
+    </div>
     <div class="acts">
-      <button class="btn pri" data-a="open">Mở môn học</button>
-      <details class="more"><summary aria-label="Thao tác khác">⋯</summary>
-        <div class="menu">
-          <button data-a="edit">Sửa thông tin</button>
-          <button data-a="code">Sửa mã nguồn</button>
-          <button data-a="replace">Thay bằng file mới</button>
-          <button data-a="dl">Tải xuống</button>
-          <button data-a="tab">Mở tab mới</button>
-          <hr>
-          <button data-a="left">Dời lên trước</button>
-          <button data-a="right">Dời ra sau</button>
-          <hr>
-          <button class="dng" data-a="del">Xóa môn</button>
-        </div>
-      </details>
+      <button class="btn pri full-btn" data-a="open">
+        <span>Mở môn học</span>
+        <svg viewBox="0 0 16 16" width="15" height="15" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06z"/></svg>
+      </button>
     </div>
   </article>`).join("")+"</div>";
-
-  const statPill = document.getElementById("hub-stat-pill");
-  if (statPill) statPill.textContent = subjects.length + " môn học";
 }
 
 /* ===== Viewer ===== */
@@ -887,7 +812,7 @@ function mountFrame(url){
 function renderSwitch(){
   const others=subjects.filter(s=>s.id!==viewing);
   $("#vOthers").hidden=!others.length;
-  $("#vList").innerHTML=others.map(s=>`<button type="button" data-id="${s.id}" style="--c:${esc(s.color)}"><i class="dot"></i>${esc(s.icon||"")} ${esc(s.title)}</button>`).join("");
+  $("#vList").innerHTML=others.map(s=>`<button type="button" data-id="${s.id}" style="--c:${esc(s.color)}"><i class="dot"></i>${esc(s.title)}</button>`).join("");
 }
 function openSubject(id){
   const s=get(id);if(!s)return;
@@ -1034,7 +959,7 @@ function cpHelper(){
   var doc=document,win=window;
   var cssEsc=(win.CSS&&win.CSS.escape)?win.CSS.escape.bind(win.CSS):function(s){return String(s).replace(/[^\w-]/g,"\\$&")};
   var st=doc.createElement("style");
-  st.textContent=".__pxo-hover{outline:2px solid #ff4785 !important;outline-offset:-2px !important}html.__pxo-pick,html.__pxo-pick *{cursor:crosshair !important}";
+  st.textContent=".__pxo-hover{outline:2px solid #38bdf8 !important;outline-offset:-2px !important}html.__pxo-pick,html.__pxo-pick *{cursor:crosshair !important}";
   (doc.head||doc.documentElement).appendChild(st);
 
   function txt(el){return String(el.innerText||el.textContent||"").replace(/\s+/g," ").trim()}
@@ -1645,7 +1570,7 @@ window.addEventListener("keydown",e=>{
   if (window.matchMedia && matchMedia('(pointer:fine)').matches) {
     document.addEventListener('pointermove', (e) => {
       if (!body.classList.contains('lg-theme') || !lgConfig.glow) return;
-      const el = e.target.closest && e.target.closest('.tile, .apple-hero, .apple-nav, .theme-modal-box');
+      const el = e.target.closest && e.target.closest('.tile, .apple-nav, .theme-modal-box');
       if (!el) return;
       const r = el.getBoundingClientRect();
       el.style.setProperty('--mx', (e.clientX - r.left) + 'px');

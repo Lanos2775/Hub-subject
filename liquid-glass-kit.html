@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liquid Glass Kit</title>
+
+<!-- =====================================================================
+  LIQUID GLASS KIT — bộ giao diện kính mờ kiểu Apple, 1 file, không phụ thuộc thư viện.
+  CÁCH MANG SANG DỰ ÁN KHÁC:
+    1. Copy khối <style id="lg-css"> (hoặc bấm "Sao chép CSS" trên trang) vào CSS của dự án.
+    2. Copy khối <script id="lg-js"> (tuỳ chọn: đèn theo con trỏ + khúc xạ) vào cuối <body>.
+    3. Copy <svg id="lg-defs"> (bộ lọc khúc xạ, tuỳ chọn) vào đầu <body>.
+    4. Gắn class: nền trang = .lg-bg + .lg-orbs; khung = .lg-glass; nút = .lg-btn; ... (xem phần Thành phần).
+  Mọi class đều có tiền tố lg- để không đụng CSS sẵn có.
+===================================================================== -->
+
+<style id="lg-css">
+/* ---------- 1. TOKEN ---------- */
+:root{
+  --lg-blur:14px;          /* độ mờ phía sau kính: nhỏ = trong hơn */
+  --lg-sat:200%;           /* độ rực màu nền xuyên qua kính */
+  --lg-fill:.12;           /* độ sáng của lớp kính (alpha trắng) */
+  --lg-tint:.16;           /* độ phủ màu tối giúp chữ dễ đọc */
+  --lg-ink:#0d1140;        /* chữ tối dùng trên nền trắng (trạng thái chọn) */
+  --lg-text:#ffffff;
+  --lg-muted:rgba(255,255,255,.82);
+  --lg-ok:#5ff0b5; --lg-warn:#ffd666; --lg-bad:#ff9db6;
+  --lg-r-xl:36px; --lg-r-lg:28px; --lg-r-md:18px;
+  --lg-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Inter",system-ui,sans-serif;
+}
+
+/* ---------- 2. NỀN: kính cần có màu để khúc xạ ---------- */
+.lg-bg{
+  min-height:100vh;color:var(--lg-text);font-family:var(--lg-font);letter-spacing:-.005em;
+  -webkit-font-smoothing:antialiased;position:relative;
+  background-color:#14183f;
+  background-image:
+    radial-gradient(60% 55% at 8% 0%,rgba(63,107,255,.85),transparent 70%),
+    radial-gradient(50% 50% at 100% 12%,rgba(176,67,255,.7),transparent 70%),
+    radial-gradient(55% 55% at 42% 108%,rgba(255,79,154,.6),transparent 70%),
+    radial-gradient(40% 40% at 92% 96%,rgba(18,214,192,.5),transparent 70%),
+    linear-gradient(160deg,#14183f,#1c1b52 45%,#2a1650);
+  background-attachment:fixed;
+}
+/* Các "viên ngọc" rõ nét nằm sau kính: chính chúng làm hiệu ứng mờ/khúc xạ lộ ra */
+.lg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.lg-orbs i{position:absolute;border-radius:50%;display:block}
+.lg-orbs i:nth-child(1){left:6%;top:14%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#9fb4ff,#4f6bff 55%,#2a2fb0)}
+.lg-orbs i:nth-child(2){right:9%;top:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#f0c0ff,#b043ff 55%,#6a1fb8)}
+.lg-orbs i:nth-child(3){left:38%;top:52%;width:280px;height:280px;background:radial-gradient(circle at 32% 28%,#ffc2dd,#ff4f9a 55%,#b01a68)}
+.lg-orbs i:nth-child(4){right:4%;bottom:6%;width:210px;height:210px;background:radial-gradient(circle at 32% 28%,#b4fff2,#12d6c0 55%,#0a7f8f)}
+.lg-orbs i:nth-child(5){left:3%;bottom:8%;width:150px;height:150px;background:radial-gradient(circle at 32% 28%,#fff1b0,#ffc83d 55%,#d98a00)}
+.lg-root{position:relative;z-index:1}
+
+/* ---------- 3. KHUNG KÍNH (cấp 1: có blur) ----------
+   4 lớp: (a) fill mỏng  (b) backdrop blur+saturate  (c) rim light viền gradient  (d) specular vệt sáng trên */
+.lg-glass{
+  position:relative;isolation:isolate;border-radius:var(--lg-r-lg);color:var(--lg-text);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(14,16,70,var(--lg-tint));
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+          backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 -1px 0 rgba(255,255,255,.18),
+    inset 0 0 26px rgba(255,255,255,.08),
+    inset 0 -20px 30px -20px rgba(255,255,255,.24),
+    0 26px 54px -20px rgba(4,6,36,.65);
+  text-shadow:0 1px 10px rgba(8,10,56,.35);
+}
+.lg-glass::before{                       /* (d) specular + đèn theo con trỏ */
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(circle 170px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.24),transparent 70%),
+    radial-gradient(120% 55% at 50% -8%,rgba(255,255,255,.36),transparent 58%);
+}
+.lg-glass::after{                        /* (c) rim light: viền sáng gradient, sáng ở góc trên-trái & dưới-phải */
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:2;
+  background:linear-gradient(135deg,rgba(255,255,255,.95),rgba(255,255,255,.1) 30%,rgba(255,255,255,.04) 62%,rgba(255,255,255,.7));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.lg-xl{border-radius:var(--lg-r-xl)}
+.lg-strong{                              /* popup/modal: nằm trên lớp phủ tối nên cần đặc hơn */
+  --lg-blur:26px;--lg-tint:.5;
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 60%,rgba(255,255,255,.12)),
+    rgba(22,26,98,.62);
+}
+.lg-card{                                /* thẻ lật: tấm kính lớn, trong nhất */
+  --lg-blur:18px;--lg-fill:.16;--lg-tint:.1;border-radius:40px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.85),inset 0 -2px 8px rgba(255,255,255,.2),inset 0 0 44px rgba(255,255,255,.1),0 36px 72px -20px rgba(4,6,36,.75);
+}
+
+/* ---------- 4. ĐIỀU KHIỂN (cấp 2: KHÔNG blur — chỉ fill + rim, để tránh kính chồng kính) ---------- */
+.lg-btn,.lg-tile,.lg-chip{
+  font:inherit;font-weight:600;color:var(--lg-text);cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(255,255,255,.12),0 8px 16px -10px rgba(4,6,36,.6);
+  text-shadow:0 1px 8px rgba(8,10,56,.5);
+  transition:background .18s ease,transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.lg-btn{border-radius:999px;padding:10px 20px;font-size:14px}
+.lg-tile{border-radius:var(--lg-r-md);padding:11px 14px;text-align:left;font-size:14px}
+.lg-chip{border-radius:999px;padding:5px 12px;font-size:12px}
+.lg-icon{width:40px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.lg-btn:hover,.lg-tile:hover,.lg-chip:hover{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.12));border-color:rgba(255,255,255,.7);transform:translateY(-1px)}
+.lg-btn:active,.lg-tile:active{transform:scale(.97)}
+.lg-btn:focus-visible,.lg-tile:focus-visible,.lg-chip:focus-visible,.lg-input:focus-visible{outline:2px solid #c9d5ff;outline-offset:2px}
+.lg-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+/* Trạng thái đang chọn = viên thuốc trắng chữ xanh đêm (đảo tương phản, như iOS) */
+.lg-on,.lg-on:hover{background:linear-gradient(180deg,#fff,#dfe5ff);color:var(--lg-ink);border-color:#fff;text-shadow:none;box-shadow:0 4px 14px rgba(0,0,0,.28),inset 0 1px 0 #fff}
+.lg-primary{background:linear-gradient(180deg,#d4ddff,#9fb4ff);color:var(--lg-ink);border-color:rgba(255,255,255,.75);text-shadow:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 10px 24px -8px rgba(120,150,255,.65)}
+.lg-primary:hover{background:linear-gradient(180deg,#e4eaff,#b3c4ff)}
+/* Màu ngữ nghĩa: tint trong suốt + viền màu + chữ sáng (không fill đặc) */
+.lg-ok{color:#b7fadf;background:rgba(60,230,170,.2);border-color:rgba(95,240,181,.65)}
+.lg-warn{color:#ffe9a8;background:rgba(255,214,102,.2);border-color:rgba(255,214,102,.65)}
+.lg-bad{color:#ffd0dc;background:rgba(255,120,160,.2);border-color:rgba(255,157,182,.65)}
+
+/* Segmented control (tab) */
+.lg-seg{display:flex;gap:2px;padding:4px;border-radius:999px;background:rgba(8,10,50,.28);border:1px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 3px rgba(0,0,0,.3)}
+.lg-seg>button{flex:1 1 0;min-width:0;border:0;border-radius:999px;padding:8px 4px;font:inherit;font-size:13px;font-weight:600;color:rgba(255,255,255,.92);background:transparent;cursor:pointer;transition:background .2s,color .2s}
+.lg-seg>button:hover:not(.lg-on){background:rgba(255,255,255,.14)}
+.lg-seg>button.lg-on{box-shadow:0 2px 8px rgba(0,0,0,.28),inset 0 1px 0 #fff}
+
+/* Ô nhập */
+.lg-input{width:100%;box-sizing:border-box;font:inherit;font-size:14px;color:#fff;padding:11px 16px;border-radius:999px;background:rgba(8,10,50,.24);border:1px solid rgba(255,255,255,.3);box-shadow:inset 0 1px 3px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.12)}
+.lg-input::placeholder{color:rgba(255,255,255,.64)}
+textarea.lg-input{border-radius:var(--lg-r-md);resize:vertical}
+
+/* Ô số liệu */
+.lg-stat{display:flex;flex-direction:column;gap:2px;text-align:center;padding:12px 6px}
+.lg-stat b{font-size:22px;letter-spacing:-.02em}
+.lg-stat span{font-size:12px;color:var(--lg-muted)}
+
+/* Bong bóng chat */
+.lg-bubble{max-width:80%;padding:10px 15px;border-radius:20px 20px 20px 6px;font-size:14px;line-height:1.4;border:1px solid rgba(255,255,255,.34);background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.08));box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.lg-bubble.me{align-self:flex-end;border-radius:20px 20px 6px 20px;background:linear-gradient(180deg,#d4ddff,#9fb4ff);color:var(--lg-ink);text-shadow:none;border-color:rgba(255,255,255,.75)}
+
+/* Toast / nhãn nổi */
+.lg-toast{display:inline-flex;align-items:center;gap:10px;padding:11px 20px;border-radius:999px;font-size:13px;font-weight:600}
+
+/* Lớp phủ phía sau modal */
+.lg-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(8,10,44,.5);-webkit-backdrop-filter:blur(10px) saturate(130%);backdrop-filter:blur(10px) saturate(130%);z-index:50}
+
+/* ---------- 5. KHÚC XẠ (tuỳ chọn, chỉ Chromium) ---------- */
+html.lg-refract .lg-glass{
+  -webkit-backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+          backdrop-filter:url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+}
+
+/* ---------- 6. DỰ PHÒNG & TRUY CẬP ---------- */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .lg-glass{background:#262a72}.lg-strong{background:#20246a}
+}
+@media (prefers-reduced-transparency:reduce){
+  .lg-glass,.lg-overlay{-webkit-backdrop-filter:none;backdrop-filter:none}
+  .lg-glass{background:#262a72}
+}
+@media (prefers-reduced-motion:reduce){.lg-btn,.lg-tile,.lg-chip,.lg-seg>button{transition:none}}
+</style>
+
+<!-- Phần dưới chỉ là bố cục của trang giới thiệu, không cần mang đi -->
+<style>
+*{box-sizing:border-box}
+body{margin:0}
+.kit-wrap{max-width:1180px;margin:0 auto;padding:32px 20px 80px;display:flex;flex-direction:column;gap:28px}
+.kit-head{padding:34px 36px;display:flex;flex-direction:column;gap:10px}
+.kit-head h1{margin:0;font-size:clamp(30px,5vw,48px);letter-spacing:-.03em;line-height:1.05}
+.kit-head p{margin:0;max-width:62ch;color:var(--lg-muted);font-size:16px;line-height:1.5}
+.kit-sec{padding:28px 30px;display:flex;flex-direction:column;gap:18px}
+.kit-sec h2{margin:0;font-size:22px;letter-spacing:-.02em}
+.kit-sec h3{margin:0 0 4px;font-size:14px;color:var(--lg-muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.kit-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.kit-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.kit-ctrl{display:grid;gap:14px 28px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:center}
+.kit-ctrl label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}
+.kit-ctrl label span{display:flex;justify-content:space-between;color:var(--lg-muted);font-weight:500}
+.kit-ctrl input[type=range]{width:100%;accent-color:#c9d5ff}
+.kit-rules{list-style:none;margin:0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));counter-reset:r}
+.kit-rules li{counter-increment:r;padding:14px 16px 14px 56px;position:relative;font-size:14px;line-height:1.5}
+.kit-rules li::before{content:counter(r);position:absolute;left:14px;top:13px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--lg-ink);background:linear-gradient(180deg,#fff,#dfe5ff);text-shadow:none}
+.kit-rules b{display:block;margin-bottom:2px;font-size:15px}
+.kit-rules span{color:var(--lg-muted)}
+table.kit-tok{width:100%;border-collapse:collapse;font-size:13px}
+table.kit-tok th,table.kit-tok td{padding:9px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.16);vertical-align:top}
+table.kit-tok th{color:var(--lg-muted);font-weight:600}
+table.kit-tok code,.kit-code code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+.kit-tokwrap{overflow-x:auto}
+.kit-code{margin:0;padding:16px;border-radius:var(--lg-r-md);background:rgba(8,10,50,.4);border:1px solid rgba(255,255,255,.2);overflow-x:auto;font-size:12.5px;line-height:1.55;text-shadow:none}
+.kit-demo-card{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:30px}
+.kit-demo-card p{margin:0;font-size:30px;font-weight:600;letter-spacing:-.025em;line-height:1.2}
+.kit-demo-card small{color:var(--lg-muted)}
+.kit-chat{display:flex;flex-direction:column;gap:10px;padding:18px}
+.kit-modal{padding:22px;display:flex;flex-direction:column;gap:14px}
+.kit-modal-h{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.2)}
+.kit-copied{font-size:13px;color:var(--lg-ok);min-height:1em}
+</style>
+</head>
+
+<body class="lg-bg">
+
+<!-- Bộ lọc khúc xạ (tuỳ chọn) -->
+<svg id="lg-defs" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+<div class="lg-root"><div class="kit-wrap">
+
+  <header class="lg-glass lg-xl kit-head">
+    <h1>Liquid Glass Kit</h1>
+    <p>Bộ giao diện kính mờ kiểu Apple trong một file HTML. Tất cả class có tiền tố <code>lg-</code>, không cần thư viện. Kéo các thanh bên dưới để chỉnh độ kính theo ý bạn, rồi bấm sao chép.</p>
+  </header>
+
+  <section class="lg-glass kit-sec" aria-label="Điều chỉnh độ kính">
+    <h2>Điều chỉnh độ kính</h2>
+    <div class="kit-ctrl">
+      <label>Độ mờ phía sau <span><em>--lg-blur</em><output id="o-blur">14px</output></span><input id="r-blur" type="range" min="0" max="40" value="14"></label>
+      <label>Độ sáng của kính <span><em>--lg-fill</em><output id="o-fill">0.12</output></span><input id="r-fill" type="range" min="2" max="40" value="12"></label>
+      <label>Độ phủ màu tối <span><em>--lg-tint</em><output id="o-tint">0.16</output></span><input id="r-tint" type="range" min="0" max="60" value="16"></label>
+      <label>Độ rực màu nền <span><em>--lg-sat</em><output id="o-sat">200%</output></span><input id="r-sat" type="range" min="100" max="300" value="200"></label>
+    </div>
+    <div class="kit-row">
+      <button class="lg-btn" id="b-refract" type="button" aria-pressed="false">Khúc xạ (Chrome): tắt</button>
+      <button class="lg-btn" id="b-reset" type="button">Đặt lại</button>
+      <button class="lg-btn lg-primary" id="b-copy-css" type="button">Sao chép CSS</button>
+      <button class="lg-btn lg-primary" id="b-copy-js" type="button">Sao chép JS</button>
+      <span class="kit-copied" id="copied" role="status"></span>
+    </div>
+  </section>
+
+  <section class="lg-glass kit-sec" aria-label="Thành phần">
+    <h2>Thành phần</h2>
+
+    <div class="kit-grid">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <h3>Tab (segmented)</h3>
+        <div class="lg-seg" id="demo-seg">
+          <button type="button" class="lg-on">Thẻ</button><button type="button">Viết</button><button type="button">Nghe</button><button type="button">Ngữ pháp</button>
+        </div>
+        <h3>Ô thống kê</h3>
+        <div class="kit-grid" style="grid-template-columns:1fr 1fr;gap:10px">
+          <button type="button" class="lg-tile lg-stat lg-on"><b>24</b><span style="color:inherit">Tổng thẻ</span></button>
+          <button type="button" class="lg-tile lg-stat"><b style="color:var(--lg-warn)">9</b><span>Đang học</span></button>
+          <button type="button" class="lg-tile lg-stat"><b style="color:var(--lg-ok)">12</b><span>Đã biết</span></button>
+          <button type="button" class="lg-tile lg-stat"><b style="color:var(--lg-bad)">3</b><span>Khó</span></button>
+        </div>
+        <h3>Ô nhập</h3>
+        <input class="lg-input" type="text" placeholder="Gõ câu bạn nghe được rồi Enter ..." aria-label="Ô nhập mẫu">
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <h3>Nút</h3>
+        <div class="kit-row">
+          <button class="lg-btn" type="button">Mặc định</button>
+          <button class="lg-btn lg-on" type="button">Đang chọn</button>
+          <button class="lg-btn lg-primary" type="button">Chính</button>
+          <button class="lg-btn lg-icon" type="button" aria-label="Phát âm"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button>
+        </div>
+        <h3>Màu ngữ nghĩa</h3>
+        <div class="kit-row">
+          <button class="lg-btn lg-bad" type="button">Khó</button>
+          <button class="lg-btn lg-warn" type="button">Đang học</button>
+          <button class="lg-btn lg-ok" type="button">Đã biết</button>
+        </div>
+        <h3>Danh sách</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button type="button" class="lg-tile lg-on" style="display:flex;justify-content:space-between"><span>Unit 21 — Đặt bàn</span><span>24</span></button>
+          <button type="button" class="lg-tile" style="display:flex;justify-content:space-between"><span>Unit 22 — Sân bay</span><span>18</span></button>
+        </div>
+        <h3>Chip & toast</h3>
+        <div class="kit-row">
+          <button class="lg-chip" type="button">Tất cả</button><button class="lg-chip lg-on" type="button">Đã đánh dấu 3</button>
+          <span class="lg-glass lg-toast"><i style="width:8px;height:8px;border-radius:50%;background:var(--lg-ok);box-shadow:0 0 10px var(--lg-ok)"></i>Đã lưu vào Từ điển</span>
+        </div>
+      </div>
+
+      <div class="lg-glass kit-chat">
+        <h3>Bong bóng chat</h3>
+        <div class="lg-bubble">Hi, I would like to know my credit balance.</div>
+        <div class="lg-bubble me">Of course. May I have your card number?</div>
+        <div class="lg-bubble">Sure, it is ending in 4821.</div>
+      </div>
+    </div>
+
+    <div class="kit-grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div class="lg-glass lg-card kit-demo-card">
+        <span class="lg-chip lg-warn" style="cursor:default">Đang học</span>
+        <p>I’d like to book a table for two.</p>
+        <small>Nhấp hoặc nhấn Space để lật thẻ</small>
+      </div>
+      <div class="lg-glass lg-strong kit-modal" role="dialog" aria-label="Modal mẫu">
+        <div class="kit-modal-h"><span>Cài đặt</span><button class="lg-btn lg-icon" type="button" aria-label="Đóng" style="width:30px;height:30px">✕</button></div>
+        <label style="display:flex;align-items:center;gap:10px;font-size:14px"><input type="checkbox" checked style="accent-color:#c9d5ff;width:18px;height:18px"> Hiệu ứng âm</label>
+        <input class="lg-input" type="text" placeholder="Tên đăng nhập" aria-label="Tên đăng nhập">
+        <div class="kit-row"><button class="lg-btn lg-primary" type="button" style="flex:1">Lưu</button><button class="lg-btn" type="button" style="flex:1">Hủy</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lg-glass kit-sec" aria-label="Quy tắc">
+    <h2>Quy tắc để giữ đúng chất kính</h2>
+    <ol class="kit-rules">
+      <li class="lg-tile" style="cursor:default"><b>Nền phải có màu và hình khối</b><span>Kính không có gì để khúc xạ thì chỉ là hộp xám. Luôn có ít nhất 3 mảng màu lớn và vài viên ngọc rõ nét nằm sau khung (<code>.lg-bg</code> + <code>.lg-orbs</code>), nền đặt <code>fixed</code>.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Mỗi khung kính gồm 4 lớp</b><span>Fill rất mỏng (alpha ≤ .2), backdrop blur kèm saturate, viền rim light dạng gradient, và vệt specular ở mép trên. Thiếu một lớp là mất cảm giác kính.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Kính không chồng kính quá 2 cấp</b><span>Cấp 1 (khung, thẻ, modal) có blur. Cấp 2 (nút, ô nhập, hàng danh sách) chỉ fill + rim, không blur. Danh sách dài cũng không blur từng hàng.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Chữ luôn trắng, có bóng nhẹ</b><span>Chữ chính #fff, chữ phụ alpha ≥ .8, thêm <code>text-shadow</code> mờ để đọc được trên vùng nền sáng. Không dùng chữ xám tối.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Chọn = đảo tương phản</b><span>Mục đang chọn là viên thuốc trắng chữ xanh đêm (<code>.lg-on</code>), giống segmented control của iOS. Không đánh dấu bằng viền màu.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Màu ngữ nghĩa là tint, không fill đặc</b><span>Đúng/biết/khó/học dùng nền trong suốt cùng màu, viền màu và chữ sáng (<code>.lg-ok .lg-warn .lg-bad</code>).</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Bo góc lớn, đồng bộ</b><span>Khung lớn 36px, khung thường 28px, ô 18px, nút và chip bo tròn hết (999px), thẻ lật 40px.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Modal đặc hơn, overlay mờ</b><span>Modal nằm trên lớp phủ tối nên dùng <code>.lg-strong</code> (tint .5, blur 26px). Popup nổi không chặn trang thì không cần overlay.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Giữ hiệu năng</b><span>Tối đa khoảng 6 phần tử có backdrop-filter cùng lúc trên màn hình. Header dính (sticky) dùng fill đặc để hàng cuộn phía sau không lộ xuyên.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Luôn có dự phòng</b><span><code>@supports</code> cho trình duyệt không có backdrop-filter, <code>prefers-reduced-transparency</code> và <code>prefers-reduced-motion</code> đã có sẵn trong CSS.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Chuyển động ngắn, nhẹ</b><span>Hover nhấc 1px và sáng lên, bấm co 97%, thời lượng .18s. Không xoay, không nảy.</span></li>
+      <li class="lg-tile" style="cursor:default"><b>Phông chữ hệ thống</b><span>SF Pro qua <code>-apple-system</code>, dự phòng Inter. Tiêu đề letter-spacing âm nhẹ (-.02em).</span></li>
+    </ol>
+  </section>
+
+  <section class="lg-glass kit-sec" aria-label="Token">
+    <h2>Token</h2>
+    <div class="kit-tokwrap">
+    <table class="kit-tok">
+      <thead><tr><th>Biến</th><th>Mặc định</th><th>Ý nghĩa</th></tr></thead>
+      <tbody>
+        <tr><td><code>--lg-blur</code></td><td>14px</td><td>Độ mờ phía sau. Nhỏ hơn thì kính trong hơn, thấy rõ nền; lớn hơn thì mờ đục.</td></tr>
+        <tr><td><code>--lg-fill</code></td><td>.12</td><td>Độ sáng lớp kính (alpha trắng). Các lớp gradient tự nhân hệ số.</td></tr>
+        <tr><td><code>--lg-tint</code></td><td>.16</td><td>Độ phủ màu xanh đêm giúp chữ dễ đọc. Tăng nếu nền quá sáng.</td></tr>
+        <tr><td><code>--lg-sat</code></td><td>200%</td><td>Độ rực của màu nền xuyên qua kính.</td></tr>
+        <tr><td><code>--lg-ink</code></td><td>#0d1140</td><td>Màu chữ trên nền trắng (trạng thái chọn, nút chính).</td></tr>
+        <tr><td><code>--lg-ok / warn / bad</code></td><td>#5ff0b5 / #ffd666 / #ff9db6</td><td>Màu ngữ nghĩa đúng, đang học, sai.</td></tr>
+        <tr><td><code>--lg-r-xl / lg / md</code></td><td>36 / 28 / 18px</td><td>Bán kính bo góc khung lớn, khung thường, ô.</td></tr>
+        <tr><td><code>--mx, --my</code></td><td>tự đặt bằng JS</td><td>Vị trí con trỏ trong khung, dùng cho đèn sáng chạy theo chuột.</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="lg-glass kit-sec" aria-label="Cách dùng">
+    <h2>Dùng trong dự án khác</h2>
+    <pre class="kit-code"><code>&lt;body class="lg-bg"&gt;
+  &lt;div class="lg-orbs"&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="lg-root"&gt;                       &lt;!-- nội dung nằm trên viên ngọc --&gt;
+    &lt;aside class="lg-glass lg-xl"&gt;...&lt;/aside&gt;
+    &lt;nav class="lg-seg"&gt;&lt;button class="lg-on"&gt;Thẻ&lt;/button&gt;&lt;button&gt;Viết&lt;/button&gt;&lt;/nav&gt;
+    &lt;button class="lg-btn lg-primary"&gt;Lưu&lt;/button&gt;
+    &lt;div class="lg-glass lg-card"&gt;...&lt;/div&gt;
+    &lt;div class="lg-overlay"&gt;&lt;div class="lg-glass lg-strong"&gt;...&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;</code></pre>
+    <p style="margin:0;color:var(--lg-muted);font-size:14px;line-height:1.5">Đổi độ kính cho cả dự án bằng cách sửa 4 biến ở <code>:root</code>, hoặc cho riêng một khung bằng style nội tuyến, ví dụ <code>style="--lg-blur:8px;--lg-tint:.05"</code>.</p>
+  </section>
+
+</div></div>
+
+<script id="lg-js">
+/* Liquid Glass — JS tuỳ chọn: đèn sáng chạy theo con trỏ + bật khúc xạ trên Chromium */
+(function () {
+  var fine = window.matchMedia && matchMedia("(pointer:fine)").matches;
+  if (fine) {
+    document.addEventListener("pointermove", function (e) {
+      var el = e.target.closest && e.target.closest(".lg-glass");
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      el.style.setProperty("--my", (e.clientY - r.top) + "px");
+    }, { passive: true });
+  }
+  window.LG = {
+    /* Khúc xạ dùng backdrop-filter:url(#...) nên chỉ chạy trên Chromium (Chrome, Edge). */
+    canRefract: function () { return /Chrom(e|ium)\//.test(navigator.userAgent) && CSS.supports("backdrop-filter", "blur(1px)"); },
+    refract: function (on) { document.documentElement.classList.toggle("lg-refract", !!on); }
+  };
+})();
+</script>
+
+<script>
+(function () {
+  var root = document.documentElement, st = root.style;
+  var def = { blur: 14, fill: 12, tint: 16, sat: 200 };
+  function bind(id, apply, fmt) {
+    var r = document.getElementById("r-" + id), o = document.getElementById("o-" + id);
+    function go() { var v = +r.value; apply(v); o.textContent = fmt(v); }
+    r.addEventListener("input", go); go(); return { r: r, go: go };
+  }
+  var ctl = [
+    bind("blur", function (v) { st.setProperty("--lg-blur", v + "px"); }, function (v) { return v + "px"; }),
+    bind("fill", function (v) { st.setProperty("--lg-fill", (v / 100).toFixed(2)); }, function (v) { return (v / 100).toFixed(2); }),
+    bind("tint", function (v) { st.setProperty("--lg-tint", (v / 100).toFixed(2)); }, function (v) { return (v / 100).toFixed(2); }),
+    bind("sat", function (v) { st.setProperty("--lg-sat", v + "%"); }, function (v) { return v + "%"; })
+  ];
+  document.getElementById("b-reset").addEventListener("click", function () {
+    Object.keys(def).forEach(function (k) { document.getElementById("r-" + k).value = def[k]; });
+    ctl.forEach(function (c) { c.go(); });
+  });
+  var rb = document.getElementById("b-refract");
+  if (!window.LG.canRefract()) { rb.disabled = true; rb.textContent = "Khúc xạ: cần Chrome / Edge"; }
+  rb.addEventListener("click", function () {
+    var on = rb.getAttribute("aria-pressed") !== "true";
+    rb.setAttribute("aria-pressed", on); window.LG.refract(on);
+    rb.textContent = "Khúc xạ (Chrome): " + (on ? "bật" : "tắt");
+    rb.classList.toggle("lg-on", on);
+  });
+  var msg = document.getElementById("copied");
+  function copy(id, label) {
+    var t = document.getElementById(id).textContent;
+    var done = function () { msg.textContent = "Đã sao chép " + label; setTimeout(function () { msg.textContent = ""; }, 2200); };
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, function () { msg.textContent = "Không sao chép được, hãy chọn và copy thủ công"; });
+    else msg.textContent = "Trình duyệt không hỗ trợ sao chép tự động";
+  }
+  document.getElementById("b-copy-css").addEventListener("click", function () { copy("lg-css", "CSS"); });
+  document.getElementById("b-copy-js").addEventListener("click", function () { copy("lg-js", "JS"); });
+  var seg = document.getElementById("demo-seg");
+  seg.addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    seg.querySelectorAll("button").forEach(function (x) { x.classList.toggle("lg-on", x === b); });
+  });
+})();
+</script>
+</body>
+</html>
