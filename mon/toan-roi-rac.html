@@ -604,9 +604,115 @@ html[data-view=desktop] #mn { width: min(420px, calc(100vw - 28px)); }
 
 ol.steps,.ans,.f{display:flow-root}figure.fl{margin:14px 0}figure.fl svg{margin:0}
 @media(min-width:900px){html[data-view=desktop] figure.fl{float:right;clear:right;width:min(46%,560px);margin:6px 0 14px 28px}}
+
+/* ==========================================================================
+   5. CÀI ĐẶT GIAO DIỆN: nút bánh răng + popup, và giao diện "Kính mờ" (Liquid Glass)
+   ========================================================================== */
+.vrow { display: flex; gap: 8px; margin-bottom: 12px; align-items: stretch; }
+.vrow .vs { flex: 1; margin: 0; min-width: 0; }
+.st-gear { flex: 0 0 44px; width: 44px; border: 1.5px solid var(--g); border-radius: 12px; background: var(--tint); color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+.st-gear:hover { border-color: var(--c5); color: var(--c5); }
+.st-gear:focus-visible, .st-pop button:focus-visible { outline: 3px solid var(--c3); outline-offset: 2px; }
+.st-ov { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(10,12,40,.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.st-ov[hidden], #glass-opts[hidden] { display: none; }
+.st-pop { width: min(460px, 100%); max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); overflow-y: auto; background: var(--card); color: var(--ink); border: 1px solid var(--g); border-radius: 22px; padding: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.4); font: 600 14.5px/1.5 "Be Vietnam Pro", system-ui, sans-serif; letter-spacing: 0; }
+.st-h { display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 17px; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--g); }
+.st-x { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--g); background: var(--tint); color: var(--ink); font: 700 14px/1 sans-serif; cursor: pointer; }
+.st-lab { font-size: 12px; font-weight: 800; color: var(--mut); text-transform: uppercase; margin: 0 0 8px; letter-spacing: .4px; }
+.st-seg { display: flex; gap: 4px; padding: 4px; background: var(--tint); border: 1.5px solid var(--g); border-radius: 14px; margin-bottom: 16px; }
+.st-seg button { flex: 1; border: 0; border-radius: 10px; padding: 10px 6px; background: transparent; color: var(--ink); font: 700 13.5px "Be Vietnam Pro", sans-serif; cursor: pointer; }
+.st-seg button[aria-pressed=true] { background: var(--c5); color: #fff; }
+.st-row { display: flex; flex-direction: column; gap: 6px; margin: 0 0 14px; font-size: 13.5px; }
+.st-row > span { display: flex; justify-content: space-between; gap: 10px; }
+.st-row > span em { font-style: normal; color: var(--mut); font-weight: 500; font-size: 12px; }
+.st-row > span output { color: var(--mut); font-weight: 600; }
+.st-row input[type=range] { width: 100%; accent-color: var(--c5); }
+.st-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.st-btns button { border: 1.5px solid var(--g); border-radius: 999px; padding: 9px 16px; background: var(--tint); color: var(--ink); font: 700 13px "Be Vietnam Pro", sans-serif; cursor: pointer; }
+.st-btns button:disabled { opacity: .5; cursor: not-allowed; }
+.st-btns button[aria-pressed=true] { background: var(--c5); color: #fff; border-color: var(--c5); }
+.st-note { font-size: 12.5px; color: var(--mut); font-weight: 500; margin: 12px 0 0; }
+
+/* --- Các viên ngọc nằm sau kính (chỉ hiện ở giao diện Kính mờ) --- */
+.lg-orbs { display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; filter: blur(var(--lg-orb-blur, 0px)); }
+.lg-orbs i { position: absolute; border-radius: 50%; display: block; }
+.lg-orbs i:nth-child(1){left:6%;top:14%;width:240px;height:240px;background:radial-gradient(circle at 32% 28%,#9fb4ff,#4f6bff 55%,#2a2fb0)}
+.lg-orbs i:nth-child(2){right:9%;top:6%;width:200px;height:200px;background:radial-gradient(circle at 32% 28%,#f0c0ff,#b043ff 55%,#6a1fb8)}
+.lg-orbs i:nth-child(3){left:38%;top:52%;width:280px;height:280px;background:radial-gradient(circle at 32% 28%,#ffc2dd,#ff4f9a 55%,#b01a68)}
+.lg-orbs i:nth-child(4){right:4%;bottom:6%;width:210px;height:210px;background:radial-gradient(circle at 32% 28%,#b4fff2,#12d6c0 55%,#0a7f8f)}
+.lg-orbs i:nth-child(5){left:3%;bottom:8%;width:150px;height:150px;background:radial-gradient(circle at 32% 28%,#fff1b0,#ffc83d 55%,#d98a00)}
+
+/* --- Giao diện Kính mờ: đổi bảng màu sang tông tối trong suốt, rồi thêm nền + kính --- */
+html:root[data-skin="glass"] {
+  --lg-blur: 14px; --lg-sat: 200%; --lg-fill: .12; --lg-tint: .16;
+  --bg: #14183f; --card: rgba(255,255,255,.08); --ink: #ffffff; --mut: rgba(255,255,255,.82);
+  --g: rgba(255,255,255,.28); --tint: rgba(255,255,255,.1);
+  --c1: #6ea0ff; --c2: #38d9a9; --c3: #ffd43b; --c4: #ff8fb8; --c5: #a78bfa;
+  color-scheme: dark;
+}
+html:root[data-skin="glass"] body {
+  background-color: #14183f;
+  background-image:
+    radial-gradient(60% 55% at 8% 0%,rgba(63,107,255,.85),transparent 70%),
+    radial-gradient(50% 50% at 100% 12%,rgba(176,67,255,.7),transparent 70%),
+    radial-gradient(55% 55% at 42% 108%,rgba(255,79,154,.6),transparent 70%),
+    radial-gradient(40% 40% at 92% 96%,rgba(18,214,192,.5),transparent 70%),
+    linear-gradient(160deg,#14183f,#1c1b52 45%,#2a1650);
+  background-attachment: fixed; -webkit-font-smoothing: antialiased;
+}
+html:root[data-skin="glass"] .lg-orbs { display: block; }
+html:root[data-skin="glass"][data-orbs="off"] .lg-orbs { display: none; }
+html:root[data-skin="glass"] main { position: relative; z-index: 1; }
+html:root[data-skin="glass"] section, html:root[data-skin="glass"] #mn, html:root[data-skin="glass"] .st-pop {
+  background:
+    radial-gradient(circle 170px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.2),transparent 70%),
+    linear-gradient(135deg,rgba(255,255,255,calc(var(--lg-fill)*1.5)),rgba(255,255,255,calc(var(--lg-fill)*.3)) 60%,rgba(255,255,255,calc(var(--lg-fill)*.8))),
+    rgba(14,16,70,var(--lg-tint));
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+          backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(255,255,255,.18), inset 0 0 26px rgba(255,255,255,.07), 0 26px 54px -20px rgba(4,6,36,.65);
+  border-color: rgba(255,255,255,.3);
+}
+html:root[data-skin="glass"] section { border-radius: 28px; text-shadow: 0 1px 10px rgba(8,10,56,.3); }
+html:root[data-skin="glass"] #mn, html:root[data-skin="glass"] .st-pop { background:
+    radial-gradient(circle 170px at var(--mx,28%) var(--my,0%),rgba(255,255,255,.2),transparent 70%),
+    linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 60%,rgba(255,255,255,.12)), rgba(22,26,98,.66);
+  -webkit-backdrop-filter: blur(max(var(--lg-blur),22px)) saturate(var(--lg-sat)); backdrop-filter: blur(max(var(--lg-blur),22px)) saturate(var(--lg-sat)); }
+html:root[data-skin="glass"] #mn { border-radius: 24px; }
+html:root[data-skin="glass"] .st-ov { background: rgba(8,10,44,.5); }
+html:root[data-skin="glass"] #mb, html:root[data-skin="glass"] .st-gear, html:root[data-skin="glass"] .st-x {
+  background: linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.06));
+  border: 1px solid rgba(255,255,255,.4); color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 8px 16px -10px rgba(4,6,36,.6);
+}
+html:root[data-skin="glass"] .vb[aria-pressed=true], html:root[data-skin="glass"] .st-seg button[aria-pressed=true], html:root[data-skin="glass"] .st-btns button[aria-pressed=true] {
+  background: linear-gradient(180deg,#fff,#dfe5ff); color: #0d1140; border-color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.28);
+}
+html:root[data-skin="glass"] .vs, html:root[data-skin="glass"] .st-seg { background: rgba(8,10,50,.28); border-color: rgba(255,255,255,.22); box-shadow: inset 0 1px 3px rgba(0,0,0,.3); }
+html:root[data-skin="glass"] .st-btns button { background: linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.06)); border-color: rgba(255,255,255,.34); color: #fff; }
+html:root[data-skin="glass"] .csel-menu { background: rgba(24,28,100,.96); }
+html:root[data-skin="glass"] .steps > li::before, html:root[data-skin="glass"] .k { color: #0d1140; }
+html:root[data-skin="glass"].lg-refract section, html:root[data-skin="glass"].lg-refract #mn, html:root[data-skin="glass"].lg-refract .st-pop {
+  -webkit-backdrop-filter: url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+          backdrop-filter: url(#lg-refract) blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.08);
+}
+@media (prefers-reduced-transparency: reduce) {
+  html:root[data-skin="glass"] section, html:root[data-skin="glass"] #mn, html:root[data-skin="glass"] .st-pop { -webkit-backdrop-filter: none; backdrop-filter: none; background: #262a72; }
+}
+
+/* Thu nhỏ thanh chế độ xem + nút setting */
+.vrow { gap: 6px; margin-bottom: 10px; }
+.vrow .vs { padding: 2px; gap: 2px; border-radius: 9px; border-width: 1px; flex: 0 1 auto; }
+.vrow .vb { flex: 0 0 auto; padding: 3px 9px; font-size: 11px; border-radius: 7px; }
+.vrow .st-gear { flex: 0 0 28px; width: 28px; border-width: 1px; border-radius: 9px; }
+.vrow .st-gear svg { width: 14px; height: 14px; }
 </style>
 </head>
 <body>
+
+<!-- Nền kính mờ: bộ lọc khúc xạ + viên ngọc (chỉ hiện khi chọn giao diện Kính mờ) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<div class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
 
 <!-- Nút 3 gạch ở góc trên bên trái -->
 <button id="mb" type="button" aria-label="Mở menu chọn bài và mục lục" aria-expanded="false" aria-controls="mn">
@@ -615,7 +721,7 @@ ol.steps,.ans,.f{display:flow-root}figure.fl{margin:14px 0}figure.fl svg{margin:
 
 <!-- Menu điều hướng chứa bộ chọn bài học và mục lục tự động -->
 <nav id="mn" hidden aria-label="Menu bài học và mục lục">
-  <div class="vs" role="group" aria-label="Chế độ xem"><b>Chế độ xem</b><button type="button" id="vm" class="vb" aria-pressed="true">Điện thoại</button><button type="button" id="vd" class="vb" aria-pressed="false">Máy tính</button></div>
+  <div class="vrow"><div class="vs" role="group" aria-label="Chế độ xem"><button type="button" id="vm" class="vb" aria-pressed="true">Điện thoại</button><button type="button" id="vd" class="vb" aria-pressed="false">Máy tính</button></div><button type="button" id="st-open" class="st-gear" aria-label="Cài đặt giao diện" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button></div>
   <div class="menu-selector-wrap">
     <label for="lesson-select">Chọn bài học Toán Rời Rạc:</label>
     <select id="lesson-select" onchange="loadLesson(this.value)">
@@ -635,6 +741,21 @@ ol.steps,.ans,.f{display:flow-root}figure.fl{margin:14px 0}figure.fl svg{margin:
   <div class="toc-title">Mục lục bài đang mở</div>
   <div id="toc-links"></div>
 </nav>
+
+<!-- Popup chỉnh giao diện -->
+<div class="st-ov" id="st-ov" hidden>
+  <div class="st-pop" role="dialog" aria-modal="true" aria-labelledby="st-title">
+    <div class="st-h"><span id="st-title">Cài đặt giao diện</span><button type="button" class="st-x" id="st-close" aria-label="Đóng">✕</button></div>
+    <p class="st-lab">Giao diện</p>
+    <div class="st-seg" role="group" aria-label="Chọn giao diện"><button type="button" data-skin="classic" aria-pressed="true">Dracula</button><button type="button" data-skin="glass" aria-pressed="false">Kính mờ (Liquid Glass)</button></div>
+    <div id="glass-opts" hidden>
+      <p class="st-lab">Điều chỉnh độ kính</p>
+<label class="st-row"><span>Độ mờ phía sau <em>--lg-blur</em><output id="so-blur"></output></span><input id="sr-blur" type="range" min="0" max="40" value="14"></label><label class="st-row"><span>Độ sáng của kính <em>--lg-fill</em><output id="so-fill"></output></span><input id="sr-fill" type="range" min="2" max="40" value="12"></label><label class="st-row"><span>Độ phủ màu tối <em>--lg-tint</em><output id="so-tint"></output></span><input id="sr-tint" type="range" min="0" max="60" value="16"></label><label class="st-row"><span>Độ rực màu nền <em>--lg-sat</em><output id="so-sat"></output></span><input id="sr-sat" type="range" min="100" max="300" value="200"></label><label class="st-row"><span>Làm mờ nền (kéo về 0 để ẩn các vòng tròn) <em></em><output id="so-bg"></output></span><input id="sr-bg" type="range" min="0" max="40" value="1"></label>
+      <div class="st-btns"><button type="button" id="st-refract" aria-pressed="false">Khúc xạ (Chrome): tắt</button><button type="button" id="st-reset">Đặt lại</button></div>
+      <p class="st-note">Cài đặt được lưu lại trên trình duyệt này.</p>
+    </div>
+  </div>
+</div>
 
 <!-- Khu vực chứa nội dung bài học được nạp động -->
 <main id="app-content"></main>
@@ -3254,6 +3375,64 @@ window.loadLesson = loadLesson;
   // Mặc định mở Phần 4 (Bài 6 - Lý thuyết số & Mật mã hóa RSA) để xem ngay Mục 5.1 vừa bổ sung
   $('lesson-select').value = '8';
   loadLesson('8');
+})();
+</script>
+<script>
+/* Cài đặt giao diện: Hiện tại / Kính mờ + popup chỉnh kính */
+(function () {
+  var KEY = 'toan-roi-rac-skin', root = document.documentElement, st = root.style;
+  var DEF = { blur: 14, fill: 12, tint: 16, sat: 200, bg: 1 };
+  var S = { skin: 'classic', refract: false };
+  Object.keys(DEF).forEach(function (k) { S[k] = DEF[k]; });
+  try { var raw = localStorage.getItem(KEY); if (raw) { var o = JSON.parse(raw); Object.keys(S).forEach(function (k) { if (o[k] !== undefined && typeof o[k] === typeof S[k]) S[k] = o[k]; }); } } catch (e) {}
+  if (S.skin !== 'glass') S.skin = 'classic';
+  var $ = function (id) { return document.getElementById(id); };
+  var canRefract = /Chrom(e|ium)\//.test(navigator.userAgent) && window.CSS && CSS.supports('backdrop-filter', 'blur(1px)');
+  var FMT = {
+    blur: function (v) { return v + 'px'; }, fill: function (v) { return (v / 100).toFixed(2); },
+    tint: function (v) { return (v / 100).toFixed(2); }, sat: function (v) { return v + '%'; },
+    bg: function (v) { return v === 0 ? 'ẩn' : v === 1 ? 'rõ nét' : 'mờ ' + (v - 1) + 'px'; }
+  };
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function apply() {
+    root.setAttribute('data-skin', S.skin);
+    st.setProperty('--lg-blur', S.blur + 'px');
+    st.setProperty('--lg-fill', (S.fill / 100).toFixed(2));
+    st.setProperty('--lg-tint', (S.tint / 100).toFixed(2));
+    st.setProperty('--lg-sat', S.sat + '%');
+    st.setProperty('--lg-orb-blur', Math.max(0, S.bg - 1) + 'px');
+    root.setAttribute('data-orbs', S.bg === 0 ? 'off' : 'on');
+    root.classList.toggle('lg-refract', !!(S.refract && canRefract && S.skin === 'glass'));
+    document.querySelectorAll('.st-seg button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.skin === S.skin); });
+    $('glass-opts').hidden = S.skin !== 'glass';
+    Object.keys(DEF).forEach(function (k) { $('sr-' + k).value = S[k]; $('so-' + k).textContent = FMT[k](S[k]); });
+    var rb = $('st-refract');
+    rb.setAttribute('aria-pressed', !!S.refract);
+    rb.textContent = canRefract ? 'Khúc xạ (Chrome): ' + (S.refract ? 'bật' : 'tắt') : 'Khúc xạ: cần Chrome / Edge';
+    rb.disabled = !canRefract;
+  }
+  document.querySelectorAll('.st-seg button').forEach(function (b) { b.onclick = function () { S.skin = b.dataset.skin; apply(); save(); }; });
+  Object.keys(DEF).forEach(function (k) { $('sr-' + k).addEventListener('input', function (e) { S[k] = +e.target.value; apply(); save(); }); });
+  $('st-refract').onclick = function () { S.refract = !S.refract; apply(); save(); };
+  $('st-reset').onclick = function () { Object.keys(DEF).forEach(function (k) { S[k] = DEF[k]; }); S.refract = false; apply(); save(); };
+  var ov = $('st-ov'), opener = $('st-open');
+  function open() { ov.hidden = false; $('st-close').focus(); }
+  function close() { ov.hidden = true; opener.focus(); }
+  opener.onclick = open; $('st-close').onclick = close;
+  ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ov.hidden) { e.stopPropagation(); close(); } }, true);
+  /* Đèn sáng chạy theo con trỏ trên các khung kính */
+  if (window.matchMedia && matchMedia('(pointer:fine)').matches) {
+    document.addEventListener('pointermove', function (e) {
+      if (S.skin !== 'glass') return;
+      var el = e.target.closest && e.target.closest('section, #mn, .st-pop');
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }, { passive: true });
+  }
+  apply();
 })();
 </script>
 </body>
