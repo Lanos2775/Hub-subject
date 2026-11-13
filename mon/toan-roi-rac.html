@@ -3746,789 +3746,1315 @@ body.ai-theme[data-ai-style="claude"] .theme-bg-card.active,
 </template>
 
 <template id="tpl-buoi-9">
-<header>
-  <span class="k b3">TOÁN RỜI RẠC · BÀI 13 (LÝ THUYẾT ĐỒ THỊ)</span>
-  <h1>Đồ Thị: Khái Niệm, Bậc, Đồ Thị Đặc Biệt, Biểu Diễn, Đẳng Cấu, Liên Thông, Chu Trình Euler &amp; Hamilton</h1>
-  <p class="mut">Nội dung bao quát toàn diện Chương 13: phân loại đồ thị, các mô hình thực tế, định lý bắt tay, đồ thị phân đôi và định lý Hall, ma trận kề/liên thuộc, điều kiện đẳng cấu, thành phần liên thông, khớp/cầu, định lý Euler và định lý Dirac/Ore về chu trình Hamilton.</p>
-</header>
-
-<section>
-  <h2>1. Khái Niệm Cơ Bản &amp; Các Mô Hình Đồ Thị Thực Tế</h2>
-  <div class="box analogy">
-    <b>Ẩn dụ trực quan:</b> Hãy tưởng tượng đồ thị là một mạng lưới quan hệ. <b>Đỉnh (Vertex)</b> là các đối tượng (con người, thành phố, trang web, protein), còn <b>Cạnh (Edge)</b> là sợi dây kết nối thể hiện mối quan hệ giữa chúng (bạn bè, đường bay, đường dẫn hyperlink, tương tác hóa học).
+  <div class="lesson-header">
+    <div class="lesson-badge">Toán rời rạc &bull; Chương 13</div>
+    <h1 class="lesson-title">Lý thuyết đồ thị cơ bản &bull; Mô hình, Thuật ngữ, Biểu diễn và Tính chất liên thông</h1>
+    <div class="lesson-meta">
+      <span>Thời lượng học: 4 - 5 giờ</span>
+      <span>Số lượng hình minh họa: 20 đồ thị SVG trực quan</span>
+      <span>Tài liệu tham khảo: Bài 13.pdf (UET) & Kenneth H. Rosen</span>
+    </div>
   </div>
 
-  <p>Một đồ thị $G = (V, E)$ gồm hai thành phần chính: tập đỉnh $V \neq \emptyset$ (Vertices) và tập cạnh $E$ (Edges). Mỗi cạnh $e \in E$ liên kết với một hoặc hai đỉnh gọi là các <i>điểm cuối (endpoints)</i>.</p>
+  <!-- PHẦN 1 -->
+  <h2>1. Tổng quan và Các mô hình đồ thị</h2>
+  <p>Lý thuyết đồ thị (Graph Theory) là một nhánh cốt lõi của toán học rời rạc và khoa học máy tính. Đồ thị là cấu trúc toán học biểu diễn các mối quan hệ nhị phân giữa các đối tượng. Một đồ thị bao gồm một tập các <strong>đỉnh</strong> (vertices / nodes) và một tập các <strong>cạnh</strong> (edges / arcs) nối các cặp đỉnh.</p>
 
-  <figure class="fl">
-    <svg viewBox="0 0 760 210" role="img" style="max-width:100%;height:auto">
-      <!-- Don do thi -->
-      <g>
-        <rect x="15" y="15" width="225" height="180" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="127" y="38" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="14">1. Đơn Đồ Thị (Simple)</text>
-        <line x1="60" y1="80" x2="190" y2="80" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="60" y1="80" x2="60" y2="160" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="60" y1="160" x2="190" y2="160" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="190" y1="80" x2="190" y2="160" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="60" y1="80" x2="190" y2="160" stroke="var(--ink)" stroke-width="2"/>
-        <circle cx="60" cy="80" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="60" y="85" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">a</text>
-        <circle cx="190" cy="80" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="190" y="85" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">b</text>
-        <circle cx="60" cy="160" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="60" y="165" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">c</text>
-        <circle cx="190" cy="160" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="190" y="165" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">d</text>
-      </g>
-      <!-- Da do thi co khuyen -->
-      <g>
-        <rect x="265" y="15" width="225" height="180" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="377" y="38" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="14">2. Đa Đồ Thị Có Khuyên</text>
-        <!-- Canh boi giua u va v -->
-        <path d="M 315 110 Q 377 75 440 110" fill="none" stroke="var(--c4)" stroke-width="2.2"/>
-        <path d="M 315 110 Q 377 145 440 110" fill="none" stroke="var(--c4)" stroke-width="2.2"/>
-        <line x1="315" y1="110" x2="440" y2="110" stroke="var(--ink)" stroke-width="2"/>
-        <!-- Loop khuyen tai u -->
-        <path d="M 315 110 C 275 60 275 160 315 110" fill="none" stroke="var(--c5)" stroke-width="2.2"/>
-        <circle cx="315" cy="110" r="13" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5"/>
-        <text x="315" y="115" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u</text>
-        <circle cx="440" cy="110" r="13" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5"/>
-        <text x="440" y="115" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v</text>
-        <text x="377" y="175" text-anchor="middle" font-size="11" fill="var(--mut)">3 cạnh nối (u,v) + 1 khuyên tại u</text>
-      </g>
-      <!-- Do thi co huong -->
-      <g>
-        <rect x="515" y="15" width="230" height="180" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="630" y="38" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="14">3. Đồ Thị Có Hướng (Digraph)</text>
+  <div class="box note">
+    <div class="box-title">Định nghĩa hình thức: Đồ thị vô hướng và Đồ thị có hướng</div>
+    <ul>
+      <li><strong>Đồ thị vô hướng (Undirected Graph):</strong> Là một cặp $G = (V, E)$, trong đó $V$ là tập hợp khác rỗng các đỉnh, $E$ là tập hợp các cạnh. Mỗi cạnh $e \in E$ là một tập gồm 2 phần tử $\{u, v\}$ (không có thứ tự) với $u, v \in V$. Ta nói $e$ nối đỉnh $u$ và đỉnh $v$.</li>
+      <li><strong>Đồ thị có hướng (Directed Graph / Digraph):</strong> Là một cặp $G = (V, E)$, trong đó $V$ là tập hợp khác rỗng các đỉnh, $E$ là tập hợp các cung (directed edges). Mỗi cung $e \in E$ là một cặp có thứ tự $(u, v)$ với $u, v \in V$. Ta nói $e$ bắt đầu từ đỉnh $u$ (đỉnh đầu) và trỏ tới đỉnh $v$ (đỉnh cuối).</li>
+    </ul>
+  </div>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.1: So sánh Đồ thị có hướng (Slide 2) và Đồ thị vô hướng (Slide 3)</div>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+      <!-- Digraph 3 nodes -->
+      <svg width="260" height="200" viewBox="0 0 260 200" style="background: transparent;">
         <defs>
-          <marker id="arr-g" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-            <path d="M 0 0 L 8 4 L 0 8 z" fill="var(--c2)"/>
+          <marker id="arrow" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--c1)" />
           </marker>
         </defs>
-        <line x1="565" y1="90" x2="685" y2="90" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-g)"/>
-        <line x1="695" y1="95" x2="635" y2="155" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-g)"/>
-        <line x1="625" y1="155" x2="565" y2="95" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-g)"/>
-        <circle cx="560" cy="90" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
-        <text x="560" y="95" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">x</text>
-        <circle cx="700" cy="90" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
-        <text x="700" y="95" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">y</text>
-        <circle cx="630" cy="165" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
-        <text x="630" y="170" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">z</text>
-      </g>
-    </svg>
-    <figcaption>Ba hình thái đồ thị cơ bản: Đơn đồ thị vô hướng, Đa đồ thị có khuyên (giả đồ thị) và Đồ thị có hướng.</figcaption>
-  </figure>
+        <!-- Edges -->
+        <line x1="60" y1="50" x2="200" y2="50" stroke="var(--c1)" stroke-width="2.5" marker-end="url(#arrow)" />
+        <line x1="200" y1="50" x2="130" y2="160" stroke="var(--c1)" stroke-width="2.5" marker-end="url(#arrow)" />
+        <line x1="60" y1="50" x2="130" y2="160" stroke="var(--c1)" stroke-width="2.5" marker-end="url(#arrow)" />
+        <!-- Nodes -->
+        <circle cx="60" cy="50" r="18" fill="var(--card)" stroke="var(--c1)" stroke-width="3" />
+        <text x="60" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="200" cy="50" r="18" fill="var(--card)" stroke="var(--c1)" stroke-width="3" />
+        <text x="200" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="130" cy="160" r="18" fill="var(--card)" stroke="var(--c1)" stroke-width="3" />
+        <text x="130" y="165" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">c</text>
+        <text x="130" y="195" text-anchor="middle" font-size="12" font-style="italic" fill="var(--mut)">Đồ thị có hướng G = (V, E)</text>
+      </svg>
 
-  <div class="tw">
-    <table>
+      <!-- Undirected Graph 4 nodes -->
+      <svg width="260" height="200" viewBox="0 0 260 200" style="background: transparent;">
+        <!-- Edges -->
+        <line x1="60" y1="50" x2="200" y2="50" stroke="var(--c2)" stroke-width="2.5" />
+        <line x1="200" y1="50" x2="200" y2="150" stroke="var(--c2)" stroke-width="2.5" />
+        <line x1="200" y1="150" x2="60" y2="150" stroke="var(--c2)" stroke-width="2.5" />
+        <line x1="60" y1="150" x2="60" y2="50" stroke="var(--c2)" stroke-width="2.5" />
+        <line x1="60" y1="50" x2="200" y2="150" stroke="var(--c2)" stroke-width="2.5" />
+        <!-- Nodes -->
+        <circle cx="60" cy="50" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="60" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="200" cy="50" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="200" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="60" cy="150" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="60" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">c</text>
+        <circle cx="200" cy="150" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="200" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">d</text>
+        <text x="130" y="195" text-anchor="middle" font-size="12" font-style="italic" fill="var(--mut)">Đồ thị vô hướng G = (V, E)</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3>Phân loại các mô hình đồ thị (Slide 4 - 9)</h3>
+  <p>Dựa trên đặc điểm của cạnh (có hướng hay vô hướng), có tồn tại khuyên (vòng lặp từ một đỉnh về chính nó) hay cạnh bội (nhiều cạnh cùng nối một cặp đỉnh) hay không, ta có bảng phân loại chuẩn:</p>
+
+  <div class="table-container" style="overflow-x: auto; margin: 16px 0;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
       <thead>
-        <tr>
-          <th>Loại Đồ Thị</th>
-          <th>Bản Chất Cạnh</th>
-          <th>Cạnh Bội (Multiple Edges)?</th>
-          <th>Khuyên (Self-loop)?</th>
-          <th>Ví Dụ Thực Tế Trong Đời Sống</th>
+        <tr style="border-bottom: 2px solid var(--border);">
+          <th style="padding: 10px;">Loại đồ thị</th>
+          <th style="padding: 10px;">Cạnh có hướng?</th>
+          <th style="padding: 10px;">Cho phép cạnh bội?</th>
+          <th style="padding: 10px;">Cho phép khuyên (loop)?</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><b>Đơn đồ thị vô hướng</b></td>
-          <td>Cặp không thứ tự $\{u, v\}$</td>
-          <td>Không</td>
-          <td>Không</td>
-          <td>Mạng bạn bè Facebook (2 chiều đối xứng, không kết bạn với chính mình)</td>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px;"><strong>Đơn đồ thị vô hướng (Simple graph)</strong></td>
+          <td style="padding: 10px;">Không</td>
+          <td style="padding: 10px; color: var(--c3);">Không</td>
+          <td style="padding: 10px; color: var(--c3);">Không</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px;"><strong>Đa đồ thị vô hướng (Multigraph)</strong></td>
+          <td style="padding: 10px;">Không</td>
+          <td style="padding: 10px; color: var(--c1);">Có</td>
+          <td style="padding: 10px; color: var(--c3);">Không</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px;"><strong>Giả đồ thị vô hướng (Pseudograph)</strong></td>
+          <td style="padding: 10px;">Không</td>
+          <td style="padding: 10px; color: var(--c1);">Có</td>
+          <td style="padding: 10px; color: var(--c1);">Có</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px;"><strong>Đơn đồ thị có hướng (Simple directed graph)</strong></td>
+          <td style="padding: 10px;">Có</td>
+          <td style="padding: 10px; color: var(--c3);">Không</td>
+          <td style="padding: 10px; color: var(--c3);">Không</td>
+        </tr>
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 10px;"><strong>Đa đồ thị có hướng (Directed multigraph)</strong></td>
+          <td style="padding: 10px;">Có</td>
+          <td style="padding: 10px; color: var(--c1);">Có</td>
+          <td style="padding: 10px; color: var(--c1);">Có</td>
         </tr>
         <tr>
-          <td><b>Đa đồ thị vô hướng</b></td>
-          <td>Cặp không thứ tự $\{u, v\}$</td>
-          <td><b>Có</b></td>
-          <td>Không</td>
-          <td>Hệ thống cáp mạng dự phòng kết nối giữa 2 tổng đài viễn thông</td>
-        </tr>
-        <tr>
-          <td><b>Giả đồ thị (Pseudograph)</b></td>
-          <td>Cặp không thứ tự $\{u, v\}$</td>
-          <td><b>Có</b></td>
-          <td><b>Có</b></td>
-          <td>Mạng lưới giao thông nội bộ (tuyến đường vòng khép kín quanh đảo)</td>
-        </tr>
-        <tr>
-          <td><b>Đơn đồ thị có hướng</b></td>
-          <td>Cặp có thứ tự $(u, v)$</td>
-          <td>Không</td>
-          <td>Không</td>
-          <td>Mạng lưới theo dõi (Follower) trên X/Twitter, quan hệ ảnh hưởng xã hội</td>
-        </tr>
-        <tr>
-          <td><b>Đa đồ thị có hướng</b></td>
-          <td>Cặp có thứ tự $(u, v)$</td>
-          <td><b>Có</b></td>
-          <td><b>Có</b></td>
-          <td>Mạng lưới đường bay thương mại (nhiều chuyến/ngày từ Hà Nội đến TP.HCM)</td>
+          <td style="padding: 10px;"><strong>Đồ thị hỗn hợp (Mixed graph)</strong></td>
+          <td style="padding: 10px;">Cả hai</td>
+          <td style="padding: 10px; color: var(--c1);">Có</td>
+          <td style="padding: 10px; color: var(--c1);">Có</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="box tip">
-    <b>Các mô hình đồ thị quan trọng trong slide CNTT:</b>
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.2: Đơn đồ thị vs Đa đồ thị có khuyên (Loop) và Cạnh bội (Slide 4)</div>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+      <!-- Simple Directed Graph -->
+      <svg width="280" height="210" viewBox="0 0 280 210" style="background: transparent;">
+        <defs>
+          <marker id="ar1" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--c4)" />
+          </marker>
+        </defs>
+        <line x1="60" y1="60" x2="220" y2="60" stroke="var(--c4)" stroke-width="2.5" marker-end="url(#ar1)" />
+        <line x1="220" y1="60" x2="140" y2="160" stroke="var(--c4)" stroke-width="2.5" marker-end="url(#ar1)" />
+        <line x1="140" y1="160" x2="60" y2="60" stroke="var(--c4)" stroke-width="2.5" marker-end="url(#ar1)" />
+        <!-- Nodes -->
+        <circle cx="60" cy="60" r="18" fill="var(--card)" stroke="var(--c4)" stroke-width="3" />
+        <text x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="220" cy="60" r="18" fill="var(--card)" stroke="var(--c4)" stroke-width="3" />
+        <text x="220" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="140" cy="160" r="18" fill="var(--card)" stroke="var(--c4)" stroke-width="3" />
+        <text x="140" y="165" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">c</text>
+        <text x="140" y="200" text-anchor="middle" font-size="12" font-style="italic" fill="var(--mut)">Đơn đồ thị có hướng (Không khuyên, không cạnh bội)</text>
+      </svg>
+
+      <!-- Multigraph with loop and multiple edges -->
+      <svg width="300" height="210" viewBox="0 0 300 210" style="background: transparent;">
+        <!-- Multiple edges between a and b -->
+        <path d="M 60 70 Q 140 30 220 70" fill="none" stroke="var(--c5)" stroke-width="2.5" />
+        <path d="M 60 70 Q 140 110 220 70" fill="none" stroke="var(--c5)" stroke-width="2.5" />
+        <!-- Edge b to c -->
+        <line x1="220" y1="70" x2="220" y2="160" stroke="var(--c5)" stroke-width="2.5" />
+        <!-- Edge a to c -->
+        <line x1="60" y1="70" x2="220" y2="160" stroke="var(--c5)" stroke-width="2.5" />
+        <!-- Loop at d -->
+        <path d="M 60 160 C 20 120, 20 200, 50 175" fill="none" stroke="var(--c5)" stroke-width="2.5" />
+        <line x1="60" y1="160" x2="220" y2="160" stroke="var(--c5)" stroke-width="2.5" />
+        <!-- Nodes -->
+        <circle cx="60" cy="70" r="18" fill="var(--card)" stroke="var(--c5)" stroke-width="3" />
+        <text x="60" y="75" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="220" cy="70" r="18" fill="var(--card)" stroke="var(--c5)" stroke-width="3" />
+        <text x="220" y="75" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="220" cy="160" r="18" fill="var(--card)" stroke="var(--c5)" stroke-width="3" />
+        <text x="220" y="165" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">c</text>
+        <circle cx="60" cy="160" r="18" fill="var(--card)" stroke="var(--c5)" stroke-width="3" />
+        <text x="60" y="165" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">d</text>
+        <text x="140" y="200" text-anchor="middle" font-size="12" font-style="italic" fill="var(--mut)">Giả đồ thị: Cạnh bội giữa (a, b) & khuyên tại d</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PHẦN 2 -->
+  <h2>2. Thuật ngữ cơ bản trên Đồ thị vô hướng</h2>
+  <div class="box note">
+    <div class="box-title">Khái niệm: Đỉnh kề, Cạnh liên thuộc, Lân cận</div>
     <ul>
-      <li><b>Đồ thị Hollywood &amp; Số Bacon:</b> Đỉnh là các diễn viên. Hai diễn viên kề nhau nếu đóng chung một bộ phim. "Số Bacon" là khoảng cách ngắn nhất từ diễn viên bất kỳ đến tài tử Kevin Bacon.</li>
-      <li><b>Đồ thị cộng tác học thuật &amp; Số Erdős:</b> Đỉnh là các nhà nghiên cứu. Hai người kề nhau nếu đồng tác giả một bài báo. Số Erdős là khoảng cách đến nhà toán học lỗi lạc Paul Erdős.</li>
-      <li><b>Mạng Web (Web Graph):</b> Đỉnh là các trang web URL, cạnh có hướng là các siêu liên kết (hyperlinks). Đây là nền tảng của thuật toán PageRank kinh điển của Google.</li>
-      <li><b>Mạng tương tác Protein (PPI Network):</b> Đỉnh là các phân tử protein, cạnh biểu diễn phản ứng tương tác sinh hóa để nghiên cứu cơ chế bệnh tật học đường.</li>
+      <li>Hai đỉnh $u$ và $v$ gọi là <strong>kề nhau</strong> (adjacent / neighbors) nếu tồn tại cạnh $e = \{u, v\}$ nối chúng. Cạnh $e$ được gọi là <strong>liên thuộc</strong> (incident) với các đỉnh $u$ và $v$.</li>
+      <li>Tập hợp tất cả các đỉnh kề với đỉnh $v$ được gọi là <strong>tập lân cận</strong> (neighborhood) của $v$, ký hiệu là $N(v)$. Nếu $A \subseteq V$, $N(A) = igcup_{v \in A} N(v)$.</li>
+      <li><strong>Bậc của đỉnh (Degree):</strong> Ký hiệu $\deg(v)$, là số lượng cạnh liên thuộc với đỉnh $v$. <em>Lưu ý đặc biệt:</em> Một khuyên (loop) đóng góp <strong>2 đơn vị</strong> vào bậc của đỉnh đó.</li>
+      <li>Đỉnh có $\deg(v) = 0$ gọi là <strong>đỉnh cô lập</strong> (isolated vertex).</li>
+      <li>Đỉnh có $\deg(v) = 1$ gọi là <strong>đỉnh treo</strong> (pendant vertex / leaf).</li>
     </ul>
   </div>
-</section>
 
-<section>
-  <h2>2. Bậc Của Đỉnh, Đỉnh Cô Lập, Đỉnh Treo &amp; Định Lý Bắt Tay</h2>
-  <p>Đối với đồ thị vô hướng, <b>bậc của đỉnh $v$</b> (ký hiệu $\deg(v)$) là số lượng cạnh liên thuộc với $v$, riêng <i>mỗi khuyên (loop) đóng góp 2 vào bậc của đỉnh</i>.</p>
-  <ul>
-    <li><b>Đỉnh cô lập (Isolated vertex):</b> Đỉnh có bậc bằng 0 ($\deg(v) = 0$). Đỉnh này không nối với bất kỳ đỉnh nào khác.</li>
-    <li><b>Đỉnh treo (Pendant / leaf vertex):</b> Đỉnh có bậc bằng 1 ($\deg(v) = 1$).</li>
-    <li><b>Tập lân cận $N(v)$:</b> Tập hợp tất cả các đỉnh kề trực tiếp với $v$. Với đơn đồ thị, $|N(v)| = \deg(v)$.</li>
-  </ul>
-
-  <div class="f key">
-    $$\sum_{v \in V} \deg(v) = 2|E| = 2m$$
-    <small><b>Định lý bắt tay (Handshaking Theorem):</b> Trong mọi đồ thị vô hướng, tổng bậc của tất cả các đỉnh luôn bằng đúng <b>hai lần số cạnh</b>.</small>
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.3: Minh họa bậc của đỉnh, đỉnh treo và đỉnh cô lập (Slide 15)</div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+      <svg width="460" height="220" viewBox="0 0 460 220" style="background: transparent;">
+        <!-- Edges -->
+        <line x1="60" y1="50" x2="160" y2="50" stroke="var(--border)" stroke-width="3" />
+        <line x1="160" y1="50" x2="260" y2="50" stroke="var(--border)" stroke-width="3" />
+        <line x1="60" y1="50" x2="160" y2="150" stroke="var(--border)" stroke-width="3" />
+        <line x1="160" y1="50" x2="160" y2="150" stroke="var(--border)" stroke-width="3" />
+        <line x1="160" y1="150" x2="260" y2="50" stroke="var(--border)" stroke-width="3" />
+        <line x1="160" y1="150" x2="260" y2="150" stroke="var(--border)" stroke-width="3" />
+        <line x1="260" y1="50" x2="260" y2="150" stroke="var(--border)" stroke-width="3" />
+        <!-- Pendant edge to d -->
+        <line x1="60" y1="50" x2="60" y2="150" stroke="var(--c3)" stroke-width="3" stroke-dasharray="4" />
+        
+        <!-- Nodes -->
+        <!-- a -->
+        <circle cx="60" cy="50" r="18" fill="var(--card)" stroke="var(--c1)" stroke-width="3" />
+        <text x="60" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">a</text>
+        <!-- b -->
+        <circle cx="160" cy="50" r="18" fill="var(--card)" stroke="var(--c1)" stroke-width="3" />
+        <text x="160" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">b</text>
+        <!-- c -->
+        <circle cx="260" cy="50" r="18" fill="var(--card)" stroke="var(--c1)" stroke-width="3" />
+        <text x="260" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">c</text>
+        <!-- d (treo) -->
+        <circle cx="60" cy="150" r="18" fill="var(--card)" stroke="var(--c3)" stroke-width="3" />
+        <text x="60" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--c3)">d</text>
+        <text x="60" y="185" text-anchor="middle" font-size="12" font-weight="600" fill="var(--c3)">đỉnh treo (deg=1)</text>
+        <!-- e -->
+        <circle cx="160" cy="150" r="18" fill="var(--card)" stroke="var(--c1)" stroke-width="3" />
+        <text x="160" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">e</text>
+        <!-- f -->
+        <circle cx="260" cy="150" r="18" fill="var(--card)" stroke="var(--c1)" stroke-width="3" />
+        <text x="260" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">f</text>
+        <!-- g (cô lập) -->
+        <circle cx="380" cy="100" r="18" fill="var(--card)" stroke="var(--mut)" stroke-width="3" />
+        <text x="380" y="105" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--mut)">g</text>
+        <text x="380" y="135" text-anchor="middle" font-size="12" font-weight="600" fill="var(--mut)">đỉnh cô lập (deg=0)</text>
+      </svg>
+      <div style="text-align: left; max-width: 500px; margin-top: 10px; font-size: 13.5px; color: var(--ink);">
+        • <strong>Bậc các đỉnh:</strong> $\deg(a) = 2$, $\deg(b) = 4$, $\deg(c) = 4$, $\deg(d) = 1$, $\deg(e) = 3$, $\deg(f) = 4$, $\deg(g) = 0$.<br>
+        • <strong>Tập lân cận:</strong> $N(a) = \{b, d\}$, $N(b) = \{a, c, e, f\}$, $N(d) = \{a\}$, $N(g) = \emptyset$.<br>
+        • <strong>Tổng bậc:</strong> $\sum_{v \in V} \deg(v) = 2 + 4 + 4 + 1 + 3 + 4 + 0 = 18 = 2 	imes 9$ (chính xác bằng 2 lần số cạnh $|E|=9$).
+      </div>
+    </div>
   </div>
 
   <div class="box tip">
-    <b>Tại sao lại có định lý này?</b> Rất trực quan: mỗi một cạnh luôn có đúng 2 đầu mút. Khi ta cộng bậc của từng đỉnh một trên đồ thị, mỗi cạnh sẽ được đếm đúng 2 lần (mỗi lần cho một đầu mút của nó).
+    <div class="box-title">Định lý Bắt tay (Handshaking Theorem - Slide 16)</div>
+    <p>Cho đồ thị vô hướng $G = (V, E)$ có $m = |E|$ cạnh. Khi đó:</p>
+    $$\sum_{v \in V} \deg(v) = 2m$$
+    <p><strong>Chứng minh:</strong> Mỗi cạnh $e = \{u, v\}$ nối đúng hai đỉnh $u$ và $v$, do đó đóng góp đúng $1$ vào bậc của $u$ và $1$ vào bậc của $v$ (hoặc nếu là khuyên thì đóng góp $2$ vào đỉnh đó). Khi lấy tổng bậc của toàn bộ các đỉnh, mỗi cạnh được tính đúng hai lần.</p>
+    <p><strong>Hệ quả quan trọng (Slide 17):</strong> Trong một đồ thị vô hướng, <em>số lượng đỉnh có bậc lẻ luôn là một số chẵn</em>.</p>
+    <p><em>Chứng minh hệ quả:</em> Gọi $V_1$ là tập đỉnh bậc lẻ và $V_2$ là tập đỉnh bậc chẵn ($V = V_1 \cup V_2$). Ta có:
+    $$\sum_{v \in V} \deg(v) = \sum_{v \in V_1} \deg(v) + \sum_{v \in V_2} \deg(v) = 2m$$
+    Vì $2m$ chẵn và $\sum_{v \in V_2} \deg(v)$ chẵn (tổng các số chẵn), nên $\sum_{v \in V_1} \deg(v)$ bắt buộc phải là số chẵn. Một tổng các số lẻ mà là số chẵn thì số lượng số hạng của nó ($|V_1|$) phải là một số chẵn.</p>
   </div>
 
-  <div class="f key">
-    $$\text{Số đỉnh có bậc lẻ luôn là một số \textbf{CHẴN}}$$
-    <small><b>Hệ quả quan trọng:</b> Không bao giờ tồn tại một đồ thị có số đỉnh bậc lẻ là một số lẻ (ví dụ: không thể có đồ thị với 5 đỉnh mà mỗi đỉnh đều có bậc 3).</small>
-  </div>
-
-  <div class="box warn">
-    <b>Chứng minh hệ quả:</b> Chia tập đỉnh $V$ thành hai tập rời nhau: $V_{chẵn}$ (chứa các đỉnh bậc chẵn) và $V_{lẻ}$ (chứa các đỉnh bậc lẻ). Ta có:
-    $$\sum_{v \in V} \deg(v) = \sum_{v \in V_{chẵn}} \deg(v) + \sum_{v \in V_{lẻ}} \deg(v) = 2m$$
-    Vì $2m$ là số chẵn và $\sum_{v \in V_{chẵn}} \deg(v)$ là tổng các số chẵn nên cũng là số chẵn, suy ra $\sum_{v \in V_{lẻ}} \deg(v)$ bắt buộc phải là một <b>số chẵn</b>. Tổng của các số lẻ mà ra số chẵn thì số lượng số hạng tham gia vào tổng đó bắt buộc phải là <b>số chẵn</b>!
-  </div>
-
-  <h3>Bậc trong Đồ Thị Có Hướng</h3>
-  <p>Với đồ thị có hướng, ta phân biệt hai loại bậc:</p>
-  <ul>
-    <li><b>Bậc vào (In-degree) $\deg^-(v)$:</b> Số lượng cung có điểm cuối kết thúc tại $v$.</li>
-    <li><b>Bậc ra (Out-degree) $\deg^+(v)$:</b> Số lượng cung có điểm đầu xuất phát từ $v$.</li>
-    <li>Mỗi khuyên tại $v$ đóng góp 1 vào $\deg^-(v)$ và 1 vào $\deg^+(v)$.</li>
-  </ul>
-  <div class="f key">
+  <!-- PHẦN 3 -->
+  <h2>3. Thuật ngữ cơ bản trên Đồ thị có hướng</h2>
+  <div class="box note">
+    <div class="box-title">Khái niệm: Bậc vào, Bậc ra & Định lý bảo toàn số cung (Slide 18 - 19)</div>
+    <p>Cho đồ thị có hướng $G = (V, E)$ và đỉnh $v \in V$:</p>
+    <ul>
+      <li><strong>Bậc vào (In-degree) $\deg^-(v)$:</strong> Là số lượng cung có đỉnh cuối là $v$ (các cung trỏ vào $v$).</li>
+      <li><strong>Bậc ra (Out-degree) $\deg^+(v)$:</strong> Là số lượng cung có đỉnh đầu là $v$ (các cung xuất phát từ $v$).</li>
+      <li><em>Lưu ý:</em> Một khuyên tại $v$ đóng góp $1$ vào $\deg^-(v)$ và $1$ vào $\deg^+(v)$.</li>
+    </ul>
+    <p><strong>Định lý bảo toàn:</strong> Cho $G = (V, E)$ là đồ thị có hướng với tập cung $E$. Khi đó:</p>
     $$\sum_{v \in V} \deg^-(v) = \sum_{v \in V} \deg^+(v) = |E|$$
-    <small>Tổng bậc vào luôn bằng tổng bậc ra và bằng tổng số cung (cạnh có hướng) của đồ thị.</small>
-  </div>
-</section>
-
-<section>
-  <h2>3. Các Đồ Thị Đơn Đặc Biệt, Đồ Thị Phân Đôi &amp; Ghép Cặp</h2>
-  <p>Đây là những họ đồ thị chuẩn mực thường xuyên xuất hiện trong các bài thi và ứng dụng thuật toán:</p>
-
-  <figure class="fl">
-    <svg viewBox="0 0 760 320" role="img" style="max-width:100%;height:auto">
-      <!-- K4 -->
-      <g>
-        <rect x="10" y="10" width="165" height="145" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
-        <text x="92" y="30" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="13">K₄ (Đầy đủ)</text>
-        <line x1="50" y1="50" x2="135" y2="50" stroke="var(--ink)" stroke-width="1.8"/>
-        <line x1="50" y1="50" x2="50" y2="125" stroke="var(--ink)" stroke-width="1.8"/>
-        <line x1="135" y1="50" x2="135" y2="125" stroke="var(--ink)" stroke-width="1.8"/>
-        <line x1="50" y1="125" x2="135" y2="125" stroke="var(--ink)" stroke-width="1.8"/>
-        <line x1="50" y1="50" x2="135" y2="125" stroke="var(--c1)" stroke-width="1.8"/>
-        <line x1="135" y1="50" x2="50" y2="125" stroke="var(--c1)" stroke-width="1.8"/>
-        <circle cx="50" cy="50" r="8" fill="var(--c1)"/>
-        <circle cx="135" cy="50" r="8" fill="var(--c1)"/>
-        <circle cx="50" cy="125" r="8" fill="var(--c1)"/>
-        <circle cx="135" cy="125" r="8" fill="var(--c1)"/>
-        <text x="92" y="145" text-anchor="middle" font-size="11" fill="var(--mut)">v=4, e=6</text>
-      </g>
-      <!-- C5 -->
-      <g>
-        <rect x="195" y="10" width="165" height="145" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
-        <text x="277" y="30" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="13">C₅ (Chu trình ngũ giác)</text>
-        <polygon points="277,45 335,85 315,130 240,130 220,85" fill="none" stroke="var(--ink)" stroke-width="2"/>
-        <circle cx="277" cy="45" r="7" fill="var(--c2)"/>
-        <circle cx="335" cy="85" r="7" fill="var(--c2)"/>
-        <circle cx="315" cy="130" r="7" fill="var(--c2)"/>
-        <circle cx="240" cy="130" r="7" fill="var(--c2)"/>
-        <circle cx="220" cy="85" r="7" fill="var(--c2)"/>
-        <text x="277" y="145" text-anchor="middle" font-size="11" fill="var(--mut)">v=5, e=5, bậc 2</text>
-      </g>
-      <!-- W4 -->
-      <g>
-        <rect x="380" y="10" width="165" height="145" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
-        <text x="462" y="30" text-anchor="middle" font-weight="700" fill="var(--c3)" font-size="13">W₄ (Bánh xe)</text>
-        <polygon points="420,50 505,50 505,125 420,125" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
-        <line x1="420" y1="50" x2="462" y2="87" stroke="var(--c3)" stroke-width="2"/>
-        <line x1="505" y1="50" x2="462" y2="87" stroke="var(--c3)" stroke-width="2"/>
-        <line x1="505" y1="125" x2="462" y2="87" stroke="var(--c3)" stroke-width="2"/>
-        <line x1="420" y1="125" x2="462" y2="87" stroke="var(--c3)" stroke-width="2"/>
-        <circle cx="420" cy="50" r="7" fill="var(--ink)"/>
-        <circle cx="505" cy="50" r="7" fill="var(--ink)"/>
-        <circle cx="505" cy="125" r="7" fill="var(--ink)"/>
-        <circle cx="420" cy="125" r="7" fill="var(--ink)"/>
-        <circle cx="462" cy="87" r="8" fill="var(--c3)"/>
-        <text x="462" y="145" text-anchor="middle" font-size="11" fill="var(--mut)">v=5, e=8 (trung tâm)</text>
-      </g>
-      <!-- Q3 -->
-      <g>
-        <rect x="565" y="10" width="185" height="145" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
-        <text x="657" y="30" text-anchor="middle" font-weight="700" fill="var(--c5)" font-size="13">Q₃ (Khối 3 chiều - Cube)</text>
-        <!-- Hinh khoi 3D -->
-        <rect x="590" y="70" width="50" height="50" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
-        <rect x="625" y="45" width="50" height="50" fill="none" stroke="var(--c5)" stroke-width="1.5"/>
-        <line x1="590" y1="70" x2="625" y2="45" stroke="var(--ink)" stroke-width="1.5"/>
-        <line x1="640" y1="70" x2="675" y2="45" stroke="var(--ink)" stroke-width="1.5"/>
-        <line x1="590" y1="120" x2="625" y2="95" stroke="var(--ink)" stroke-width="1.5"/>
-        <line x1="640" y1="120" x2="675" y2="95" stroke="var(--ink)" stroke-width="1.5"/>
-        <circle cx="590" cy="70" r="5" fill="var(--ink)"/>
-        <circle cx="640" cy="70" r="5" fill="var(--ink)"/>
-        <circle cx="590" cy="120" r="5" fill="var(--ink)"/>
-        <circle cx="640" cy="120" r="5" fill="var(--ink)"/>
-        <circle cx="625" cy="45" r="5" fill="var(--c5)"/>
-        <circle cx="675" cy="45" r="5" fill="var(--c5)"/>
-        <circle cx="625" cy="95" r="5" fill="var(--c5)"/>
-        <circle cx="675" cy="95" r="5" fill="var(--c5)"/>
-        <text x="657" y="145" text-anchor="middle" font-size="11" fill="var(--mut)">v=2³=8, e=3·2²=12</text>
-      </g>
-      <!-- Km,n - K2,3 Bipartite -->
-      <g>
-        <rect x="60" y="170" width="300" height="140" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
-        <text x="210" y="190" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="13">K₂,₃ (Phân đôi đầy đủ)</text>
-        <!-- V1 = 2 dinh mau do -->
-        <circle cx="120" cy="225" r="9" fill="var(--c4)"/>
-        <text x="95" y="230" font-size="11" font-weight="700" fill="var(--c4)">u₁</text>
-        <circle cx="120" cy="275" r="9" fill="var(--c4)"/>
-        <text x="95" y="280" font-size="11" font-weight="700" fill="var(--c4)">u₂</text>
-        <!-- V2 = 3 dinh mau xanh -->
-        <circle cx="280" cy="210" r="9" fill="var(--c1)"/>
-        <text x="300" y="215" font-size="11" font-weight="700" fill="var(--c1)">v₁</text>
-        <circle cx="280" cy="250" r="9" fill="var(--c1)"/>
-        <text x="300" y="255" font-size="11" font-weight="700" fill="var(--c1)">v₂</text>
-        <circle cx="280" cy="290" r="9" fill="var(--c1)"/>
-        <text x="300" y="295" font-size="11" font-weight="700" fill="var(--c1)">v₃</text>
-        <!-- Canh noi giua V1 va V2 -->
-        <line x1="120" y1="225" x2="280" y2="210" stroke="var(--ink)" stroke-width="1.4"/>
-        <line x1="120" y1="225" x2="280" y2="250" stroke="var(--ink)" stroke-width="1.4"/>
-        <line x1="120" y1="225" x2="280" y2="290" stroke="var(--ink)" stroke-width="1.4"/>
-        <line x1="120" y1="275" x2="280" y2="210" stroke="var(--ink)" stroke-width="1.4"/>
-        <line x1="120" y1="275" x2="280" y2="250" stroke="var(--ink)" stroke-width="1.4"/>
-        <line x1="120" y1="275" x2="280" y2="290" stroke="var(--ink)" stroke-width="1.4"/>
-      </g>
-      <!-- C6 Bipartite Demo -->
-      <g>
-        <rect x="400" y="170" width="300" height="140" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
-        <text x="550" y="190" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="13">C₆ là đồ thị phân đôi (Tô 2 màu xen kẽ)</text>
-        <polygon points="550,205 600,230 600,280 550,305 500,280 500,230" fill="none" stroke="var(--ink)" stroke-width="2"/>
-        <circle cx="550" cy="205" r="8" fill="var(--c4)"/>
-        <circle cx="600" cy="230" r="8" fill="var(--c1)"/>
-        <circle cx="600" cy="280" r="8" fill="var(--c4)"/>
-        <circle cx="550" cy="305" r="8" fill="var(--c1)"/>
-        <circle cx="500" cy="280" r="8" fill="var(--c4)"/>
-        <circle cx="500" cy="230" r="8" fill="var(--c1)"/>
-        <text x="550" y="260" text-anchor="middle" font-size="11" fill="var(--mut)">Không có chu trình lẻ</text>
-      </g>
-    </svg>
-    <figcaption>Các họ đồ thị đặc biệt: Đồ thị đầy đủ $K_n$, Chu trình $C_n$, Bánh xe $W_n$, Khối $n$-chiều $Q_n$, và Đồ thị phân đôi $K_{m,n}$.</figcaption>
-  </figure>
-
-  <div class="tw">
-    <table>
-      <thead>
-        <tr>
-          <th>Họ Đồ Thị</th>
-          <th>Ký Hiệu</th>
-          <th>Số Đỉnh $|V|$</th>
-          <th>Số Cạnh $|E|$</th>
-          <th>Bậc Của Các Đỉnh</th>
-          <th>Đặc Điểm Nhận Dạng</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><b>Đầy đủ (Complete)</b></td>
-          <td>$K_n$ ($n \ge 1$)</td>
-          <td>$n$</td>
-          <td>$\dfrac{n(n-1)}{2}$</td>
-          <td>Mọi đỉnh đều có bậc $n-1$</td>
-          <td>Mọi cặp đỉnh phân biệt đều được nối bởi một cạnh.</td>
-        </tr>
-        <tr>
-          <td><b>Chu trình (Cycle)</b></td>
-          <td>$C_n$ ($n \ge 3$)</td>
-          <td>$n$</td>
-          <td>$n$</td>
-          <td>Mọi đỉnh đều có bậc 2</td>
-          <td>Tạo thành một vòng khép kín: $v_1-v_2-\dots-v_n-v_1$.</td>
-        </tr>
-        <tr>
-          <td><b>Bánh xe (Wheel)</b></td>
-          <td>$W_n$ ($n \ge 3$)</td>
-          <td>$n + 1$</td>
-          <td>$2n$</td>
-          <td>$n$ đỉnh vành bậc 3, đỉnh tâm bậc $n$</td>
-          <td>Tạo từ $C_n$ bằng cách thêm 1 đỉnh tâm nối với tất cả $n$ đỉnh trên vành.</td>
-        </tr>
-        <tr>
-          <td><b>Khối $n$ chiều (Hypercube)</b></td>
-          <td>$Q_n$ ($n \ge 1$)</td>
-          <td>$2^n$</td>
-          <td>$n \cdot 2^{n-1}$</td>
-          <td>Mọi đỉnh đều có bậc $n$</td>
-          <td>Đỉnh là các chuỗi bit độ dài $n$; 2 đỉnh kề nhau $\iff$ chuỗi bit khác nhau đúng 1 bit.</td>
-        </tr>
-        <tr>
-          <td><b>Phân đôi đầy đủ</b></td>
-          <td>$K_{m,n}$</td>
-          <td>$m + n$</td>
-          <td>$m \cdot n$</td>
-          <td>$m$ đỉnh có bậc $n$, $n$ đỉnh có bậc $m$</td>
-          <td>Tập đỉnh chia thành $V_1$ ($m$ đỉnh) và $V_2$ ($n$ đỉnh), mọi đỉnh của $V_1$ nối với mọi đỉnh của $V_2$.</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 
-  <h3>Đồ Thị Phân Đôi (Bipartite Graph) &amp; Định Lý Ghép Cặp Hall</h3>
-  <p>Một đơn đồ thị $G = (V, E)$ được gọi là <b>đồ thị phân đôi</b> nếu tập đỉnh $V$ có thể phân hoạch thành hai tập con không rỗng và rời nhau $V_1$ và $V_2$ sao cho <i>mọi cạnh trong $E$ đều nối một đỉnh trong $V_1$ với một đỉnh trong $V_2$</i> (nghĩa là không có cạnh nào nối hai đỉnh cùng nằm trong $V_1$ hoặc cùng nằm trong $V_2$).</p>
-
-  <div class="f key">
-    $$G \text{ là đồ thị phân đôi} \iff G \text{ KHÔNG chứa chu trình đơn có độ dài LẺ}$$
-    <small><b>Định lý nhận biết đồ thị phân đôi:</b> Tương đương với việc đồ thị có thể tô được bằng đúng 2 màu (ví dụ Đỏ và Xanh) sao cho hai đỉnh kề nhau luôn có màu khác nhau. Do đó, $C_n$ là đồ thị phân đôi $\iff n$ là số chẵn ($C_4, C_6, C_8...$ phân đôi; còn tam giác $C_3, C_5...$ không bao giờ phân đôi!).</small>
-  </div>
-
-  <div class="box tip">
-    <b>Bài toán Ghép Cặp (Matching) &amp; Định lý Hôn Nhân Hall:</b><br/>
-    Xét đồ thị phân đôi $G = (V_1 \cup V_2, E)$, mô hình hóa bài toán gán người vào việc (hoặc ghép cặp nam $V_1$ với nữ $V_2$). Một ghép cặp $M \subseteq E$ là tập các cạnh không có đỉnh chung.<br/>
-    <b>Định lý Hall:</b> Tồn tại một ghép cặp phủ kín toàn bộ tập đỉnh $V_1$ khi và chỉ khi:
-    $$\forall A \subseteq V_1,\ |N(A)| \ge |A|$$
-    (Nghĩa là: bất kỳ một nhóm người nào trong $V_1$ cũng phải có tổng số ứng viên phù hợp trong $V_2$ ít nhất bằng số lượng thành viên của nhóm đó!).
-  </div>
-</section>
-
-<section>
-  <h2>4. Đồ Thị Con, Phép Hợp &amp; Các Phương Pháp Biểu Diễn Đồ Thị</h2>
-  <p><b>Đồ thị con (Subgraph):</b> Một đồ thị $H = (W, F)$ được gọi là đồ thị con của $G = (V, E)$ nếu $W \subseteq V$ và $F \subseteq E$.</p>
-  <p><b>Đồ thị con cảm sinh (Induced Subgraph):</b> Đồ thị con sinh bởi tập đỉnh $W \subseteq V$ (ký hiệu $G[W]$) là đồ thị có tập đỉnh $W$ và tập cạnh chứa <i>tất cả các cạnh của $G$ có cả hai đầu mút nằm trong $W$</i>.</p>
-  <p><b>Phép hợp hai đồ thị:</b> $G_1 \cup G_2 = (V_1 \cup V_2, E_1 \cup E_2)$.</p>
-
-  <h3>Các Cấu Trúc Biểu Diễn Đồ Thị Trên Máy Tính</h3>
-  <div class="tw">
-    <table>
-      <thead>
-        <tr>
-          <th>Phương Pháp Biểu Diễn</th>
-          <th>Bản Chất Dữ Liệu</th>
-          <th>Không Gian Bộ Nhớ</th>
-          <th>Ưu Điểm &amp; Nhược Điểm Thực Tế</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><b>Danh sách kề (Adjacency List)</b></td>
-          <td>Mỗi đỉnh liên kết với một danh sách các đỉnh kề trực tiếp nó</td>
-          <td>$O(|V| + |E|)$</td>
-          <td>Cực kỳ tiết kiệm bộ nhớ cho <i>đồ thị thưa</i> ($|E| \ll |V|^2$). Duyệt nhanh các đỉnh kề nhưng kiểm tra 2 đỉnh có nối cạnh không mất $O(\deg(v))$.</td>
-        </tr>
-        <tr>
-          <td><b>Ma trận kề (Adjacency Matrix)</b></td>
-          <td>Ma trận vuông $A = [a_{ij}]$ cỡ $n \times n$. $a_{ij} = 1$ nếu có cạnh $(v_i, v_j)$, ngược lại $a_{ij} = 0$</td>
-          <td>$O(|V|^2)$</td>
-          <td>Kiểm tra cạnh kề trong thời gian tức thì $O(1)$. Đồ thị vô hướng cho ma trận đối xứng ($A = A^T$). Đồ thị có khuyên có giá trị trên đường chéo chính. Tốn nhiều bộ nhớ khi đồ thị có hàng triệu đỉnh ít cạnh.</td>
-        </tr>
-        <tr>
-          <td><b>Ma trận liên thuộc (Incidence Matrix)</b></td>
-          <td>Ma trận $M = [m_{ij}]$ cỡ $|V| \times |E|$. $m_{ij} = 1$ nếu đỉnh $v_i$ là đầu mút của cạnh $e_j$</td>
-          <td>$O(|V| \cdot |E|)$</td>
-          <td>Mỗi cột luôn có đúng 2 số 1 (ứng với 2 đầu mút của cạnh). Rất thuận tiện để mô tả cấu trúc mạng lưới điện và mạch logic.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<section>
-  <h2>5. Đẳng Cấu Đồ Thị &amp; Các Bất Biến Đẳng Cấu</h2>
-  <div class="box analogy">
-    <b>Đẳng cấu là gì?</b> Hai đồ thị nhìn qua có thể được vẽ theo hình thù rất khác nhau (một cái vẽ hình tròn, một cái vẽ hình vuông), nhưng nếu chúng có cấu trúc liên kết cạnh giữa các đỉnh hoàn toàn y hệt nhau, thì chúng được gọi là <b>đẳng cấu (isomorphic)</b>!
-  </div>
-
-  <p><b>Định nghĩa hình thức:</b> Hai đơn đồ thị $G_1 = (V_1, E_1)$ và $G_2 = (V_2, E_2)$ được gọi là đẳng cấu nếu tồn tại một <b>song ánh</b> $f: V_1 \to V_2$ bảo toàn quan hệ kề:
-  $$\forall u, v \in V_1,\ (u, v) \in E_1 \iff (f(u), f(v)) \in E_2$$</p>
-
-  <figure class="fl">
-    <svg viewBox="0 0 720 200" role="img" style="max-width:100%;height:auto">
-      <!-- G1: Hinh vuong cheo -->
-      <g>
-        <rect x="30" y="15" width="300" height="170" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="180" y="38" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="14">Đồ thị G₁ (Vẽ dạng bàn cờ)</text>
-        <line x1="100" y1="70" x2="260" y2="70" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="260" y1="70" x2="260" y2="150" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="260" y1="150" x2="100" y2="150" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="100" y1="150" x2="100" y2="70" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="100" y1="70" x2="260" y2="150" stroke="var(--c1)" stroke-width="2.5"/>
-        <circle cx="100" cy="70" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="100" y="75" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u₁</text>
-        <circle cx="260" cy="70" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="260" y="75" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u₂</text>
-        <circle cx="100" cy="150" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="100" y="155" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u₃</text>
-        <circle cx="260" cy="150" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="260" y="155" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u₄</text>
-      </g>
-      <!-- G2: Hinh tam giac ghep -->
-      <g>
-        <rect x="390" y="15" width="300" height="170" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="540" y="38" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="14">Đồ thị G₂ (Vẽ dạng cánh diều)</text>
-        <polygon points="450,110 540,60 630,110 540,160" fill="none" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="540" y1="60" x2="540" y2="160" stroke="var(--c2)" stroke-width="2.5"/>
-        <circle cx="450" cy="110" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
-        <text x="450" y="115" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v₃</text>
-        <circle cx="540" cy="60" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
-        <text x="540" y="65" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v₁</text>
-        <circle cx="630" cy="110" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
-        <text x="630" y="115" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v₂</text>
-        <circle cx="540" cy="160" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
-        <text x="540" y="165" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v₄</text>
-      </g>
-    </svg>
-    <figcaption>G₁ và G₂ là hai đồ thị đẳng cấu: dù cách vẽ khác nhau, song ánh $f(u_1)=v_1, f(u_4)=v_4, f(u_2)=v_2, f(u_3)=v_3$ hoàn toàn bảo toàn quan hệ kề.</figcaption>
-  </figure>
-
-  <h3>Các Bất Biến Đẳng Cấu (Graph Invariants)</h3>
-  <p>Nếu hai đồ thị đẳng cấu với nhau thì chúng bắt buộc phải có chung các <b>bất biến</b> sau:</p>
-  <ul>
-    <li>Cùng số lượng đỉnh: $|V_1| = |V_2|$.</li>
-    <li>Cùng số lượng cạnh: $|E_1| = |E_2|$.</li>
-    <li>Cùng dãy bậc của các đỉnh (sắp xếp tăng dần).</li>
-    <li>Cùng số lượng chu trình đơn có độ dài $k$ bất kỳ (ví dụ cùng số tam giác, cùng số chu trình 4 đỉnh).</li>
-    <li>Cùng các đồ thị con cảm sinh đặc thù (ví dụ nếu ở $G_1$ có hai đỉnh bậc 3 kề nhau thì ở $G_2$ hai đỉnh ảnh bậc 3 cũng bắt buộc phải kề nhau).</li>
-  </ul>
-
-  <div class="box tip">
-    <b>Chiến thuật giải bài toán thi:</b>
-    <ul>
-      <li><b>Để chứng minh KHÔNG đẳng cấu:</b> Chỉ cần tìm ra <b>đúng một bất biến</b> mà hai đồ thị sai khác nhau (ví dụ: một bên có chu trình độ dài 3 nhưng bên kia không có tam giác nào; hoặc dãy bậc không trùng nhau).</li>
-      <li><b>Để chứng minh CÓ đẳng cấu:</b> Không được chỉ dựa vào việc trùng số đỉnh, số cạnh! Ta phải <b>chỉ ra rõ ràng một hàm song ánh $f$</b> từ tập đỉnh này sang tập đỉnh kia và kiểm tra tính kề (hoặc chứng minh ma trận kề hoán vị trùng nhau).</li>
-    </ul>
-  </div>
-</section>
-
-<section>
-  <h2>6. Đường Đi, Tính Liên Thông, Khớp &amp; Cầu</h2>
-  <p><b>Đường đi (Path):</b> Một chuỗi các cạnh liên tiếp nối một dãy các đỉnh $x_0, x_1, \dots, x_k$. Độ dài đường đi là số cạnh trên đường đi đó ($k$).</p>
-  <ul>
-    <li><b>Đường đi đơn (Simple path):</b> Đường đi không đi qua bất kỳ cạnh nào quá một lần.</li>
-    <li><b>Chu trình (Cycle):</b> Đường đi bắt đầu và kết thúc tại cùng một đỉnh ($x_0 = x_k$) với độ dài $\ge 1$.</li>
-    <li><b>Chu trình đơn:</b> Chu trình không lặp lại cạnh nào.</li>
-  </ul>
-
-  <div class="f key">
-    $$\text{Số đường đi độ dài } r \text{ từ đỉnh } v_i \text{ tới đỉnh } v_j = (A^r)_{ij}$$
-    <small><b>Định lý đếm đường đi bằng ma trận kề:</b> Nếu $A$ là ma trận kề của đồ thị $G$, thì phần tử ở dòng $i$, cột $j$ của ma trận lũy thừa $A^r$ chính là số lượng đường đi khác nhau có đúng độ dài $r$ nối từ đỉnh $v_i$ đến đỉnh $v_j$.</small>
-  </div>
-
-  <figure class="fl">
-    <svg viewBox="0 0 740 220" role="img" style="max-width:100%;height:auto">
-      <!-- Khop va Cau -->
-      <g>
-        <rect x="20" y="15" width="340" height="190" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="190" y="38" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="14">Đỉnh Khớp (Cut Vertex) &amp; Cầu (Bridge)</text>
-        <line x1="60" y1="90" x2="130" y2="60" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="60" y1="90" x2="130" y2="120" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="130" y1="60" x2="130" y2="120" stroke="var(--ink)" stroke-width="2"/>
-        <!-- Cau c - d -->
-        <line x1="130" y1="90" x2="220" y2="90" stroke="var(--c4)" stroke-width="4"/>
-        <line x1="220" y1="90" x2="300" y2="60" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="220" y1="90" x2="300" y2="120" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="300" y1="60" x2="300" y2="120" stroke="var(--ink)" stroke-width="2"/>
-        <circle cx="60" cy="90" r="10" fill="var(--c1)"/>
-        <circle cx="130" cy="60" r="10" fill="var(--c1)"/>
-        <circle cx="130" cy="120" r="10" fill="var(--c1)"/>
-        <circle cx="130" cy="90" r="12" fill="var(--card)" stroke="var(--c5)" stroke-width="3"/>
-        <text x="130" y="94" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c5)">c</text>
-        <circle cx="220" cy="90" r="12" fill="var(--card)" stroke="var(--c5)" stroke-width="3"/>
-        <text x="220" y="94" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c5)">d</text>
-        <circle cx="300" cy="60" r="10" fill="var(--c1)"/>
-        <circle cx="300" cy="120" r="10" fill="var(--c1)"/>
-        <text x="175" y="80" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="12">Cầu (c,d)</text>
-        <text x="190" y="160" text-anchor="middle" font-size="12" fill="var(--mut)">c và d là 2 đỉnh khớp (bỏ đi đồ thị bị đứt làm 2)</text>
-      </g>
-      <!-- Lien thong manh va yeu -->
-      <g>
-        <rect x="380" y="15" width="340" height="190" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="550" y="38" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="14">Liên Thông Mạnh vs Yếu (Có Hướng)</text>
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.4: Tính bậc vào $\deg^-$ và bậc ra $\deg^+$ trên Đa đồ thị có hướng (Slide 19)</div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+      <svg width="440" height="230" viewBox="0 0 440 230" style="background: transparent;">
         <defs>
-          <marker id="arr-m" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
-            <path d="M 0 0 L 7 3.5 L 0 7 z" fill="var(--c2)"/>
+          <marker id="arr2" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--c2)" />
           </marker>
         </defs>
-        <!-- Chu trinh 3 dinh: manh -->
-        <line x1="440" y1="80" x2="520" y2="80" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-m)"/>
-        <line x1="530" y1="85" x2="485" y2="140" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-m)"/>
-        <line x1="475" y1="140" x2="435" y2="85" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-m)"/>
-        <circle cx="430" cy="80" r="9" fill="var(--c2)"/>
-        <circle cx="530" cy="80" r="9" fill="var(--c2)"/>
-        <circle cx="480" cy="145" r="9" fill="var(--c2)"/>
-        <text x="480" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="var(--c2)">Mạnh: u ↔ v luôn có đường</text>
-        <!-- Mot chieu: yeu -->
-        <line x1="590" y1="80" x2="670" y2="80" stroke="var(--mut)" stroke-width="2.2" marker-end="url(#arr-m)"/>
-        <line x1="670" y1="90" x2="630" y2="140" stroke="var(--mut)" stroke-width="2.2" marker-end="url(#arr-m)"/>
-        <line x1="590" y1="90" x2="630" y2="140" stroke="var(--mut)" stroke-width="2.2" marker-end="url(#arr-m)"/>
-        <circle cx="590" cy="80" r="9" fill="var(--mut)"/>
-        <circle cx="670" cy="80" r="9" fill="var(--mut)"/>
-        <circle cx="630" cy="145" r="9" fill="var(--mut)"/>
-        <text x="630" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">Yếu: Chỉ liên thông nếu bỏ mũi tên</text>
-      </g>
-    </svg>
-    <figcaption>Minh họa Đỉnh khớp, Cạnh cầu và Phân biệt Đồ thị có hướng Liên thông mạnh vs Liên thông yếu.</figcaption>
-  </figure>
+        <!-- Arcs -->
+        <path d="M 70 60 Q 150 20 230 60" fill="none" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
+        <line x1="70" y1="60" x2="230" y2="60" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
+        <line x1="230" y1="60" x2="370" y2="60" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
+        <line x1="230" y1="60" x2="230" y2="170" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
+        <path d="M 70 60 Q 100 130 150 170" fill="none" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
+        <line x1="150" y1="170" x2="230" y2="170" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
+        <line x1="230" y1="170" x2="370" y2="60" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
+        <line x1="370" y1="60" x2="150" y2="170" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
+        <!-- Loop at a -->
+        <path d="M 70 60 C 20 20, 20 100, 50 75" fill="none" stroke="var(--c2)" stroke-width="2.5" marker-end="url(#arr2)" />
 
-  <h3>Các Khái Niệm Liên Thông Trọng Tâm</h3>
-  <ul>
-    <li><b>Đồ thị vô hướng liên thông:</b> Luôn tồn tại đường đi giữa mọi cặp đỉnh phân biệt. Nếu không liên thông, đồ thị phân rã thành các <b>thành phần liên thông (connected components)</b> rời nhau.</li>
-    <li><b>Đỉnh khớp (Cut vertex):</b> Đỉnh mà khi xóa nó cùng các cạnh liên thuộc sẽ làm <i>tăng số thành phần liên thông</i> của đồ thị.</li>
-    <li><b>Cạnh cầu (Bridge / Cut edge):</b> Cạnh mà khi xóa nó đi sẽ làm <i>tăng số thành phần liên thông</i> của đồ thị.</li>
-    <li><b>Độ liên thông đỉnh $\kappa(G)$:</b> Số đỉnh ít nhất cần xóa để đồ thị mất tính liên thông hoặc chỉ còn 1 đỉnh.</li>
-    <li><b>Độ liên thông cạnh $\lambda(G)$:</b> Số cạnh ít nhất cần xóa để đồ thị mất tính liên thông. Ta luôn có bất đẳng thức Whitney: $\kappa(G) \le \lambda(G) \le \min_{v} \deg(v)$.</li>
-    <li><b>Đồ thị có hướng liên thông mạnh (Strongly Connected):</b> Giữa 2 đỉnh $u, v$ bất kỳ luôn có đường đi có hướng từ $u \to v$ và từ $v \to u$.</li>
-    <li><b>Đồ thị có hướng liên thông yếu (Weakly Connected):</b> Đồ thị vô hướng nền tảng (khi bỏ hết hướng mũi tên) là một đồ thị liên thông.</li>
-  </ul>
-</section>
-
-<section>
-  <h2>7. Chu Trình Euler &amp; Chu Trình Hamilton</h2>
-  <div class="tw">
-    <table>
-      <thead>
-        <tr>
-          <th>Tiêu Chí So Sánh</th>
-          <th>Chu Trình Euler (Euler Circuit)</th>
-          <th>Chu Trình Hamilton (Hamiltonian Cycle)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><b>Mục tiêu duyệt</b></td>
-          <td>Đi qua <b>mỗi CẠNH đúng 1 lần</b> và quay về đỉnh ban đầu</td>
-          <td>Đi qua <b>mỗi ĐỈNH đúng 1 lần</b> và quay về đỉnh ban đầu</td>
-        </tr>
-        <tr>
-          <td><b>Nguồn gốc lịch sử</b></td>
-          <td>Leonhard Euler (1736) - Bài toán 7 cây cầu thành phố Königsberg</td>
-          <td>Sir William Rowan Hamilton (1859) - Trò chơi Icosian trên khối 12 mặt</td>
-        </tr>
-        <tr>
-          <td><b>Điều kiện Cần &amp; Đủ</b></td>
-          <td><b>Rất đơn giản:</b> Đồ thị liên thông và <b>mọi đỉnh đều có bậc chẵn</b></td>
-          <td><b>Cực kỳ khó:</b> Chưa có điều kiện cần và đủ tổng quát! Bài toán kiểm tra thuộc lớp NP-complete.</td>
-        </tr>
-        <tr>
-          <td><b>Đường đi (không khép kín)</b></td>
-          <td>Tồn tại đường đi Euler $\iff$ đồ thị có <b>đúng 2 đỉnh bậc lẻ</b> (bắt đầu ở 1 đỉnh lẻ và kết thúc ở đỉnh lẻ còn lại)</td>
-          <td>Tồn tại đường đi Hamilton: đi qua mọi đỉnh đúng 1 lần (không cần khép kín)</td>
-        </tr>
-      </tbody>
-    </table>
+        <!-- Nodes -->
+        <circle cx="70" cy="60" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="70" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="230" cy="60" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="230" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="370" cy="60" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="370" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">c</text>
+        <circle cx="150" cy="170" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="150" y="175" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">d</text>
+        <circle cx="230" cy="170" r="18" fill="var(--card)" stroke="var(--c2)" stroke-width="3" />
+        <text x="230" y="175" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--ink)">e</text>
+      </svg>
+      <div style="text-align: left; max-width: 500px; margin-top: 10px; font-size: 13.5px; color: var(--ink);">
+        • <strong>Bậc vào:</strong> $\deg^-(a)=1$ (khuyên), $\deg^-(b)=2$, $\deg^-(c)=2$, $\deg^-(d)=2$, $\deg^-(e)=2$. Tổng $= 9$.<br>
+        • <strong>Bậc ra:</strong> $\deg^+(a)=3$ (khuyên, 2 cung tới $b$, 1 tới $d$), $\deg^+(b)=2$, $\deg^+(c)=1$, $\deg^+(d)=1$, $\deg^+(e)=2$. Tổng $= 9$.<br>
+        • Số lượng cung: $|E| = 9 = \sum \deg^- = \sum \deg^+$.
+      </div>
+    </div>
   </div>
 
-  <figure class="fl">
-    <svg viewBox="0 0 740 230" role="img" style="max-width:100%;height:auto">
-      <!-- 7 cay cau Konigsberg -->
-      <g>
-        <rect x="25" y="15" width="330" height="200" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="190" y="38" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="14">Mô Hình 7 Cây Cầu Königsberg</text>
-        <!-- 4 bo dat: A, B, C, D -->
-        <circle cx="190" cy="70" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="190" y="75" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">A</text>
-        <circle cx="110" cy="140" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="110" y="145" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">B</text>
-        <circle cx="270" cy="140" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="270" y="145" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">C</text>
-        <circle cx="190" cy="185" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
-        <text x="190" y="190" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">D</text>
-        <!-- 2 cau A-B -->
-        <path d="M 175 70 C 130 80 120 110 110 125" fill="none" stroke="var(--c1)" stroke-width="2.2"/>
-        <path d="M 185 85 C 160 110 145 125 125 140" fill="none" stroke="var(--c1)" stroke-width="2.2"/>
-        <!-- 2 cau B-D -->
-        <path d="M 110 155 C 120 170 140 185 175 185" fill="none" stroke="var(--c1)" stroke-width="2.2"/>
-        <path d="M 125 140 C 145 155 160 170 185 175" fill="none" stroke="var(--c1)" stroke-width="2.2"/>
-        <!-- 1 cau A-C -->
-        <line x1="205" y1="70" x2="270" y2="125" stroke="var(--c1)" stroke-width="2.2"/>
-        <!-- 1 cau C-D -->
-        <line x1="270" y1="155" x2="205" y2="185" stroke="var(--c1)" stroke-width="2.2"/>
-        <!-- 1 cau B-C -->
-        <line x1="125" y1="140" x2="255" y2="140" stroke="var(--c1)" stroke-width="2.2"/>
-        <text x="190" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c4)">deg(A)=3, deg(B)=5</text>
-        <text x="190" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c4)">deg(C)=3, deg(D)=3</text>
-        <text x="190" y="208" text-anchor="middle" font-size="11" fill="var(--mut)">Cả 4 đỉnh đều bậc lẻ ⇒ KHÔNG có đường đi Euler!</text>
-      </g>
-      <!-- Do thi Petersen khong co Hamilton -->
-      <g>
-        <rect x="385" y="15" width="330" height="200" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
-        <text x="550" y="38" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="14">Đồ Thị Petersen (Không có Hamilton)</text>
-        <!-- Ngu giac ngoai -->
-        <polygon points="550,55 615,85 590,150 510,150 485,85" fill="none" stroke="var(--ink)" stroke-width="2"/>
-        <!-- Ngu giac sao ben trong -->
-        <polygon points="550,85 580,135 495,100 605,100 520,135" fill="none" stroke="var(--c4)" stroke-width="2"/>
-        <!-- 5 duong noi giua ngoai va trong -->
-        <line x1="550" y1="55" x2="550" y2="85" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="615" y1="85" x2="605" y2="100" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="590" y1="150" x2="580" y2="135" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="510" y1="150" x2="520" y2="135" stroke="var(--ink)" stroke-width="2"/>
-        <line x1="485" y1="85" x2="495" y2="100" stroke="var(--ink)" stroke-width="2"/>
-        <circle cx="550" cy="55" r="5" fill="var(--c1)"/>
-        <circle cx="615" cy="85" r="5" fill="var(--c1)"/>
-        <circle cx="590" cy="150" r="5" fill="var(--c1)"/>
-        <circle cx="510" cy="150" r="5" fill="var(--c1)"/>
-        <circle cx="485" cy="85" r="5" fill="var(--c1)"/>
-        <circle cx="550" cy="85" r="5" fill="var(--c4)"/>
-        <circle cx="580" cy="135" r="5" fill="var(--c4)"/>
-        <circle cx="495" cy="100" r="5" fill="var(--c4)"/>
-        <circle cx="605" cy="100" r="5" fill="var(--c4)"/>
-        <circle cx="520" cy="135" r="5" fill="var(--c4)"/>
-        <text x="550" y="175" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">Mỗi đỉnh bậc 3 (v=10, e=15)</text>
-        <text x="550" y="195" text-anchor="middle" font-size="11" fill="var(--mut)">Đồ thị nổi tiếng không có chu trình Hamilton</text>
-      </g>
-    </svg>
-    <figcaption>Minh họa 7 cây cầu Königsberg (Euler) và Đồ thị Petersen kinh điển (không chứa chu trình Hamilton).</figcaption>
-  </figure>
+  <!-- PHẦN 4 -->
+  <h2>4. Các họ đồ thị đặc biệt</h2>
 
-  <h3>Các Định Lý Đủ Về Chu Trình Hamilton</h3>
-  <p>Tuy chưa có điều kiện cần và đủ tổng quát, các nhà toán học đã tìm ra các <b>điều kiện đủ</b> sau để đảm bảo đồ thị có chu trình Hamilton:</p>
+  <h3>4.1. Đồ thị đầy đủ $K_n$ (Complete Graphs - Slide 21)</h3>
+  <p>Đồ thị đầy đủ $n$ đỉnh, ký hiệu $K_n$, là đơn đồ thị vô hướng gồm $n$ đỉnh mà giữa mỗi cặp đỉnh bất kỳ đều có đúng một cạnh nối. Số lượng cạnh của $K_n$ là $inom{n}{2} = rac{n(n-1)}{2}$. Mỗi đỉnh đều có bậc là $n-1$.</p>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.5: Họ đồ thị đầy đủ $K_1, K_2, K_3, K_4, K_5, K_6$ (Slide 21)</div>
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; align-items: flex-end;">
+      <!-- K1 -->
+      <svg width="60" height="90" viewBox="0 0 60 90">
+        <circle cx="30" cy="45" r="8" fill="var(--c1)" />
+        <text x="30" y="80" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₁</text>
+      </svg>
+      <!-- K2 -->
+      <svg width="80" height="90" viewBox="0 0 80 90">
+        <line x1="20" y1="45" x2="60" y2="45" stroke="var(--c1)" stroke-width="2" />
+        <circle cx="20" cy="45" r="7" fill="var(--c1)" />
+        <circle cx="60" cy="45" r="7" fill="var(--c1)" />
+        <text x="40" y="80" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₂</text>
+      </svg>
+      <!-- K3 -->
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <polygon points="45,15 20,60 70,60" fill="none" stroke="var(--c1)" stroke-width="2" />
+        <circle cx="45" cy="15" r="6" fill="var(--c1)" />
+        <circle cx="20" cy="60" r="6" fill="var(--c1)" />
+        <circle cx="70" cy="60" r="6" fill="var(--c1)" />
+        <text x="45" y="82" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₃</text>
+      </svg>
+      <!-- K4 -->
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <line x1="25" y1="20" x2="75" y2="20" stroke="var(--c1)" stroke-width="1.8" />
+        <line x1="75" y1="20" x2="75" y2="70" stroke="var(--c1)" stroke-width="1.8" />
+        <line x1="75" y1="70" x2="25" y2="70" stroke="var(--c1)" stroke-width="1.8" />
+        <line x1="25" y1="70" x2="25" y2="20" stroke="var(--c1)" stroke-width="1.8" />
+        <line x1="25" y1="20" x2="75" y2="70" stroke="var(--c1)" stroke-width="1.8" />
+        <line x1="75" y1="20" x2="25" y2="70" stroke="var(--c1)" stroke-width="1.8" />
+        <circle cx="25" cy="20" r="6" fill="var(--c1)" />
+        <circle cx="75" cy="20" r="6" fill="var(--c1)" />
+        <circle cx="25" cy="70" r="6" fill="var(--c1)" />
+        <circle cx="75" cy="70" r="6" fill="var(--c1)" />
+        <text x="50" y="92" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₄</text>
+      </svg>
+      <!-- K5 -->
+      <svg width="110" height="110" viewBox="0 0 110 110">
+        <!-- 5 nodes polygon: (55, 15), (93, 42), (79, 87), (31, 87), (17, 42) -->
+        <polygon points="55,15 93,42 79,87 31,87 17,42" fill="none" stroke="var(--c1)" stroke-width="1.8" />
+        <line x1="55" y1="15" x2="79" y2="87" stroke="var(--c1)" stroke-width="1.5" />
+        <line x1="55" y1="15" x2="31" y2="87" stroke="var(--c1)" stroke-width="1.5" />
+        <line x1="93" y1="42" x2="31" y2="87" stroke="var(--c1)" stroke-width="1.5" />
+        <line x1="93" y1="42" x2="17" y2="42" stroke="var(--c1)" stroke-width="1.5" />
+        <line x1="79" y1="87" x2="17" y2="42" stroke="var(--c1)" stroke-width="1.5" />
+        <circle cx="55" cy="15" r="5" fill="var(--c1)" />
+        <circle cx="93" cy="42" r="5" fill="var(--c1)" />
+        <circle cx="79" cy="87" r="5" fill="var(--c1)" />
+        <circle cx="31" cy="87" r="5" fill="var(--c1)" />
+        <circle cx="17" cy="42" r="5" fill="var(--c1)" />
+        <text x="55" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₅</text>
+      </svg>
+      <!-- K6 -->
+      <svg width="120" height="110" viewBox="0 0 120 110">
+        <!-- Regular hexagon: center 60, 50, r=38. Angles 0, 60, 120, 180, 240, 300 -->
+        <line x1="98" y1="50" x2="79" y2="83" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="79" y1="83" x2="41" y2="83" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="41" y1="83" x2="22" y2="50" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="22" y1="50" x2="41" y2="17" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="41" y1="17" x2="79" y2="17" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="79" y1="17" x2="98" y2="50" stroke="var(--c1)" stroke-width="1.2" />
+        <!-- Diagonals -->
+        <line x1="98" y1="50" x2="41" y2="83" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="98" y1="50" x2="22" y2="50" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="98" y1="50" x2="41" y2="17" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="79" y1="83" x2="22" y2="50" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="79" y1="83" x2="41" y2="17" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="79" y1="83" x2="79" y2="17" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="41" y1="83" x2="41" y2="17" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="41" y1="83" x2="79" y2="17" stroke="var(--c1)" stroke-width="1.2" />
+        <line x1="22" y1="50" x2="79" y2="17" stroke="var(--c1)" stroke-width="1.2" />
+        <!-- Nodes -->
+        <circle cx="98" cy="50" r="5" fill="var(--c1)" />
+        <circle cx="79" cy="83" r="5" fill="var(--c1)" />
+        <circle cx="41" cy="83" r="5" fill="var(--c1)" />
+        <circle cx="22" cy="50" r="5" fill="var(--c1)" />
+        <circle cx="41" cy="17" r="5" fill="var(--c1)" />
+        <circle cx="79" cy="17" r="5" fill="var(--c1)" />
+        <text x="60" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₆</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3>4.2. Chu trình $C_n$ và Bánh xe $W_n$ (Cycles & Wheels - Slide 22)</h3>
   <ul>
-    <li><b>Định lý Dirac (1952):</b> Nếu $G$ là đơn đồ thị có $n \ge 3$ đỉnh và với mọi đỉnh $v \in V$, ta có:
-      $$\deg(v) \ge \frac{n}{2}$$
-      thì $G$ chắc chắn có chứa chu trình Hamilton.</li>
-    <li><b>Định lý Ore (1960):</b> Nếu $G$ là đơn đồ thị có $n \ge 3$ đỉnh và với mọi cặp đỉnh <i>không kề nhau</i> $u, v$, ta có:
-      $$\deg(u) + \deg(v) \ge n$$
-      thì $G$ chắc chắn có chứa chu trình Hamilton.</li>
+    <li><strong>Chu trình $C_n$ ($n \ge 3$):</strong> Gồm $n$ đỉnh $v_1, v_2, \dots, v_n$ và các cạnh $\{v_1, v_2\}, \{v_2, v_3\}, \dots, \{v_{n-1}, v_n\}, \{v_n, v_1\}$. Mỗi đỉnh của $C_n$ đều có bậc đúng bằng $2$.</li>
+    <li><strong>Đồ thị Bánh xe $W_n$ ($n \ge 3$):</strong> Thu được bằng cách lấy $C_n$, thêm một đỉnh mới ở tâm và nối đỉnh tâm này tới toàn bộ $n$ đỉnh của chu trình $C_n$. Đồ thị $W_n$ có $n+1$ đỉnh và $2n$ cạnh. Đỉnh tâm có bậc $n$, các đỉnh ngoài có bậc $3$.</li>
   </ul>
 
-  <div class="box warn">
-    <b>Chú ý cạm bẫy thi trắc nghiệm:</b>
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.6: Chu trình $C_3, C_4, C_5, C_6$ và Bánh xe $W_4, W_5$ (Slide 22)</div>
+    <div style="display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; align-items: center;">
+      <!-- C3 -->
+      <svg width="80" height="90" viewBox="0 0 80 90">
+        <polygon points="40,15 15,65 65,65" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <circle cx="40" cy="15" r="5" fill="var(--c2)" />
+        <circle cx="15" cy="65" r="5" fill="var(--c2)" />
+        <circle cx="65" cy="65" r="5" fill="var(--c2)" />
+        <text x="40" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">C₃</text>
+      </svg>
+      <!-- C4 -->
+      <svg width="80" height="90" viewBox="0 0 80 90">
+        <rect x="20" y="20" width="40" height="40" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <circle cx="20" cy="20" r="5" fill="var(--c2)" />
+        <circle cx="60" cy="20" r="5" fill="var(--c2)" />
+        <circle cx="20" cy="60" r="5" fill="var(--c2)" />
+        <circle cx="60" cy="60" r="5" fill="var(--c2)" />
+        <text x="40" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">C₄</text>
+      </svg>
+      <!-- C5 -->
+      <svg width="85" height="90" viewBox="0 0 85 90">
+        <polygon points="42,15 72,37 61,72 23,72 12,37" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <circle cx="42" cy="15" r="5" fill="var(--c2)" />
+        <circle cx="72" cy="37" r="5" fill="var(--c2)" />
+        <circle cx="61" cy="72" r="5" fill="var(--c2)" />
+        <circle cx="23" cy="72" r="5" fill="var(--c2)" />
+        <circle cx="12" cy="37" r="5" fill="var(--c2)" />
+        <text x="42" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">C₅</text>
+      </svg>
+      <!-- C6 -->
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <polygon points="68,20 80,45 68,70 32,70 20,45 32,20" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <circle cx="68" cy="20" r="5" fill="var(--c2)" />
+        <circle cx="80" cy="45" r="5" fill="var(--c2)" />
+        <circle cx="68" cy="70" r="5" fill="var(--c2)" />
+        <circle cx="32" cy="70" r="5" fill="var(--c2)" />
+        <circle cx="20" cy="45" r="5" fill="var(--c2)" />
+        <circle cx="32" cy="20" r="5" fill="var(--c2)" />
+        <text x="50" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">C₆</text>
+      </svg>
+      <!-- W4 -->
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <rect x="20" y="20" width="50" height="50" fill="none" stroke="var(--c3)" stroke-width="2" />
+        <line x1="45" y1="45" x2="20" y2="20" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="45" y1="45" x2="70" y2="20" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="45" y1="45" x2="20" y2="70" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="45" y1="45" x2="70" y2="70" stroke="var(--c3)" stroke-width="1.8" />
+        <circle cx="20" cy="20" r="5" fill="var(--c3)" />
+        <circle cx="70" cy="20" r="5" fill="var(--c3)" />
+        <circle cx="20" cy="70" r="5" fill="var(--c3)" />
+        <circle cx="70" cy="70" r="5" fill="var(--c3)" />
+        <circle cx="45" cy="45" r="5.5" fill="var(--c1)" />
+        <text x="45" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">W₄</text>
+      </svg>
+      <!-- W5 -->
+      <svg width="100" height="90" viewBox="0 0 100 90">
+        <polygon points="50,15 82,38 70,74 30,74 18,38" fill="none" stroke="var(--c3)" stroke-width="2" />
+        <line x1="50" y1="48" x2="50" y2="15" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="50" y1="48" x2="82" y2="38" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="50" y1="48" x2="70" y2="74" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="50" y1="48" x2="30" y2="74" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="50" y1="48" x2="18" y2="38" stroke="var(--c3)" stroke-width="1.8" />
+        <circle cx="50" cy="15" r="5" fill="var(--c3)" />
+        <circle cx="82" cy="38" r="5" fill="var(--c3)" />
+        <circle cx="70" cy="74" r="5" fill="var(--c3)" />
+        <circle cx="30" cy="74" r="5" fill="var(--c3)" />
+        <circle cx="18" cy="38" r="5" fill="var(--c3)" />
+        <circle cx="50" cy="48" r="5.5" fill="var(--c1)" />
+        <text x="50" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">W₅</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3>4.3. Đồ thị siêu khối $n$-chiều $Q_n$ (n-dimensional Hypercubes - Slide 23)</h3>
+  <p>Đồ thị siêu khối $Q_n$ có $2^n$ đỉnh, mỗi đỉnh được gán nhãn bằng một xâu nhị phân độ dài $n$. Hai đỉnh kề nhau khi và chỉ khi nhãn nhị phân của chúng <strong>khác nhau đúng $1$ bit</strong> (khoảng cách Hamming bằng 1). Đồ thị $Q_n$ là đồ thị chính quy bậc $n$ và có tổng cộng $n 2^{n-1}$ cạnh.</p>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.7: Khối $Q_1, Q_2$ và Siêu khối lập phương $Q_3$ (Slide 23)</div>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; align-items: center;">
+      <!-- Q1 -->
+      <svg width="90" height="150" viewBox="0 0 90 150">
+        <line x1="20" y1="75" x2="70" y2="75" stroke="var(--c4)" stroke-width="2.5" />
+        <circle cx="20" cy="75" r="6" fill="var(--c4)" />
+        <text x="20" y="60" text-anchor="middle" font-size="11" fill="var(--ink)">0</text>
+        <circle cx="70" cy="75" r="6" fill="var(--c4)" />
+        <text x="70" y="60" text-anchor="middle" font-size="11" fill="var(--ink)">1</text>
+        <text x="45" y="115" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">Q₁</text>
+      </svg>
+      <!-- Q2 -->
+      <svg width="130" height="150" viewBox="0 0 130 150">
+        <rect x="30" y="30" width="70" height="70" fill="none" stroke="var(--c4)" stroke-width="2" />
+        <circle cx="30" cy="30" r="6" fill="var(--c4)" />
+        <text x="18" y="25" text-anchor="middle" font-size="11" fill="var(--ink)">00</text>
+        <circle cx="100" cy="30" r="6" fill="var(--c4)" />
+        <text x="115" y="25" text-anchor="middle" font-size="11" fill="var(--ink)">01</text>
+        <circle cx="30" cy="100" r="6" fill="var(--c4)" />
+        <text x="18" y="115" text-anchor="middle" font-size="11" fill="var(--ink)">10</text>
+        <circle cx="100" cy="100" r="6" fill="var(--c4)" />
+        <text x="115" y="115" text-anchor="middle" font-size="11" fill="var(--ink)">11</text>
+        <text x="65" y="140" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">Q₂</text>
+      </svg>
+      <!-- Q3 (Cube) -->
+      <svg width="220" height="170" viewBox="0 0 220 170">
+        <!-- Back square -->
+        <rect x="70" y="25" width="80" height="80" fill="none" stroke="var(--mut)" stroke-width="1.8" stroke-dasharray="4" />
+        <!-- Connecting lines -->
+        <line x1="30" y1="65" x2="70" y2="25" stroke="var(--c4)" stroke-width="2" />
+        <line x1="110" y1="65" x2="150" y2="25" stroke="var(--c4)" stroke-width="2" />
+        <line x1="30" y1="145" x2="70" y2="105" stroke="var(--c4)" stroke-width="2" />
+        <line x1="110" y1="145" x2="150" y2="105" stroke="var(--c4)" stroke-width="2" />
+        <!-- Front square -->
+        <rect x="30" y="65" width="80" height="80" fill="none" stroke="var(--c4)" stroke-width="2" />
+        <!-- Back Nodes -->
+        <circle cx="70" cy="25" r="5" fill="var(--mut)" />
+        <text x="70" y="18" text-anchor="middle" font-size="10" fill="var(--mut)">001</text>
+        <circle cx="150" cy="25" r="5" fill="var(--mut)" />
+        <text x="165" y="20" text-anchor="start" font-size="10" fill="var(--mut)">011</text>
+        <circle cx="70" cy="105" r="5" fill="var(--mut)" />
+        <text x="85" y="102" text-anchor="start" font-size="10" fill="var(--mut)">101</text>
+        <circle cx="150" cy="105" r="5" fill="var(--mut)" />
+        <text x="165" y="105" text-anchor="start" font-size="10" fill="var(--mut)">111</text>
+        <!-- Front Nodes -->
+        <circle cx="30" cy="65" r="5.5" fill="var(--c4)" />
+        <text x="15" y="60" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--ink)">000</text>
+        <circle cx="110" cy="65" r="5.5" fill="var(--c4)" />
+        <text x="110" y="58" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--ink)">010</text>
+        <circle cx="30" cy="145" r="5.5" fill="var(--c4)" />
+        <text x="15" y="155" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--ink)">100</text>
+        <circle cx="110" cy="145" r="5.5" fill="var(--c4)" />
+        <text x="125" y="155" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--ink)">110</text>
+        <text x="90" y="165" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">Q₃ (Hypercube)</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3>4.4. Đồ thị phân đôi & Định lý nhận biết (Bipartite Graphs - Slide 24, 25)</h3>
+  <div class="box note">
+    <div class="box-title">Định nghĩa Đồ thị phân đôi (Bipartite Graph)</div>
+    <p>Một đơn đồ thị $G = (V, E)$ được gọi là <strong>phân đôi</strong> nếu tập đỉnh $V$ có thể phân hoạch thành hai tập con rời nhau $V_1$ và $V_2$ ($V = V_1 \cup V_2$ và $V_1 \cap V_2 = \emptyset$) sao cho <em>mọi cạnh</em> trong $E$ đều nối một đỉnh thuộc $V_1$ với một đỉnh thuộc $V_2$ (tuyệt đối không có cạnh nào nối hai đỉnh trong cùng một tập con).</p>
+    <p><strong>Định lý nhận biết:</strong> Một đồ thị là phân đôi khi và chỉ khi <strong>nó có thể tô được bằng 2 màu</strong> sao cho hai đỉnh kề nhau luôn khác màu $\iff$ Đồ thị <strong>không chứa chu trình có độ dài lẻ</strong>.</p>
+  </div>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.8: Nhận biết Đồ thị phân đôi qua phương pháp tô 2 màu (Slide 24)</div>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; align-items: center;">
+      <!-- Graph G is bipartite -->
+      <svg width="250" height="200" viewBox="0 0 250 200">
+        <!-- Edges -->
+        <line x1="50" y1="40" x2="130" y2="40" stroke="var(--border)" stroke-width="2" />
+        <line x1="50" y1="40" x2="50" y2="100" stroke="var(--border)" stroke-width="2" />
+        <line x1="130" y1="40" x2="200" y2="100" stroke="var(--border)" stroke-width="2" />
+        <line x1="50" y1="100" x2="130" y2="160" stroke="var(--border)" stroke-width="2" />
+        <line x1="200" y1="100" x2="130" y2="160" stroke="var(--border)" stroke-width="2" />
+        <line x1="130" y1="100" x2="50" y2="100" stroke="var(--border)" stroke-width="2" />
+        <line x1="130" y1="100" x2="200" y2="100" stroke="var(--border)" stroke-width="2" />
+        <!-- Nodes: Set V1 (Blue: a, b, d) & Set V2 (Red: c, e, f, g) -->
+        <!-- a (V1) -->
+        <circle cx="50" cy="40" r="14" fill="var(--c1)" />
+        <text x="50" y="45" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">a</text>
+        <!-- c (V2) -->
+        <circle cx="130" cy="40" r="14" fill="var(--c3)" />
+        <text x="130" y="45" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">c</text>
+        <!-- b (V1) -->
+        <circle cx="50" cy="100" r="14" fill="var(--c1)" />
+        <text x="50" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">b</text>
+        <!-- e (V2) -->
+        <circle cx="130" cy="100" r="14" fill="var(--c3)" />
+        <text x="130" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">e</text>
+        <!-- d (V1) -->
+        <circle cx="200" cy="100" r="14" fill="var(--c1)" />
+        <text x="200" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">d</text>
+        <!-- f (V2) -->
+        <circle cx="130" cy="160" r="14" fill="var(--c3)" />
+        <text x="130" y="165" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">f</text>
+        <text x="125" y="190" text-anchor="middle" font-size="12" font-style="italic" fill="var(--c1)">Đồ thị G: Phân đôi (V₁={a,b,d}, V₂={c,e,f})</text>
+      </svg>
+
+      <!-- Graph H contains odd cycle (not bipartite) -->
+      <svg width="250" height="200" viewBox="0 0 250 200">
+        <!-- Edges of H -->
+        <line x1="50" y1="40" x2="130" y2="40" stroke="var(--border)" stroke-width="2" />
+        <line x1="50" y1="40" x2="50" y2="100" stroke="var(--c3)" stroke-width="3" />
+        <line x1="50" y1="100" x2="130" y2="100" stroke="var(--c3)" stroke-width="3" />
+        <line x1="50" y1="40" x2="130" y2="100" stroke="var(--c3)" stroke-width="3" stroke-dasharray="3" />
+        <line x1="130" y1="40" x2="200" y2="100" stroke="var(--border)" stroke-width="2" />
+        <line x1="200" y1="100" x2="130" y2="160" stroke="var(--border)" stroke-width="2" />
+        <line x1="130" y1="100" x2="130" y2="160" stroke="var(--border)" stroke-width="2" />
+        <!-- Nodes -->
+        <circle cx="50" cy="40" r="14" fill="var(--c1)" />
+        <text x="50" y="45" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">a</text>
+        <circle cx="130" cy="40" r="14" fill="var(--c3)" />
+        <text x="130" y="45" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">c</text>
+        <circle cx="50" cy="100" r="14" fill="var(--c3)" />
+        <text x="50" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">b</text>
+        <circle cx="130" cy="100" r="14" fill="var(--c1)" />
+        <text x="130" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">f</text>
+        <circle cx="200" cy="100" r="14" fill="var(--mut)" />
+        <text x="200" y="105" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">d</text>
+        <circle cx="130" cy="160" r="14" fill="var(--mut)" />
+        <text x="130" y="165" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">e</text>
+        <text x="125" y="190" text-anchor="middle" font-size="12" font-style="italic" fill="var(--c3)">H: KHÔNG phân đôi (chứa tam giác a-b-f lẻ)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.9: Chứng minh $C_6$ là đồ thị phân đôi qua 2 cách vẽ (Slide 25)</div>
+    <div style="display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; align-items: center;">
+      <!-- Hexagonal view -->
+      <svg width="240" height="210" viewBox="0 0 240 210">
+        <polygon points="120,25 190,65 190,145 120,185 50,145 50,65" fill="none" stroke="var(--border)" stroke-width="2.5" />
+        <circle cx="120" cy="25" r="14" fill="var(--c1)" />
+        <text x="120" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">v₁</text>
+        <circle cx="190" cy="65" r="14" fill="var(--c2)" />
+        <text x="190" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">v₂</text>
+        <circle cx="190" cy="145" r="14" fill="var(--c1)" />
+        <text x="190" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">v₃</text>
+        <circle cx="120" cy="185" r="14" fill="var(--c2)" />
+        <text x="120" y="190" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">v₄</text>
+        <circle cx="50" cy="145" r="14" fill="var(--c1)" />
+        <text x="50" y="150" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">v₅</text>
+        <circle cx="50" cy="65" r="14" fill="var(--c2)" />
+        <text x="50" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">v₆</text>
+        <text x="120" y="205" text-anchor="middle" font-size="11" font-style="italic" fill="var(--mut)">Dạng vòng lục giác</text>
+      </svg>
+
+      <!-- Partition view -->
+      <svg width="260" height="210" viewBox="0 0 260 210">
+        <!-- Partition boundary elipses -->
+        <ellipse cx="60" cy="100" rx="40" ry="85" fill="none" stroke="var(--c1)" stroke-width="1.5" stroke-dasharray="4" />
+        <text x="60" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--c1)">V₁</text>
+        <ellipse cx="200" cy="100" rx="40" ry="85" fill="none" stroke="var(--c2)" stroke-width="1.5" stroke-dasharray="4" />
+        <text x="200" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--c2)">V₂</text>
+        <!-- Edges: v1-v2, v2-v3, v3-v4, v4-v5, v5-v6, v6-v1 -->
+        <line x1="60" y1="55" x2="200" y2="55" stroke="var(--border)" stroke-width="2" />
+        <line x1="200" y1="55" x2="60" y2="100" stroke="var(--border)" stroke-width="2" />
+        <line x1="60" y1="100" x2="200" y2="100" stroke="var(--border)" stroke-width="2" />
+        <line x1="200" y1="100" x2="60" y2="145" stroke="var(--border)" stroke-width="2" />
+        <line x1="60" y1="145" x2="200" y2="145" stroke="var(--border)" stroke-width="2" />
+        <line x1="200" y1="145" x2="60" y2="55" stroke="var(--border)" stroke-width="2" />
+        <!-- Nodes -->
+        <circle cx="60" cy="55" r="12" fill="var(--c1)" />
+        <text x="60" y="59" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">v₁</text>
+        <circle cx="60" cy="100" r="12" fill="var(--c1)" />
+        <text x="60" y="104" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">v₃</text>
+        <circle cx="60" cy="145" r="12" fill="var(--c1)" />
+        <text x="60" y="149" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">v₅</text>
+        <circle cx="200" cy="55" r="12" fill="var(--c2)" />
+        <text x="200" y="59" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">v₂</text>
+        <circle cx="200" cy="100" r="12" fill="var(--c2)" />
+        <text x="200" y="104" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">v₄</text>
+        <circle cx="200" cy="145" r="12" fill="var(--c2)" />
+        <text x="200" y="149" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">v₆</text>
+        <text x="130" y="205" text-anchor="middle" font-size="11" font-style="italic" fill="var(--mut)">Vẽ lại dạng 2 tập rời nhau</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3>4.5. Đồ thị phân đôi đầy đủ $K_{m,n}$ (Complete Bipartite Graphs - Slide 27)</h3>
+  <p>Đồ thị phân đôi đầy đủ $K_{m,n}$ là đồ thị phân đôi với $|V_1| = m$ và $|V_2| = n$, trong đó <strong>mỗi đỉnh của $V_1$ đều được nối với tất cả các đỉnh của $V_2$</strong>. Tổng số đỉnh là $m + n$ và tổng số cạnh là $m 	imes n$.</p>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.10: Họ đồ thị phân đôi đầy đủ $K_{2,3}, K_{3,3}, K_{3,5}, K_{2,6}$ (Slide 27)</div>
+    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; align-items: flex-end;">
+      <!-- K2,3 -->
+      <svg width="120" height="130" viewBox="0 0 120 130">
+        <!-- Top: 2 nodes (35, 30), (85, 30); Bottom: 3 nodes (20, 95), (60, 95), (100, 95) -->
+        <line x1="35" y1="30" x2="20" y2="95" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="35" y1="30" x2="60" y2="95" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="35" y1="30" x2="100" y2="95" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="85" y1="30" x2="20" y2="95" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="85" y1="30" x2="60" y2="95" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="85" y1="30" x2="100" y2="95" stroke="var(--border)" stroke-width="1.5" />
+        <circle cx="35" cy="30" r="6" fill="var(--c1)" />
+        <circle cx="85" cy="30" r="6" fill="var(--c1)" />
+        <circle cx="20" cy="95" r="6" fill="var(--c2)" />
+        <circle cx="60" cy="95" r="6" fill="var(--c2)" />
+        <circle cx="100" cy="95" r="6" fill="var(--c2)" />
+        <text x="60" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₂,₃</text>
+      </svg>
+
+      <!-- K3,3 -->
+      <svg width="130" height="130" viewBox="0 0 130 130">
+        <line x1="25" y1="30" x2="25" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <line x1="25" y1="30" x2="65" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <line x1="25" y1="30" x2="105" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <line x1="65" y1="30" x2="25" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <line x1="65" y1="30" x2="65" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <line x1="65" y1="30" x2="105" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <line x1="105" y1="30" x2="25" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <line x1="105" y1="30" x2="65" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <line x1="105" y1="30" x2="105" y2="95" stroke="var(--border)" stroke-width="1.2" />
+        <circle cx="25" cy="30" r="6" fill="var(--c1)" />
+        <circle cx="65" cy="30" r="6" fill="var(--c1)" />
+        <circle cx="105" cy="30" r="6" fill="var(--c1)" />
+        <circle cx="25" cy="95" r="6" fill="var(--c2)" />
+        <circle cx="65" cy="95" r="6" fill="var(--c2)" />
+        <circle cx="105" cy="95" r="6" fill="var(--c2)" />
+        <text x="65" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₃,₃</text>
+      </svg>
+
+      <!-- K3,5 -->
+      <svg width="150" height="130" viewBox="0 0 150 130">
+        <!-- 3 top: 35, 75, 115; 5 bottom: 15, 45, 75, 105, 135 -->
+        <g stroke="var(--border)" stroke-width="1" opacity="0.8">
+          <line x1="35" y1="30" x2="15" y2="95" /><line x1="35" y1="30" x2="45" y2="95" /><line x1="35" y1="30" x2="75" y2="95" /><line x1="35" y1="30" x2="105" y2="95" /><line x1="35" y1="30" x2="135" y2="95" />
+          <line x1="75" y1="30" x2="15" y2="95" /><line x1="75" y1="30" x2="45" y2="95" /><line x1="75" y1="30" x2="75" y2="95" /><line x1="75" y1="30" x2="105" y2="95" /><line x1="75" y1="30" x2="135" y2="95" />
+          <line x1="115" y1="30" x2="15" y2="95" /><line x1="115" y1="30" x2="45" y2="95" /><line x1="115" y1="30" x2="75" y2="95" /><line x1="115" y1="30" x2="105" y2="95" /><line x1="115" y1="30" x2="135" y2="95" />
+        </g>
+        <circle cx="35" cy="30" r="5" fill="var(--c1)" /><circle cx="75" cy="30" r="5" fill="var(--c1)" /><circle cx="115" cy="30" r="5" fill="var(--c1)" />
+        <circle cx="15" cy="95" r="5" fill="var(--c2)" /><circle cx="45" cy="95" r="5" fill="var(--c2)" /><circle cx="75" cy="95" r="5" fill="var(--c2)" /><circle cx="105" cy="95" r="5" fill="var(--c2)" /><circle cx="135" cy="95" r="5" fill="var(--c2)" />
+        <text x="75" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₃,₅</text>
+      </svg>
+
+      <!-- K2,6 -->
+      <svg width="150" height="130" viewBox="0 0 150 130">
+        <!-- 2 top: 50, 100; 6 bottom: 12, 37, 62, 87, 112, 137 -->
+        <g stroke="var(--border)" stroke-width="1" opacity="0.8">
+          <line x1="50" y1="30" x2="12" y2="95" /><line x1="50" y1="30" x2="37" y2="95" /><line x1="50" y1="30" x2="62" y2="95" /><line x1="50" y1="30" x2="87" y2="95" /><line x1="50" y1="30" x2="112" y2="95" /><line x1="50" y1="30" x2="137" y2="95" />
+          <line x1="100" y1="30" x2="12" y2="95" /><line x1="100" y1="30" x2="37" y2="95" /><line x1="100" y1="30" x2="62" y2="95" /><line x1="100" y1="30" x2="87" y2="95" /><line x1="100" y1="30" x2="112" y2="95" /><line x1="100" y1="30" x2="137" y2="95" />
+        </g>
+        <circle cx="50" cy="30" r="5" fill="var(--c1)" /><circle cx="100" cy="30" r="5" fill="var(--c1)" />
+        <circle cx="12" cy="95" r="5" fill="var(--c2)" /><circle cx="37" cy="95" r="5" fill="var(--c2)" /><circle cx="62" cy="95" r="5" fill="var(--c2)" /><circle cx="87" cy="95" r="5" fill="var(--c2)" /><circle cx="112" cy="95" r="5" fill="var(--c2)" /><circle cx="137" cy="95" r="5" fill="var(--c2)" />
+        <text x="75" y="120" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">K₂,₆</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="box tip">
+    <div class="box-title">Ứng dụng thực tế: Bài toán Ghép việc (Job Assignment - Slide 26)</div>
+    <p>Giả sử ta có nhóm nhân viên $\{Alvarez, Berkowitz, Chen, Davis\}$ và danh mục công việc cần hoàn thành $\{requirements, architecture, implementation, testing\}$. Mỗi nhân viên có kỹ năng phù hợp với một số công việc nhất định.</p>
+    <div style="display: flex; justify-content: center; margin: 16px 0;">
+      <svg width="380" height="180" viewBox="0 0 380 180">
+        <!-- Employees on left, jobs on right -->
+        <line x1="100" y1="30" x2="280" y2="30" stroke="var(--c1)" stroke-width="2" />
+        <line x1="100" y1="30" x2="280" y2="70" stroke="var(--c1)" stroke-width="2" />
+        <line x1="100" y1="70" x2="280" y2="30" stroke="var(--c1)" stroke-width="2" />
+        <line x1="100" y1="110" x2="280" y2="70" stroke="var(--c1)" stroke-width="2" />
+        <line x1="100" y1="110" x2="280" y2="110" stroke="var(--c1)" stroke-width="2" />
+        <line x1="100" y1="110" x2="280" y2="150" stroke="var(--c1)" stroke-width="2" />
+        <line x1="100" y1="150" x2="280" y2="30" stroke="var(--c1)" stroke-width="2" />
+        <!-- Nodes Left -->
+        <circle cx="100" cy="30" r="8" fill="var(--c1)" /><text x="85" y="34" text-anchor="end" font-size="12" fill="var(--ink)">Alvarez</text>
+        <circle cx="100" cy="70" r="8" fill="var(--c1)" /><text x="85" y="74" text-anchor="end" font-size="12" fill="var(--ink)">Berkowitz</text>
+        <circle cx="100" cy="110" r="8" fill="var(--c1)" /><text x="85" y="114" text-anchor="end" font-size="12" fill="var(--ink)">Chen</text>
+        <circle cx="100" cy="150" r="8" fill="var(--c1)" /><text x="85" y="154" text-anchor="end" font-size="12" fill="var(--ink)">Davis</text>
+        <!-- Nodes Right -->
+        <circle cx="280" cy="30" r="8" fill="var(--c2)" /><text x="295" y="34" text-anchor="start" font-size="12" fill="var(--ink)">requirements</text>
+        <circle cx="280" cy="70" r="8" fill="var(--c2)" /><text x="295" y="74" text-anchor="start" font-size="12" fill="var(--ink)">architecture</text>
+        <circle cx="280" cy="110" r="8" fill="var(--c2)" /><text x="295" y="114" text-anchor="start" font-size="12" fill="var(--ink)">implementation</text>
+        <circle cx="280" cy="150" r="8" fill="var(--c2)" /><text x="295" y="154" text-anchor="start" font-size="12" fill="var(--ink)">testing</text>
+      </svg>
+    </div>
+    <p>Mô hình đồ thị phân đôi này là nền tảng giải quyết bài toán tìm <strong>ghép cặp cực đại (Maximum Matching)</strong> bằng định lý Hall hoặc thuật toán Luồng cực đại (Ford-Fulkerson).</p>
+  </div>
+
+  <!-- PHẦN 5 -->
+  <h2>5. Đồ thị con và Phép toán trên Đồ thị</h2>
+  <div class="box note">
+    <div class="box-title">Định nghĩa: Đồ thị con & Đồ thị con cảm sinh (Slide 28, 29)</div>
     <ul>
-      <li>Định lý Dirac và Ore chỉ là <b>điều kiện ĐỦ</b>, không phải điều kiện cần! Chu trình $C_5$ có chu trình Hamilton rõ ràng nhưng mọi đỉnh đều có bậc $2 < 2.5 = 5/2$ (không thỏa mãn Dirac).</li>
-      <li><b>Dấu hiệu loại trừ nhanh:</b> Nếu đồ thị có bất kỳ đỉnh nào bậc 1 ($\deg(v) = 1$) hoặc có đỉnh cô lập, đồ thị đó <b>chắc chắn không thể có chu trình Hamilton</b> (vì chu trình qua đỉnh nào phải có 1 cạnh đi vào và 1 cạnh đi ra, cần tối thiểu bậc 2).</li>
+      <li><strong>Đồ thị con (Subgraph):</strong> Cho $G = (V, E)$. Một đồ thị $H = (V', E')$ được gọi là đồ thị con của $G$ nếu $V' \subseteq V$ và $E' \subseteq E$.</li>
+      <li><strong>Đồ thị con cảm sinh (Induced Subgraph):</strong> Cho tập con đỉnh $W \subseteq V$. Đồ thị con của $G$ <em>cảm sinh bởi $W$</em>, ký hiệu $G[W]$, là đồ thị có tập đỉnh là $W$ và tập cạnh chứa <strong>tất cả các cạnh của $G$ có cả hai đầu mút thuộc $W$</strong>.</li>
     </ul>
   </div>
-</section>
 
-<section>
-  <h2>8. Hệ Thống Bài Tập Áp Dụng Có Lời Giải Chi Tiết Từng Bước</h2>
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.11: Đồ thị gốc $K_5$, Đồ thị con $H$ và Đồ thị con cảm sinh $G[W]$ (Slide 28, 29)</div>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; align-items: center;">
+      <!-- K5 -->
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <!-- 5 nodes: a(90, 20), b(160, 70), c(135, 145), d(45, 145), e(20, 70) -->
+        <polygon points="90,20 160,70 135,145 45,145 20,70" fill="none" stroke="var(--border)" stroke-width="2" />
+        <line x1="90" y1="20" x2="135" y2="145" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="90" y1="20" x2="45" y2="145" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="160" y1="70" x2="45" y2="145" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="160" y1="70" x2="20" y2="70" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="135" y1="145" x2="20" y2="70" stroke="var(--border)" stroke-width="1.5" />
+        <circle cx="90" cy="20" r="12" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="90" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="160" cy="70" r="12" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="160" y="74" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="135" cy="145" r="12" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="135" y="149" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">c</text>
+        <circle cx="45" cy="145" r="12" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="45" y="149" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">d</text>
+        <circle cx="20" cy="70" r="12" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="20" y="74" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">e</text>
+        <text x="90" y="175" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">Đồ thị gốc G (K₅)</text>
+      </svg>
 
-  <div class="formula-card">
-    <h3>Bài Tập 1: Ứng Dụng Định Lý Bắt Tay</h3>
-    <p><b>Đề bài:</b> Một đồ thị vô hướng $G$ có 10 đỉnh, trong đó mỗi đỉnh đều có bậc bằng 3. Hỏi đồ thị này có bao nhiêu cạnh? Liệu có thể tồn tại một đồ thị có 15 đỉnh mà mỗi đỉnh đều có bậc bằng 3 hay không? Giải thích chi tiết.</p>
+      <!-- Subgraph H -->
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <!-- Subgraph H: Nodes a, b, c, e with some edges omitted -->
+        <line x1="90" y1="20" x2="160" y2="70" stroke="var(--c2)" stroke-width="2" />
+        <line x1="160" y1="70" x2="135" y2="145" stroke="var(--c2)" stroke-width="2" />
+        <line x1="135" y1="145" x2="20" y2="70" stroke="var(--c2)" stroke-width="2" />
+        <line x1="20" y1="70" x2="90" y2="20" stroke="var(--c2)" stroke-width="2" />
+        <circle cx="90" cy="20" r="12" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5" /><text x="90" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="160" cy="70" r="12" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5" /><text x="160" y="74" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="135" cy="145" r="12" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5" /><text x="135" y="149" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">c</text>
+        <circle cx="20" cy="70" r="12" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5" /><text x="20" y="74" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">e</text>
+        <text x="90" y="175" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--c2)">Đồ thị con H của G</text>
+      </svg>
+
+      <!-- Induced subgraph G[W] with W = {a, b, c, e} -->
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <!-- ALL edges between a, b, c, e are present (K4) -->
+        <polygon points="90,20 160,70 135,145 20,70" fill="none" stroke="var(--c4)" stroke-width="2" />
+        <line x1="90" y1="20" x2="135" y2="145" stroke="var(--c4)" stroke-width="2" />
+        <line x1="160" y1="70" x2="20" y2="70" stroke="var(--c4)" stroke-width="2" />
+        <circle cx="90" cy="20" r="12" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5" /><text x="90" y="24" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="160" cy="70" r="12" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5" /><text x="160" y="74" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="135" cy="145" r="12" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5" /><text x="135" y="149" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">c</text>
+        <circle cx="20" cy="70" r="12" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5" /><text x="20" y="74" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">e</text>
+        <text x="90" y="175" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--c4)">Cảm sinh G[W] (= K₄)</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PHẦN 6 -->
+  <h2>6. Biểu diễn Đồ thị trên Máy tính</h2>
+  <p>Để lưu trữ và xử lý đồ thị trong các thuật toán máy tính, ba phương pháp biểu diễn tiêu chuẩn bao gồm: <strong>Danh sách kề (Adjacency List)</strong>, <strong>Ma trận kề (Adjacency Matrix)</strong> và <strong>Ma trận liên thuộc (Incidence Matrix)</strong>.</p>
+
+  <h3>6.1. Danh sách kề (Adjacency List - Slide 30)</h3>
+  <p>Với mỗi đỉnh $u \in V$, ta lưu trữ danh sách các đỉnh $v$ mà $u$ có cạnh nối tới $v$.</p>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.12: Đồ thị có hướng và Bảng danh sách kề tương ứng (Slide 30)</div>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; align-items: center;">
+      <!-- Digraph Slide 30 -->
+      <svg width="250" height="200" viewBox="0 0 250 200">
+        <defs>
+          <marker id="ar30" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--c1)" />
+          </marker>
+        </defs>
+        <!-- Edges: a->b, a->c, a->d, b->b, b->d, c->a, c->c, d->b, e->d -->
+        <line x1="50" y1="50" x2="150" y2="50" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <line x1="50" y1="50" x2="50" y2="150" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <line x1="50" y1="50" x2="150" y2="150" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <path d="M 150 50 C 180 20, 200 60, 165 65" fill="none" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <line x1="150" y1="50" x2="150" y2="150" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <path d="M 50 150 C 70 120, 70 80, 52 65" fill="none" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <path d="M 50 150 C 10 180, 20 200, 38 165" fill="none" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <path d="M 150 150 C 120 120, 120 80, 148 65" fill="none" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <line x1="220" y1="150" x2="150" y2="150" stroke="var(--c1)" stroke-width="2" marker-end="url(#ar30)" />
+        <!-- Nodes -->
+        <circle cx="50" cy="50" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="50" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="150" cy="50" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="150" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="50" cy="150" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="50" y="155" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">c</text>
+        <circle cx="150" cy="150" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="150" y="155" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">d</text>
+        <circle cx="220" cy="150" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="220" y="155" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">e</text>
+      </svg>
+
+      <!-- Table Representation -->
+      <table style="border-collapse: collapse; text-align: left; font-size: 14px;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--border);">
+            <th style="padding: 8px 16px;">Đỉnh đầu</th>
+            <th style="padding: 8px 16px;">Các đỉnh cuối kề</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 16px; font-weight: bold; color: var(--c1);">a</td><td style="padding: 8px 16px;">b, c, d</td></tr>
+          <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 16px; font-weight: bold; color: var(--c1);">b</td><td style="padding: 8px 16px;">b, d</td></tr>
+          <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 16px; font-weight: bold; color: var(--c1);">c</td><td style="padding: 8px 16px;">a, c</td></tr>
+          <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 8px 16px; font-weight: bold; color: var(--c1);">d</td><td style="padding: 8px 16px;">b</td></tr>
+          <tr><td style="padding: 8px 16px; font-weight: bold; color: var(--c1);">e</td><td style="padding: 8px 16px;">d</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3>6.2. Ma trận kề (Adjacency Matrix - Slide 31, 32)</h3>
+  <p>Cho $G = (V, E)$ với $V = \{v_1, v_2, \dots, v_n\}$. <strong>Ma trận kề</strong> của $G$ là ma trận vuông $A = [a_{ij}]$ kích thước $n 	imes n$ trong đó $a_{ij}$ là số cạnh (hoặc cung) nối từ đỉnh $v_i$ đến đỉnh $v_j$.</p>
+  <ul>
+    <li>Với <em>đơn đồ thị vô hướng</em>, ma trận kề $A$ luôn là <strong>ma trận đối xứng</strong> ($a_{ij} = a_{ji}$) và đường chéo chính toàn số $0$ ($a_{ii} = 0$).</li>
+    <li>Với <em>đa đồ thị có khuyên</em>, phần tử đường chéo $a_{ii}$ biểu diễn số khuyên tại đỉnh $i$.</li>
+  </ul>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.13: Minh họa Ma trận kề của Đa đồ thị có khuyên (Slide 32)</div>
+    <div style="display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; align-items: center;">
+      <!-- Multigraph Slide 32 -->
+      <svg width="240" height="200" viewBox="0 0 240 200">
+        <!-- 4 nodes: a(50, 50), b(190, 50), c(50, 150), d(190, 150) -->
+        <!-- Edges between a and b: 3 multiple edges -->
+        <line x1="50" y1="50" x2="190" y2="50" stroke="var(--c2)" stroke-width="2" />
+        <path d="M 50 50 Q 120 20 190 50" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <path d="M 50 50 Q 120 80 190 50" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <!-- Edge a-c: 2 edges -->
+        <path d="M 50 50 Q 20 100 50 150" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <path d="M 50 50 Q 75 100 50 150" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <!-- Edge b-d: 1 edge -->
+        <line x1="190" y1="50" x2="190" y2="150" stroke="var(--c2)" stroke-width="2" />
+        <!-- Loop at c -->
+        <path d="M 50 150 C 10 180, 20 200, 40 165" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <!-- Edge b-c: 2 edges -->
+        <line x1="190" y1="50" x2="50" y2="150" stroke="var(--c2)" stroke-width="2" />
+        <path d="M 190 50 Q 140 130 50 150" fill="none" stroke="var(--c2)" stroke-width="2" stroke-dasharray="3" />
+        <!-- Nodes -->
+        <circle cx="50" cy="50" r="15" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5" /><text x="50" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">a</text>
+        <circle cx="190" cy="50" r="15" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5" /><text x="190" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">b</text>
+        <circle cx="50" cy="150" r="15" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5" /><text x="50" y="155" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">c</text>
+        <circle cx="190" cy="150" r="15" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5" /><text x="190" y="155" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">d</text>
+      </svg>
+
+      <!-- Matrix Display -->
+      <div style="font-family: monospace; font-size: 16px; line-height: 1.6; text-align: left; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+        <span style="color: var(--mut);">&nbsp;&nbsp;&nbsp;a&nbsp;b&nbsp;c&nbsp;d</span><br>
+        <strong>a:</strong> [0 3 2 0]<br>
+        <strong>b:</strong> [3 0 2 1]<br>
+        <strong>c:</strong> [2 2 1 0] &larr; <span style="color: var(--c2); font-size: 13px;">c[3][3]=1 (khuyên)</span><br>
+        <strong>d:</strong> [0 1 0 0]
+      </div>
+    </div>
+  </div>
+
+  <!-- PHẦN 7 -->
+  <h2>7. Đẳng cấu đồ thị (Graph Isomorphism - Slide 33, 34)</h2>
+  <div class="box note">
+    <div class="box-title">Định nghĩa Đẳng cấu (Isomorphism)</div>
+    <p>Hai đơn đồ thị $G_1 = (V_1, E_1)$ và $G_2 = (V_2, E_2)$ được gọi là <strong>đẳng cấu</strong> với nhau (ký hiệu $G_1 \simeq G_2$) nếu tồn tại một <strong>song ánh</strong> $f: V_1 	o V_2$ bảo toàn mối quan hệ kề:</p>
+    $$u 	ext{ kề } v 	ext{ trong } G_1 \iff f(u) 	ext{ kề } f(v) 	ext{ trong } G_2, \quad orall u, v \in V_1$$
+  </div>
+
+  <p><strong>Bất biến đẳng cấu (Isomorphic Invariants):</strong> Hai đồ thị đẳng cấu thì bắt buộc phải có cùng:
+    <br>1. Số lượng đỉnh ($|V_1| = |V_2|$) và số lượng cạnh ($|E_1| = |E_2|$).
+    <br>2. Dãy bậc của các đỉnh (sắp xếp theo thứ tự không giảm).
+    <br>3. Số lượng các chu trình con có độ dài $k$ ($k = 3, 4, \dots$).
+    <br><em>Lưu ý:</em> Có cùng các bất biến trên là <strong>điều kiện cần nhưng chưa đủ</strong> để kết luận đẳng cấu. Để khẳng định đẳng cấu, ta phải chỉ ra song ánh $f$.</p>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.14: Cặp đồ thị đẳng cấu $G$ và $H$ (Slide 33)</div>
+    <div style="display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; align-items: center;">
+      <!-- Graph G (Diamond / Square) -->
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <rect x="40" y="40" width="120" height="120" fill="none" stroke="var(--c1)" stroke-width="2.5" />
+        <circle cx="40" cy="40" r="14" fill="var(--card)" stroke="var(--c1)" stroke-width="3" /><text x="40" y="45" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">u₁</text>
+        <circle cx="160" cy="40" r="14" fill="var(--card)" stroke="var(--c1)" stroke-width="3" /><text x="160" y="45" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">u₂</text>
+        <circle cx="160" cy="160" r="14" fill="var(--card)" stroke="var(--c1)" stroke-width="3" /><text x="160" y="165" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">u₃</text>
+        <circle cx="40" cy="160" r="14" fill="var(--card)" stroke="var(--c1)" stroke-width="3" /><text x="40" y="165" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">u₄</text>
+        <text x="100" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">Đồ thị G</text>
+      </svg>
+
+      <!-- Graph H (Crossed layout) -->
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <line x1="100" y1="30" x2="30" y2="100" stroke="var(--c2)" stroke-width="2.5" />
+        <line x1="30" y1="100" x2="100" y2="170" stroke="var(--c2)" stroke-width="2.5" />
+        <line x1="100" y1="170" x2="170" y2="100" stroke="var(--c2)" stroke-width="2.5" />
+        <line x1="170" y1="100" x2="100" y2="30" stroke="var(--c2)" stroke-width="2.5" />
+        <circle cx="100" cy="30" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="3" /><text x="100" y="35" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">v₁</text>
+        <circle cx="170" cy="100" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="3" /><text x="170" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">v₂</text>
+        <circle cx="100" cy="170" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="3" /><text x="100" y="175" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">v₃</text>
+        <circle cx="30" cy="100" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="3" /><text x="30" y="105" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--ink)">v₄</text>
+        <text x="100" y="195" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--ink)">Đồ thị H</text>
+      </svg>
+    </div>
+    <div style="margin-top: 12px; font-size: 13.5px; color: var(--ink);">
+      Song ánh đẳng cấu: $f(u_1) = v_1, f(u_2) = v_2, f(u_3) = v_3, f(u_4) = v_4$. Cả hai đều là chu trình $C_4$.
+    </div>
+  </div>
+
+  <!-- PHẦN 8 -->
+  <h2>8. Đường đi và Tính liên thông</h2>
+  <div class="box note">
+    <div class="box-title">Khái niệm: Đường đi, Chu trình, Liên thông (Slide 35 - 39)</div>
+    <ul>
+      <li><strong>Đường đi (Path):</strong> Dãy các đỉnh $x_0, x_1, \dots, x_k$ sao cho $\{x_{i-1}, x_i\} \in E$ với mọi $i = 1, \dots, k$. Độ dài của đường đi là $k$ (số cạnh đi qua).</li>
+      <li><strong>Đường đi đơn (Simple path):</strong> Đường đi không đi qua bất kỳ cạnh nào quá 1 lần.</li>
+      <li><strong>Chu trình (Cycle / Circuit):</strong> Đường đi có đỉnh đầu trùng đỉnh cuối ($x_0 = x_k$) và độ dài $\ge 1$.</li>
+      <li><strong>Tính liên thông:</strong> Một đồ thị vô hướng gọi là <strong>liên thông (connected)</strong> nếu luôn tồn tại đường đi giữa mọi cặp đỉnh phân biệt.</li>
+      <li><strong>Thành phần liên thông (Connected Component):</strong> Là đồ thị con liên thông cực đại của $G$.</li>
+      <li><strong>Đỉnh khớp (Cut vertex / Articulation point):</strong> Đỉnh mà khi xóa nó (cùng các cạnh liên thuộc) làm tăng số thành phần liên thông của đồ thị.</li>
+      <li><strong>Cạnh cầu (Bridge / Cut edge):</strong> Cạnh mà khi xóa nó làm tăng số thành phần liên thông của đồ thị.</li>
+    </ul>
+  </div>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.15: Đồ thị liên thông có Đỉnh khớp $c$ vs Đồ thị có 3 thành phần liên thông (Slide 38, 39)</div>
+    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; align-items: center;">
+      <!-- Connected Graph with Cut Vertex c -->
+      <svg width="260" height="180" viewBox="0 0 260 180">
+        <!-- Triangle a-b-c and Triangle c-d-e -->
+        <polygon points="40,50 40,130 130,90" fill="none" stroke="var(--border)" stroke-width="2.5" />
+        <polygon points="130,90 220,50 220,130" fill="none" stroke="var(--border)" stroke-width="2.5" />
+        <circle cx="40" cy="50" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="40" y="54" text-anchor="middle" font-size="12" fill="var(--ink)">a</text>
+        <circle cx="40" cy="130" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="40" y="134" text-anchor="middle" font-size="12" fill="var(--ink)">b</text>
+        <!-- c is cut vertex -->
+        <circle cx="130" cy="90" r="15" fill="var(--card)" stroke="var(--c3)" stroke-width="3.5" /><text x="130" y="94" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--c3)">c</text>
+        <text x="130" y="125" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c3)">Đỉnh khớp</text>
+        <circle cx="220" cy="50" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="220" y="54" text-anchor="middle" font-size="12" fill="var(--ink)">d</text>
+        <circle cx="220" cy="130" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5" /><text x="220" y="134" text-anchor="middle" font-size="12" fill="var(--ink)">e</text>
+        <text x="130" y="165" text-anchor="middle" font-size="12" font-style="italic" fill="var(--mut)">G liên thông, c là đỉnh khớp (xóa c tách thành 2 phần)</text>
+      </svg>
+
+      <!-- Graph with 3 connected components (Slide 39) -->
+      <svg width="280" height="180" viewBox="0 0 280 180">
+        <!-- Component H1: a-b-c -->
+        <polygon points="40,40 90,40 65,85" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <circle cx="40" cy="40" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="40" y="44" text-anchor="middle" font-size="11" fill="var(--ink)">a</text>
+        <circle cx="90" cy="40" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="90" y="44" text-anchor="middle" font-size="11" fill="var(--ink)">b</text>
+        <circle cx="65" cy="85" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="65" y="89" text-anchor="middle" font-size="11" fill="var(--ink)">c</text>
+        <text x="65" y="115" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c2)">Thành phần H₁</text>
+
+        <!-- Component H2: d-e -->
+        <line x1="160" y1="50" x2="160" y2="110" stroke="var(--c4)" stroke-width="2" />
+        <circle cx="160" cy="50" r="10" fill="var(--card)" stroke="var(--c4)" stroke-width="2" /><text x="160" y="54" text-anchor="middle" font-size="11" fill="var(--ink)">d</text>
+        <circle cx="160" cy="110" r="10" fill="var(--card)" stroke="var(--c4)" stroke-width="2" /><text x="160" y="114" text-anchor="middle" font-size="11" fill="var(--ink)">e</text>
+        <text x="160" y="135" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c4)">H₂</text>
+
+        <!-- Component H3: f-g-h -->
+        <line x1="220" y1="40" x2="260" y2="75" stroke="var(--c5)" stroke-width="2" />
+        <line x1="260" y1="75" x2="220" y2="110" stroke="var(--c5)" stroke-width="2" />
+        <circle cx="220" cy="40" r="10" fill="var(--card)" stroke="var(--c5)" stroke-width="2" /><text x="220" y="44" text-anchor="middle" font-size="11" fill="var(--ink)">f</text>
+        <circle cx="260" cy="75" r="10" fill="var(--card)" stroke="var(--c5)" stroke-width="2" /><text x="260" y="79" text-anchor="middle" font-size="11" fill="var(--ink)">g</text>
+        <circle cx="220" cy="110" r="10" fill="var(--card)" stroke="var(--c5)" stroke-width="2" /><text x="220" y="114" text-anchor="middle" font-size="11" fill="var(--ink)">h</text>
+        <text x="240" y="135" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c5)">H₃</text>
+        <text x="140" y="165" text-anchor="middle" font-size="12" font-style="italic" fill="var(--mut)">Đồ thị H gồm 3 thành phần liên thông rời nhau</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="box tip">
+    <div class="box-title">Định lý Số đường đi và Lũy thừa Ma trận kề (Slide 37)</div>
+    <p>Cho $G$ là đồ thị với ma trận kề $A$. Khi đó, <strong>số lượng đường đi khác nhau có độ dài $r$ từ đỉnh $v_i$ đến đỉnh $v_j$</strong> chính bằng phần tử ở hàng $i$, cột $j$ của ma trận lũy thừa bậc $r$:</p>
+    $$N_r(v_i, v_j) = (A^r)_{ij}$$
+    <p><em>Ví dụ thực tế (Slide 37):</em> Cho đồ thị 4 đỉnh $\{a, b, c, d\}$ với ma trận kề $A$. Khi tính $A^4$, phần tử $(A^4)_{14} = 8$, nghĩa là có đúng <strong>8 đường đi độ dài 4</strong> nối từ đỉnh $a$ đến đỉnh $d$.</p>
+  </div>
+
+  <!-- PHẦN 9 -->
+  <h2>9. Đồ thị Euler và Đồ thị Hamilton</h2>
+
+  <h3>9.1. Chu trình Euler và Đường đi Euler (Slide 44 - 49)</h3>
+  <div class="box note">
+    <div class="box-title">Định nghĩa & Định lý Euler</div>
+    <ul>
+      <li><strong>Chu trình Euler (Euler Circuit):</strong> Là chu trình đơn đi qua <strong>mọi cạnh</strong> của đồ thị đúng 1 lần (và quay về đỉnh xuất phát).</li>
+      <li><strong>Đường đi Euler (Euler Path):</strong> Là đường đi đơn đi qua <strong>mọi cạnh</strong> của đồ thị đúng 1 lần (đỉnh đầu khác đỉnh cuối).</li>
+    </ul>
+    <p><strong>Định lý Euler cho Đồ thị vô hướng liên thông:</strong></p>
+    <ul>
+      <li>Đồ thị có <em>chu trình Euler</em> $\iff$ <strong>Mọi đỉnh đều có bậc chẵn</strong>.</li>
+      <li>Đồ thị có <em>đường đi Euler</em> (không có chu trình) $\iff$ Đồ thị có <strong>đúng 2 đỉnh bậc lẻ</strong> (đường đi sẽ bắt đầu từ 1 đỉnh lẻ và kết thúc ở đỉnh lẻ còn lại).</li>
+      <li>Nếu đồ thị có nhiều hơn 2 đỉnh bậc lẻ $\implies$ <strong>Không tồn tại</strong> cả đường đi lẫn chu trình Euler.</li>
+    </ul>
+  </div>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.16: Phân tích 3 đồ thị $G_1, G_2, G_3$ kiểm tra điều kiện Euler (Slide 47)</div>
+    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; align-items: center;">
+      <!-- G1: Có đường đi Euler (2 đỉnh lẻ b, d) -->
+      <svg width="180" height="190" viewBox="0 0 180 190">
+        <!-- Square a(30, 40), b(150, 40), c(150, 140), d(30, 140) + e(90, 90) -->
+        <polygon points="30,40 150,40 150,140 30,140" fill="none" stroke="var(--c1)" stroke-width="2" />
+        <line x1="30" y1="40" x2="90" y2="90" stroke="var(--c1)" stroke-width="2" />
+        <line x1="150" y1="40" x2="90" y2="90" stroke="var(--c1)" stroke-width="2" />
+        <line x1="150" y1="140" x2="90" y2="90" stroke="var(--c1)" stroke-width="2" />
+        <line x1="30" y1="140" x2="90" y2="90" stroke="var(--c1)" stroke-width="2" />
+        <circle cx="30" cy="40" r="10" fill="var(--card)" stroke="var(--c1)" stroke-width="2" /><text x="30" y="44" text-anchor="middle" font-size="11" fill="var(--ink)">a</text>
+        <circle cx="150" cy="40" r="10" fill="var(--c3)" stroke="var(--c3)" stroke-width="2" /><text x="150" y="44" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">b</text>
+        <circle cx="150" cy="140" r="10" fill="var(--card)" stroke="var(--c1)" stroke-width="2" /><text x="150" y="144" text-anchor="middle" font-size="11" fill="var(--ink)">c</text>
+        <circle cx="30" cy="140" r="10" fill="var(--c3)" stroke="var(--c3)" stroke-width="2" /><text x="30" y="144" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">d</text>
+        <circle cx="90" cy="90" r="10" fill="var(--card)" stroke="var(--c1)" stroke-width="2" /><text x="90" y="94" text-anchor="middle" font-size="11" fill="var(--ink)">e</text>
+        <text x="90" y="170" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">G₁: Có đường đi Euler</text>
+        <text x="90" y="185" text-anchor="middle" font-size="10" fill="var(--mut)">(Đúng 2 đỉnh lẻ: b, d)</text>
+      </svg>
+
+      <!-- G2: Có chu trình Euler (Tất cả đỉnh chẵn) -->
+      <svg width="180" height="190" viewBox="0 0 180 190">
+        <!-- Octagon / Bowtie -->
+        <polygon points="30,40 90,40 90,140 30,140" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <polygon points="90,40 150,40 150,140 90,140" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <circle cx="30" cy="40" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="30" y="44" text-anchor="middle" font-size="11" fill="var(--ink)">a</text>
+        <circle cx="90" cy="40" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="90" y="44" text-anchor="middle" font-size="11" fill="var(--ink)">b</text>
+        <circle cx="150" cy="40" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="150" y="44" text-anchor="middle" font-size="11" fill="var(--ink)">c</text>
+        <circle cx="150" cy="140" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="150" y="144" text-anchor="middle" font-size="11" fill="var(--ink)">d</text>
+        <circle cx="90" cy="140" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="90" y="144" text-anchor="middle" font-size="11" fill="var(--ink)">e</text>
+        <circle cx="30" cy="140" r="10" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="30" y="144" text-anchor="middle" font-size="11" fill="var(--ink)">f</text>
+        <text x="90" y="170" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c2)">G₂: Có Chu trình Euler</text>
+        <text x="90" y="185" text-anchor="middle" font-size="10" fill="var(--mut)">(Tất cả đỉnh đều bậc chẵn)</text>
+      </svg>
+
+      <!-- G3: Không có Euler (6 đỉnh lẻ) -->
+      <svg width="180" height="190" viewBox="0 0 180 190">
+        <polygon points="90,30 155,75 155,135 90,165 25,135 25,75" fill="none" stroke="var(--border)" stroke-width="1.8" />
+        <line x1="90" y1="30" x2="90" y2="165" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="25" y1="75" x2="155" y2="135" stroke="var(--c3)" stroke-width="1.8" />
+        <line x1="25" y1="135" x2="155" y2="75" stroke="var(--c3)" stroke-width="1.8" />
+        <circle cx="90" cy="30" r="8" fill="var(--c3)" />
+        <circle cx="155" cy="75" r="8" fill="var(--c3)" />
+        <circle cx="155" cy="135" r="8" fill="var(--c3)" />
+        <circle cx="90" cy="165" r="8" fill="var(--c3)" />
+        <circle cx="25" cy="135" r="8" fill="var(--c3)" />
+        <circle cx="25" cy="75" r="8" fill="var(--c3)" />
+        <text x="90" y="178" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c3)">G₃: Không có Euler</text>
+        <text x="90" y="190" text-anchor="middle" font-size="10" fill="var(--mut)">(Có tới 6 đỉnh bậc 3 lẻ)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="box tip">
+    <div class="box-title">Thuật toán Hierholzer tìm Chu trình Euler (Slide 49)</div>
+    <ol>
+      <li>Bắt đầu tại đỉnh tùy ý $v$. Đi theo các cạnh chưa thăm cho đến khi quay về chính đỉnh $v$ (luôn được đảm bảo vì mọi đỉnh đều có bậc chẵn), thu được chu trình con đầu tiên $C$.</li>
+      <li>Nếu $C$ đã chứa toàn bộ cạnh của đồ thị, ta dừng lại và thu được chu trình Euler.</li>
+      <li>Nếu vẫn còn cạnh chưa thăm, chọn một đỉnh $u \in C$ có liên thuộc với cạnh chưa thăm. Khởi hành từ $u$ tìm tiếp chu trình con mới $C'$.</li>
+      <li>Ghép chu trình $C'$ vào $C$ tại vị trí đỉnh $u$. Lặp lại bước 2-3 cho đến khi toàn bộ cạnh được thăm hết. Độ phức tạp tuyến tính $O(|E|)$.</li>
+    </ol>
+  </div>
+
+  <h3>9.2. Chu trình Hamilton và Đường đi Hamilton (Slide 50 - 53)</h3>
+  <div class="box note">
+    <div class="box-title">Định nghĩa Hamilton</div>
+    <ul>
+      <li><strong>Đường đi Hamilton:</strong> Là đường đi đơn đi qua <strong>mọi đỉnh</strong> của đồ thị đúng 1 lần.</li>
+      <li><strong>Chu trình Hamilton:</strong> Là chu trình đơn đi qua <strong>mọi đỉnh</strong> của đồ thị đúng 1 lần (ngoại trừ đỉnh xuất phát trùng với đỉnh kết thúc).</li>
+    </ul>
+    <p><em>So sánh cốt lõi:</em> Euler đi qua mọi <strong>cạnh</strong> đúng 1 lần (dễ kiểm tra, $O(|E|)$). Hamilton đi qua mọi <strong>đỉnh</strong> đúng 1 lần (bài toán NP-đầy đủ, không có điều kiện cần và đủ đơn giản).</p>
+  </div>
+
+  <div class="box alert">
+    <div class="box-title">Hai điều kiện đủ cho Chu trình Hamilton (Slide 51)</div>
+    <p>Cho đơn đồ thị $G$ có $n \ge 3$ đỉnh:</p>
+    <ul>
+      <li><strong>Định lý Dirac:</strong> Nếu mọi đỉnh $v \in V$ đều thỏa mãn $\deg(v) \ge rac{n}{2}$ thì $G$ có chu trình Hamilton.</li>
+      <li><strong>Định lý Ore:</strong> Nếu với mọi cặp đỉnh không kề nhau $u, v$, ta có $\deg(u) + \deg(v) \ge n$ thì $G$ có chu trình Hamilton.</li>
+    </ul>
+    <p><em>Chú ý:</em> Đây chỉ là điều kiện đủ. Nhiều đồ thị không thỏa mãn Dirac hay Ore vẫn có chu trình Hamilton (ví dụ chu trình đơn $C_n$ có $\deg = 2 < n/2$ với $n \ge 5$ nhưng luôn có chu trình Hamilton).</p>
+  </div>
+
+  <div class="svg-card" style="margin: 24px 0; padding: 20px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+    <div style="font-weight: 600; margin-bottom: 12px; color: var(--ink);">Hình 9.17: Kiểm tra tính chất Hamilton trên 3 đồ thị $G_1, G_2, G_3$ (Slide 50)</div>
+    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; align-items: center;">
+      <!-- G1: Has Hamilton cycle -->
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <!-- 5 nodes pentagon: a(90, 25), b(155, 65), c(135, 140), d(45, 140), e(25, 65) with cross edges -->
+        <polygon points="90,25 155,65 135,140 45,140 25,65" fill="none" stroke="var(--c1)" stroke-width="2.5" />
+        <line x1="90" y1="25" x2="45" y2="140" stroke="var(--border)" stroke-width="1.5" />
+        <line x1="155" y1="65" x2="25" y2="65" stroke="var(--border)" stroke-width="1.5" />
+        <circle cx="90" cy="25" r="10" fill="var(--card)" stroke="var(--c1)" stroke-width="2" /><text x="90" y="29" text-anchor="middle" font-size="11" fill="var(--ink)">a</text>
+        <circle cx="155" cy="65" r="10" fill="var(--card)" stroke="var(--c1)" stroke-width="2" /><text x="155" y="69" text-anchor="middle" font-size="11" fill="var(--ink)">b</text>
+        <circle cx="135" cy="140" r="10" fill="var(--card)" stroke="var(--c1)" stroke-width="2" /><text x="135" y="144" text-anchor="middle" font-size="11" fill="var(--ink)">c</text>
+        <circle cx="45" cy="140" r="10" fill="var(--card)" stroke="var(--c1)" stroke-width="2" /><text x="45" y="144" text-anchor="middle" font-size="11" fill="var(--ink)">d</text>
+        <circle cx="25" cy="65" r="10" fill="var(--card)" stroke="var(--c1)" stroke-width="2" /><text x="25" y="69" text-anchor="middle" font-size="11" fill="var(--ink)">e</text>
+        <text x="90" y="165" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">G₁: Có chu trình Hamilton</text>
+        <text x="90" y="177" text-anchor="middle" font-size="10" fill="var(--mut)">(a - b - c - d - e - a)</text>
+      </svg>
+
+      <!-- G2: Có đường đi Hamilton nhưng không có chu trình -->
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <!-- Pendant vertex e attached to square a-b-c-d -->
+        <rect x="40" y="30" width="70" height="70" fill="none" stroke="var(--c2)" stroke-width="2" />
+        <line x1="110" y1="100" x2="155" y2="135" stroke="var(--c2)" stroke-width="2" />
+        <circle cx="40" cy="30" r="9" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="40" y="34" text-anchor="middle" font-size="10" fill="var(--ink)">a</text>
+        <circle cx="110" cy="30" r="9" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="110" y="34" text-anchor="middle" font-size="10" fill="var(--ink)">b</text>
+        <circle cx="40" cy="100" r="9" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="40" y="104" text-anchor="middle" font-size="10" fill="var(--ink)">c</text>
+        <circle cx="110" cy="100" r="9" fill="var(--card)" stroke="var(--c2)" stroke-width="2" /><text x="110" y="104" text-anchor="middle" font-size="10" fill="var(--ink)">d</text>
+        <circle cx="155" cy="135" r="9" fill="var(--card)" stroke="var(--c3)" stroke-width="2" /><text x="155" y="139" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--c3)">e</text>
+        <text x="90" y="165" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c2)">G₂: Có đường đi Hamilton</text>
+        <text x="90" y="177" text-anchor="middle" font-size="10" fill="var(--c3)">(e bậc 1 &rarr; Không có chu trình)</text>
+      </svg>
+
+      <!-- G3: Không có Hamilton (đỉnh cắt tách thành phần) -->
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <!-- Two triangles sharing one cut vertex c -->
+        <polygon points="25,50 25,120 90,85" fill="none" stroke="var(--border)" stroke-width="2" />
+        <polygon points="90,85 155,50 155,120" fill="none" stroke="var(--border)" stroke-width="2" />
+        <circle cx="25" cy="50" r="8" fill="var(--mut)" />
+        <circle cx="25" cy="120" r="8" fill="var(--mut)" />
+        <circle cx="90" cy="85" r="10" fill="var(--c3)" />
+        <circle cx="155" cy="50" r="8" fill="var(--mut)" />
+        <circle cx="155" cy="120" r="8" fill="var(--mut)" />
+        <text x="90" y="165" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c3)">G₃: Không có Hamilton</text>
+        <text x="90" y="177" text-anchor="middle" font-size="10" fill="var(--mut)">(Đỉnh cắt qua 2 lần nếu quay về)</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="box tip">
+    <div class="box-title">Ứng dụng: Chu trình Hamilton trên $Q_n$ và Mã Gray (Slide 53)</div>
+    <p>Một chu trình Hamilton trên đồ thị siêu khối $Q_n$ chính là một thứ tự liệt kê toàn bộ $2^n$ xâu nhị phân sao cho hai xâu liên tiếp (và xâu cuối cùng với xâu đầu tiên) chỉ khác nhau đúng 1 bit. Thứ tự này được gọi là <strong>Mã Gray (Gray Code)</strong>.</p>
+    <div style="display: flex; justify-content: center; margin: 16px 0;">
+      <svg width="280" height="160" viewBox="0 0 280 160">
+        <!-- Gray code circle of 8 codes for Q3 -->
+        <!-- Center (140, 80), r=60 -->
+        <circle cx="140" cy="80" r="55" fill="none" stroke="var(--c4)" stroke-width="2" stroke-dasharray="3" />
+        <!-- 8 positions: 000, 001, 011, 010, 110, 111, 101, 100 -->
+        <text x="140" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">000</text>
+        <text x="185" y="38" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">001</text>
+        <text x="205" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">011</text>
+        <text x="185" y="132" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">010</text>
+        <text x="140" y="152" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">110</text>
+        <text x="95" y="132" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">111</text>
+        <text x="75" y="85" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">101</text>
+        <text x="95" y="38" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--c1)">100</text>
+        <text x="140" y="85" text-anchor="middle" font-size="12" font-style="italic" fill="var(--mut)">Mã Gray 3-bit</text>
+      </svg>
+    </div>
+    <p>Mã Gray có ứng dụng then chốt trong cảm biến góc quay kỹ thuật số (tránh lỗi chuyển mạch do nhiều bit đổi cùng lúc) và lập bản đồ Karnaugh tối giản mạch logic.</p>
+  </div>
+
+
+  <!-- PHẦN 10 -->
+  <h2>10. Bài tập áp dụng và Luyện thi</h2>
+  <p>Dưới đây là các dạng bài tập điển hình từ bài giảng và đề thi môn Toán rời rạc (UET). Hãy tự suy nghĩ và vẽ đồ thị ra nháp trước khi bấm mở lời giải chi tiết.</p>
+
+  <div class="ex-box">
+    <div class="ex-title">Bài tập 1: Bậc của đỉnh và Định lý Bắt tay (Slide 16, 17)</div>
+    <p>Cho đồ thị vô hướng $G$ có $15$ đỉnh, trong đó mỗi đỉnh đều có bậc bằng $3$ hoặc bậc bằng $4$. Biết tổng số cạnh của đồ thị là $27$. Hỏi đồ thị $G$ có bao nhiêu đỉnh bậc $3$ và bao nhiêu đỉnh bậc $4$?</p>
     <div class="btn-group">
       <button type="button" class="btn btn-sol" onclick="togglePanel('sol-9-1')">Xem Lời giải chi tiết</button>
     </div>
     <div id="sol-9-1" class="panel">
-      <div class="step"><b>Bước 1 (Tính số cạnh):</b> Gọi $m = |E|$ là số cạnh của đồ thị. Áp dụng Định lý Bắt tay:
-        $$2m = \sum_{v \in V} \deg(v) = 10 \times 3 = 30 \implies m = \frac{30}{2} = 15\ \text{cạnh.}$$
+      <div class="step"><b>Bước 1: Thiết lập ẩn số</b><br>Gọi $x$ là số đỉnh có bậc $3$ và $y$ là số đỉnh có bậc $4$ ($x, y \in \mathbb{N}$).</div>
+      <div class="step"><b>Bước 2: Thiết lập hệ phương trình</b><br>
+        Tổng số đỉnh: $x + y = 15$ &nbsp;&nbsp;(1)<br>
+        Áp dụng Định lý Bắt tay: Tổng bậc của tất cả các đỉnh bằng 2 lần số cạnh:<br>
+        $\sum_{v \in V} \deg(v) = 3x + 4y = 2 \times 27 = 54$ &nbsp;&nbsp;(2)
       </div>
-      <div class="step"><b>Bước 2 (Xét đồ thị 15 đỉnh bậc 3):</b> Giả sử tồn tại đồ thị này, tổng bậc của 15 đỉnh sẽ là:
-        $$\sum_{v \in V} \deg(v) = 15 \times 3 = 45$$
-        Theo định lý bắt tay, tổng bậc này phải bằng $2m$ (bắt buộc là một số chẵn). Tuy nhiên $45$ lại là số lẻ, mâu thuẫn!
+      <div class="step"><b>Bước 3: Giải hệ phương trình</b><br>
+        Từ (1) suy ra $y = 15 - x$. Thay vào (2):<br>
+        $3x + 4(15 - x) = 54 \iff 60 - x = 54 \iff x = 6$.<br>
+        Suy ra $y = 15 - 6 = 9$.
       </div>
-      <div class="step"><b>Cách giải thích khác:</b> Số đỉnh có bậc lẻ ở đây là 15 (số lẻ), vi phạm trực tiếp hệ quả <i>"Số đỉnh bậc lẻ trong đồ thị vô hướng luôn là một số chẵn"</i>.</div>
-      <div class="ans"><b>Kết luận:</b> Đồ thị 10 đỉnh có đúng <b>15 cạnh</b>. Và <b>KHÔNG THỂ</b> tồn tại đồ thị 15 đỉnh mà mỗi đỉnh đều có bậc 3.</div>
+      <div class="step"><b>Kết luận:</b> Đồ thị $G$ có đúng <strong>6 đỉnh bậc 3</strong> và <strong>9 đỉnh bậc 4</strong>. (Thỏa mãn hệ quả: số đỉnh bậc lẻ $x=6$ là một số chẵn).</div>
     </div>
   </div>
 
-  <div class="formula-card">
-    <h3>Bài Tập 2: Nhận Biết Đồ Thị Phân Đôi</h3>
-    <p><b>Đề bài:</b> Trong các đồ thị sau: $C_4$, $C_5$, $K_3$, $K_{3,4}$ và $Q_3$, những đồ thị nào là đồ thị phân đôi? Với mỗi đồ thị phân đôi, hãy chỉ ra cách chia tập đỉnh $V_1$ và $V_2$.</p>
+  <div class="ex-box">
+    <div class="ex-title">Bài tập 2: Nhận biết Đồ thị phân đôi và Chu trình lẻ (Slide 24, 25)</div>
+    <p>Xét hai đồ thị: Chu trình $C_5$ và Chu trình $C_8$. Đồ thị nào là đồ thị phân đôi? Hãy giải thích chi tiết bằng cả hai phương pháp (tô màu và định lý chu trình).</p>
     <div class="btn-group">
       <button type="button" class="btn btn-sol" onclick="togglePanel('sol-9-2')">Xem Lời giải chi tiết</button>
     </div>
     <div id="sol-9-2" class="panel">
-      <div class="step"><b>Quy tắc áp dụng:</b> $G$ là đồ thị phân đôi $\iff G$ không chứa chu trình đơn có độ dài lẻ.</div>
-      <div class="step"><b>1. $C_4$:</b> Là chu trình độ dài 4 (chẵn) $\implies$ <b>Là đồ thị phân đôi</b>. Tập đỉnh chia thành $V_1 = \{v_1, v_3\}$ và $V_2 = \{v_2, v_4\}$.</div>
-      <div class="step"><b>2. $C_5$:</b> Là chu trình độ dài 5 (lẻ) $\implies$ <b>KHÔNG phải đồ thị phân đôi</b> (cố tô 2 màu sẽ có 2 đỉnh kề nhau cùng màu).</div>
-      <div class="step"><b>3. $K_3$:</b> Chính là tam giác $C_3$ (chu trình lẻ 3) $\implies$ <b>KHÔNG phải đồ thị phân đôi</b>.</div>
-      <div class="step"><b>4. $K_{3,4}$:</b> Theo định nghĩa là đồ thị phân đôi đầy đủ $\implies$ <b>Là đồ thị phân đôi</b> ($|V_1|=3, |V_2|=4$).</div>
-      <div class="step"><b>5. $Q_3$:</b> Đỉnh là các chuỗi nhị phân 3 bit $b_1 b_2 b_3$. Hai đỉnh kề nhau nếu khác đúng 1 bit. Phân hoạch $V_1$ chứa các chuỗi có số lượng bit 1 là chẵn (000, 011, 101, 110) và $V_2$ chứa các chuỗi có số lượng bit 1 là lẻ (001, 010, 100, 111). Mọi cạnh đều đi từ chẵn sang lẻ $\implies$ <b>Là đồ thị phân đôi</b>.</div>
-      <div class="ans"><b>Đáp án:</b> Các đồ thị phân đôi là: <b>$C_4$, $K_{3,4}$ và $Q_3$</b>.</div>
+      <div class="step"><b>Xét chu trình $C_5$:</b><br>
+        • $C_5$ là một chu trình có độ dài lẻ ($k = 5$). Theo định lý nhận biết đồ thị phân đôi, một đồ thị là phân đôi khi và chỉ khi nó không chứa chu trình lẻ. Vì $C_5$ chính là một chu trình lẻ, nên <strong>$C_5$ không phải là đồ thị phân đôi</strong>.<br>
+        • <em>Cách kiểm tra bằng tô 2 màu (Đỏ và Xanh):</em> Xuất phát từ đỉnh $v_1$ (Đỏ) &rarr; $v_2$ (Xanh) &rarr; $v_3$ (Đỏ) &rarr; $v_4$ (Xanh) &rarr; $v_5$ (Đỏ). Khi đó cạnh $\{v_5, v_1\}$ nối hai đỉnh cùng màu Đỏ &rarr; Vi phạm quy tắc tô 2 màu hợp lệ.
+      </div>
+      <div class="step"><b>Xét chu trình $C_8$:</b><br>
+        • $C_8$ có độ dài chẵn ($k = 8$) và không chứa bất kỳ chu trình con lẻ nào. Do đó <strong>$C_8$ là đồ thị phân đôi</strong>.<br>
+        • Hai tập phân hoạch đỉnh là: $V_1 = \{v_1, v_3, v_5, v_7\}$ và $V_2 = \{v_2, v_4, v_6, v_8\}$. Mọi cạnh của $C_8$ đều chỉ nối một đỉnh thuộc $V_1$ với một đỉnh thuộc $V_2$.
+      </div>
     </div>
   </div>
 
-  <div class="formula-card">
-    <h3>Bài Tập 3: Đếm Số Đường Đi Bằng Lũy Thừa Ma Trận Kề</h3>
-    <p><b>Đề bài:</b> Cho đồ thị $G$ gồm 4 đỉnh $\{v_1, v_2, v_3, v_4\}$ có ma trận kề $A$ như sau:
-    $$A = \begin{pmatrix} 0 & 1 & 1 & 0 \\ 1 & 0 & 0 & 1 \\ 1 & 0 & 0 & 1 \\ 0 & 1 & 1 & 0 \end{pmatrix}$$
-    Hãy tính số đường đi có độ dài đúng bằng 2 và độ dài đúng bằng 3 nối từ đỉnh $v_1$ đến đỉnh $v_4$.</p>
+  <div class="ex-box">
+    <div class="ex-title">Bài tập 3: Số đường đi độ dài $r$ bằng Ma trận kề (Slide 37)</div>
+    <p>Cho đồ thị đầy đủ $K_3$ gồm 3 đỉnh $\{1, 2, 3\}$.<br>
+    a) Viết ma trận kề $A$ của $K_3$.<br>
+    b) Tính ma trận $A^2$ và $A^3$, từ đó cho biết có bao nhiêu đường đi độ dài 3 nối giữa đỉnh 1 và đỉnh 2.</p>
     <div class="btn-group">
       <button type="button" class="btn btn-sol" onclick="togglePanel('sol-9-3')">Xem Lời giải chi tiết</button>
     </div>
     <div id="sol-9-3" class="panel">
-      <div class="step"><b>Bước 1: Tính ma trận $A^2$:</b>
-      $$(A^2)_{14} = \sum_{k=1}^4 a_{1k} a_{k4} = a_{11}a_{14} + a_{12}a_{24} + a_{13}a_{34} + a_{14}a_{44} = 0\cdot 0 + 1\cdot 1 + 1\cdot 1 + 0\cdot 0 = 2$$
-      Vậy có đúng <b>2 đường đi độ dài 2</b> từ $v_1$ đến $v_4$: đó là $v_1 \to v_2 \to v_4$ và $v_1 \to v_3 \to v_4$.
+      <div class="step"><b>Câu a: Ma trận kề $A$</b><br>
+        Vì là đơn đồ thị đầy đủ 3 đỉnh nên đường chéo bằng 0 và các vị trí khác bằng 1:
+        $$A = \begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 0 \end{pmatrix}$$
       </div>
-      <div class="step"><b>Bước 2: Tính ma trận $A^3 = A^2 \times A$:</b>
-      Ta cần tính dòng 1 của $A^2$:
-      Dòng 1 nhân với các cột của $A$:
-      $(A^2)_{11} = 1\cdot 1 + 1\cdot 1 = 2$, $(A^2)_{12} = 0$, $(A^2)_{13} = 0$, $(A^2)_{14} = 2$.
-      Vậy $(A^3)_{14} = (A^2)_{11}a_{14} + (A^2)_{12}a_{24} + (A^2)_{13}a_{34} + (A^2)_{14}a_{44} = 2\cdot 0 + 0\cdot 1 + 0\cdot 1 + 2\cdot 0 = 0$.
+      <div class="step"><b>Câu b: Tính $A^2$ và $A^3$</b><br>
+        $$A^2 = A \times A = \begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 0 \end{pmatrix} \begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 0 \end{pmatrix} = \begin{pmatrix} 2 & 1 & 1 \\ 1 & 2 & 1 \\ 1 & 1 & 2 \end{pmatrix}$$
+        $$A^3 = A^2 \times A = \begin{pmatrix} 2 & 1 & 1 \\ 1 & 2 & 1 \\ 1 & 1 & 2 \end{pmatrix} \begin{pmatrix} 0 & 1 & 1 \\ 1 & 0 & 1 \\ 1 & 1 & 0 \end{pmatrix} = \begin{pmatrix} 2 & 3 & 3 \\ 3 & 2 & 3 \\ 3 & 3 & 2 \end{pmatrix}$$
       </div>
-      <div class="step"><b>Giải thích ý nghĩa:</b> Đồ thị $G$ chính là chu trình $C_4$. Trong chu trình 4 đỉnh, khoảng cách giữa 2 đỉnh đối diện $v_1$ và $v_4$ chỉ có thể là độ dài chẵn (2, 4, 6...), không thể đi đến nhau bằng 3 bước mà không quay đầu lại.</div>
-      <div class="ans"><b>Đáp án:</b> Có <b>2 đường đi độ dài 2</b> và <b>0 đường đi độ dài 3</b> từ $v_1$ đến $v_4$.</div>
+      <div class="step"><b>Kết luận:</b><br>
+        Số đường đi độ dài $3$ từ đỉnh $1$ đến đỉnh $2$ chính bằng phần tử ở hàng 1 cột 2 của $A^3$:
+        $$(A^3)_{12} = 3$$
+        3 đường đi độ dài 3 cụ thể là:
+        <br>1) $1 \to 2 \to 1 \to 2$
+        <br>2) $1 \to 3 \to 1 \to 2$
+        <br>3) $1 \to 2 \to 3 \to 2$ (hoặc $1 \to 3 \to 3$ không hợp lệ, $1 \to 2 \to 3 \to 2$).
+      </div>
     </div>
   </div>
 
-  <div class="formula-card">
-    <h3>Bài Tập 4: Kiểm Tra Chu Trình Euler &amp; Chu Trình Hamilton</h3>
-    <p><b>Đề bài:</b> Cho đồ thị vô hướng $G$ có tập đỉnh $V = \{a, b, c, d, e\}$ với các cạnh: $(a,b), (b,c), (c,d), (d,e), (e,a), (b,e), (b,d)$.<br/>
-    (a) Đồ thị $G$ có chu trình Euler hoặc đường đi Euler không?<br/>
-    (b) Đồ thị $G$ có chu trình Hamilton không? Nếu có hãy chỉ ra một chu trình.</p>
+  <div class="ex-box">
+    <div class="ex-title">Bài tập 4: Kiểm tra Chu trình Euler và Hamilton trên Đồ thị phân đôi đầy đủ (Slide 47, 50)</div>
+    <p>Xét đồ thị phân đôi đầy đủ $K_{3,3}$ và $K_{2,4}$:<br>
+    a) Đồ thị nào có Chu trình Euler? Đồ thị nào có Đường đi Euler?<br>
+    b) Đồ thị nào có Chu trình Hamilton?</p>
     <div class="btn-group">
       <button type="button" class="btn btn-sol" onclick="togglePanel('sol-9-4')">Xem Lời giải chi tiết</button>
     </div>
     <div id="sol-9-4" class="panel">
-      <div class="step"><b>Bước 1: Tính bậc từng đỉnh của $G$:</b>
-        <ul>
-          <li>Đỉnh $a$ nối với $b, e \implies \deg(a) = 2$ (chẵn)</li>
-          <li>Đỉnh $b$ nối với $a, c, d, e \implies \deg(b) = 4$ (chẵn)</li>
-          <li>Đỉnh $c$ nối với $b, d \implies \deg(c) = 2$ (chẵn)</li>
-          <li>Đỉnh $d$ nối với $c, e, b \implies \deg(d) = 3$ (lẻ)</li>
-          <li>Đỉnh $e$ nối với $d, a, b \implies \deg(e) = 3$ (lẻ)</li>
-        </ul>
+      <div class="step"><b>Xét tính chất Euler:</b><br>
+        • Trong $K_{m,n}$, $m$ đỉnh của tập $V_1$ đều có bậc bằng $n$, và $n$ đỉnh của tập $V_2$ đều có bậc bằng $m$.<br>
+        • Với $K_{3,3}$: Có $m=3, n=3$. Cả 6 đỉnh đều có bậc bằng $3$ (lẻ). Vì có tới 6 đỉnh bậc lẻ nên <strong>$K_{3,3}$ không có chu trình Euler và cũng không có đường đi Euler</strong>.<br>
+        • Với $K_{2,4}$: Có $2$ đỉnh bậc $4$ (chẵn) và $4$ đỉnh bậc $2$ (chẵn). Tất cả các đỉnh của $K_{2,4}$ đều có bậc chẵn nên <strong>$K_{2,4}$ có Chu trình Euler</strong>.
       </div>
-      <div class="step"><b>Bước 2 (Xét Euler):</b> Đồ thị $G$ là liên thông và có đúng <b>2 đỉnh bậc lẻ</b> là $d$ và $e$ (các đỉnh còn lại $a, b, c$ đều bậc chẵn).
-      $\implies$ Đồ thị <b>KHÔNG có chu trình Euler</b>, nhưng <b>CÓ đường đi Euler</b> bắt đầu từ $d$ và kết thúc ở $e$ (hoặc ngược lại).<br/>
-      Ví dụ đường đi Euler: $d - c - b - a - e - b - d - e$.
-      </div>
-      <div class="step"><b>Bước 3 (Xét Hamilton):</b> Số đỉnh $n = 5$. Kiểm tra định lý Dirac: $\deg(a) = 2 < 5/2 = 2.5$ nên Dirac không áp dụng được.<br/>
-      Tuy nhiên, ta dễ dàng tìm được chu trình Hamilton bằng mắt vì bao ngoài là chu trình 5 đỉnh $C_5$:
-      $$a - b - c - d - e - a$$
-      Chu trình này đi qua tất cả 5 đỉnh $\{a, b, c, d, e\}$ mỗi đỉnh đúng 1 lần và quay về $a$.
-      </div>
-      <div class="ans"><b>Kết luận:</b><br/>
-      (a) $G$ <b>không có chu trình Euler</b> nhưng <b>có đường đi Euler</b>.<br/>
-      (b) $G$ <b>có chu trình Hamilton</b>: $a - b - c - d - e - a$.
+      <div class="step"><b>Xét tính chất Hamilton:</b><br>
+        • <em>Định lý đồ thị phân đôi có chu trình Hamilton:</em> Một đồ thị phân đôi $G=(V_1 \cup V_2, E)$ muốn có chu trình Hamilton thì bắt buộc $|V_1| = |V_2| \ge 2$ (vì mỗi bước đi phải luân phiên giữa 2 tập $V_1$ và $V_2$, nên số đỉnh của 2 tập phải bằng nhau để khép kín chu trình).<br>
+        • Với $K_{3,3}$: Ta có $|V_1| = |V_2| = 3$. Mặt khác với mọi đỉnh $v$, $\deg(v) = 3 \ge 6/2 = 3$ (thỏa mãn định lý Dirac). Do đó <strong>$K_{3,3}$ có Chu trình Hamilton</strong>.<br>
+        • Với $K_{2,4}$: Vì $|V_1| = 2 \ne |V_2| = 4$, đồ thị <strong>không thể có chu trình Hamilton</strong> (sau khi đi hết 2 đỉnh của $V_1$ thì không thể ghé thăm tiếp 2 đỉnh còn lại của $V_2$ mà không đi lại đỉnh cũ).
       </div>
     </div>
   </div>
-</section>
 
-<section class="sum">
-  <h2>Tổng Kết Bài 9 (Lý Thuyết Đồ Thị)</h2>
-  <ul>
-    <li><b>Định lý bắt tay:</b> $\sum \deg(v) = 2m$. Số đỉnh bậc lẻ luôn luôn là số chẵn. Với đồ thị có hướng: $\sum \deg^- = \sum \deg^+ = |E|$.</li>
-    <li><b>Đồ thị đặc biệt:</b> $K_n$ có $n(n-1)/2$ cạnh; $C_n$ có $n$ cạnh; $Q_n$ có $n \cdot 2^{n-1}$ cạnh; $K_{m,n}$ có $mn$ cạnh.</li>
-    <li><b>Đồ thị phân đôi:</b> Tương đương không chứa chu trình lẻ $\iff$ tô được bằng 2 màu. Định lý Hall: ghép cặp cực đại phủ $V_1 \iff |N(A)| \ge |A|$.</li>
-    <li><b>Biểu diễn &amp; Đếm:</b> Phần tử $(A^r)_{ij}$ là số đường đi độ dài $r$ từ $v_i$ đến $v_j$.</li>
-    <li><b>Đẳng cấu:</b> Phải cùng số đỉnh, số cạnh, dãy bậc, chu trình con. Chứng minh có đẳng cấu phải lập hàm song ánh $f$.</li>
-    <li><b>Euler vs Hamilton:</b> Euler duyệt mọi <b>cạnh</b> (đồ thị liên thông, mọi đỉnh bậc chẵn $\iff$ chu trình; 2 đỉnh bậc lẻ $\iff$ đường đi). Hamilton duyệt mọi <b>đỉnh</b> (Dirac: $\deg \ge n/2$; Ore: $\deg(u)+\deg(v) \ge n$).</li>
-  </ul>
-  <div class="btn-group">
-    <button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='10';loadLesson('10')">Học tiếp Bài 10 (Đường đi ngắn nhất, Đồ thị phẳng &amp; Tô màu) →</button>
+  <h2>11. Tổng kết kiến thức trọng tâm</h2>
+  <div class="box note">
+    <div class="box-title">Ghi nhớ nhanh các công thức & tính chất cốt lõi</div>
+    <ol>
+      <li><strong>Định lý Bắt tay:</strong> $\sum_{v \in V} \deg(v) = 2|E| \implies$ Số đỉnh bậc lẻ luôn là số chẵn.</li>
+      <li><strong>Đồ thị có hướng:</strong> $\sum \deg^-(v) = \sum \deg^+(v) = |E|$.</li>
+      <li><strong>Số cạnh các đồ thị đặc biệt:</strong>
+        <ul>
+          <li>Đầy đủ $K_n$: $rac{n(n-1)}{2}$ cạnh.</li>
+          <li>Chu trình $C_n$: $n$ cạnh, mỗi đỉnh bậc $2$.</li>
+          <li>Bánh xe $W_n$: $2n$ cạnh, $n+1$ đỉnh.</li>
+          <li>Siêu khối $Q_n$: $2^n$ đỉnh, $n 2^{n-1}$ cạnh.</li>
+          <li>Phân đôi đầy đủ $K_{m,n}$: $m 	imes n$ cạnh.</li>
+        </ul>
+      </li>
+      <li><strong>Đồ thị phân đôi:</strong> Không có chu trình độ dài lẻ $\iff$ Tô được bằng 2 màu.</li>
+      <li><strong>Số đường đi độ dài $r$:</strong> Tính bằng phần tử $(A^r)_{ij}$ của ma trận kề $A$.</li>
+      <li><strong>Điều kiện Euler:</strong> Liên thông + Mọi đỉnh bậc chẵn (Chu trình Euler) | Đúng 2 đỉnh bậc lẻ (Đường đi Euler).</li>
+      <li><strong>Điều kiện Hamilton:</strong> Định lý Dirac ($\deg(v) \ge n/2$) và Định lý Ore ($\deg(u)+\deg(v) \ge n$).</li>
+    </ol>
   </div>
-</section>
 </template>
 
 <template id="tpl-buoi-10">
