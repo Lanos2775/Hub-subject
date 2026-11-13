@@ -3746,15 +3746,2088 @@ body.ai-theme[data-ai-style="claude"] .theme-bg-card.active,
 </template>
 
 <template id="tpl-buoi-9">
-<header><span class="k b3">TOÁN RỜI RẠC · BÀI 13 (LÝ THUYẾT ĐỒ THỊ)</span><h1>Đồ Thị: Bậc, Biểu Diễn, Đường Đi, Liên Thông, Chu Trình Euler & Hamilton</h1><p class="mut">Hai phần của slide: (1) khái niệm đồ thị, bậc, đồ thị đặc biệt, biểu diễn, đẳng cấu; (2) đường đi, liên thông, Euler, Hamilton. Các mục mô hình hóa (mạng xã hội, Hollywood, Internet, hàng không, protein…) chỉ là ví dụ: <b>đỉnh = đối tượng, cạnh = quan hệ</b>.</p></header><section><h2>1. Khái Niệm, Bậc & Các Đồ Thị Đặc Biệt</h2><figure class="fl"><svg viewBox="0 0 680 220" role="img"><line x1="150" y1="60" x2="150" y2="160" stroke="var(--c1)" stroke-width="2.5"/><line x1="150" y1="60" x2="320" y2="110" stroke="var(--c1)" stroke-width="2.5"/><line x1="150" y1="160" x2="320" y2="110" stroke="var(--c1)" stroke-width="2.5"/><line x1="320" y1="110" x2="500" y2="110" stroke="var(--c4)" stroke-width="3.5"/><circle cx="150" cy="60" r="15" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="150" y="65" text-anchor="middle" style="font-weight:800;font-size:13px">a</text><circle cx="150" cy="160" r="15" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="150" y="165" text-anchor="middle" style="font-weight:800;font-size:13px">b</text><circle cx="320" cy="110" r="15" style="fill:var(--card);stroke:var(--c5);stroke-width:2.5"/><text x="320" y="115" text-anchor="middle" style="font-weight:800;font-size:13px">c</text><circle cx="500" cy="110" r="15" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="500" y="115" text-anchor="middle" style="font-weight:800;font-size:13px">d</text><text x="150" y="38" text-anchor="middle" style="font-size:12px;fill:var(--mut)">deg=2</text><text x="150" y="196" text-anchor="middle" style="font-size:12px;fill:var(--mut)">deg=2</text><text x="320" y="146" text-anchor="middle" style="font-size:12px;fill:var(--mut)">deg=3</text><text x="500" y="146" text-anchor="middle" style="font-size:12px;fill:var(--mut)">deg=1</text><text x="556" y="70" style="font-weight:800;fill:var(--c4);font-size:13px">cạnh cd = cầu</text><text x="556" y="92" style="font-size:12px;fill:var(--mut)">2+2+3+1 = 8 = 2·4</text><text x="556" y="112" style="font-size:12px;fill:var(--mut)">(4 cạnh)</text></svg><figcaption>Đồ thị 4 đỉnh dùng cho Câu 2: bậc từng đỉnh, tổng bậc bằng hai lần số cạnh.</figcaption></figure><div class="tw"><table><tr><th>Loại</th><th>Đặc điểm</th></tr><tr><td>Đơn đồ thị</td><td>mỗi cạnh nối 2 đỉnh khác nhau, không có hai cạnh cùng cặp đỉnh</td></tr><tr><td>Đa đồ thị / có khuyên</td><td>cho phép cạnh bội / cạnh nối đỉnh với chính nó (khuyên tăng bậc 2)</td></tr><tr><td>Có hướng</td><td>cạnh là cặp đỉnh có thứ tự $(u,v)$: bậc vào $\deg^-$, bậc ra $\deg^+$</td></tr></table></div><div class="f key">$$2m=\sum_{v\in V}\deg(v)\qquad\qquad |E|=\sum\deg^-(v)=\sum\deg^+(v)\ \text{(có hướng)}$$<small><b>Định lý bắt tay:</b> mỗi cạnh đóng góp 2 vào tổng bậc. <b>Hệ quả:</b> số đỉnh bậc lẻ luôn <b>chẵn</b> (vì tổng bậc chẵn, mà tổng bậc các đỉnh bậc chẵn đã chẵn).</small></div><div class="tw"><table><tr><th>Đồ thị</th><th>Số đỉnh</th><th>Số cạnh</th><th>Ghi chú</th></tr><tr><td>$K_n$ (đầy đủ)</td><td>$n$</td><td>$\dfrac{n(n-1)}{2}$</td><td>mọi cặp đỉnh đều kề</td></tr><tr><td>$C_n$ ($n\ge3$) (chu trình)</td><td>$n$</td><td>$n$</td><td>mỗi đỉnh bậc 2</td></tr><tr><td>$Q_n$ (khối $n$ chiều)</td><td>$2^n$</td><td>$n\cdot2^{n-1}$</td><td>kề nhau ⇔ xâu nhị phân khác đúng 1 bit</td></tr><tr><td>$K_{m,n}$ (phân đôi đầy đủ)</td><td>$m+n$</td><td>$mn$</td><td>mọi đỉnh $V_1$ nối mọi đỉnh $V_2$</td></tr></table></div><div class="box analogy"><b>Đồ thị phân đôi = tô 2 màu:</b> có thể tô đỏ/xanh sao cho mọi cạnh nối hai màu khác nhau. Ví dụ: $C_6$ chia $V_1=\{v_1,v_3,v_5\}$, $V_2=\{v_2,v_4,v_6\}$. Ứng dụng: ghép nhân viên với công việc.</div><div class="formula-card"><h3>Câu 1: Định lý bắt tay</h3><p><b>Đề bài:</b> (a) Đồ thị 10 đỉnh, mỗi đỉnh bậc 3 có bao nhiêu cạnh? (b) Có đồ thị 5 đỉnh với mọi đỉnh bậc 3 không? (c) $K_{3,4}$ và $Q_3$ có bao nhiêu cạnh?</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b13-1')">Xem Lời giải chi tiết</button></div><div id="s-b13-1" class="panel"><div class="step"><b>(a)</b> $2m=10\cdot3=30\Rightarrow m=15$.</div><div class="step"><b>(b)</b> Tổng bậc $=15$ là số lẻ, mà $2m$ phải chẵn ⇒ <b>không tồn tại</b> (5 đỉnh bậc lẻ: số lẻ đỉnh bậc lẻ, mâu thuẫn Định lý 2).</div><div class="step"><b>(c)</b> $|E(K_{3,4})|=3\cdot4=12$; $Q_3$: 8 đỉnh, mỗi đỉnh bậc 3 ⇒ $m=8\cdot3/2=12$ (đúng $n2^{n-1}=3\cdot4$).</div><div class="ans"><b>Đáp án:</b> (a) $\mathbf{15}$; (b) không; (c) $\mathbf{12}$ và $\mathbf{12}$.</div></div></div></section><section><h2>2. Biểu Diễn Đồ Thị, Đường Đi & Liên Thông</h2><p><b>Danh sách kề</b>: với mỗi đỉnh liệt kê các đỉnh kề. <b>Ma trận kề</b> $A=[a_{ij}]$: $a_{ij}=1$ nếu $v_i,v_j$ kề (với đa đồ thị: bằng số cạnh nối; khuyên nằm trên đường chéo). <b>Đẳng cấu:</b> có song ánh $f$ giữ nguyên quan hệ kề; hai đồ thị đẳng cấu phải cùng số đỉnh, số cạnh và dãy bậc.</p><div class="f key">$$\#\{\text{đường đi độ dài } r \text{ từ } v_i \text{ đến } v_j\}=(A^r)_{ij}$$<small>Số đường đi độ dài $r$ giữa hai đỉnh là phần tử $(i,j)$ của $A^r$ ($r>0$).</small></div><p><b>Liên thông:</b> vô hướng liên thông nếu có đường đi giữa mọi cặp đỉnh; mỗi mảnh liên thông cực đại là một <b>thành phần liên thông</b>. <b>Khớp</b> (đỉnh) / <b>cầu</b> (cạnh): xóa đi làm tăng số thành phần liên thông. Có hướng: <b>liên thông mạnh</b> (có đường $a\to b$ và $b\to a$ với mọi cặp) và <b>liên thông yếu</b> (chỉ cần liên thông khi bỏ hướng). Độ liên thông: $\kappa(G)\le\lambda(G)\le\min\deg(v)$.</p><div class="formula-card"><h3>Câu 2: Ma trận kề và số đường đi</h3><p><b>Đề bài:</b> Đồ thị hình trên có cạnh $ab, ac, bc, cd$, thứ tự đỉnh $a,b,c,d$. Viết ma trận kề $A$, tính $A^2$ và cho biết số đường đi độ dài 2 từ $a$ đến $d$, từ $a$ đến $a$. Cạnh nào là cầu?</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b13-2')">Xem Lời giải chi tiết</button></div><div id="s-b13-2" class="panel"><div class="step">$A=\begin{pmatrix}0&1&1&0\\1&0&1&0\\1&1&0&1\\0&0&1&0\end{pmatrix}$.</div><div class="step">$A^2=\begin{pmatrix}2&1&1&1\\1&2&1&1\\1&1&3&0\\1&1&0&1\end{pmatrix}$ (ví dụ phần tử $(a,d)$: $a$ có hàng $(0,1,1,0)$, cột $d$ là $(0,0,1,0)$ ⇒ $0+0+1+0=1$).</div><div class="step">$(A^2)_{ad}=1$: đường $a\to c\to d$. $(A^2)_{aa}=2$: $a\to b\to a$ và $a\to c\to a$ (đúng bằng $\deg a=2$, đường chéo của $A^2$ là dãy bậc).</div><div class="step">Cạnh $cd$ là cầu vì xóa nó thì $d$ bị tách ra (1 thành phần → 2); $c$ là khớp.</div><div class="ans"><b>Đáp án:</b> $(A^2)_{ad}=\mathbf1$, $(A^2)_{aa}=\mathbf2$; cầu là $cd$.</div></div></div></section><section><h2>3. Chu Trình Euler & Chu Trình Hamilton</h2><div class="tw"><table><tr><th></th><th>Euler</th><th>Hamilton</th></tr><tr><td>Đi qua</td><td>mỗi <b>cạnh</b> đúng 1 lần, về điểm xuất phát</td><td>mỗi <b>đỉnh</b> đúng 1 lần, về điểm xuất phát</td></tr><tr><td>Điều kiện</td><td>đa đồ thị liên thông <b>và mọi đỉnh bậc chẵn</b> (cần và đủ)</td><td>không có điều kiện cần và đủ đơn giản, chỉ có điều kiện đủ</td></tr><tr><td>Dấu hiệu loại</td><td>có đỉnh bậc lẻ</td><td>có đỉnh bậc 1; đỉnh bậc 2 ⇒ cả hai cạnh phải nằm trong chu trình</td></tr></table></div><p><b>Thuật toán Euler:</b> đi một chu trình bất kỳ từ một đỉnh; xóa các cạnh đã dùng; khi $H$ còn cạnh, lấy chu trình con trong $H$ xuất phát từ một đỉnh của chu trình hiện có rồi <b>chèn</b> vào chu trình lớn.</p><div class="formula-card"><h3>Câu 3: Đồ thị nào có chu trình Euler?</h3><p><b>Đề bài:</b> Xét $K_5$, $K_4$, $C_7$, $K_{2,3}$, $K_{2,4}$.</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b13-3')">Xem Lời giải chi tiết</button></div><div id="s-b13-3" class="panel"><div class="box tip"><b>Ý tưởng:</b> Chỉ cần liên thông và kiểm tra bậc từng đỉnh có chẵn không.</div><div class="step">$K_5$: mọi đỉnh bậc 4 ⇒ <b>có</b>. $K_4$: bậc 3 ⇒ không. $C_7$: bậc 2 ⇒ có.</div><div class="step">$K_{2,3}$: 2 đỉnh bậc 3 và 3 đỉnh bậc 2 ⇒ không. $K_{2,4}$: 2 đỉnh bậc 4 và 4 đỉnh bậc 2 ⇒ <b>có</b>.</div><div class="ans"><b>Đáp án:</b> Có Euler: $K_5$, $C_7$, $K_{2,4}$; không: $K_4$, $K_{2,3}$.</div></div></div></section><section class="sum"><h2>Tổng Kết Bài 13</h2><ul><li>$\sum\deg(v)=2m$ ⇒ số đỉnh bậc lẻ luôn chẵn; có hướng: $\sum\deg^-=\sum\deg^+=|E|$.</li><li>$K_n$: $\frac{n(n-1)}2$ cạnh; $K_{m,n}$: $mn$ cạnh; $Q_n$: $2^n$ đỉnh, $n2^{n-1}$ cạnh; phân đôi ⇔ tô được 2 màu.</li><li>Ma trận kề: $(A^r)_{ij}$ đếm đường đi độ dài $r$. Euler ⇔ liên thông & mọi bậc chẵn.</li></ul><div class="btn-group"><button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='8';loadLesson('8')">Quay lại Bài 12 (Đếm nâng cao)</button><button type="button" class="btn btn-sol" onclick="document.getElementById('lesson-select').value='10';loadLesson('10')">Sang Phần 10 (Bài 14): Đường đi ngắn nhất, đồ thị phẳng, tô màu</button></div></section>
+<header>
+  <span class="k b3">TOÁN RỜI RẠC · BÀI 13 (LÝ THUYẾT ĐỒ THỊ)</span>
+  <h1>Đồ Thị: Khái Niệm, Bậc, Đồ Thị Đặc Biệt, Biểu Diễn, Đẳng Cấu, Liên Thông, Chu Trình Euler &amp; Hamilton</h1>
+  <p class="mut">Nội dung bao quát toàn diện Chương 13: phân loại đồ thị, các mô hình thực tế, định lý bắt tay, đồ thị phân đôi và định lý Hall, ma trận kề/liên thuộc, điều kiện đẳng cấu, thành phần liên thông, khớp/cầu, định lý Euler và định lý Dirac/Ore về chu trình Hamilton.</p>
+</header>
+
+<section>
+  <h2>1. Khái Niệm Cơ Bản &amp; Các Mô Hình Đồ Thị Thực Tế</h2>
+  <div class="box analogy">
+    <b>Ẩn dụ trực quan:</b> Hãy tưởng tượng đồ thị là một mạng lưới quan hệ. <b>Đỉnh (Vertex)</b> là các đối tượng (con người, thành phố, trang web, protein), còn <b>Cạnh (Edge)</b> là sợi dây kết nối thể hiện mối quan hệ giữa chúng (bạn bè, đường bay, đường dẫn hyperlink, tương tác hóa học).
+  </div>
+
+  <p>Một đồ thị $G = (V, E)$ gồm hai thành phần chính: tập đỉnh $V \neq \emptyset$ (Vertices) và tập cạnh $E$ (Edges). Mỗi cạnh $e \in E$ liên kết với một hoặc hai đỉnh gọi là các <i>điểm cuối (endpoints)</i>.</p>
+
+  <figure class="fl">
+    <svg viewBox="0 0 760 210" role="img" style="max-width:100%;height:auto">
+      <!-- Don do thi -->
+      <g>
+        <rect x="15" y="15" width="225" height="180" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="127" y="38" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="14">1. Đơn Đồ Thị (Simple)</text>
+        <line x1="60" y1="80" x2="190" y2="80" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="60" y1="80" x2="60" y2="160" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="60" y1="160" x2="190" y2="160" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="190" y1="80" x2="190" y2="160" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="60" y1="80" x2="190" y2="160" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="60" cy="80" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="60" y="85" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">a</text>
+        <circle cx="190" cy="80" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="190" y="85" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">b</text>
+        <circle cx="60" cy="160" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="60" y="165" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">c</text>
+        <circle cx="190" cy="160" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="190" y="165" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">d</text>
+      </g>
+      <!-- Da do thi co khuyen -->
+      <g>
+        <rect x="265" y="15" width="225" height="180" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="377" y="38" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="14">2. Đa Đồ Thị Có Khuyên</text>
+        <!-- Canh boi giua u va v -->
+        <path d="M 315 110 Q 377 75 440 110" fill="none" stroke="var(--c4)" stroke-width="2.2"/>
+        <path d="M 315 110 Q 377 145 440 110" fill="none" stroke="var(--c4)" stroke-width="2.2"/>
+        <line x1="315" y1="110" x2="440" y2="110" stroke="var(--ink)" stroke-width="2"/>
+        <!-- Loop khuyen tai u -->
+        <path d="M 315 110 C 275 60 275 160 315 110" fill="none" stroke="var(--c5)" stroke-width="2.2"/>
+        <circle cx="315" cy="110" r="13" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5"/>
+        <text x="315" y="115" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u</text>
+        <circle cx="440" cy="110" r="13" fill="var(--card)" stroke="var(--c4)" stroke-width="2.5"/>
+        <text x="440" y="115" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v</text>
+        <text x="377" y="175" text-anchor="middle" font-size="11" fill="var(--mut)">3 cạnh nối (u,v) + 1 khuyên tại u</text>
+      </g>
+      <!-- Do thi co huong -->
+      <g>
+        <rect x="515" y="15" width="230" height="180" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="630" y="38" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="14">3. Đồ Thị Có Hướng (Digraph)</text>
+        <defs>
+          <marker id="arr-g" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M 0 0 L 8 4 L 0 8 z" fill="var(--c2)"/>
+          </marker>
+        </defs>
+        <line x1="565" y1="90" x2="685" y2="90" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-g)"/>
+        <line x1="695" y1="95" x2="635" y2="155" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-g)"/>
+        <line x1="625" y1="155" x2="565" y2="95" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-g)"/>
+        <circle cx="560" cy="90" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+        <text x="560" y="95" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">x</text>
+        <circle cx="700" cy="90" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+        <text x="700" y="95" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">y</text>
+        <circle cx="630" cy="165" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+        <text x="630" y="170" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">z</text>
+      </g>
+    </svg>
+    <figcaption>Ba hình thái đồ thị cơ bản: Đơn đồ thị vô hướng, Đa đồ thị có khuyên (giả đồ thị) và Đồ thị có hướng.</figcaption>
+  </figure>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Loại Đồ Thị</th>
+          <th>Bản Chất Cạnh</th>
+          <th>Cạnh Bội (Multiple Edges)?</th>
+          <th>Khuyên (Self-loop)?</th>
+          <th>Ví Dụ Thực Tế Trong Đời Sống</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Đơn đồ thị vô hướng</b></td>
+          <td>Cặp không thứ tự $\{u, v\}$</td>
+          <td>Không</td>
+          <td>Không</td>
+          <td>Mạng bạn bè Facebook (2 chiều đối xứng, không kết bạn với chính mình)</td>
+        </tr>
+        <tr>
+          <td><b>Đa đồ thị vô hướng</b></td>
+          <td>Cặp không thứ tự $\{u, v\}$</td>
+          <td><b>Có</b></td>
+          <td>Không</td>
+          <td>Hệ thống cáp mạng dự phòng kết nối giữa 2 tổng đài viễn thông</td>
+        </tr>
+        <tr>
+          <td><b>Giả đồ thị (Pseudograph)</b></td>
+          <td>Cặp không thứ tự $\{u, v\}$</td>
+          <td><b>Có</b></td>
+          <td><b>Có</b></td>
+          <td>Mạng lưới giao thông nội bộ (tuyến đường vòng khép kín quanh đảo)</td>
+        </tr>
+        <tr>
+          <td><b>Đơn đồ thị có hướng</b></td>
+          <td>Cặp có thứ tự $(u, v)$</td>
+          <td>Không</td>
+          <td>Không</td>
+          <td>Mạng lưới theo dõi (Follower) trên X/Twitter, quan hệ ảnh hưởng xã hội</td>
+        </tr>
+        <tr>
+          <td><b>Đa đồ thị có hướng</b></td>
+          <td>Cặp có thứ tự $(u, v)$</td>
+          <td><b>Có</b></td>
+          <td><b>Có</b></td>
+          <td>Mạng lưới đường bay thương mại (nhiều chuyến/ngày từ Hà Nội đến TP.HCM)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box tip">
+    <b>Các mô hình đồ thị quan trọng trong slide CNTT:</b>
+    <ul>
+      <li><b>Đồ thị Hollywood &amp; Số Bacon:</b> Đỉnh là các diễn viên. Hai diễn viên kề nhau nếu đóng chung một bộ phim. "Số Bacon" là khoảng cách ngắn nhất từ diễn viên bất kỳ đến tài tử Kevin Bacon.</li>
+      <li><b>Đồ thị cộng tác học thuật &amp; Số Erdős:</b> Đỉnh là các nhà nghiên cứu. Hai người kề nhau nếu đồng tác giả một bài báo. Số Erdős là khoảng cách đến nhà toán học lỗi lạc Paul Erdős.</li>
+      <li><b>Mạng Web (Web Graph):</b> Đỉnh là các trang web URL, cạnh có hướng là các siêu liên kết (hyperlinks). Đây là nền tảng của thuật toán PageRank kinh điển của Google.</li>
+      <li><b>Mạng tương tác Protein (PPI Network):</b> Đỉnh là các phân tử protein, cạnh biểu diễn phản ứng tương tác sinh hóa để nghiên cứu cơ chế bệnh tật học đường.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>2. Bậc Của Đỉnh, Đỉnh Cô Lập, Đỉnh Treo &amp; Định Lý Bắt Tay</h2>
+  <p>Đối với đồ thị vô hướng, <b>bậc của đỉnh $v$</b> (ký hiệu $\deg(v)$) là số lượng cạnh liên thuộc với $v$, riêng <i>mỗi khuyên (loop) đóng góp 2 vào bậc của đỉnh</i>.</p>
+  <ul>
+    <li><b>Đỉnh cô lập (Isolated vertex):</b> Đỉnh có bậc bằng 0 ($\deg(v) = 0$). Đỉnh này không nối với bất kỳ đỉnh nào khác.</li>
+    <li><b>Đỉnh treo (Pendant / leaf vertex):</b> Đỉnh có bậc bằng 1 ($\deg(v) = 1$).</li>
+    <li><b>Tập lân cận $N(v)$:</b> Tập hợp tất cả các đỉnh kề trực tiếp với $v$. Với đơn đồ thị, $|N(v)| = \deg(v)$.</li>
+  </ul>
+
+  <div class="f key">
+    $$\sum_{v \in V} \deg(v) = 2|E| = 2m$$
+    <small><b>Định lý bắt tay (Handshaking Theorem):</b> Trong mọi đồ thị vô hướng, tổng bậc của tất cả các đỉnh luôn bằng đúng <b>hai lần số cạnh</b>.</small>
+  </div>
+
+  <div class="box tip">
+    <b>Tại sao lại có định lý này?</b> Rất trực quan: mỗi một cạnh luôn có đúng 2 đầu mút. Khi ta cộng bậc của từng đỉnh một trên đồ thị, mỗi cạnh sẽ được đếm đúng 2 lần (mỗi lần cho một đầu mút của nó).
+  </div>
+
+  <div class="f key">
+    $$\text{Số đỉnh có bậc lẻ luôn là một số \textbf{CHẴN}}$$
+    <small><b>Hệ quả quan trọng:</b> Không bao giờ tồn tại một đồ thị có số đỉnh bậc lẻ là một số lẻ (ví dụ: không thể có đồ thị với 5 đỉnh mà mỗi đỉnh đều có bậc 3).</small>
+  </div>
+
+  <div class="box warn">
+    <b>Chứng minh hệ quả:</b> Chia tập đỉnh $V$ thành hai tập rời nhau: $V_{chẵn}$ (chứa các đỉnh bậc chẵn) và $V_{lẻ}$ (chứa các đỉnh bậc lẻ). Ta có:
+    $$\sum_{v \in V} \deg(v) = \sum_{v \in V_{chẵn}} \deg(v) + \sum_{v \in V_{lẻ}} \deg(v) = 2m$$
+    Vì $2m$ là số chẵn và $\sum_{v \in V_{chẵn}} \deg(v)$ là tổng các số chẵn nên cũng là số chẵn, suy ra $\sum_{v \in V_{lẻ}} \deg(v)$ bắt buộc phải là một <b>số chẵn</b>. Tổng của các số lẻ mà ra số chẵn thì số lượng số hạng tham gia vào tổng đó bắt buộc phải là <b>số chẵn</b>!
+  </div>
+
+  <h3>Bậc trong Đồ Thị Có Hướng</h3>
+  <p>Với đồ thị có hướng, ta phân biệt hai loại bậc:</p>
+  <ul>
+    <li><b>Bậc vào (In-degree) $\deg^-(v)$:</b> Số lượng cung có điểm cuối kết thúc tại $v$.</li>
+    <li><b>Bậc ra (Out-degree) $\deg^+(v)$:</b> Số lượng cung có điểm đầu xuất phát từ $v$.</li>
+    <li>Mỗi khuyên tại $v$ đóng góp 1 vào $\deg^-(v)$ và 1 vào $\deg^+(v)$.</li>
+  </ul>
+  <div class="f key">
+    $$\sum_{v \in V} \deg^-(v) = \sum_{v \in V} \deg^+(v) = |E|$$
+    <small>Tổng bậc vào luôn bằng tổng bậc ra và bằng tổng số cung (cạnh có hướng) của đồ thị.</small>
+  </div>
+</section>
+
+<section>
+  <h2>3. Các Đồ Thị Đơn Đặc Biệt, Đồ Thị Phân Đôi &amp; Ghép Cặp</h2>
+  <p>Đây là những họ đồ thị chuẩn mực thường xuyên xuất hiện trong các bài thi và ứng dụng thuật toán:</p>
+
+  <figure class="fl">
+    <svg viewBox="0 0 760 320" role="img" style="max-width:100%;height:auto">
+      <!-- K4 -->
+      <g>
+        <rect x="10" y="10" width="165" height="145" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
+        <text x="92" y="30" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="13">K₄ (Đầy đủ)</text>
+        <line x1="50" y1="50" x2="135" y2="50" stroke="var(--ink)" stroke-width="1.8"/>
+        <line x1="50" y1="50" x2="50" y2="125" stroke="var(--ink)" stroke-width="1.8"/>
+        <line x1="135" y1="50" x2="135" y2="125" stroke="var(--ink)" stroke-width="1.8"/>
+        <line x1="50" y1="125" x2="135" y2="125" stroke="var(--ink)" stroke-width="1.8"/>
+        <line x1="50" y1="50" x2="135" y2="125" stroke="var(--c1)" stroke-width="1.8"/>
+        <line x1="135" y1="50" x2="50" y2="125" stroke="var(--c1)" stroke-width="1.8"/>
+        <circle cx="50" cy="50" r="8" fill="var(--c1)"/>
+        <circle cx="135" cy="50" r="8" fill="var(--c1)"/>
+        <circle cx="50" cy="125" r="8" fill="var(--c1)"/>
+        <circle cx="135" cy="125" r="8" fill="var(--c1)"/>
+        <text x="92" y="145" text-anchor="middle" font-size="11" fill="var(--mut)">v=4, e=6</text>
+      </g>
+      <!-- C5 -->
+      <g>
+        <rect x="195" y="10" width="165" height="145" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
+        <text x="277" y="30" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="13">C₅ (Chu trình ngũ giác)</text>
+        <polygon points="277,45 335,85 315,130 240,130 220,85" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="277" cy="45" r="7" fill="var(--c2)"/>
+        <circle cx="335" cy="85" r="7" fill="var(--c2)"/>
+        <circle cx="315" cy="130" r="7" fill="var(--c2)"/>
+        <circle cx="240" cy="130" r="7" fill="var(--c2)"/>
+        <circle cx="220" cy="85" r="7" fill="var(--c2)"/>
+        <text x="277" y="145" text-anchor="middle" font-size="11" fill="var(--mut)">v=5, e=5, bậc 2</text>
+      </g>
+      <!-- W4 -->
+      <g>
+        <rect x="380" y="10" width="165" height="145" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
+        <text x="462" y="30" text-anchor="middle" font-weight="700" fill="var(--c3)" font-size="13">W₄ (Bánh xe)</text>
+        <polygon points="420,50 505,50 505,125 420,125" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+        <line x1="420" y1="50" x2="462" y2="87" stroke="var(--c3)" stroke-width="2"/>
+        <line x1="505" y1="50" x2="462" y2="87" stroke="var(--c3)" stroke-width="2"/>
+        <line x1="505" y1="125" x2="462" y2="87" stroke="var(--c3)" stroke-width="2"/>
+        <line x1="420" y1="125" x2="462" y2="87" stroke="var(--c3)" stroke-width="2"/>
+        <circle cx="420" cy="50" r="7" fill="var(--ink)"/>
+        <circle cx="505" cy="50" r="7" fill="var(--ink)"/>
+        <circle cx="505" cy="125" r="7" fill="var(--ink)"/>
+        <circle cx="420" cy="125" r="7" fill="var(--ink)"/>
+        <circle cx="462" cy="87" r="8" fill="var(--c3)"/>
+        <text x="462" y="145" text-anchor="middle" font-size="11" fill="var(--mut)">v=5, e=8 (trung tâm)</text>
+      </g>
+      <!-- Q3 -->
+      <g>
+        <rect x="565" y="10" width="185" height="145" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
+        <text x="657" y="30" text-anchor="middle" font-weight="700" fill="var(--c5)" font-size="13">Q₃ (Khối 3 chiều - Cube)</text>
+        <!-- Hinh khoi 3D -->
+        <rect x="590" y="70" width="50" height="50" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+        <rect x="625" y="45" width="50" height="50" fill="none" stroke="var(--c5)" stroke-width="1.5"/>
+        <line x1="590" y1="70" x2="625" y2="45" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="640" y1="70" x2="675" y2="45" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="590" y1="120" x2="625" y2="95" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="640" y1="120" x2="675" y2="95" stroke="var(--ink)" stroke-width="1.5"/>
+        <circle cx="590" cy="70" r="5" fill="var(--ink)"/>
+        <circle cx="640" cy="70" r="5" fill="var(--ink)"/>
+        <circle cx="590" cy="120" r="5" fill="var(--ink)"/>
+        <circle cx="640" cy="120" r="5" fill="var(--ink)"/>
+        <circle cx="625" cy="45" r="5" fill="var(--c5)"/>
+        <circle cx="675" cy="45" r="5" fill="var(--c5)"/>
+        <circle cx="625" cy="95" r="5" fill="var(--c5)"/>
+        <circle cx="675" cy="95" r="5" fill="var(--c5)"/>
+        <text x="657" y="145" text-anchor="middle" font-size="11" fill="var(--mut)">v=2³=8, e=3·2²=12</text>
+      </g>
+      <!-- Km,n - K2,3 Bipartite -->
+      <g>
+        <rect x="60" y="170" width="300" height="140" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
+        <text x="210" y="190" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="13">K₂,₃ (Phân đôi đầy đủ)</text>
+        <!-- V1 = 2 dinh mau do -->
+        <circle cx="120" cy="225" r="9" fill="var(--c4)"/>
+        <text x="95" y="230" font-size="11" font-weight="700" fill="var(--c4)">u₁</text>
+        <circle cx="120" cy="275" r="9" fill="var(--c4)"/>
+        <text x="95" y="280" font-size="11" font-weight="700" fill="var(--c4)">u₂</text>
+        <!-- V2 = 3 dinh mau xanh -->
+        <circle cx="280" cy="210" r="9" fill="var(--c1)"/>
+        <text x="300" y="215" font-size="11" font-weight="700" fill="var(--c1)">v₁</text>
+        <circle cx="280" cy="250" r="9" fill="var(--c1)"/>
+        <text x="300" y="255" font-size="11" font-weight="700" fill="var(--c1)">v₂</text>
+        <circle cx="280" cy="290" r="9" fill="var(--c1)"/>
+        <text x="300" y="295" font-size="11" font-weight="700" fill="var(--c1)">v₃</text>
+        <!-- Canh noi giua V1 va V2 -->
+        <line x1="120" y1="225" x2="280" y2="210" stroke="var(--ink)" stroke-width="1.4"/>
+        <line x1="120" y1="225" x2="280" y2="250" stroke="var(--ink)" stroke-width="1.4"/>
+        <line x1="120" y1="225" x2="280" y2="290" stroke="var(--ink)" stroke-width="1.4"/>
+        <line x1="120" y1="275" x2="280" y2="210" stroke="var(--ink)" stroke-width="1.4"/>
+        <line x1="120" y1="275" x2="280" y2="250" stroke="var(--ink)" stroke-width="1.4"/>
+        <line x1="120" y1="275" x2="280" y2="290" stroke="var(--ink)" stroke-width="1.4"/>
+      </g>
+      <!-- C6 Bipartite Demo -->
+      <g>
+        <rect x="400" y="170" width="300" height="140" rx="10" fill="var(--card)" stroke="var(--border)" stroke-width="1.2"/>
+        <text x="550" y="190" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="13">C₆ là đồ thị phân đôi (Tô 2 màu xen kẽ)</text>
+        <polygon points="550,205 600,230 600,280 550,305 500,280 500,230" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="550" cy="205" r="8" fill="var(--c4)"/>
+        <circle cx="600" cy="230" r="8" fill="var(--c1)"/>
+        <circle cx="600" cy="280" r="8" fill="var(--c4)"/>
+        <circle cx="550" cy="305" r="8" fill="var(--c1)"/>
+        <circle cx="500" cy="280" r="8" fill="var(--c4)"/>
+        <circle cx="500" cy="230" r="8" fill="var(--c1)"/>
+        <text x="550" y="260" text-anchor="middle" font-size="11" fill="var(--mut)">Không có chu trình lẻ</text>
+      </g>
+    </svg>
+    <figcaption>Các họ đồ thị đặc biệt: Đồ thị đầy đủ $K_n$, Chu trình $C_n$, Bánh xe $W_n$, Khối $n$-chiều $Q_n$, và Đồ thị phân đôi $K_{m,n}$.</figcaption>
+  </figure>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Họ Đồ Thị</th>
+          <th>Ký Hiệu</th>
+          <th>Số Đỉnh $|V|$</th>
+          <th>Số Cạnh $|E|$</th>
+          <th>Bậc Của Các Đỉnh</th>
+          <th>Đặc Điểm Nhận Dạng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Đầy đủ (Complete)</b></td>
+          <td>$K_n$ ($n \ge 1$)</td>
+          <td>$n$</td>
+          <td>$\dfrac{n(n-1)}{2}$</td>
+          <td>Mọi đỉnh đều có bậc $n-1$</td>
+          <td>Mọi cặp đỉnh phân biệt đều được nối bởi một cạnh.</td>
+        </tr>
+        <tr>
+          <td><b>Chu trình (Cycle)</b></td>
+          <td>$C_n$ ($n \ge 3$)</td>
+          <td>$n$</td>
+          <td>$n$</td>
+          <td>Mọi đỉnh đều có bậc 2</td>
+          <td>Tạo thành một vòng khép kín: $v_1-v_2-\dots-v_n-v_1$.</td>
+        </tr>
+        <tr>
+          <td><b>Bánh xe (Wheel)</b></td>
+          <td>$W_n$ ($n \ge 3$)</td>
+          <td>$n + 1$</td>
+          <td>$2n$</td>
+          <td>$n$ đỉnh vành bậc 3, đỉnh tâm bậc $n$</td>
+          <td>Tạo từ $C_n$ bằng cách thêm 1 đỉnh tâm nối với tất cả $n$ đỉnh trên vành.</td>
+        </tr>
+        <tr>
+          <td><b>Khối $n$ chiều (Hypercube)</b></td>
+          <td>$Q_n$ ($n \ge 1$)</td>
+          <td>$2^n$</td>
+          <td>$n \cdot 2^{n-1}$</td>
+          <td>Mọi đỉnh đều có bậc $n$</td>
+          <td>Đỉnh là các chuỗi bit độ dài $n$; 2 đỉnh kề nhau $\iff$ chuỗi bit khác nhau đúng 1 bit.</td>
+        </tr>
+        <tr>
+          <td><b>Phân đôi đầy đủ</b></td>
+          <td>$K_{m,n}$</td>
+          <td>$m + n$</td>
+          <td>$m \cdot n$</td>
+          <td>$m$ đỉnh có bậc $n$, $n$ đỉnh có bậc $m$</td>
+          <td>Tập đỉnh chia thành $V_1$ ($m$ đỉnh) và $V_2$ ($n$ đỉnh), mọi đỉnh của $V_1$ nối với mọi đỉnh của $V_2$.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Đồ Thị Phân Đôi (Bipartite Graph) &amp; Định Lý Ghép Cặp Hall</h3>
+  <p>Một đơn đồ thị $G = (V, E)$ được gọi là <b>đồ thị phân đôi</b> nếu tập đỉnh $V$ có thể phân hoạch thành hai tập con không rỗng và rời nhau $V_1$ và $V_2$ sao cho <i>mọi cạnh trong $E$ đều nối một đỉnh trong $V_1$ với một đỉnh trong $V_2$</i> (nghĩa là không có cạnh nào nối hai đỉnh cùng nằm trong $V_1$ hoặc cùng nằm trong $V_2$).</p>
+
+  <div class="f key">
+    $$G \text{ là đồ thị phân đôi} \iff G \text{ KHÔNG chứa chu trình đơn có độ dài LẺ}$$
+    <small><b>Định lý nhận biết đồ thị phân đôi:</b> Tương đương với việc đồ thị có thể tô được bằng đúng 2 màu (ví dụ Đỏ và Xanh) sao cho hai đỉnh kề nhau luôn có màu khác nhau. Do đó, $C_n$ là đồ thị phân đôi $\iff n$ là số chẵn ($C_4, C_6, C_8...$ phân đôi; còn tam giác $C_3, C_5...$ không bao giờ phân đôi!).</small>
+  </div>
+
+  <div class="box tip">
+    <b>Bài toán Ghép Cặp (Matching) &amp; Định lý Hôn Nhân Hall:</b><br/>
+    Xét đồ thị phân đôi $G = (V_1 \cup V_2, E)$, mô hình hóa bài toán gán người vào việc (hoặc ghép cặp nam $V_1$ với nữ $V_2$). Một ghép cặp $M \subseteq E$ là tập các cạnh không có đỉnh chung.<br/>
+    <b>Định lý Hall:</b> Tồn tại một ghép cặp phủ kín toàn bộ tập đỉnh $V_1$ khi và chỉ khi:
+    $$\forall A \subseteq V_1,\ |N(A)| \ge |A|$$
+    (Nghĩa là: bất kỳ một nhóm người nào trong $V_1$ cũng phải có tổng số ứng viên phù hợp trong $V_2$ ít nhất bằng số lượng thành viên của nhóm đó!).
+  </div>
+</section>
+
+<section>
+  <h2>4. Đồ Thị Con, Phép Hợp &amp; Các Phương Pháp Biểu Diễn Đồ Thị</h2>
+  <p><b>Đồ thị con (Subgraph):</b> Một đồ thị $H = (W, F)$ được gọi là đồ thị con của $G = (V, E)$ nếu $W \subseteq V$ và $F \subseteq E$.</p>
+  <p><b>Đồ thị con cảm sinh (Induced Subgraph):</b> Đồ thị con sinh bởi tập đỉnh $W \subseteq V$ (ký hiệu $G[W]$) là đồ thị có tập đỉnh $W$ và tập cạnh chứa <i>tất cả các cạnh của $G$ có cả hai đầu mút nằm trong $W$</i>.</p>
+  <p><b>Phép hợp hai đồ thị:</b> $G_1 \cup G_2 = (V_1 \cup V_2, E_1 \cup E_2)$.</p>
+
+  <h3>Các Cấu Trúc Biểu Diễn Đồ Thị Trên Máy Tính</h3>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Phương Pháp Biểu Diễn</th>
+          <th>Bản Chất Dữ Liệu</th>
+          <th>Không Gian Bộ Nhớ</th>
+          <th>Ưu Điểm &amp; Nhược Điểm Thực Tế</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Danh sách kề (Adjacency List)</b></td>
+          <td>Mỗi đỉnh liên kết với một danh sách các đỉnh kề trực tiếp nó</td>
+          <td>$O(|V| + |E|)$</td>
+          <td>Cực kỳ tiết kiệm bộ nhớ cho <i>đồ thị thưa</i> ($|E| \ll |V|^2$). Duyệt nhanh các đỉnh kề nhưng kiểm tra 2 đỉnh có nối cạnh không mất $O(\deg(v))$.</td>
+        </tr>
+        <tr>
+          <td><b>Ma trận kề (Adjacency Matrix)</b></td>
+          <td>Ma trận vuông $A = [a_{ij}]$ cỡ $n \times n$. $a_{ij} = 1$ nếu có cạnh $(v_i, v_j)$, ngược lại $a_{ij} = 0$</td>
+          <td>$O(|V|^2)$</td>
+          <td>Kiểm tra cạnh kề trong thời gian tức thì $O(1)$. Đồ thị vô hướng cho ma trận đối xứng ($A = A^T$). Đồ thị có khuyên có giá trị trên đường chéo chính. Tốn nhiều bộ nhớ khi đồ thị có hàng triệu đỉnh ít cạnh.</td>
+        </tr>
+        <tr>
+          <td><b>Ma trận liên thuộc (Incidence Matrix)</b></td>
+          <td>Ma trận $M = [m_{ij}]$ cỡ $|V| \times |E|$. $m_{ij} = 1$ nếu đỉnh $v_i$ là đầu mút của cạnh $e_j$</td>
+          <td>$O(|V| \cdot |E|)$</td>
+          <td>Mỗi cột luôn có đúng 2 số 1 (ứng với 2 đầu mút của cạnh). Rất thuận tiện để mô tả cấu trúc mạng lưới điện và mạch logic.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>5. Đẳng Cấu Đồ Thị &amp; Các Bất Biến Đẳng Cấu</h2>
+  <div class="box analogy">
+    <b>Đẳng cấu là gì?</b> Hai đồ thị nhìn qua có thể được vẽ theo hình thù rất khác nhau (một cái vẽ hình tròn, một cái vẽ hình vuông), nhưng nếu chúng có cấu trúc liên kết cạnh giữa các đỉnh hoàn toàn y hệt nhau, thì chúng được gọi là <b>đẳng cấu (isomorphic)</b>!
+  </div>
+
+  <p><b>Định nghĩa hình thức:</b> Hai đơn đồ thị $G_1 = (V_1, E_1)$ và $G_2 = (V_2, E_2)$ được gọi là đẳng cấu nếu tồn tại một <b>song ánh</b> $f: V_1 \to V_2$ bảo toàn quan hệ kề:
+  $$\forall u, v \in V_1,\ (u, v) \in E_1 \iff (f(u), f(v)) \in E_2$$</p>
+
+  <figure class="fl">
+    <svg viewBox="0 0 720 200" role="img" style="max-width:100%;height:auto">
+      <!-- G1: Hinh vuong cheo -->
+      <g>
+        <rect x="30" y="15" width="300" height="170" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="180" y="38" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="14">Đồ thị G₁ (Vẽ dạng bàn cờ)</text>
+        <line x1="100" y1="70" x2="260" y2="70" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="260" y1="70" x2="260" y2="150" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="260" y1="150" x2="100" y2="150" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="100" y1="150" x2="100" y2="70" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="100" y1="70" x2="260" y2="150" stroke="var(--c1)" stroke-width="2.5"/>
+        <circle cx="100" cy="70" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="100" y="75" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u₁</text>
+        <circle cx="260" cy="70" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="260" y="75" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u₂</text>
+        <circle cx="100" cy="150" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="100" y="155" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u₃</text>
+        <circle cx="260" cy="150" r="13" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="260" y="155" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">u₄</text>
+      </g>
+      <!-- G2: Hinh tam giac ghep -->
+      <g>
+        <rect x="390" y="15" width="300" height="170" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="540" y="38" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="14">Đồ thị G₂ (Vẽ dạng cánh diều)</text>
+        <polygon points="450,110 540,60 630,110 540,160" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="540" y1="60" x2="540" y2="160" stroke="var(--c2)" stroke-width="2.5"/>
+        <circle cx="450" cy="110" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+        <text x="450" y="115" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v₃</text>
+        <circle cx="540" cy="60" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+        <text x="540" y="65" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v₁</text>
+        <circle cx="630" cy="110" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+        <text x="630" y="115" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v₂</text>
+        <circle cx="540" cy="160" r="13" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+        <text x="540" y="165" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">v₄</text>
+      </g>
+    </svg>
+    <figcaption>G₁ và G₂ là hai đồ thị đẳng cấu: dù cách vẽ khác nhau, song ánh $f(u_1)=v_1, f(u_4)=v_4, f(u_2)=v_2, f(u_3)=v_3$ hoàn toàn bảo toàn quan hệ kề.</figcaption>
+  </figure>
+
+  <h3>Các Bất Biến Đẳng Cấu (Graph Invariants)</h3>
+  <p>Nếu hai đồ thị đẳng cấu với nhau thì chúng bắt buộc phải có chung các <b>bất biến</b> sau:</p>
+  <ul>
+    <li>Cùng số lượng đỉnh: $|V_1| = |V_2|$.</li>
+    <li>Cùng số lượng cạnh: $|E_1| = |E_2|$.</li>
+    <li>Cùng dãy bậc của các đỉnh (sắp xếp tăng dần).</li>
+    <li>Cùng số lượng chu trình đơn có độ dài $k$ bất kỳ (ví dụ cùng số tam giác, cùng số chu trình 4 đỉnh).</li>
+    <li>Cùng các đồ thị con cảm sinh đặc thù (ví dụ nếu ở $G_1$ có hai đỉnh bậc 3 kề nhau thì ở $G_2$ hai đỉnh ảnh bậc 3 cũng bắt buộc phải kề nhau).</li>
+  </ul>
+
+  <div class="box tip">
+    <b>Chiến thuật giải bài toán thi:</b>
+    <ul>
+      <li><b>Để chứng minh KHÔNG đẳng cấu:</b> Chỉ cần tìm ra <b>đúng một bất biến</b> mà hai đồ thị sai khác nhau (ví dụ: một bên có chu trình độ dài 3 nhưng bên kia không có tam giác nào; hoặc dãy bậc không trùng nhau).</li>
+      <li><b>Để chứng minh CÓ đẳng cấu:</b> Không được chỉ dựa vào việc trùng số đỉnh, số cạnh! Ta phải <b>chỉ ra rõ ràng một hàm song ánh $f$</b> từ tập đỉnh này sang tập đỉnh kia và kiểm tra tính kề (hoặc chứng minh ma trận kề hoán vị trùng nhau).</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>6. Đường Đi, Tính Liên Thông, Khớp &amp; Cầu</h2>
+  <p><b>Đường đi (Path):</b> Một chuỗi các cạnh liên tiếp nối một dãy các đỉnh $x_0, x_1, \dots, x_k$. Độ dài đường đi là số cạnh trên đường đi đó ($k$).</p>
+  <ul>
+    <li><b>Đường đi đơn (Simple path):</b> Đường đi không đi qua bất kỳ cạnh nào quá một lần.</li>
+    <li><b>Chu trình (Cycle):</b> Đường đi bắt đầu và kết thúc tại cùng một đỉnh ($x_0 = x_k$) với độ dài $\ge 1$.</li>
+    <li><b>Chu trình đơn:</b> Chu trình không lặp lại cạnh nào.</li>
+  </ul>
+
+  <div class="f key">
+    $$\text{Số đường đi độ dài } r \text{ từ đỉnh } v_i \text{ tới đỉnh } v_j = (A^r)_{ij}$$
+    <small><b>Định lý đếm đường đi bằng ma trận kề:</b> Nếu $A$ là ma trận kề của đồ thị $G$, thì phần tử ở dòng $i$, cột $j$ của ma trận lũy thừa $A^r$ chính là số lượng đường đi khác nhau có đúng độ dài $r$ nối từ đỉnh $v_i$ đến đỉnh $v_j$.</small>
+  </div>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 220" role="img" style="max-width:100%;height:auto">
+      <!-- Khop va Cau -->
+      <g>
+        <rect x="20" y="15" width="340" height="190" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="190" y="38" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="14">Đỉnh Khớp (Cut Vertex) &amp; Cầu (Bridge)</text>
+        <line x1="60" y1="90" x2="130" y2="60" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="60" y1="90" x2="130" y2="120" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="130" y1="60" x2="130" y2="120" stroke="var(--ink)" stroke-width="2"/>
+        <!-- Cau c - d -->
+        <line x1="130" y1="90" x2="220" y2="90" stroke="var(--c4)" stroke-width="4"/>
+        <line x1="220" y1="90" x2="300" y2="60" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="220" y1="90" x2="300" y2="120" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="300" y1="60" x2="300" y2="120" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="60" cy="90" r="10" fill="var(--c1)"/>
+        <circle cx="130" cy="60" r="10" fill="var(--c1)"/>
+        <circle cx="130" cy="120" r="10" fill="var(--c1)"/>
+        <circle cx="130" cy="90" r="12" fill="var(--card)" stroke="var(--c5)" stroke-width="3"/>
+        <text x="130" y="94" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c5)">c</text>
+        <circle cx="220" cy="90" r="12" fill="var(--card)" stroke="var(--c5)" stroke-width="3"/>
+        <text x="220" y="94" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c5)">d</text>
+        <circle cx="300" cy="60" r="10" fill="var(--c1)"/>
+        <circle cx="300" cy="120" r="10" fill="var(--c1)"/>
+        <text x="175" y="80" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="12">Cầu (c,d)</text>
+        <text x="190" y="160" text-anchor="middle" font-size="12" fill="var(--mut)">c và d là 2 đỉnh khớp (bỏ đi đồ thị bị đứt làm 2)</text>
+      </g>
+      <!-- Lien thong manh va yeu -->
+      <g>
+        <rect x="380" y="15" width="340" height="190" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="550" y="38" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="14">Liên Thông Mạnh vs Yếu (Có Hướng)</text>
+        <defs>
+          <marker id="arr-m" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M 0 0 L 7 3.5 L 0 7 z" fill="var(--c2)"/>
+          </marker>
+        </defs>
+        <!-- Chu trinh 3 dinh: manh -->
+        <line x1="440" y1="80" x2="520" y2="80" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-m)"/>
+        <line x1="530" y1="85" x2="485" y2="140" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-m)"/>
+        <line x1="475" y1="140" x2="435" y2="85" stroke="var(--c2)" stroke-width="2.2" marker-end="url(#arr-m)"/>
+        <circle cx="430" cy="80" r="9" fill="var(--c2)"/>
+        <circle cx="530" cy="80" r="9" fill="var(--c2)"/>
+        <circle cx="480" cy="145" r="9" fill="var(--c2)"/>
+        <text x="480" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="var(--c2)">Mạnh: u ↔ v luôn có đường</text>
+        <!-- Mot chieu: yeu -->
+        <line x1="590" y1="80" x2="670" y2="80" stroke="var(--mut)" stroke-width="2.2" marker-end="url(#arr-m)"/>
+        <line x1="670" y1="90" x2="630" y2="140" stroke="var(--mut)" stroke-width="2.2" marker-end="url(#arr-m)"/>
+        <line x1="590" y1="90" x2="630" y2="140" stroke="var(--mut)" stroke-width="2.2" marker-end="url(#arr-m)"/>
+        <circle cx="590" cy="80" r="9" fill="var(--mut)"/>
+        <circle cx="670" cy="80" r="9" fill="var(--mut)"/>
+        <circle cx="630" cy="145" r="9" fill="var(--mut)"/>
+        <text x="630" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">Yếu: Chỉ liên thông nếu bỏ mũi tên</text>
+      </g>
+    </svg>
+    <figcaption>Minh họa Đỉnh khớp, Cạnh cầu và Phân biệt Đồ thị có hướng Liên thông mạnh vs Liên thông yếu.</figcaption>
+  </figure>
+
+  <h3>Các Khái Niệm Liên Thông Trọng Tâm</h3>
+  <ul>
+    <li><b>Đồ thị vô hướng liên thông:</b> Luôn tồn tại đường đi giữa mọi cặp đỉnh phân biệt. Nếu không liên thông, đồ thị phân rã thành các <b>thành phần liên thông (connected components)</b> rời nhau.</li>
+    <li><b>Đỉnh khớp (Cut vertex):</b> Đỉnh mà khi xóa nó cùng các cạnh liên thuộc sẽ làm <i>tăng số thành phần liên thông</i> của đồ thị.</li>
+    <li><b>Cạnh cầu (Bridge / Cut edge):</b> Cạnh mà khi xóa nó đi sẽ làm <i>tăng số thành phần liên thông</i> của đồ thị.</li>
+    <li><b>Độ liên thông đỉnh $\kappa(G)$:</b> Số đỉnh ít nhất cần xóa để đồ thị mất tính liên thông hoặc chỉ còn 1 đỉnh.</li>
+    <li><b>Độ liên thông cạnh $\lambda(G)$:</b> Số cạnh ít nhất cần xóa để đồ thị mất tính liên thông. Ta luôn có bất đẳng thức Whitney: $\kappa(G) \le \lambda(G) \le \min_{v} \deg(v)$.</li>
+    <li><b>Đồ thị có hướng liên thông mạnh (Strongly Connected):</b> Giữa 2 đỉnh $u, v$ bất kỳ luôn có đường đi có hướng từ $u \to v$ và từ $v \to u$.</li>
+    <li><b>Đồ thị có hướng liên thông yếu (Weakly Connected):</b> Đồ thị vô hướng nền tảng (khi bỏ hết hướng mũi tên) là một đồ thị liên thông.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Chu Trình Euler &amp; Chu Trình Hamilton</h2>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Tiêu Chí So Sánh</th>
+          <th>Chu Trình Euler (Euler Circuit)</th>
+          <th>Chu Trình Hamilton (Hamiltonian Cycle)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Mục tiêu duyệt</b></td>
+          <td>Đi qua <b>mỗi CẠNH đúng 1 lần</b> và quay về đỉnh ban đầu</td>
+          <td>Đi qua <b>mỗi ĐỈNH đúng 1 lần</b> và quay về đỉnh ban đầu</td>
+        </tr>
+        <tr>
+          <td><b>Nguồn gốc lịch sử</b></td>
+          <td>Leonhard Euler (1736) - Bài toán 7 cây cầu thành phố Königsberg</td>
+          <td>Sir William Rowan Hamilton (1859) - Trò chơi Icosian trên khối 12 mặt</td>
+        </tr>
+        <tr>
+          <td><b>Điều kiện Cần &amp; Đủ</b></td>
+          <td><b>Rất đơn giản:</b> Đồ thị liên thông và <b>mọi đỉnh đều có bậc chẵn</b></td>
+          <td><b>Cực kỳ khó:</b> Chưa có điều kiện cần và đủ tổng quát! Bài toán kiểm tra thuộc lớp NP-complete.</td>
+        </tr>
+        <tr>
+          <td><b>Đường đi (không khép kín)</b></td>
+          <td>Tồn tại đường đi Euler $\iff$ đồ thị có <b>đúng 2 đỉnh bậc lẻ</b> (bắt đầu ở 1 đỉnh lẻ và kết thúc ở đỉnh lẻ còn lại)</td>
+          <td>Tồn tại đường đi Hamilton: đi qua mọi đỉnh đúng 1 lần (không cần khép kín)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 230" role="img" style="max-width:100%;height:auto">
+      <!-- 7 cay cau Konigsberg -->
+      <g>
+        <rect x="25" y="15" width="330" height="200" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="190" y="38" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="14">Mô Hình 7 Cây Cầu Königsberg</text>
+        <!-- 4 bo dat: A, B, C, D -->
+        <circle cx="190" cy="70" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="190" y="75" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">A</text>
+        <circle cx="110" cy="140" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="110" y="145" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">B</text>
+        <circle cx="270" cy="140" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="270" y="145" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">C</text>
+        <circle cx="190" cy="185" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+        <text x="190" y="190" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">D</text>
+        <!-- 2 cau A-B -->
+        <path d="M 175 70 C 130 80 120 110 110 125" fill="none" stroke="var(--c1)" stroke-width="2.2"/>
+        <path d="M 185 85 C 160 110 145 125 125 140" fill="none" stroke="var(--c1)" stroke-width="2.2"/>
+        <!-- 2 cau B-D -->
+        <path d="M 110 155 C 120 170 140 185 175 185" fill="none" stroke="var(--c1)" stroke-width="2.2"/>
+        <path d="M 125 140 C 145 155 160 170 185 175" fill="none" stroke="var(--c1)" stroke-width="2.2"/>
+        <!-- 1 cau A-C -->
+        <line x1="205" y1="70" x2="270" y2="125" stroke="var(--c1)" stroke-width="2.2"/>
+        <!-- 1 cau C-D -->
+        <line x1="270" y1="155" x2="205" y2="185" stroke="var(--c1)" stroke-width="2.2"/>
+        <!-- 1 cau B-C -->
+        <line x1="125" y1="140" x2="255" y2="140" stroke="var(--c1)" stroke-width="2.2"/>
+        <text x="190" y="115" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c4)">deg(A)=3, deg(B)=5</text>
+        <text x="190" y="130" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c4)">deg(C)=3, deg(D)=3</text>
+        <text x="190" y="208" text-anchor="middle" font-size="11" fill="var(--mut)">Cả 4 đỉnh đều bậc lẻ ⇒ KHÔNG có đường đi Euler!</text>
+      </g>
+      <!-- Do thi Petersen khong co Hamilton -->
+      <g>
+        <rect x="385" y="15" width="330" height="200" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="550" y="38" text-anchor="middle" font-weight="700" fill="var(--c4)" font-size="14">Đồ Thị Petersen (Không có Hamilton)</text>
+        <!-- Ngu giac ngoai -->
+        <polygon points="550,55 615,85 590,150 510,150 485,85" fill="none" stroke="var(--ink)" stroke-width="2"/>
+        <!-- Ngu giac sao ben trong -->
+        <polygon points="550,85 580,135 495,100 605,100 520,135" fill="none" stroke="var(--c4)" stroke-width="2"/>
+        <!-- 5 duong noi giua ngoai va trong -->
+        <line x1="550" y1="55" x2="550" y2="85" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="615" y1="85" x2="605" y2="100" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="590" y1="150" x2="580" y2="135" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="510" y1="150" x2="520" y2="135" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="485" y1="85" x2="495" y2="100" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="550" cy="55" r="5" fill="var(--c1)"/>
+        <circle cx="615" cy="85" r="5" fill="var(--c1)"/>
+        <circle cx="590" cy="150" r="5" fill="var(--c1)"/>
+        <circle cx="510" cy="150" r="5" fill="var(--c1)"/>
+        <circle cx="485" cy="85" r="5" fill="var(--c1)"/>
+        <circle cx="550" cy="85" r="5" fill="var(--c4)"/>
+        <circle cx="580" cy="135" r="5" fill="var(--c4)"/>
+        <circle cx="495" cy="100" r="5" fill="var(--c4)"/>
+        <circle cx="605" cy="100" r="5" fill="var(--c4)"/>
+        <circle cx="520" cy="135" r="5" fill="var(--c4)"/>
+        <text x="550" y="175" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)">Mỗi đỉnh bậc 3 (v=10, e=15)</text>
+        <text x="550" y="195" text-anchor="middle" font-size="11" fill="var(--mut)">Đồ thị nổi tiếng không có chu trình Hamilton</text>
+      </g>
+    </svg>
+    <figcaption>Minh họa 7 cây cầu Königsberg (Euler) và Đồ thị Petersen kinh điển (không chứa chu trình Hamilton).</figcaption>
+  </figure>
+
+  <h3>Các Định Lý Đủ Về Chu Trình Hamilton</h3>
+  <p>Tuy chưa có điều kiện cần và đủ tổng quát, các nhà toán học đã tìm ra các <b>điều kiện đủ</b> sau để đảm bảo đồ thị có chu trình Hamilton:</p>
+  <ul>
+    <li><b>Định lý Dirac (1952):</b> Nếu $G$ là đơn đồ thị có $n \ge 3$ đỉnh và với mọi đỉnh $v \in V$, ta có:
+      $$\deg(v) \ge \frac{n}{2}$$
+      thì $G$ chắc chắn có chứa chu trình Hamilton.</li>
+    <li><b>Định lý Ore (1960):</b> Nếu $G$ là đơn đồ thị có $n \ge 3$ đỉnh và với mọi cặp đỉnh <i>không kề nhau</i> $u, v$, ta có:
+      $$\deg(u) + \deg(v) \ge n$$
+      thì $G$ chắc chắn có chứa chu trình Hamilton.</li>
+  </ul>
+
+  <div class="box warn">
+    <b>Chú ý cạm bẫy thi trắc nghiệm:</b>
+    <ul>
+      <li>Định lý Dirac và Ore chỉ là <b>điều kiện ĐỦ</b>, không phải điều kiện cần! Chu trình $C_5$ có chu trình Hamilton rõ ràng nhưng mọi đỉnh đều có bậc $2 < 2.5 = 5/2$ (không thỏa mãn Dirac).</li>
+      <li><b>Dấu hiệu loại trừ nhanh:</b> Nếu đồ thị có bất kỳ đỉnh nào bậc 1 ($\deg(v) = 1$) hoặc có đỉnh cô lập, đồ thị đó <b>chắc chắn không thể có chu trình Hamilton</b> (vì chu trình qua đỉnh nào phải có 1 cạnh đi vào và 1 cạnh đi ra, cần tối thiểu bậc 2).</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>8. Hệ Thống Bài Tập Áp Dụng Có Lời Giải Chi Tiết Từng Bước</h2>
+
+  <div class="formula-card">
+    <h3>Bài Tập 1: Ứng Dụng Định Lý Bắt Tay</h3>
+    <p><b>Đề bài:</b> Một đồ thị vô hướng $G$ có 10 đỉnh, trong đó mỗi đỉnh đều có bậc bằng 3. Hỏi đồ thị này có bao nhiêu cạnh? Liệu có thể tồn tại một đồ thị có 15 đỉnh mà mỗi đỉnh đều có bậc bằng 3 hay không? Giải thích chi tiết.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-9-1')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-9-1" class="panel">
+      <div class="step"><b>Bước 1 (Tính số cạnh):</b> Gọi $m = |E|$ là số cạnh của đồ thị. Áp dụng Định lý Bắt tay:
+        $$2m = \sum_{v \in V} \deg(v) = 10 \times 3 = 30 \implies m = \frac{30}{2} = 15\ \text{cạnh.}$$
+      </div>
+      <div class="step"><b>Bước 2 (Xét đồ thị 15 đỉnh bậc 3):</b> Giả sử tồn tại đồ thị này, tổng bậc của 15 đỉnh sẽ là:
+        $$\sum_{v \in V} \deg(v) = 15 \times 3 = 45$$
+        Theo định lý bắt tay, tổng bậc này phải bằng $2m$ (bắt buộc là một số chẵn). Tuy nhiên $45$ lại là số lẻ, mâu thuẫn!
+      </div>
+      <div class="step"><b>Cách giải thích khác:</b> Số đỉnh có bậc lẻ ở đây là 15 (số lẻ), vi phạm trực tiếp hệ quả <i>"Số đỉnh bậc lẻ trong đồ thị vô hướng luôn là một số chẵn"</i>.</div>
+      <div class="ans"><b>Kết luận:</b> Đồ thị 10 đỉnh có đúng <b>15 cạnh</b>. Và <b>KHÔNG THỂ</b> tồn tại đồ thị 15 đỉnh mà mỗi đỉnh đều có bậc 3.</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 2: Nhận Biết Đồ Thị Phân Đôi</h3>
+    <p><b>Đề bài:</b> Trong các đồ thị sau: $C_4$, $C_5$, $K_3$, $K_{3,4}$ và $Q_3$, những đồ thị nào là đồ thị phân đôi? Với mỗi đồ thị phân đôi, hãy chỉ ra cách chia tập đỉnh $V_1$ và $V_2$.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-9-2')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-9-2" class="panel">
+      <div class="step"><b>Quy tắc áp dụng:</b> $G$ là đồ thị phân đôi $\iff G$ không chứa chu trình đơn có độ dài lẻ.</div>
+      <div class="step"><b>1. $C_4$:</b> Là chu trình độ dài 4 (chẵn) $\implies$ <b>Là đồ thị phân đôi</b>. Tập đỉnh chia thành $V_1 = \{v_1, v_3\}$ và $V_2 = \{v_2, v_4\}$.</div>
+      <div class="step"><b>2. $C_5$:</b> Là chu trình độ dài 5 (lẻ) $\implies$ <b>KHÔNG phải đồ thị phân đôi</b> (cố tô 2 màu sẽ có 2 đỉnh kề nhau cùng màu).</div>
+      <div class="step"><b>3. $K_3$:</b> Chính là tam giác $C_3$ (chu trình lẻ 3) $\implies$ <b>KHÔNG phải đồ thị phân đôi</b>.</div>
+      <div class="step"><b>4. $K_{3,4}$:</b> Theo định nghĩa là đồ thị phân đôi đầy đủ $\implies$ <b>Là đồ thị phân đôi</b> ($|V_1|=3, |V_2|=4$).</div>
+      <div class="step"><b>5. $Q_3$:</b> Đỉnh là các chuỗi nhị phân 3 bit $b_1 b_2 b_3$. Hai đỉnh kề nhau nếu khác đúng 1 bit. Phân hoạch $V_1$ chứa các chuỗi có số lượng bit 1 là chẵn (000, 011, 101, 110) và $V_2$ chứa các chuỗi có số lượng bit 1 là lẻ (001, 010, 100, 111). Mọi cạnh đều đi từ chẵn sang lẻ $\implies$ <b>Là đồ thị phân đôi</b>.</div>
+      <div class="ans"><b>Đáp án:</b> Các đồ thị phân đôi là: <b>$C_4$, $K_{3,4}$ và $Q_3$</b>.</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 3: Đếm Số Đường Đi Bằng Lũy Thừa Ma Trận Kề</h3>
+    <p><b>Đề bài:</b> Cho đồ thị $G$ gồm 4 đỉnh $\{v_1, v_2, v_3, v_4\}$ có ma trận kề $A$ như sau:
+    $$A = \begin{pmatrix} 0 & 1 & 1 & 0 \\ 1 & 0 & 0 & 1 \\ 1 & 0 & 0 & 1 \\ 0 & 1 & 1 & 0 \end{pmatrix}$$
+    Hãy tính số đường đi có độ dài đúng bằng 2 và độ dài đúng bằng 3 nối từ đỉnh $v_1$ đến đỉnh $v_4$.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-9-3')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-9-3" class="panel">
+      <div class="step"><b>Bước 1: Tính ma trận $A^2$:</b>
+      $$(A^2)_{14} = \sum_{k=1}^4 a_{1k} a_{k4} = a_{11}a_{14} + a_{12}a_{24} + a_{13}a_{34} + a_{14}a_{44} = 0\cdot 0 + 1\cdot 1 + 1\cdot 1 + 0\cdot 0 = 2$$
+      Vậy có đúng <b>2 đường đi độ dài 2</b> từ $v_1$ đến $v_4$: đó là $v_1 \to v_2 \to v_4$ và $v_1 \to v_3 \to v_4$.
+      </div>
+      <div class="step"><b>Bước 2: Tính ma trận $A^3 = A^2 \times A$:</b>
+      Ta cần tính dòng 1 của $A^2$:
+      Dòng 1 nhân với các cột của $A$:
+      $(A^2)_{11} = 1\cdot 1 + 1\cdot 1 = 2$, $(A^2)_{12} = 0$, $(A^2)_{13} = 0$, $(A^2)_{14} = 2$.
+      Vậy $(A^3)_{14} = (A^2)_{11}a_{14} + (A^2)_{12}a_{24} + (A^2)_{13}a_{34} + (A^2)_{14}a_{44} = 2\cdot 0 + 0\cdot 1 + 0\cdot 1 + 2\cdot 0 = 0$.
+      </div>
+      <div class="step"><b>Giải thích ý nghĩa:</b> Đồ thị $G$ chính là chu trình $C_4$. Trong chu trình 4 đỉnh, khoảng cách giữa 2 đỉnh đối diện $v_1$ và $v_4$ chỉ có thể là độ dài chẵn (2, 4, 6...), không thể đi đến nhau bằng 3 bước mà không quay đầu lại.</div>
+      <div class="ans"><b>Đáp án:</b> Có <b>2 đường đi độ dài 2</b> và <b>0 đường đi độ dài 3</b> từ $v_1$ đến $v_4$.</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 4: Kiểm Tra Chu Trình Euler &amp; Chu Trình Hamilton</h3>
+    <p><b>Đề bài:</b> Cho đồ thị vô hướng $G$ có tập đỉnh $V = \{a, b, c, d, e\}$ với các cạnh: $(a,b), (b,c), (c,d), (d,e), (e,a), (b,e), (b,d)$.<br/>
+    (a) Đồ thị $G$ có chu trình Euler hoặc đường đi Euler không?<br/>
+    (b) Đồ thị $G$ có chu trình Hamilton không? Nếu có hãy chỉ ra một chu trình.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-9-4')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-9-4" class="panel">
+      <div class="step"><b>Bước 1: Tính bậc từng đỉnh của $G$:</b>
+        <ul>
+          <li>Đỉnh $a$ nối với $b, e \implies \deg(a) = 2$ (chẵn)</li>
+          <li>Đỉnh $b$ nối với $a, c, d, e \implies \deg(b) = 4$ (chẵn)</li>
+          <li>Đỉnh $c$ nối với $b, d \implies \deg(c) = 2$ (chẵn)</li>
+          <li>Đỉnh $d$ nối với $c, e, b \implies \deg(d) = 3$ (lẻ)</li>
+          <li>Đỉnh $e$ nối với $d, a, b \implies \deg(e) = 3$ (lẻ)</li>
+        </ul>
+      </div>
+      <div class="step"><b>Bước 2 (Xét Euler):</b> Đồ thị $G$ là liên thông và có đúng <b>2 đỉnh bậc lẻ</b> là $d$ và $e$ (các đỉnh còn lại $a, b, c$ đều bậc chẵn).
+      $\implies$ Đồ thị <b>KHÔNG có chu trình Euler</b>, nhưng <b>CÓ đường đi Euler</b> bắt đầu từ $d$ và kết thúc ở $e$ (hoặc ngược lại).<br/>
+      Ví dụ đường đi Euler: $d - c - b - a - e - b - d - e$.
+      </div>
+      <div class="step"><b>Bước 3 (Xét Hamilton):</b> Số đỉnh $n = 5$. Kiểm tra định lý Dirac: $\deg(a) = 2 < 5/2 = 2.5$ nên Dirac không áp dụng được.<br/>
+      Tuy nhiên, ta dễ dàng tìm được chu trình Hamilton bằng mắt vì bao ngoài là chu trình 5 đỉnh $C_5$:
+      $$a - b - c - d - e - a$$
+      Chu trình này đi qua tất cả 5 đỉnh $\{a, b, c, d, e\}$ mỗi đỉnh đúng 1 lần và quay về $a$.
+      </div>
+      <div class="ans"><b>Kết luận:</b><br/>
+      (a) $G$ <b>không có chu trình Euler</b> nhưng <b>có đường đi Euler</b>.<br/>
+      (b) $G$ <b>có chu trình Hamilton</b>: $a - b - c - d - e - a$.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sum">
+  <h2>Tổng Kết Bài 9 (Lý Thuyết Đồ Thị)</h2>
+  <ul>
+    <li><b>Định lý bắt tay:</b> $\sum \deg(v) = 2m$. Số đỉnh bậc lẻ luôn luôn là số chẵn. Với đồ thị có hướng: $\sum \deg^- = \sum \deg^+ = |E|$.</li>
+    <li><b>Đồ thị đặc biệt:</b> $K_n$ có $n(n-1)/2$ cạnh; $C_n$ có $n$ cạnh; $Q_n$ có $n \cdot 2^{n-1}$ cạnh; $K_{m,n}$ có $mn$ cạnh.</li>
+    <li><b>Đồ thị phân đôi:</b> Tương đương không chứa chu trình lẻ $\iff$ tô được bằng 2 màu. Định lý Hall: ghép cặp cực đại phủ $V_1 \iff |N(A)| \ge |A|$.</li>
+    <li><b>Biểu diễn &amp; Đếm:</b> Phần tử $(A^r)_{ij}$ là số đường đi độ dài $r$ từ $v_i$ đến $v_j$.</li>
+    <li><b>Đẳng cấu:</b> Phải cùng số đỉnh, số cạnh, dãy bậc, chu trình con. Chứng minh có đẳng cấu phải lập hàm song ánh $f$.</li>
+    <li><b>Euler vs Hamilton:</b> Euler duyệt mọi <b>cạnh</b> (đồ thị liên thông, mọi đỉnh bậc chẵn $\iff$ chu trình; 2 đỉnh bậc lẻ $\iff$ đường đi). Hamilton duyệt mọi <b>đỉnh</b> (Dirac: $\deg \ge n/2$; Ore: $\deg(u)+\deg(v) \ge n$).</li>
+  </ul>
+  <div class="btn-group">
+    <button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='10';loadLesson('10')">Học tiếp Bài 10 (Đường đi ngắn nhất, Đồ thị phẳng &amp; Tô màu) →</button>
+  </div>
+</section>
 </template>
 
 <template id="tpl-buoi-10">
-<header><span class="k b3">TOÁN RỜI RẠC · BÀI 14</span><h1>Đường Đi Ngắn Nhất, Đồ Thị Phẳng & Tô Màu Đồ Thị</h1><p class="mut">Ba chủ đề: tìm đường ngắn nhất (Dijkstra, Floyd), vẽ đồ thị không cắt cạnh (Euler, Kuratowski), và tô màu đỉnh (sắc số, định lý bốn màu).</p></header><section><h2>1. Đường Đi Ngắn Nhất — Thuật Toán Dijkstra & Floyd</h2><div class="box analogy"><b>Ẩn dụ "Vết dầu loang":</b> Từ $a$, mỗi lần ta chốt đỉnh <b>chưa chốt</b> có nhãn $L$ nhỏ nhất (đó chắc chắn đã là đường ngắn nhất vì mọi trọng số dương), rồi dùng nó để cập nhật nhãn các đỉnh còn lại: $L(v)=\min\{L(v),\ L(u)+w(u,v)\}$.</div><figure class="fl"><svg viewBox="0 0 680 240" role="img"><line x1="60" y1="110" x2="190" y2="50" stroke="var(--mut)" stroke-width="1.6"/><text x="125" y="74" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">4</text><line x1="60" y1="110" x2="190" y2="180" stroke="var(--c4)" stroke-width="4"/><text x="125" y="139" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">2</text><line x1="190" y1="50" x2="190" y2="180" stroke="var(--c4)" stroke-width="4"/><text x="190" y="109" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">1</text><line x1="190" y1="50" x2="380" y2="50" stroke="var(--c4)" stroke-width="4"/><text x="285" y="44" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">5</text><line x1="190" y1="180" x2="380" y2="50" stroke="var(--mut)" stroke-width="1.6"/><text x="285" y="109" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">8</text><line x1="190" y1="180" x2="380" y2="180" stroke="var(--mut)" stroke-width="1.6"/><text x="285" y="174" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">10</text><line x1="380" y1="50" x2="380" y2="180" stroke="var(--c4)" stroke-width="4"/><text x="380" y="109" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">2</text><line x1="380" y1="50" x2="530" y2="110" stroke="var(--mut)" stroke-width="1.6"/><text x="455" y="74" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">6</text><line x1="380" y1="180" x2="530" y2="110" stroke="var(--c4)" stroke-width="4"/><text x="455" y="139" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">3</text><circle cx="60" cy="110" r="17" style="fill:var(--card);stroke:var(--c2);stroke-width:2.5"/><text x="60" y="115" text-anchor="middle" style="font-weight:800;font-size:13px">a</text><text x="60" y="144" text-anchor="middle" style="font-size:12px;fill:var(--c4);font-weight:800">L=0</text><circle cx="190" cy="50" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="190" y="55" text-anchor="middle" style="font-weight:800;font-size:13px">b</text><text x="190" y="24" text-anchor="middle" style="font-size:12px;fill:var(--c4);font-weight:800">L=3</text><circle cx="190" cy="180" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="190" y="185" text-anchor="middle" style="font-weight:800;font-size:13px">c</text><text x="190" y="214" text-anchor="middle" style="font-size:12px;fill:var(--c4);font-weight:800">L=2</text><circle cx="380" cy="50" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="380" y="55" text-anchor="middle" style="font-weight:800;font-size:13px">d</text><text x="380" y="24" text-anchor="middle" style="font-size:12px;fill:var(--c4);font-weight:800">L=8</text><circle cx="380" cy="180" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="380" y="185" text-anchor="middle" style="font-weight:800;font-size:13px">e</text><text x="380" y="214" text-anchor="middle" style="font-size:12px;fill:var(--c4);font-weight:800">L=10</text><circle cx="530" cy="110" r="17" style="fill:var(--card);stroke:var(--c2);stroke-width:2.5"/><text x="530" y="115" text-anchor="middle" style="font-weight:800;font-size:13px">z</text><text x="530" y="144" text-anchor="middle" style="font-size:12px;fill:var(--c4);font-weight:800">L=13</text><text x="340" y="228" text-anchor="middle" style="font-weight:800;fill:var(--c4);font-size:14px">Đường ngắn nhất a→z: a, c, b, d, e, z (độ dài 13)</text></svg><figcaption>Đồ thị trong slide. Nét đậm: đường ngắn nhất; $L$ = nhãn cuối cùng của mỗi đỉnh.</figcaption></figure><div class="f key">$$L(a)=0,\ L(v)=\infty;\quad \text{lặp: chọn } u\notin S \text{ có } L(u) \text{ nhỏ nhất, } S\leftarrow S\cup\{u\},\ L(v)\leftarrow\min(L(v),L(u)+w(u,v))$$<small>Dijkstra dừng khi $z\in S$. Độ phức tạp $O(n^2)$ (đồ thị dương trọng số). <b>Floyd</b> tìm đường ngắn nhất giữa <b>mọi</b> cặp đỉnh bằng 3 vòng lặp $i,j,k$: $d(v_j,v_k)=\min\{d(v_j,v_k),\ d(v_j,v_i)+d(v_i,v_k)\}$, độ phức tạp $O(n^3)$.</small></div><div class="formula-card"><h3>Câu 1: Chạy Dijkstra từ $a$ đến $z$</h3><p><b>Đề bài:</b> Đồ thị có các cạnh $ab=4$, $ac=2$, $bc=1$, $bd=5$, $cd=8$, $ce=10$, $de=2$, $dz=6$, $ez=3$. Lập bảng nhãn.</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b14-1')">Xem Lời giải chi tiết</button></div><div id="s-b14-1" class="panel"><div class="tw"><table><tr><th>Bước</th><th>Chốt</th><th>b</th><th>c</th><th>d</th><th>e</th><th>z</th></tr><tr><td>0</td><td>$a$ (0)</td><td>4</td><td>2</td><td>∞</td><td>∞</td><td>∞</td></tr><tr><td>1</td><td>$c$ (2)</td><td>3 (qua c)</td><td>–</td><td>10</td><td>12</td><td>∞</td></tr><tr><td>2</td><td>$b$ (3)</td><td>–</td><td>–</td><td>8 (qua b)</td><td>12</td><td>∞</td></tr><tr><td>3</td><td>$d$ (8)</td><td>–</td><td>–</td><td>–</td><td>10 (qua d)</td><td>14</td></tr><tr><td>4</td><td>$e$ (10)</td><td>–</td><td>–</td><td>–</td><td>–</td><td>13 (qua e)</td></tr><tr><td>5</td><td>$z$ (13)</td><td></td><td></td><td></td><td></td><td>xong</td></tr></table></div><div class="step">Bước 1: từ $c$ ($L=2$): $b$: $2+1=3<4$; $d$: $2+8=10$; $e$: $2+10=12$. Bước 2: từ $b$: $d$: $3+5=8<10$. Bước 3: từ $d$: $e$: $8+2=10<12$; $z$: $8+6=14$. Bước 4: từ $e$: $z$: $10+3=13<14$.</div><div class="step">Truy ngược nhãn: $z\leftarrow e\leftarrow d\leftarrow b\leftarrow c\leftarrow a$.</div><div class="ans"><b>Đáp án:</b> $L(z)=\mathbf{13}$ theo đường $a,c,b,d,e,z$.</div></div></div></section><section><h2>2. Đồ Thị Phẳng — Vẽ Không Cắt Cạnh</h2><p><b>Phẳng</b> nếu vẽ được trên mặt phẳng mà không có hai cạnh cắt nhau (biểu diễn phẳng). Chứng minh phẳng: chỉ ra một cách vẽ ($K_4$, $Q_3$ vẽ lại được). Chứng minh <b>không phẳng</b> mới khó. Ứng dụng: mạch in, mạng đường bộ; bài "ba nhà – ba tiện ích" chính là $K_{3,3}$.</p><div class="f key">$$r=e-v+2\qquad e\le3v-6\ (v\ge3)\qquad e\le2v-4\ (v\ge3,\ \text{không có chu trình độ dài }3)$$<small><b>Công thức Euler</b> ($r$ = số miền của biểu diễn phẳng, đồ thị đơn liên thông). Hệ quả 1, 3 dùng để chứng minh không phẳng; Hệ quả 2: có đỉnh bậc $\le5$. <b>Kuratowski (1930):</b> không phẳng ⇔ chứa đồ thị con đồng phôi với $K_{3,3}$ hoặc $K_5$ (đồng phôi: nhận được từ nhau bằng các phép chia nhỏ cạnh: thay cạnh $\{u,v\}$ bằng $\{u,w\},\{w,v\}$).</small></div><div class="formula-card"><h3>Câu 2: $K_5$ và $K_{3,3}$ không phẳng</h3><p><b>Đề bài:</b> Chứng minh $K_5$ và $K_{3,3}$ không phẳng.</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b14-2')">Xem Lời giải chi tiết</button></div><div id="s-b14-2" class="panel"><div class="box tip"><b>Ý tưởng:</b> Giả sử phẳng rồi đối chiếu số cạnh với cận trên từ công thức Euler.</div><div class="step"><b>$K_5$:</b> $v=5$, $e=\binom52=10$. Hệ quả 1 cho $e\le3\cdot5-6=9$, mà $10>9$ ⇒ mâu thuẫn ⇒ không phẳng.</div><div class="step"><b>$K_{3,3}$:</b> $v=6$, $e=9$. Đồ thị phân đôi nên <b>không có chu trình độ dài 3</b>, áp dụng Hệ quả 3: $e\le2\cdot6-4=8$, mà $9>8$ ⇒ không phẳng. (Hệ quả 1 cho $9\le12$ nên không đủ để kết luận, phải dùng Hệ quả 3.)</div><div class="ans"><b>Đáp án:</b> Cả hai đều <b>không phẳng</b>.</div></div></div></section><section><h2>3. Tô Màu Đồ Thị — Sắc Số</h2><p><b>Tô màu</b> đơn đồ thị: gán màu cho đỉnh sao cho hai đỉnh kề khác màu; <b>sắc số</b> $\chi(G)$ là số màu ít nhất. Tô màu bản đồ ⇒ tô màu đồ thị đối ngẫu (mỗi vùng là một đỉnh, hai vùng chung biên thì có cạnh; chỉ chung điểm thì không). <b>Định lý bốn màu:</b> $\chi(G)\le4$ với mọi đồ thị phẳng. Tìm sắc số chính xác là NP-khó. Ứng dụng: lập lịch thi (mỗi môn một đỉnh, chung sinh viên thì có cạnh; màu = ca thi), phân kênh truyền hình, thanh ghi chỉ mục.</p><div class="tw"><table><tr><th>Đồ thị</th><th>$K_n$</th><th>$K_{m,n}$</th><th>$C_n$</th></tr><tr><td>$\chi$</td><td>$n$</td><td>$2$</td><td>$2$ nếu $n$ chẵn, $3$ nếu $n$ lẻ</td></tr></table></div><div class="formula-card"><h3>Câu 3: Sắc số hai đồ thị $G$ và $H$ trên slide</h3><p><b>Đề bài:</b> $G$ có các cạnh $ab, ac, bc, bd, be, cd, cf, de, df, ef, eg, fg$. $H$ là $G$ thêm cạnh $ag$. Tìm $\chi(G)$ và $\chi(H)$.</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b14-3')">Xem Lời giải chi tiết</button></div><div id="s-b14-3" class="panel"><div class="box tip"><b>Ý tưởng:</b> Tam giác ⇒ cần ít nhất 3 màu. Tô tham lam theo thứ tự cố định rồi xem có phải dùng màu thứ 4 không.</div><div class="step">Có tam giác $b,c,d$ nên $\chi\ge3$. Tô: $b=1,\ c=2,\ d=3$ (bắt buộc khác nhau).</div><div class="step">$e$ kề $b(1),d(3)$ ⇒ $e=2$. $f$ kề $c(2),d(3),e(2)$ ⇒ $f=1$. $g$ kề $e(2),f(1)$ ⇒ $g=3$. $a$ kề $b(1),c(2)$ ⇒ $a=3$. Dùng đúng 3 màu ⇒ $\chi(G)=3$.</div><div class="step">Với $H$: các màu của $b,c,d,e,f,g,a$ ở trên đều <b>bị ép</b> (khi đã cố định $b,c,d$), nhưng $a=3=g$ mà thêm cạnh $ag$ ⇒ mâu thuẫn. Vậy $H$ không tô được bằng 3 màu, cần màu thứ 4.</div><div class="ans"><b>Đáp án:</b> $\chi(G)=\mathbf3$; $\chi(H)=\mathbf4$.</div></div></div></section><section class="sum"><h2>Tổng Kết Bài 14</h2><ul><li><b>Dijkstra:</b> chốt đỉnh nhãn nhỏ nhất, cập nhật $L(v)=\min(L(v),L(u)+w)$, $O(n^2)$; <b>Floyd</b> mọi cặp, $O(n^3)$.</li><li>Phẳng: $r=e-v+2$; $e\le3v-6$; không có tam giác thì $e\le2v-4$. $K_5$ và $K_{3,3}$ là hai đồ thị không phẳng cơ bản (Kuratowski).</li><li>Sắc số: $\chi(K_n)=n$, $\chi(K_{m,n})=2$, $\chi(C_n)\in\{2,3\}$; đồ thị phẳng tô được tối đa 4 màu.</li></ul><div class="btn-group"><button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='9';loadLesson('9')">Quay lại Bài 13 (Lý thuyết đồ thị)</button><button type="button" class="btn btn-sol" onclick="document.getElementById('lesson-select').value='11';loadLesson('11')">Sang Phần 11 (Bài 15): Cây</button></div></section>
+<header>
+  <span class="k b3">TOÁN RỜI RẠC · BÀI 14 (ĐƯỜNG ĐI NGẮN NHẤT, ĐỒ THỊ PHẲNG &amp; TÔ MÀU)</span>
+  <h1>Thuật Toán Dijkstra, Floyd-Warshall, Đồ Thị Phẳng, Công Thức Euler &amp; Sắc Số Tô Màu</h1>
+  <p class="mut">Nội dung trọn vẹn Chương 14: bài toán tìm đường đi ngắn nhất (thuật toán Dijkstra kèm bảng trace chạy tay chi tiết, quy hoạch động Floyd-Warshall), bài toán 3 nhà 3 tiện ích, công thức Euler $r=e-v+2$, chứng minh $K_5$ và $K_{3,3}$ không phẳng, định lý Kuratowski, bài toán 4 màu và ứng dụng tô màu đồ thị trong lập lịch thi &amp; cấp phát thanh ghi.</p>
+</header>
+
+<section>
+  <h2>1. Bài Toán Đường Đi Ngắn Nhất: Dijkstra &amp; Floyd-Warshall</h2>
+  <div class="box analogy">
+    <b>Ẩn dụ "Vết dầu loang":</b> Thuật toán Dijkstra tìm đường đi ngắn nhất giống như việc nhỏ một giọt dầu vào đỉnh xuất phát $a$. Vết dầu sẽ loang dần theo các con đường có trọng số nhẹ nhất, chạm tới đỉnh nào trước thì khoảng cách đến đỉnh đó chính là ngắn nhất tuyệt đối!
+  </div>
+
+  <p>Cho đồ thị có trọng số $G = (V, E, w)$ với trọng số trên các cạnh là <b>không âm</b> ($w(e) \ge 0$). Bài toán yêu cầu tìm đường đi từ đỉnh nguồn $a$ đến đỉnh đích $z$ sao cho tổng trọng số các cạnh là nhỏ nhất.</p>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 250" role="img" style="max-width:100%;height:auto">
+      <!-- Canh do thi 6 dinh chuan slide -->
+      <!-- Canh khong thuoc duong di ngan nhat: net nhe -->
+      <line x1="80" y1="125" x2="220" y2="60" stroke="var(--border)" stroke-width="2"/>
+      <text x="140" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">4</text>
+
+      <line x1="220" y1="190" x2="440" y2="60" stroke="var(--border)" stroke-width="2"/>
+      <text x="320" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">8</text>
+
+      <line x1="220" y1="190" x2="440" y2="190" stroke="var(--border)" stroke-width="2"/>
+      <text x="330" y="205" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">10</text>
+
+      <line x1="440" y1="60" x2="620" y2="125" stroke="var(--border)" stroke-width="2"/>
+      <text x="540" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">6</text>
+
+      <!-- Duong di ngan nhat: a -> c -> b -> d -> e -> z (Tong: 2 + 1 + 5 + 2 + 3 = 13) -->
+      <!-- Canh a - c = 2 -->
+      <line x1="80" y1="125" x2="220" y2="190" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="140" y="170" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">2</text>
+
+      <!-- Canh c - b = 1 -->
+      <line x1="220" y1="190" x2="220" y2="60" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="205" y="130" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">1</text>
+
+      <!-- Canh b - d = 5 -->
+      <line x1="220" y1="60" x2="440" y2="60" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="330" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">5</text>
+
+      <!-- Canh d - e = 2 -->
+      <line x1="440" y1="60" x2="440" y2="190" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="455" y="130" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">2</text>
+
+      <!-- Canh e - z = 3 -->
+      <line x1="440" y1="190" x2="620" y2="125" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="540" y="170" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">3</text>
+
+      <!-- Cac dinh -->
+      <circle cx="80" cy="125" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="80" y="130" text-anchor="middle" font-weight="800" font-size="14" fill="var(--c1)">a</text>
+      <text x="80" y="158" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c1)">L=0</text>
+
+      <circle cx="220" cy="60" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="220" y="65" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">b</text>
+      <text x="220" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c2)">L=3</text>
+
+      <circle cx="220" cy="190" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="220" y="195" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">c</text>
+      <text x="220" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c2)">L=2</text>
+
+      <circle cx="440" cy="60" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="440" y="65" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">d</text>
+      <text x="440" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c2)">L=8</text>
+
+      <circle cx="440" cy="190" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="440" y="195" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">e</text>
+      <text x="440" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c2)">L=10</text>
+
+      <circle cx="620" cy="125" r="16" fill="var(--card)" stroke="var(--c4)" stroke-width="3"/>
+      <text x="620" y="130" text-anchor="middle" font-weight="800" font-size="14" fill="var(--c4)">z</text>
+      <text x="620" y="158" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c4)">L=13</text>
+
+      <text x="350" y="240" text-anchor="middle" font-weight="800" font-size="14" fill="var(--c2)">Đường đi ngắn nhất: a → c → b → d → e → z (Tổng trọng số = 13)</text>
+    </svg>
+    <figcaption>Đồ thị có trọng số 6 đỉnh chuẩn từ slide Bài 14: Đường đi ngắn nhất từ $a$ đến $z$ (tô xanh đậm) có tổng chi phí là 13.</figcaption>
+  </figure>
+
+  <h3>Trace Từng Bước Thuật Toán Dijkstra</h3>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Bước lặp</th>
+          <th>Đỉnh $u$ được chọn vào $S$</th>
+          <th>Tập đã chốt $S$</th>
+          <th>$L(a)$</th>
+          <th>$L(b)$</th>
+          <th>$L(c)$</th>
+          <th>$L(d)$</th>
+          <th>$L(e)$</th>
+          <th>$L(z)$</th>
+          <th>Hành động cập nhật (Relaxation)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Khởi tạo</b></td>
+          <td>-</td>
+          <td>$\emptyset$</td>
+          <td><b>0</b></td>
+          <td>$\infty$</td>
+          <td>$\infty$</td>
+          <td>$\infty$</td>
+          <td>$\infty$</td>
+          <td>$\infty$</td>
+          <td>Đặt nhãn đỉnh xuất phát $L(a) = 0$, các đỉnh khác bằng $\infty$</td>
+        </tr>
+        <tr>
+          <td><b>Bước 1</b></td>
+          <td><b>a</b> ($L=0$)</td>
+          <td>$\{a\}$</td>
+          <td>0</td>
+          <td>$4$</td>
+          <td>$2$</td>
+          <td>$\infty$</td>
+          <td>$\infty$</td>
+          <td>$\infty$</td>
+          <td>Từ $a$: $L(b)=\min(\infty, 0+4)=4$; $L(c)=\min(\infty, 0+2)=2$</td>
+        </tr>
+        <tr>
+          <td><b>Bước 2</b></td>
+          <td><b>c</b> ($L=2$)</td>
+          <td>$\{a, c\}$</td>
+          <td>0</td>
+          <td><b>3</b></td>
+          <td>2</td>
+          <td>$10$</td>
+          <td>$12$</td>
+          <td>$\infty$</td>
+          <td>Từ $c$: $L(b)=\min(4, 2+1)=3$; $L(d)=2+8=10$; $L(e)=2+10=12$</td>
+        </tr>
+        <tr>
+          <td><b>Bước 3</b></td>
+          <td><b>b</b> ($L=3$)</td>
+          <td>$\{a, c, b\}$</td>
+          <td>0</td>
+          <td>3</td>
+          <td>2</td>
+          <td><b>8</b></td>
+          <td>12</td>
+          <td>$\infty$</td>
+          <td>Từ $b$: $L(d)=\min(10, 3+5)=8$ (rút ngắn khoảng cách đến $d$)</td>
+        </tr>
+        <tr>
+          <td><b>Bước 4</b></td>
+          <td><b>d</b> ($L=8$)</td>
+          <td>$\{a, c, b, d\}$</td>
+          <td>0</td>
+          <td>3</td>
+          <td>2</td>
+          <td>8</td>
+          <td><b>10</b></td>
+          <td>$14$</td>
+          <td>Từ $d$: $L(e)=\min(12, 8+2)=10$; $L(z)=\min(\infty, 8+6)=14$</td>
+        </tr>
+        <tr>
+          <td><b>Bước 5</b></td>
+          <td><b>e</b> ($L=10$)</td>
+          <td>$\{a, c, b, d, e\}$</td>
+          <td>0</td>
+          <td>3</td>
+          <td>2</td>
+          <td>8</td>
+          <td>10</td>
+          <td><b>13</b></td>
+          <td>Từ $e$: $L(z)=\min(14, 10+3)=13$ (rút ngắn khoảng cách đến $z$)</td>
+        </tr>
+        <tr>
+          <td><b>Bước 6</b></td>
+          <td><b>z</b> ($L=13$)</td>
+          <td>$\{a, c, b, d, e, z\}$</td>
+          <td>0</td>
+          <td>3</td>
+          <td>2</td>
+          <td>8</td>
+          <td>10</td>
+          <td>13</td>
+          <td>Đã nạp đỉnh đích $z$ vào $S$. <b>Thuật toán dừng!</b></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box tip">
+    <b>Độ phức tạp của Dijkstra:</b>
+    <ul>
+      <li>Dùng mảng tuyến tính tìm $\min$: $O(|V|^2)$. Rất hiệu quả cho đồ thị dày ($|E| \approx |V|^2$).</li>
+      <li>Dùng hàng đợi ưu tiên (Min-Heap / Binary Heap): $O((|V| + |E|)\log |V|)$. Tối ưu cho đồ thị thưa.</li>
+      <li><b>Cảnh báo nghiêm trọng:</b> Thuật toán Dijkstra <b>KHÔNG hoạt động chính xác</b> nếu đồ thị chứa trọng số âm! (Với trọng số âm, ta phải dùng thuật toán Bellman-Ford).</li>
+    </ul>
+  </div>
+
+  <h3>Thuật Toán Floyd-Warshall (Đường Đi Ngắn Nhất Mọi Cặp Đỉnh)</h3>
+  <p>Thuật toán Floyd-Warshall giải bài toán tìm đường đi ngắn nhất giữa <b>mọi cặp đỉnh $(i, j)$</b> trong đồ thị bằng phương pháp <b>Quy hoạch động (Dynamic Programming)</b>.</p>
+  <div class="f key">
+    $$D^{(k)}[i][j] = \min\left( D^{(k-1)}[i][j],\ D^{(k-1)}[i][k] + D^{(k-1)}[k][j] \right)$$
+    <small>Ý nghĩa: Đường đi ngắn nhất từ $i$ đến $j$ chỉ đi qua các đỉnh trung gian $\{1, 2, \dots, k\}$ hoặc là không đi qua đỉnh $k$ (giữ nguyên $D^{(k-1)}[i][j]$), hoặc là đi qua đỉnh $k$ ($i \to k \to j$).</small>
+  </div>
+  <p>Mã giả gồm 3 vòng lặp `for` lồng nhau cực kỳ ngắn gọn:</p>
+  <div class="box code">
+    <b>for</b> k = 1 <b>to</b> n:<br/>
+    &nbsp;&nbsp;<b>for</b> i = 1 <b>to</b> n:<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;<b>for</b> j = 1 <b>to</b> n:<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D[i][j] = min(D[i][j], D[i][k] + D[k][j]);
+  </div>
+  <p>Độ phức tạp thuật toán: $\Theta(|V|^3)$. Xử lý được cả trọng số âm, miễn là đồ thị không chứa chu trình âm.</p>
+</section>
+
+<section>
+  <h2>2. Đồ Thị Phẳng, Công Thức Euler &amp; Định Lý Kuratowski</h2>
+  <div class="box analogy">
+    <b>Bài toán dân gian "Ba căn nhà và ba tiện ích":</b> Có 3 ngôi nhà và 3 nhà máy cung cấp: Khí đốt, Nước sạch, Điện lực. Liệu có thể đào các đường ống ngầm nối từ mỗi nhà máy tới cả 3 ngôi nhà sao cho các đường ống hoàn toàn không cắt chéo nhau không? Câu trả lời là <b>KHÔNG THỂ</b>, vì đồ thị này chính là $K_{3,3}$ - một đồ thị không phẳng!
+  </div>
+
+  <p><b>Định nghĩa đồ thị phẳng (Planar Graph):</b> Một đồ thị được gọi là phẳng nếu nó có thể được vẽ trên một mặt phẳng sao cho <b>không có hai cạnh nào cắt nhau</b> (ngoại trừ tại các đỉnh mút chung). Hình vẽ như vậy được gọi là một <i>biểu diễn phẳng (planar representation)</i> của đồ thị.</p>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 230" role="img" style="max-width:100%;height:auto">
+      <!-- K4 ve cat nhau va ve phang -->
+      <g>
+        <rect x="20" y="15" width="340" height="200" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="190" y="38" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="14">Biểu Diễn Phẳng Của K₄</text>
+        <!-- Dang ve cheo -->
+        <rect x="55" y="75" width="60" height="60" fill="none" stroke="var(--mut)" stroke-width="1.5"/>
+        <line x1="55" y1="75" x2="115" y2="135" stroke="var(--c4)" stroke-width="2"/>
+        <line x1="115" y1="75" x2="55" y2="135" stroke="var(--c4)" stroke-width="2"/>
+        <circle cx="55" cy="75" r="5" fill="var(--mut)"/>
+        <circle cx="115" cy="75" r="5" fill="var(--mut)"/>
+        <circle cx="55" cy="135" r="5" fill="var(--mut)"/>
+        <circle cx="115" cy="135" r="5" fill="var(--mut)"/>
+        <text x="85" y="155" text-anchor="middle" font-size="11" fill="var(--c4)">Vẽ chéo cạnh</text>
+
+        <text x="175" y="110" font-weight="800" font-size="18" fill="var(--c1)">→</text>
+
+        <!-- Dang ve phang: keo 1 dinh vao giua -->
+        <polygon points="275,60 215,165 335,165" fill="none" stroke="var(--c1)" stroke-width="2"/>
+        <line x1="275" y1="60" x2="275" y2="130" stroke="var(--c1)" stroke-width="2"/>
+        <line x1="215" y1="165" x2="275" y2="130" stroke="var(--c1)" stroke-width="2"/>
+        <line x1="335" y1="165" x2="275" y2="130" stroke="var(--c1)" stroke-width="2"/>
+        <circle cx="275" cy="60" r="6" fill="var(--c1)"/>
+        <circle cx="215" cy="165" r="6" fill="var(--c1)"/>
+        <circle cx="335" cy="165" r="6" fill="var(--c1)"/>
+        <circle cx="275" cy="130" r="6" fill="var(--c2)"/>
+        <text x="275" y="185" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c2)">Vẽ phẳng hoàn hảo (4 miền)</text>
+      </g>
+      <!-- Cac mien chia boi do thi phang -->
+      <g>
+        <rect x="380" y="15" width="340" height="200" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="550" y="38" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="14">Các Miền (Faces/Regions) &amp; Công Thức Euler</text>
+        <!-- Hinh ve chia 3 mien trong + 1 mien ngoai -->
+        <polygon points="550,60 460,160 640,160" fill="rgba(66, 185, 131, 0.08)" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="550" y1="60" x2="550" y2="160" stroke="var(--ink)" stroke-width="2"/>
+        <circle cx="550" cy="60" r="6" fill="var(--c1)"/>
+        <circle cx="460" cy="160" r="6" fill="var(--c1)"/>
+        <circle cx="640" cy="160" r="6" fill="var(--c1)"/>
+        <circle cx="550" cy="160" r="6" fill="var(--c1)"/>
+        <text x="520" y="125" font-weight="800" font-size="13" fill="var(--c4)">R₁</text>
+        <text x="580" y="125" font-weight="800" font-size="13" fill="var(--c4)">R₂</text>
+        <text x="420" y="80" font-weight="800" font-size="13" fill="var(--c5)">R₀ (Miền vô hạn bên ngoài)</text>
+        <text x="550" y="195" text-anchor="middle" font-weight="700" font-size="12" fill="var(--ink)">v = 4, e = 5 ⇒ r = e - v + 2 = 5 - 4 + 2 = 3 miền</text>
+      </g>
+    </svg>
+    <figcaption>Biểu diễn phẳng của đồ thị $K_4$ và Các miền được phân chia trên mặt phẳng (luôn bao gồm 1 miền vô hạn bên ngoài $R_0$).</figcaption>
+  </figure>
+
+  <h3>Công Thức Euler Cho Đồ Thị Phẳng</h3>
+  <p>Một biểu diễn phẳng của đồ thị chia mặt phẳng thành các vùng liên thông gọi là các <b>miền (faces hoặc regions)</b>. Lưu ý: luôn có <b>chính xác 1 miền vô hạn bên ngoài</b>.</p>
+  <div class="f key">
+    $$r = e - v + 2$$
+    <small><b>Công thức Euler (1752):</b> Với mọi đồ thị phẳng liên thông có $v$ đỉnh, $e$ cạnh và $r$ miền.</small>
+  </div>
+
+  <div class="box tip">
+    <b>Bậc của một miền $\deg(R)$:</b> Là số cạnh tạo nên đường biên của miền đó (nếu một cạnh nằm lọt hẳn bên trong miền thì cạnh đó đóng góp 2 vào bậc của miền). Ta luôn có:
+    $$\sum_{i=1}^r \deg(R_i) = 2e$$
+  </div>
+
+  <h3>Các Hệ Quả Quyết Định Để Chứng Minh Đồ Thị Không Phẳng</h3>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Hệ Quả Euler</th>
+          <th>Điều Kiện Áp Dụng</th>
+          <th>Bất Đẳng Thức</th>
+          <th>Ứng Dụng Thực Tiễn Kinh Điển</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Hệ quả 1</b></td>
+          <td>Đơn đồ thị phẳng liên thông, $v \ge 3$</td>
+          <td>$$e \le 3v - 6$$</td>
+          <td><b>Chứng minh $K_5$ không phẳng:</b><br/>$K_5$ có $v = 5, e = 10$. Theo HQ1: $e \le 3(5) - 6 = 9$. Nhưng $10 > 9 \implies$ Vi phạm $\implies \mathbf{K_5}$ <b>không phải đồ thị phẳng!</b></td>
+        </tr>
+        <tr>
+          <td><b>Hệ quả 2</b></td>
+          <td>Đơn đồ thị phẳng liên thông, $v \ge 3$ và <b>không có chu trình độ dài 3</b> (không có tam giác)</td>
+          <td>$$e \le 2v - 4$$</td>
+          <td><b>Chứng minh $K_{3,3}$ không phẳng:</b><br/>$K_{3,3}$ là đồ thị phân đôi nên không có chu trình lẻ $\implies$ không có tam giác. Nó có $v = 6, e = 9$. Theo HQ2: $e \le 2(6) - 4 = 8$. Nhưng $9 > 8 \implies$ Vi phạm $\implies \mathbf{K_{3,3}}$ <b>không phải đồ thị phẳng!</b></td>
+        </tr>
+        <tr>
+          <td><b>Hệ quả 3</b></td>
+          <td>Đơn đồ thị phẳng liên thông</td>
+          <td>Tồn tại ít nhất 1 đỉnh có $\deg(v) \le 5$</td>
+          <td>Mọi đồ thị phẳng đều không thể có tất cả các đỉnh đều có bậc $\ge 6$.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Định Lý Kuratowski (1930)</h3>
+  <ul>
+    <li><b>Phép phân chia sơ cấp (Elementary subdivision):</b> Là thao tác thêm một đỉnh mới vào giữa một cạnh (biến cạnh $\{u, v\}$ thành 2 cạnh $\{u, w\}$ và $\{w, v\}$).</li>
+    <li><b>Đồ thị đồng phôi (Homeomorphic graphs):</b> Hai đồ thị $G_1$ và $G_2$ được gọi là đồng phôi nếu chúng có thể thu được từ cùng một đồ thị thông qua một chuỗi các phép phân chia sơ cấp.</li>
+  </ul>
+  <div class="f key">
+    $$G \text{ là đồ thị PHẲNG} \iff G \text{ KHÔNG chứa đồ thị con đồng phôi với } K_5 \text{ hoặc } K_{3,3}$$
+    <small><b>Định lý Kuratowski:</b> Đây là tiêu chuẩn vàng hoàn chỉnh (điều kiện cần và đủ) để xác định tính phẳng của bất kỳ đồ thị nào!</small>
+  </div>
+</section>
+
+<section>
+  <h2>3. Tô Màu Đồ Thị &amp; Sắc Số (Graph Coloring)</h2>
+  <div class="box analogy">
+    <b>Bài toán tô màu bản đồ:</b> Khi vẽ bản đồ các quốc gia trên thế giới, ta cần tô màu sao cho hai quốc gia có chung đường biên giới không bao giờ bị trùng màu. Cần ít nhất bao nhiêu màu mực? Câu trả lời chấn động lịch sử: <b>Chỉ cần tối đa 4 màu mực cho mọi bản đồ phẳng!</b>
+  </div>
+
+  <p><b>Định nghĩa:</b> Tô màu một đơn đồ thị là phép gán màu cho các đỉnh của đồ thị sao cho <i>hai đỉnh kề nhau luôn được gán hai màu khác nhau</i>.<br/>
+  <b>Sắc số (Chromatic Number) $\chi(G)$:</b> Là số lượng màu <b>ít nhất</b> cần thiết để tô màu hợp lệ đồ thị $G$.</p>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 220" role="img" style="max-width:100%;height:auto">
+      <!-- Ban do va do thi doi ngau -->
+      <g>
+        <rect x="20" y="15" width="340" height="190" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="190" y="38" text-anchor="middle" font-weight="700" fill="var(--c1)" font-size="14">Bản Đồ &amp; Đồ Thị Đối Ngẫu (Dual Graph)</text>
+        <!-- Cac vung ban do A, B, C, D -->
+        <rect x="60" y="65" width="120" height="60" fill="rgba(255, 107, 107, 0.15)" stroke="var(--mut)" stroke-width="1.5"/>
+        <text x="120" y="100" text-anchor="middle" font-weight="700" fill="var(--c4)">Vùng A</text>
+        <rect x="180" y="65" width="120" height="60" fill="rgba(78, 205, 196, 0.15)" stroke="var(--mut)" stroke-width="1.5"/>
+        <text x="240" y="100" text-anchor="middle" font-weight="700" fill="var(--c1)">Vùng B</text>
+        <rect x="60" y="125" width="240" height="50" fill="rgba(255, 230, 109, 0.15)" stroke="var(--mut)" stroke-width="1.5"/>
+        <text x="180" y="155" text-anchor="middle" font-weight="700" fill="var(--c5)">Vùng C</text>
+        <!-- Dinh doi ngau dat o giua moi vung -->
+        <circle cx="120" cy="95" r="8" fill="var(--c4)"/>
+        <circle cx="240" cy="95" r="8" fill="var(--c1)"/>
+        <circle cx="180" cy="150" r="8" fill="var(--c5)"/>
+        <!-- Canh doi ngau noi giua cac vung co chung bien gioi -->
+        <line x1="120" y1="95" x2="240" y2="95" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4"/>
+        <line x1="120" y1="95" x2="180" y2="150" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4"/>
+        <line x1="240" y1="95" x2="180" y2="150" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4"/>
+        <text x="190" y="195" text-anchor="middle" font-size="11" fill="var(--mut)">Mỗi vùng = 1 đỉnh; Chung biên = 1 cạnh (Đồ thị đối ngẫu)</text>
+      </g>
+      <!-- Vi du to mau C5 va Wheel -->
+      <g>
+        <rect x="380" y="15" width="340" height="190" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1.5"/>
+        <text x="550" y="38" text-anchor="middle" font-weight="700" fill="var(--c2)" font-size="14">Sắc Số Của Chu Trình &amp; Bánh Xe</text>
+        <!-- C5: chi(C5) = 3 -->
+        <polygon points="460,70 500,100 485,140 435,140 420,100" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+        <circle cx="460" cy="70" r="8" fill="var(--c4)"/>
+        <circle cx="500" cy="100" r="8" fill="var(--c1)"/>
+        <circle cx="485" cy="140" r="8" fill="var(--c4)"/>
+        <circle cx="435" cy="140" r="8" fill="var(--c1)"/>
+        <circle cx="420" cy="100" r="8" fill="var(--c5)"/> <!-- Mau thu 3 -->
+        <text x="460" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">χ(C₅) = 3</text>
+        <text x="460" y="188" text-anchor="middle" font-size="11" fill="var(--mut)">(Chu trình lẻ cần 3 màu)</text>
+
+        <!-- W5: chi = 4 -->
+        <polygon points="630,70 670,100 655,140 605,140 590,100" fill="none" stroke="var(--ink)" stroke-width="1.8"/>
+        <line x1="630" y1="70" x2="630" y2="110" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="670" y1="100" x2="630" y2="110" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="655" y1="140" x2="630" y2="110" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="605" y1="140" x2="630" y2="110" stroke="var(--ink)" stroke-width="1.5"/>
+        <line x1="590" y1="100" x2="630" y2="110" stroke="var(--ink)" stroke-width="1.5"/>
+        <circle cx="630" cy="70" r="7" fill="var(--c4)"/>
+        <circle cx="670" cy="100" r="7" fill="var(--c1)"/>
+        <circle cx="655" cy="140" r="7" fill="var(--c4)"/>
+        <circle cx="605" cy="140" r="7" fill="var(--c1)"/>
+        <circle cx="590" cy="100" r="7" fill="var(--c5)"/>
+        <circle cx="630" cy="110" r="8" fill="var(--c2)"/> <!-- Mau thu 4 o tam -->
+        <text x="630" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">χ(W₅) = 4</text>
+        <text x="630" y="188" text-anchor="middle" font-size="11" fill="var(--mut)">(Tâm kề hết nên +1 màu)</text>
+      </g>
+    </svg>
+    <figcaption>Minh họa Đồ thị đối ngẫu của bản đồ địa lý và Sắc số của chu trình lẻ $C_5$ ($\chi=3$) cùng bánh xe $W_5$ ($\chi=4$).</figcaption>
+  </figure>
+
+  <h3>Sắc Số Của Các Đồ Thị Đặc Biệt</h3>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Đồ thị</th>
+          <th>Sắc số $\chi(G)$</th>
+          <th>Giải thích chi tiết</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Đồ thị đầy đủ $K_n$</b></td>
+          <td>$$\chi(K_n) = n$$</td>
+          <td>Mọi đỉnh đều đôi một kề nhau, do đó không có hai đỉnh nào được phép dùng chung màu.</td>
+        </tr>
+        <tr>
+          <td><b>Đồ thị phân đôi $K_{m,n}$</b></td>
+          <td>$$\chi(K_{m,n}) = 2$$</td>
+          <td>Tô toàn bộ tập $V_1$ màu 1, toàn bộ tập $V_2$ màu 2. Mọi cạnh chỉ nối giữa $V_1$ và $V_2$ nên hoàn toàn hợp lệ.</td>
+        </tr>
+        <tr>
+          <td><b>Chu trình $C_n$</b></td>
+          <td>$$\chi(C_n) = \begin{cases} 2 & \text{nếu } n \text{ chẵn} \\ 3 & \text{nếu } n \text{ lẻ} \end{cases}$$</td>
+          <td>Nếu $n$ chẵn, ta tô 2 màu xen kẽ ($1-2-1-2\dots$). Nếu $n$ lẻ, đỉnh cuối cùng sẽ kề với cả đỉnh đầu (màu 1) và đỉnh áp chót (màu 2), bắt buộc phải tốn thêm màu thứ 3!</td>
+        </tr>
+        <tr>
+          <td><b>Bánh xe $W_n$</b></td>
+          <td>$$\chi(W_n) = \begin{cases} 3 & \text{nếu } n \text{ chẵn} \\ 4 & \text{nếu } n \text{ lẻ} \end{cases}$$</td>
+          <td>Đỉnh tâm ở giữa kề với tất cả các đỉnh vành ngoài $C_n$, nên màu của tâm phải khác toàn bộ các đỉnh ngoài $\implies \chi(W_n) = \chi(C_n) + 1$.</td>
+        </tr>
+        <tr>
+          <td><b>Cây bất kỳ (Tree)</b></td>
+          <td>$$\chi(T) = 2$$</td>
+          <td>Cây không chứa chu trình, luôn là đồ thị phân đôi (tô theo mức chẵn/lẻ từ gốc).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="f key">
+    $$\chi(G) \le 4 \quad (\forall G \text{ là đồ thị phẳng})$$
+    <small><b>Định lý Bốn Màu (Four Color Theorem - Appel &amp; Haken, 1976):</b> Sắc số của mọi đồ thị phẳng không bao giờ vượt quá 4. Đây là định lý toán học lớn đầu tiên trong lịch sử được chứng minh bằng chương trình máy tính kiểm tra hơn 1900 cấu hình đặc biệt.</small>
+  </div>
+
+  <h3>Các Ứng Dụng Thực Tế Cốt Lõi Của Tô Màu Đồ Thị</h3>
+  <ul>
+    <li><b>Lập lịch thi cuối kỳ (Final Exam Scheduling):</b> Mỗi môn học là một đỉnh. Hai môn được nối cạnh nếu có ít nhất một sinh viên đăng ký cả hai môn đó. Hai môn kề nhau không được thi cùng một ca. $\implies$ <i>Sắc số $\chi(G)$ chính là số ca thi tối thiểu cần xếp để không một sinh viên nào bị trùng lịch thi!</i></li>
+    <li><b>Phân bổ tần số kênh truyền hình/radio:</b> Mỗi đài phát sóng là một đỉnh. Hai đài có vùng phủ sóng giao nhau được nối cạnh. $\implies$ <i>Sắc số là số lượng tần số kênh tối thiểu để các đài không gây nhiễu sóng lẫn nhau.</i></li>
+    <li><b>Cấp phát thanh ghi trong trình biên dịch (Compiler Register Allocation):</b> Mỗi biến là một đỉnh. Hai biến nối cạnh nếu chúng cùng "sống" (được sử dụng đồng thời) tại một thời điểm trong mã nguồn. $\implies$ <i>Sắc số là số lượng thanh ghi phần cứng CPU tối thiểu cần thiết để không phải ghi tạm ra RAM.</i></li>
+  </ul>
+</section>
+
+<section>
+  <h2>4. Hệ Thống Bài Tập Áp Dụng Có Lời Giải Chi Tiết Từng Bước</h2>
+
+  <div class="formula-card">
+    <h3>Bài Tập 1: Chạy Thuật Toán Dijkstra</h3>
+    <p><b>Đề bài:</b> Cho đồ thị có trọng số với tập đỉnh $\{a, b, c, d, e, z\}$ và các cạnh có trọng số:
+    $(a,b)=4, (a,c)=2, (b,c)=1, (b,d)=5, (c,d)=8, (c,e)=10, (d,e)=2, (d,z)=6, (e,z)=3$.<br/>
+    Hãy tìm đường đi ngắn nhất từ đỉnh $a$ đến đỉnh $z$ và tính tổng trọng số của đường đi đó.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-10-1')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-10-1" class="panel">
+      <div class="step"><b>Bước 1:</b> Khởi tạo $L(a) = 0$, các đỉnh khác bằng $\infty$. Tập $S = \emptyset$.</div>
+      <div class="step"><b>Bước 2:</b> Chọn $a$ ($L=0$). Cập nhật láng giềng: $L(b) = 4, L(c) = 2$. Chốt $S = \{a\}$.</div>
+      <div class="step"><b>Bước 3:</b> Chọn $c$ ($L=2$). Cập nhật: $L(b) = \min(4, 2+1) = 3$ (qua cạnh $cb$); $L(d) = 2+8 = 10$; $L(e) = 2+10 = 12$. Chốt $S = \{a, c\}$.</div>
+      <div class="step"><b>Bước 4:</b> Chọn $b$ ($L=3$). Cập nhật: $L(d) = \min(10, 3+5) = 8$. Chốt $S = \{a, c, b\}$.</div>
+      <div class="step"><b>Bước 5:</b> Chọn $d$ ($L=8$). Cập nhật: $L(e) = \min(12, 8+2) = 10$; $L(z) = \min(\infty, 8+6) = 14$. Chốt $S = \{a, c, b, d\}$.</div>
+      <div class="step"><b>Bước 6:</b> Chọn $e$ ($L=10$). Cập nhật: $L(z) = \min(14, 10+3) = 13$. Chốt $S = \{a, c, b, d, e\}$.</div>
+      <div class="step"><b>Bước 7:</b> Đỉnh $z$ được chọn vào $S$ với $L(z) = 13$. Truy vết ngược: $z \leftarrow e \leftarrow d \leftarrow b \leftarrow c \leftarrow a$.</div>
+      <div class="ans"><b>Đáp án:</b> Đường đi ngắn nhất là <b>$a \to c \to b \to d \to e \to z$</b> với tổng trọng số bằng <b>13</b>.</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 2: Áp Dụng Công Thức Euler</h3>
+    <p><b>Đề bài:</b> Một đơn đồ thị phẳng liên thông có 20 đỉnh, trong đó mỗi đỉnh đều có bậc bằng 3. Hỏi biểu diễn phẳng của đồ thị này chia mặt phẳng thành bao nhiêu miền?</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-10-2')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-10-2" class="panel">
+      <div class="step"><b>Bước 1: Tính số cạnh $e$ bằng Định lý Bắt tay:</b>
+        $$2e = \sum_{v \in V} \deg(v) = 20 \times 3 = 60 \implies e = \frac{60}{2} = 30\ \text{cạnh.}$$
+      </div>
+      <div class="step"><b>Bước 2: Áp dụng Công thức Euler cho đồ thị phẳng liên thông:</b>
+        $$r = e - v + 2$$
+        Thay số vào ta được:
+        $$r = 30 - 20 + 2 = 12\ \text{miền.}$$
+      </div>
+      <div class="ans"><b>Đáp án:</b> Biểu diễn phẳng của đồ thị chia mặt phẳng thành đúng <b>12 miền</b> (bao gồm 11 miền bị chặn và 1 miền vô hạn bên ngoài).</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 3: Chứng Minh Tính Phẳng Bằng Định Lý Kuratowski</h3>
+    <p><b>Đề bài:</b> Cho đồ thị $G$ thu được từ đồ thị đầy đủ $K_5$ bằng cách xóa đi đúng 1 cạnh. Hỏi đồ thị $G$ có phải là đồ thị phẳng hay không? Giải thích rõ ràng.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-10-3')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-10-3" class="panel">
+      <div class="step"><b>Bước 1: Phân tích số đỉnh và số cạnh:</b>
+      Đồ thị $K_5$ có 5 đỉnh và 10 cạnh. Khi xóa đi 1 cạnh, đồ thị $G$ còn lại $v = 5$ đỉnh và $e = 9$ cạnh.
+      </div>
+      <div class="step"><b>Bước 2: Kiểm tra điều kiện cần của hệ quả Euler:</b>
+      $$e \le 3v - 6 \iff 9 \le 3(5) - 6 = 9$$
+      Bất đẳng thức $9 \le 9$ hoàn toàn thỏa mãn! Như vậy điều kiện cần không bị vi phạm.
+      </div>
+      <div class="step"><b>Bước 3: Dựng biểu diễn phẳng thực tế:</b>
+      Giả sử ta xóa cạnh $(u, v)$. Vẽ 3 đỉnh còn lại thành một tam giác, đặt đỉnh $u$ và $v$ ở hai vị trí thích hợp sao cho các cạnh nối với 3 đỉnh tam giác không giao nhau. Vì cạnh $(u,v)$ đã bị xóa nên không có cạnh nối chéo giữa $u$ và $v$. Ta hoàn toàn có thể vẽ $G$ trên mặt phẳng mà không có cạnh nào cắt nhau!
+      </div>
+      <div class="step"><b>Theo định lý Kuratowski:</b> $G$ có $v=5$ đỉnh và 9 cạnh nên không thể chứa đồ thị con đồng phôi với $K_5$ (cần 10 cạnh) hay $K_{3,3}$ (cần 6 đỉnh). Do đó $G$ chắc chắn phẳng!</div>
+      <div class="ans"><b>Kết luận:</b> Đồ thị $G$ <b>LÀ ĐỒ THỊ PHẲNG</b>.</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 4: Bài Toán Lập Lịch Thi (Sắc Số)</h3>
+    <p><b>Đề bài:</b> Có 6 môn học $\{M_1, M_2, M_3, M_4, M_5, M_6\}$. Các cặp môn học sau đây có sinh viên học đồng thời cả hai môn:
+    $(M_1, M_2), (M_1, M_3), (M_2, M_3), (M_2, M_4), (M_3, M_5), (M_4, M_5), (M_4, M_6), (M_5, M_6)$.<br/>
+    Hãy tìm số lượng ca thi tối thiểu để không sinh viên nào bị trùng ca thi.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-10-4')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-10-4" class="panel">
+      <div class="step"><b>Bước 1: Mô hình hóa đồ thị:</b> Mỗi môn học là một đỉnh. Có cạnh nối giữa 2 môn nếu có sinh viên học chung. Số ca thi tối thiểu chính là sắc số $\chi(G)$.</div>
+      <div class="step"><b>Bước 2: Tìm cận dưới của sắc số:</b>
+      Để ý 3 đỉnh $M_1, M_2, M_3$ nối đôi một với nhau tạo thành một tam giác $K_3$ (chu trình 3 đỉnh).
+      Do đó ta bắt buộc phải cần ít nhất <b>3 ca thi</b>: $\chi(G) \ge 3$.
+      </div>
+      <div class="step"><b>Bước 3: Thử tô với 3 màu (Đỏ, Xanh, Vàng):</b>
+        <ul>
+          <li>Tô tam giác $M_1, M_2, M_3$: Gán $M_1 = \text{Đỏ}$, $M_2 = \text{Xanh}$, $M_3 = \text{Vàng}$.</li>
+          <li>Đỉnh $M_4$: Kề với $M_2$ (Xanh) $\implies$ Tô $M_4 = \text{Đỏ}$.</li>
+          <li>Đỉnh $M_5$: Kề với $M_3$ (Vàng) và $M_4$ (Đỏ) $\implies$ Tô $M_5 = \text{Xanh}$.</li>
+          <li>Đỉnh $M_6$: Kề với $M_4$ (Đỏ) và $M_5$ (Xanh) $\implies$ Tô $M_6 = \text{Vàng}$.</li>
+        </ul>
+        Kiểm tra: Cạnh $(M_4, M_6)$ nối Đỏ và Vàng (hợp lệ); Cạnh $(M_5, M_6)$ nối Xanh và Vàng (hợp lệ). Toàn bộ 8 cạnh đều nối 2 đỉnh khác màu!
+      </div>
+      <div class="ans"><b>Đáp án:</b> Cần tối thiểu <b>3 ca thi</b>. Lịch thi cụ thể: Ca 1 (Đỏ) gồm $\{M_1, M_4\}$; Ca 2 (Xanh) gồm $\{M_2, M_5\}$; Ca 3 (Vàng) gồm $\{M_3, M_6\}$.</div>
+    </div>
+  </div>
+</section>
+
+<section class="sum">
+  <h2>Tổng Kết Bài 10 (Đường Đi Ngắn Nhất, Đồ Thị Phẳng &amp; Tô Màu)</h2>
+  <ul>
+    <li><b>Dijkstra:</b> Tìm đường đi ngắn nhất từ 1 đỉnh nguồn với trọng số không âm. Tham lam nạp dần đỉnh có nhãn nhỏ nhất. Độ phức tạp $O(V^2)$ hoặc $O(E \log V)$.</li>
+    <li><b>Floyd-Warshall:</b> Tìm khoảng cách mọi cặp đỉnh bằng quy hoạch động: $D^{(k)}[i][j] = \min(D[i][j], D[i][k] + D[k][j])$. Độ phức tạp $\Theta(V^3)$.</li>
+    <li><b>Công thức Euler:</b> $r = e - v + 2$. Hệ quả quan trọng: $e \le 3v - 6$ (suy ra $K_5$ không phẳng); $e \le 2v - 4$ khi không có tam giác (suy ra $K_{3,3}$ không phẳng).</li>
+    <li><b>Kuratowski:</b> Đồ thị phẳng $\iff$ không chứa đồ thị con đồng phôi với $K_5$ hoặc $K_{3,3}$.</li>
+    <li><b>Tô màu đồ thị:</b> Sắc số $\chi(G)$ là số màu tối thiểu để 2 đỉnh kề nhau khác màu. Định lý 4 màu cho đồ thị phẳng. Ứng dụng: Lập lịch thi, phân bổ tần số, cấp phát thanh ghi CPU.</li>
+  </ul>
+  <div class="btn-group">
+    <button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='11';loadLesson('11')">Học tiếp Bài 11 (Cây, Huffman, Duyệt cây &amp; Cây khung) →</button>
+  </div>
+</section>
 </template>
 
 <template id="tpl-buoi-11">
-<header><span class="k b3">TOÁN RỜI RẠC · BÀI 15 (CÂY — TREE)</span><h1>Cây, Mã Huffman, Duyệt Cây, Cây Khung & Thuật Toán Prim – Kruskal</h1><p class="mut">Cây là đồ thị vô hướng <b>liên thông, không có chu trình đơn</b>. Slide đi qua: tính chất, cây $m$-phân, ứng dụng (tìm kiếm, quyết định, mã tiền tố), duyệt cây, cây khung và cây khung nhỏ nhất.</p></header><section><h2>1. Cây & Các Tính Chất Đếm</h2><div class="f key">$$n=\text{số đỉnh},\ e=n-1\qquad\ n=mi+1,\quad l=(m-1)i+1\quad(\text{cây } m\text{-phân đầy đủ})$$<small>Trong ba điều kiện (liên thông, không chu trình, $n-1$ cạnh), hai điều kiện bất kỳ kéo theo điều kiện còn lại. Cây $m$-phân đầy đủ: $i$ đỉnh trong, $l$ lá. Với $l$ lá: $i=\dfrac{l-1}{m-1}$, $n=\dfrac{ml-1}{m-1}$. Cây $m$-phân cao $h$ có tối đa $m^h$ lá, và $h\ge\lceil\log_ml\rceil$.</small></div><div class="box analogy"><b>Một đường đi duy nhất:</b> đồ thị vô hướng là cây ⇔ giữa hai đỉnh bất kỳ có <b>đúng một</b> đường đi. <b>Rừng</b> là đồ thị không chứa chu trình đơn (nhiều cây rời nhau).</div><div class="formula-card"><h3>Câu 1: Cây tam phân đầy đủ</h3><p><b>Đề bài:</b> Cây tam phân ($m=3$) đầy đủ có 12 đỉnh trong. Tính số đỉnh và số lá.</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b15-1')">Xem Lời giải chi tiết</button></div><div id="s-b15-1" class="panel"><div class="step">$n=mi+1=3\cdot12+1=37$.</div><div class="step">$l=(m-1)i+1=2\cdot12+1=25$. Kiểm tra: $i+l=12+25=37=n$ ✓.</div><div class="ans"><b>Đáp án:</b> $n=\mathbf{37}$ đỉnh, $l=\mathbf{25}$ lá.</div></div></div><p><b>Ứng dụng:</b> cây tìm kiếm nhị phân (giá trị đỉnh lớn hơn cây con trái, nhỏ hơn cây con phải); cây quyết định (tìm đồng xu giả); chặn dưới sắp xếp: thuật toán sắp xếp dựa vào so sánh cần ít nhất $\lceil\log_2n!\rceil$ so sánh, tức $\Omega(n\log n)$ (cây quyết định có $n!$ lá).</p></section><section><h2>2. Mã Tiền Tố & Mã Huffman</h2><p><b>Mã tiền tố:</b> mã của ký tự này không bao giờ là phần đầu của mã ký tự khác ⇒ biểu diễn bằng cây nhị phân, ký tự nằm ở lá, cạnh trái ghi 0, cạnh phải ghi 1. <b>Huffman:</b> luôn gộp hai cây có trọng số <b>nhỏ nhất</b>, trọng số mới là tổng; ký tự xuất hiện nhiều được mã ngắn.</p><figure class="fl"><svg viewBox="0 0 680 250" role="img"><circle cx="340" cy="30" r="22" style="fill:var(--card);stroke:var(--c4);stroke-width:2.5"/><text x="340" y="35" text-anchor="middle" style="font-weight:800;font-size:13px">1.00</text><line x1="325" y1="48" x2="200" y2="95" stroke="var(--mut)" stroke-width="2"/><text x="254" y="71" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">0</text><line x1="355" y1="48" x2="480" y2="95" stroke="var(--mut)" stroke-width="2"/><text x="425" y="71" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">1</text><circle cx="200" cy="110" r="20" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="200" y="115" text-anchor="middle" style="font-weight:800;font-size:13px">.62</text><circle cx="480" cy="110" r="20" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="480" y="115" text-anchor="middle" style="font-weight:800;font-size:13px">.38</text><line x1="188" y1="127" x2="120" y2="170" stroke="var(--mut)" stroke-width="2"/><text x="146" y="148" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">0</text><line x1="212" y1="127" x2="270" y2="170" stroke="var(--mut)" stroke-width="2"/><text x="249" y="148" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">1</text><line x1="468" y1="127" x2="420" y2="170" stroke="var(--mut)" stroke-width="2"/><text x="436" y="148" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">0</text><line x1="492" y1="127" x2="560" y2="170" stroke="var(--mut)" stroke-width="2"/><text x="534" y="148" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">1</text><circle cx="120" cy="185" r="17" style="fill:var(--card);stroke:var(--c2);stroke-width:2.5"/><text x="120" y="190" text-anchor="middle" style="font-weight:800;font-size:13px">F</text><circle cx="270" cy="185" r="20" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="270" y="190" text-anchor="middle" style="font-weight:800;font-size:13px">.27</text><circle cx="420" cy="185" r="17" style="fill:var(--card);stroke:var(--c2);stroke-width:2.5"/><text x="420" y="190" text-anchor="middle" style="font-weight:800;font-size:13px">E</text><circle cx="560" cy="185" r="20" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="560" y="190" text-anchor="middle" style="font-weight:800;font-size:13px">.18</text><text x="120" y="224" text-anchor="middle" style="font-size:12px;font-weight:800;fill:var(--c2)">F=00</text><text x="420" y="224" text-anchor="middle" style="font-size:12px;font-weight:800;fill:var(--c2)">E=10</text><text x="270" y="228" text-anchor="middle" style="font-size:12px;fill:var(--mut)">D=010, C=011</text><text x="560" y="228" text-anchor="middle" style="font-size:12px;fill:var(--mut)">B=110, A=111</text></svg><figcaption>Cây Huffman của câu 2. Các nút trong ghi trọng số, ký tự ở lá.</figcaption></figure><div class="formula-card"><h3>Câu 2: Mã Huffman cho A:0.08, B:0.10, C:0.12, D:0.15, E:0.20, F:0.35</h3><p><b>Đề bài:</b> Tìm mã Huffman và độ dài trung bình của mã.</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b15-2')">Xem Lời giải chi tiết</button></div><div id="s-b15-2" class="panel"><div class="step">Gộp hai nhỏ nhất: $A(.08)+B(.10)=.18$.</div><div class="step">Còn $.12, .15, .18, .20, .35$: gộp $C+D=.27$. Còn $.18, .20, .27, .35$: gộp $.18+.20=.38$. Còn $.27, .35, .38$: gộp $.27+.35=.62$. Cuối: $.38+.62=1.00$.</div><div class="step">Gán nhãn (cây có trọng số lớn hơn ở nhánh trái = 0): $F=00$, $D=010$, $C=011$, $E=10$, $B=110$, $A=111$.</div><div class="step">Độ dài trung bình: $0.35\cdot2+0.15\cdot3+0.12\cdot3+0.20\cdot2+0.10\cdot3+0.08\cdot3=0.70+0.45+0.36+0.40+0.30+0.24=2.45$ bit/ký tự (so với 3 bit nếu dùng mã cố định cho 6 ký tự).</div><div class="ans"><b>Đáp án:</b> Độ dài trung bình $\mathbf{2.45}$ bit/ký tự. (Gán 0/1 khác chiều vẫn cho cùng độ dài mã.)</div></div></div></section><section><h2>3. Duyệt Cây & Ký Pháp Ba Lan</h2><div class="tw"><table><tr><th>Cách duyệt</th><th>Thứ tự</th></tr><tr><td>Tiền tự (pre-order)</td><td>gốc → cây con trái → cây con phải</td></tr><tr><td>Trung tự (in-order)</td><td>cây con trái → gốc → cây con phải</td></tr><tr><td>Hậu tự (post-order)</td><td>cây con trái → cây con phải → gốc</td></tr></table></div><p>Cây nhị phân của biểu thức: duyệt tiền tự ⇒ <b>biểu thức tiền tố</b> (ký pháp Ba Lan), hậu tự ⇒ <b>hậu tố</b> (Ba Lan ngược), trung tự ⇒ biểu thức thông thường (cần ngoặc).</p><div class="formula-card"><h3>Câu 3: Ký pháp Ba Lan</h3><p><b>Đề bài:</b> Viết biểu thức tiền tố và hậu tố của $((x+y)\uparrow2)+((x-4)/3)$ rồi tính giá trị khi $x=7$, $y=2$.</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b15-3')">Xem Lời giải chi tiết</button></div><div id="s-b15-3" class="panel"><div class="box tip"><b>Ý tưởng:</b> Gốc cây là phép $+$ ngoài cùng; cây con trái là $(x+y)\uparrow2$, cây con phải là $(x-4)/3$.</div><div class="step"><b>Tiền tố</b> (gốc trước): $+\ \uparrow\ +\ x\ y\ 2\ /\ -\ x\ 4\ 3$.</div><div class="step"><b>Hậu tố</b> (gốc sau): $x\ y\ +\ 2\ \uparrow\ x\ 4\ -\ 3\ /\ +$.</div><div class="step">Tính hậu tố bằng ngăn xếp: $7\ 2\ +\to9$; $9\ 2\ \uparrow\to81$; $7\ 4\ -\to3$; $3\ 3\ /\to1$; $81\ 1\ +\to82$.</div><div class="ans"><b>Đáp án:</b> Giá trị $=\mathbf{82}$.</div></div></div></section><section><h2>4. Cây Khung (Bao Trùm) & Cây Khung Nhỏ Nhất</h2><p>Đơn đồ thị liên thông ⇔ có cây khung (cây con chứa mọi đỉnh). Tìm cây khung bằng cách <b>thêm cạnh</b> theo duyệt đồ thị: <b>DFS</b> (theo chiều sâu, đệ quy <code>visit(w)</code>) hoặc <b>BFS</b> (theo chiều rộng, dùng hàng đợi $L$), độ phức tạp $O(e)$ hay $O(n^2)$. Với đồ thị có hướng, kết quả là <b>rừng</b> khung. <b>Cây khung nhỏ nhất</b> (tổng trọng số nhỏ nhất) tìm bằng hai thuật toán tham lam:</p><div class="tw"><table><tr><th>Thuật toán</th><th>Cách làm</th></tr><tr><td><b>Prim</b></td><td>bắt đầu từ cạnh nhẹ nhất; mỗi bước thêm cạnh nhẹ nhất <b>gắn với cây hiện có</b> và không tạo chu trình</td></tr><tr><td><b>Kruskal</b></td><td>duyệt cạnh theo trọng số tăng; thêm cạnh nào <b>không tạo chu trình</b>; dừng khi đủ $n-1$ cạnh</td></tr></table></div><figure class="fl"><svg viewBox="0 0 680 240" role="img"><line x1="60" y1="110" x2="190" y2="50" stroke="var(--mut)" stroke-width="1.2"/><text x="125" y="74" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">4</text><line x1="60" y1="110" x2="190" y2="180" stroke="var(--c2)" stroke-width="4"/><text x="125" y="139" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">2</text><line x1="190" y1="50" x2="190" y2="180" stroke="var(--c2)" stroke-width="4"/><text x="190" y="109" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">1</text><line x1="190" y1="50" x2="380" y2="50" stroke="var(--c2)" stroke-width="4"/><text x="285" y="44" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">5</text><line x1="190" y1="180" x2="380" y2="50" stroke="var(--mut)" stroke-width="1.2"/><text x="285" y="109" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">8</text><line x1="190" y1="180" x2="380" y2="180" stroke="var(--mut)" stroke-width="1.2"/><text x="285" y="174" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">10</text><line x1="380" y1="50" x2="380" y2="180" stroke="var(--c2)" stroke-width="4"/><text x="380" y="109" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">2</text><line x1="380" y1="50" x2="530" y2="110" stroke="var(--mut)" stroke-width="1.2"/><text x="455" y="74" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">6</text><line x1="380" y1="180" x2="530" y2="110" stroke="var(--c2)" stroke-width="4"/><text x="455" y="139" text-anchor="middle" style="font-size:12px;fill:var(--mut);font-weight:700">3</text><circle cx="60" cy="110" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="60" y="115" text-anchor="middle" style="font-weight:800;font-size:13px">a</text><circle cx="190" cy="50" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="190" y="55" text-anchor="middle" style="font-weight:800;font-size:13px">b</text><circle cx="190" cy="180" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="190" y="185" text-anchor="middle" style="font-weight:800;font-size:13px">c</text><circle cx="380" cy="50" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="380" y="55" text-anchor="middle" style="font-weight:800;font-size:13px">d</text><circle cx="380" cy="180" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="380" y="185" text-anchor="middle" style="font-weight:800;font-size:13px">e</text><circle cx="530" cy="110" r="17" style="fill:var(--card);stroke:var(--c1);stroke-width:2.5"/><text x="530" y="115" text-anchor="middle" style="font-weight:800;font-size:13px">z</text><text x="340" y="228" text-anchor="middle" style="font-weight:800;fill:var(--c2);font-size:14px">Cây khung nhỏ nhất: 1+2+5+2+3 = 13 (5 cạnh = 6−1)</text></svg><figcaption>Cây khung nhỏ nhất của đồ thị Bài 14 (nét xanh đậm).</figcaption></figure><div class="formula-card"><h3>Câu 4: Kruskal và Prim</h3><p><b>Đề bài:</b> Tìm cây khung nhỏ nhất của đồ thị 6 đỉnh ở trên bằng Kruskal, rồi kiểm tra bằng Prim bắt đầu từ $a$.</p><div class="btn-group"><button type="button" class="btn btn-sol" onclick="togglePanel('s-b15-4')">Xem Lời giải chi tiết</button></div><div id="s-b15-4" class="panel"><div class="step"><b>Kruskal:</b> sắp xếp cạnh: $bc{=}1,\ ac{=}2,\ de{=}2,\ ez{=}3,\ ab{=}4,\ bd{=}5,\ dz{=}6,\ cd{=}8,\ ce{=}10$.</div><div class="step">Nhận $bc$, $ac$, $de$, $ez$. Bỏ $ab$ (tạo chu trình $a$-$b$-$c$). Nhận $bd{=}5$ (nối hai thành phần $\{a,b,c\}$ và $\{d,e,z\}$): đủ 5 cạnh $=6-1$ nên dừng.</div><div class="step">Tổng $=1+2+2+3+5=13$.</div><div class="step"><b>Prim từ $a$:</b> $ac(2)\to cb(1)\to bd(5)\to de(2)\to ez(3)$, tổng $13$ — cùng kết quả.</div><div class="ans"><b>Đáp án:</b> Cây khung nhỏ nhất có tổng trọng số $\mathbf{13}$.</div></div></div></section><section class="sum"><h2>Tổng Kết Bài 15</h2><ul><li>Cây = liên thông + không chu trình = $n-1$ cạnh (hai trong ba điều kiện). $m$-phân đầy đủ: $n=mi+1$, $l=(m-1)i+1$.</li><li>Huffman: gộp liên tiếp hai cây nhẹ nhất; mã tiền tố đọc được từ gốc đến lá (trái 0, phải 1).</li><li>Duyệt: tiền/trung/hậu tự cho ký pháp Ba Lan, trung tố, Ba Lan ngược. Cây khung: DFS/BFS; nhỏ nhất: Prim hoặc Kruskal.</li></ul><div class="btn-group"><button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='10';loadLesson('10')">Quay lại Bài 14 (Đường đi ngắn nhất, đồ thị phẳng, tô màu)</button></div></section>
+<header>
+  <span class="k b3">TOÁN RỜI RẠC · BÀI 15 (CÂY &amp; CÂY KHUNG)</span>
+  <h1>Cây, Cây Nhị Phân, Mã Hóa Huffman, Duyệt Cây, Ký Pháp Ba Lan &amp; Cây Khung Nhỏ Nhất (Prim/Kruskal)</h1>
+  <p class="mut">Nội dung toàn diện Chương 15: định nghĩa cây và rừng, các hệ thức đếm cây $m$-phân đầy đủ ($n=mi+1$, $l=(m-1)i+1$), cây tìm kiếm nhị phân (BST), cây quyết định cân 6 đồng xu giả, thuật toán nén Huffman tối ưu, 3 thứ tự duyệt cây (tiền/trung/hậu tự), biểu thức tiền tố (Ba Lan)/hậu tố và ngăn xếp (Stack), cây khung DFS/BFS và hai thuật toán kinh điển Prim &amp; Kruskal tìm cây khung nhỏ nhất (MST).</p>
+</header>
+
+<section>
+  <h2>1. Định Nghĩa Cây, Cây Có Gốc &amp; Các Tính Chất Đếm Cốt Lõi</h2>
+  <div class="box analogy">
+    <b>Ẩn dụ phả hệ gia đình:</b> Một cây (Tree) giống như một sơ đồ phả hệ không bao giờ có "vòng lặp". Có một tổ tiên chung ở đỉnh (Gốc - Root), từ đó chia nhánh sinh ra cha mẹ, con cái, và cuối cùng là các thế hệ chưa sinh con (Lá - Leaves). Không ai có thể vừa là cha vừa là con của người khác!
+  </div>
+
+  <p><b>Định nghĩa hình thức:</b> Một <b>Cây (Tree)</b> là một đồ thị vô hướng <b>liên thông và không chứa chu trình đơn</b>. Một tập hợp gồm nhiều cây rời nhau được gọi là một <b>Rừng (Forest)</b>.</p>
+
+  <div class="f key">
+    $$\text{Đồ thị } G = (V, E) \text{ với } n \text{ đỉnh là CÂY} \iff G \text{ LIÊN THÔNG và có đúng } n - 1 \text{ cạnh}$$
+    <small><b>Định lý 5 điều kiện tương đương của cây $n$ đỉnh:</b><br/>
+    1. $G$ là cây (liên thông và không có chu trình).<br/>
+    2. Giữa 2 đỉnh bất kỳ luôn có đúng một đường đi đơn duy nhất.<br/>
+    3. $G$ liên thông và có đúng $n-1$ cạnh.<br/>
+    4. $G$ không có chu trình và có đúng $n-1$ cạnh.<br/>
+    5. $G$ không có chu trình, nhưng nếu thêm vào bất kỳ 1 cạnh mới nào thì sẽ tạo ra đúng một chu trình đơn duy nhất.</small>
+  </div>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 260" role="img" style="max-width:100%;height:auto">
+      <!-- Cay co goc: phan tang cap do Mua 0, 1, 2, 3 -->
+      <line x1="40" y1="40" x2="700" y2="40" stroke="var(--border)" stroke-width="1" stroke-dasharray="3"/>
+      <text x="50" y="35" font-size="11" font-weight="700" fill="var(--mut)">Mức 0 (Gốc)</text>
+
+      <line x1="40" y1="100" x2="700" y2="100" stroke="var(--border)" stroke-width="1" stroke-dasharray="3"/>
+      <text x="50" y="95" font-size="11" font-weight="700" fill="var(--mut)">Mức 1</text>
+
+      <line x1="40" y1="170" x2="700" y2="170" stroke="var(--border)" stroke-width="1" stroke-dasharray="3"/>
+      <text x="50" y="165" font-size="11" font-weight="700" fill="var(--mut)">Mức 2</text>
+
+      <line x1="40" y1="230" x2="700" y2="230" stroke="var(--border)" stroke-width="1" stroke-dasharray="3"/>
+      <text x="50" y="225" font-size="11" font-weight="700" fill="var(--mut)">Mức 3 (Chiều cao h=3)</text>
+
+      <!-- Canh noi cay -->
+      <line x1="370" y1="40" x2="200" y2="100" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="370" y1="40" x2="540" y2="100" stroke="var(--ink)" stroke-width="2"/>
+
+      <line x1="200" y1="100" x2="120" y2="170" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="200" y1="100" x2="280" y2="170" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="540" y1="100" x2="470" y2="170" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="540" y1="100" x2="610" y2="170" stroke="var(--ink)" stroke-width="2"/>
+
+      <line x1="120" y1="170" x2="80" y2="230" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="120" y1="170" x2="160" y2="230" stroke="var(--ink)" stroke-width="2"/>
+
+      <!-- Cac dinh: Goc, Dinh trong, La -->
+      <!-- Goc -->
+      <circle cx="370" cy="40" r="15" fill="var(--card)" stroke="var(--c4)" stroke-width="3"/>
+      <text x="370" y="45" text-anchor="middle" font-weight="800" font-size="12" fill="var(--c4)">r</text>
+      <text x="370" y="20" text-anchor="middle" font-weight="700" font-size="11" fill="var(--c4)">GỐC (Root)</text>
+
+      <!-- Dinh trong: a, b, c -->
+      <circle cx="200" cy="100" r="14" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+      <text x="200" y="105" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">a</text>
+
+      <circle cx="540" cy="100" r="14" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+      <text x="540" y="105" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">b</text>
+
+      <circle cx="120" cy="170" r="14" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+      <text x="120" y="175" text-anchor="middle" font-weight="800" font-size="12" fill="var(--ink)">c</text>
+
+      <!-- Cac La (Leaves): d, e, f, g, h -->
+      <circle cx="280" cy="170" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="280" y="175" text-anchor="middle" font-weight="800" font-size="12" fill="var(--c2)">d</text>
+
+      <circle cx="470" cy="170" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="470" y="175" text-anchor="middle" font-weight="800" font-size="12" fill="var(--c2)">e</text>
+
+      <circle cx="610" cy="170" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="610" y="175" text-anchor="middle" font-weight="800" font-size="12" fill="var(--c2)">f</text>
+
+      <circle cx="80" cy="230" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="80" y="235" text-anchor="middle" font-weight="800" font-size="12" fill="var(--c2)">g</text>
+
+      <circle cx="160" cy="230" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="160" y="235" text-anchor="middle" font-weight="800" font-size="12" fill="var(--c2)">h</text>
+
+      <text x="570" y="235" text-anchor="middle" font-size="12" font-weight="700" fill="var(--c2)">Các nút lá: {d, e, f, g, h}</text>
+      <text x="570" y="215" text-anchor="middle" font-size="12" font-weight="700" fill="var(--c1)">Đỉnh trong: {r, a, b, c}</text>
+    </svg>
+    <figcaption>Cây có gốc (Rooted Tree): Phân định rõ Gốc, Đỉnh trong, Nút lá, các Mức (Level 0 đến 3) và Chiều cao $h=3$.</figcaption>
+  </figure>
+
+  <h3>Cây Có Gốc (Rooted Tree) &amp; Thuật Ngữ Gia Đình</h3>
+  <ul>
+    <li><b>Gốc (Root):</b> Đỉnh được chỉ định làm điểm khởi đầu. Mọi cạnh đều được ngầm định hướng từ gốc đi xuống các nhánh.</li>
+    <li><b>Cha (Parent) &amp; Con (Child):</b> Nếu có cạnh từ $u$ xuống $v$, thì $u$ là cha của $v$, còn $v$ là con của $u$.</li>
+    <li><b>Anh em (Siblings):</b> Các đỉnh có cùng một đỉnh cha.</li>
+    <li><b>Tổ tiên (Ancestors) &amp; Con cháu (Descendants):</b> Tổ tiên của $v$ là tất cả các đỉnh trên đường đi từ gốc đến $v$ (ngoại trừ chính $v$). Con cháu của $v$ là tất cả các đỉnh nhận $v$ làm tổ tiên.</li>
+    <li><b>Đỉnh trong (Internal vertex):</b> Đỉnh có <i>ít nhất một con</i> (kể cả đỉnh gốc nếu gốc có con).</li>
+    <li><b>Lá (Leaf):</b> Đỉnh <i>không có bất kỳ con nào</i>.</li>
+    <li><b>Mức (Level) của đỉnh:</b> Độ dài đường đi duy nhất từ gốc tới đỉnh đó (Gốc có mức bằng 0).</li>
+    <li><b>Chiều cao (Height) $h$:</b> Mức lớn nhất của các đỉnh trong cây.</li>
+  </ul>
+
+  <h3>Cây $m$-Phân Đầy Đủ (Full $m$-ary Tree) &amp; Các Công Thức Đếm Cốt Lõi</h3>
+  <p>Một cây có gốc được gọi là <b>cây $m$-phân</b> nếu mỗi đỉnh trong có tối đa $m$ con. Nó được gọi là <b>cây $m$-phân đầy đủ (full $m$-ary tree)</b> nếu <i>mọi đỉnh trong đều có ĐÚNG $m$ con</i> (khi $m=2$, ta có cây nhị phân đầy đủ).</p>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Công Thức Đếm</th>
+          <th>Biểu Thức Toán Học</th>
+          <th>Ý Nghĩa Trực Quan &amp; Cách Nhớ Nhanh</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Tổng số đỉnh $n$ theo số đỉnh trong $i$</b></td>
+          <td>$$n = m \cdot i + 1$$</td>
+          <td>Mỗi đỉnh trong sinh ra đúng $m$ đỉnh con ($m \cdot i$ con), cộng thêm duy nhất 1 đỉnh gốc không là con của ai.</td>
+        </tr>
+        <tr>
+          <td><b>Số lượng lá $l$ theo số đỉnh trong $i$</b></td>
+          <td>$$l = (m - 1)i + 1$$</td>
+          <td>Vì tổng số đỉnh $n = l + i$, thay $n = mi + 1$ vào ta có ngay $l = mi + 1 - i = (m-1)i + 1$.</td>
+        </tr>
+        <tr>
+          <td><b>Số đỉnh trong $i$ khi biết số lá $l$</b></td>
+          <td>$$i = \frac{l - 1}{m - 1}$$</td>
+          <td>Chuyển vế từ công thức số lá: rút ra $i$ rất tiện cho các bài toán phân tích cây nén Huffman.</td>
+        </tr>
+        <tr>
+          <td><b>Tổng số đỉnh $n$ khi biết số lá $l$</b></td>
+          <td>$$n = \frac{m \cdot l - 1}{m - 1}$$</td>
+          <td>Tính trực tiếp tổng quy mô của cây mà không cần tìm số đỉnh trong trung gian.</td>
+        </tr>
+        <tr>
+          <td><b>Cận trên số lá theo chiều cao $h$</b></td>
+          <td>$$l \le m^h \iff h \ge \lceil \log_m l \rceil$$</td>
+          <td>Mỗi mức nhân tối đa $m$ lần: mức 1 có $m$, mức 2 có $m^2$, ..., mức $h$ có tối đa $m^h$ lá. Do đó chiều cao không thể nhỏ hơn $\lceil \log_m l \rceil$.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>2. Ứng Dụng: Cây Quyết Định, Cận Dưới Sắp Xếp &amp; Nén Dữ Liệu Huffman</h2>
+
+  <h3>Cây Quyết Định (Decision Tree) &amp; Cân 6 Đồng Xu Giả</h3>
+  <div class="box analogy">
+    <b>Bài toán cân đồng xu:</b> Có 6 đồng xu bề ngoài hoàn toàn giống hệt nhau, trong đó có đúng 1 đồng xu giả nhẹ hơn 5 đồng xu thật còn lại. Bằng một chiếc cân thăng bằng 2 đĩa, hãy tìm ra đồng xu giả với số lần cân ít nhất!
+  </div>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 230" role="img" style="max-width:100%;height:auto">
+      <line x1="370" y1="35" x2="160" y2="105" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="370" y1="35" x2="370" y2="105" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="370" y1="35" x2="580" y2="105" stroke="var(--ink)" stroke-width="2"/>
+
+      <line x1="160" y1="135" x2="100" y2="195" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="160" y1="135" x2="220" y2="195" stroke="var(--ink)" stroke-width="2"/>
+
+      <line x1="370" y1="135" x2="320" y2="195" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="370" y1="135" x2="420" y2="195" stroke="var(--ink)" stroke-width="2"/>
+
+      <line x1="580" y1="135" x2="520" y2="195" stroke="var(--ink)" stroke-width="2"/>
+      <line x1="580" y1="135" x2="640" y2="195" stroke="var(--ink)" stroke-width="2"/>
+
+      <!-- Goc: Can (1,2) vs (3,4) -->
+      <rect x="290" y="15" width="160" height="38" rx="8" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+      <text x="370" y="38" text-anchor="middle" font-weight="800" font-size="12" fill="var(--c1)">Lần 1: Cân {1,2} vs {3,4}</text>
+
+      <!-- 3 nhanh: Trai nhe hon, Bang nhau, Phai nhe hon -->
+      <text x="245" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c4)">{1,2} nhẹ hơn</text>
+      <text x="370" y="85" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c2)">Bằng nhau</text>
+      <text x="495" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c4)">{3,4} nhẹ hơn</text>
+
+      <!-- Tang 2: Can lan 2 -->
+      <rect x="90" y="105" width="140" height="34" rx="8" fill="var(--card)" stroke="var(--c1)" stroke-width="2"/>
+      <text x="160" y="126" text-anchor="middle" font-weight="700" font-size="11" fill="var(--ink)">Lần 2: Cân 1 vs 2</text>
+
+      <rect x="300" y="105" width="140" height="34" rx="8" fill="var(--card)" stroke="var(--c1)" stroke-width="2"/>
+      <text x="370" y="126" text-anchor="middle" font-weight="700" font-size="11" fill="var(--ink)">Lần 2: Cân 5 vs 6</text>
+
+      <rect x="510" y="105" width="140" height="34" rx="8" fill="var(--card)" stroke="var(--c1)" stroke-width="2"/>
+      <text x="580" y="126" text-anchor="middle" font-weight="700" font-size="11" fill="var(--ink)">Lần 2: Cân 3 vs 4</text>
+
+      <!-- Tang 3: Cac dong xu gia tim duoc -->
+      <circle cx="100" cy="195" r="14" fill="var(--card)" stroke="var(--c4)" stroke-width="2"/>
+      <text x="100" y="200" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c4)">Xu 1</text>
+
+      <circle cx="220" cy="195" r="14" fill="var(--card)" stroke="var(--c4)" stroke-width="2"/>
+      <text x="220" y="200" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c4)">Xu 2</text>
+
+      <circle cx="320" cy="195" r="14" fill="var(--card)" stroke="var(--c4)" stroke-width="2"/>
+      <text x="320" y="200" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c4)">Xu 5</text>
+
+      <circle cx="420" cy="195" r="14" fill="var(--card)" stroke="var(--c4)" stroke-width="2"/>
+      <text x="420" y="200" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c4)">Xu 6</text>
+
+      <circle cx="520" cy="195" r="14" fill="var(--card)" stroke="var(--c4)" stroke-width="2"/>
+      <text x="520" y="200" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c4)">Xu 3</text>
+
+      <circle cx="640" cy="195" r="14" fill="var(--card)" stroke="var(--c4)" stroke-width="2"/>
+      <text x="640" y="200" text-anchor="middle" font-weight="800" font-size="11" fill="var(--c4)">Xu 4</text>
+    </svg>
+    <figcaption>Cây quyết định 3 nhánh: Chỉ cần đúng <b>2 lần cân</b> thăng bằng để xác định chính xác đồng xu giả trong 6 đồng xu.</figcaption>
+  </figure>
+
+  <div class="f key">
+    $$\text{Số phép so sánh tối thiểu để sắp xếp } n \text{ phần tử} \ge \lceil \log_2(n!) \rceil = \Omega(n \log n)$$
+    <small><b>Cận dưới của thuật toán sắp xếp dựa vào so sánh:</b> Vì có $n!$ hoán vị có thể xảy ra, cây quyết định nhị phân bắt buộc phải có ít nhất $n!$ lá. Theo định lý cây nhị phân, chiều cao $h \ge \lceil \log_2(n!) \rceil$. Vì $\log_2(n!) \approx n\log_2 n$, nên <i>không có bất kỳ thuật toán sắp xếp so sánh nào (QuickSort, MergeSort, HeapSort...) có thể chạy nhanh hơn $O(n \log n)$ trong trường hợp xấu nhất</i>!</small>
+  </div>
+
+  <h3>Mã Tiền Tố &amp; Thuật Toán Nén Dữ Liệu Huffman (1951)</h3>
+  <p><b>Mã tiền tố (Prefix Code):</b> Một bộ mã mà <i>không có từ mã nào là tiền tố của một từ mã khác</i>. Nhờ tính chất này, chuỗi bit nhận được có thể giải mã duy nhất tức thì từ trái sang phải mà không cần thêm ký tự phân cách.</p>
+
+  <div class="box tip">
+    <b>Ý tưởng cốt lõi của David Huffman:</b> Ký tự nào xuất hiện <b>càng nhiều lần</b> (tần số cao) thì được gán từ mã <b>càng ngắn</b>; ký tự nào hiếm khi xuất hiện thì gán từ mã dài hơn. Nhờ đó, tổng dung lượng file nén sẽ là nhỏ nhất tuyệt đối!
+  </div>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 240" role="img" style="max-width:100%;height:auto">
+      <!-- Cay Huffman mau: A(0.08), B(0.10), C(0.12), D(0.15), E(0.20), F(0.35) -->
+      <!-- Goc tong 1.00 o (370, 30) -->
+      <circle cx="370" cy="30" r="15" fill="var(--card)" stroke="var(--c5)" stroke-width="2.5"/>
+      <text x="370" y="34" text-anchor="middle" font-size="10" font-weight="800" fill="var(--ink)">1.00</text>
+
+      <!-- Nhanh trai: F(0.35) o (230, 90) -->
+      <line x1="370" y1="30" x2="230" y2="90" stroke="var(--ink)" stroke-width="2"/>
+      <text x="290" y="55" font-size="12" font-weight="800" fill="var(--c1)">0</text>
+      <circle cx="230" cy="90" r="16" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="230" y="94" text-anchor="middle" font-size="11" font-weight="800" fill="var(--c2)">F: 0.35</text>
+      <text x="230" y="125" text-anchor="middle" font-size="11" font-weight="700" fill="var(--mut)">Mã: 0</text>
+
+      <!-- Nhanh phai: Nut trong 0.65 o (510, 80) -->
+      <line x1="370" y1="30" x2="510" y2="80" stroke="var(--ink)" stroke-width="2"/>
+      <text x="450" y="50" font-size="12" font-weight="800" fill="var(--c4)">1</text>
+      <circle cx="510" cy="80" r="14" fill="var(--card)" stroke="var(--mut)" stroke-width="2"/>
+      <text x="510" y="84" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)">0.65</text>
+
+      <!-- Tu 0.65 chia: E(0.20) + 0.45 o (420, 140) va (600, 130) -->
+      <line x1="510" y1="80" x2="420" y2="140" stroke="var(--ink)" stroke-width="1.8"/>
+      <text x="455" y="105" font-size="11" font-weight="800" fill="var(--c1)">0</text>
+      <circle cx="420" cy="140" r="16" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="420" y="144" text-anchor="middle" font-size="11" font-weight="800" fill="var(--c2)">E: 0.20</text>
+      <text x="420" y="170" text-anchor="middle" font-size="11" font-weight="700" fill="var(--mut)">Mã: 10</text>
+
+      <line x1="510" y1="80" x2="600" y2="130" stroke="var(--ink)" stroke-width="1.8"/>
+      <text x="565" y="100" font-size="11" font-weight="800" fill="var(--c4)">1</text>
+      <circle cx="600" cy="130" r="14" fill="var(--card)" stroke="var(--mut)" stroke-width="2"/>
+      <text x="600" y="134" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)">0.45</text>
+
+      <!-- Tu 0.45 chia: D(0.15) va 0.30 -->
+      <line x1="600" y1="130" x2="540" y2="185" stroke="var(--ink)" stroke-width="1.8"/>
+      <text x="560" y="155" font-size="11" font-weight="800" fill="var(--c1)">0</text>
+      <circle cx="540" cy="185" r="15" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="540" y="189" text-anchor="middle" font-size="10" font-weight="800" fill="var(--c2)">D: 0.15</text>
+      <text x="540" y="215" text-anchor="middle" font-size="11" font-weight="700" fill="var(--mut)">Mã: 110</text>
+
+      <line x1="600" y1="130" x2="660" y2="185" stroke="var(--ink)" stroke-width="1.8"/>
+      <text x="635" y="155" font-size="11" font-weight="800" fill="var(--c4)">1</text>
+      <circle cx="660" cy="185" r="15" fill="var(--card)" stroke="var(--mut)" stroke-width="2"/>
+      <text x="660" y="189" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)">0.30</text>
+
+      <text x="110" y="180" font-size="12" font-weight="700" fill="var(--ink)">Quy ước rẽ nhánh:</text>
+      <text x="110" y="200" font-size="12" fill="var(--c1)">• Nhánh TRÁI = bit 0</text>
+      <text x="110" y="220" font-size="12" fill="var(--c4)">• Nhánh PHẢI = bit 1</text>
+    </svg>
+    <figcaption>Cây mã hóa Huffman: Duyệt từ gốc đến lá để đọc ra chuỗi bit mã hóa tiền tố tối ưu cho từng ký tự.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>3. Duyệt Cây &amp; Biểu Thức Số Học (Ký Pháp Ba Lan)</h2>
+
+  <h3>3 Thứ Tự Duyệt Cây Nhị Phân Kinh Điển</h3>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Kiểu Duyệt Cây</th>
+          <th>Thứ Tự Thực Hiện</th>
+          <th>Ứng Dụng Thực Tiễn Trong Lập Trình</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>1. Tiền tự (Pre-order)</b></td>
+          <td><b>Gốc $\to$ Cây con Trái $\to$ Cây con Phải</b></td>
+          <td>Sao chép cây, serialize/lưu cấu trúc cây ra file, sinh biểu thức tiền tố (Ba Lan).</td>
+        </tr>
+        <tr>
+          <td><b>2. Trung tự (In-order)</b></td>
+          <td><b>Cây con Trái $\to$ Gốc $\to$ Cây con Phải</b></td>
+          <td>Duyệt cây BST để lấy ra dãy khóa được sắp xếp tăng dần; sinh biểu thức trung tố thông thường.</td>
+        </tr>
+        <tr>
+          <td><b>3. Hậu tự (Post-order)</b></td>
+          <td><b>Cây con Trái $\to$ Cây con Phải $\to$ Gốc</b></td>
+          <td>Xóa cây (giải phóng bộ nhớ từ lá lên), tính kích thước thư mục ổ đĩa, sinh biểu thức hậu tố (Ba Lan ngược - RPN).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Biểu Thức Toán Học &amp; Ký Pháp Ba Lan</h3>
+  <p>Một biểu thức số học có thể được mô hình hóa bằng một cây nhị phân: <b>các lá là các toán hạng</b> (biến hoặc số hằng), còn <b>các đỉnh trong là các phép toán</b> ($+, -, \times, /, \uparrow$).</p>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 250" role="img" style="max-width:100%;height:auto">
+      <!-- Goc + o (370, 35) -->
+      <circle cx="370" cy="35" r="16" fill="var(--card)" stroke="var(--c4)" stroke-width="3"/>
+      <text x="370" y="42" text-anchor="middle" font-size="18" font-weight="900" fill="var(--c4)">+</text>
+
+      <!-- Nhanh trai: ^ o (200, 95) -->
+      <line x1="370" y1="35" x2="200" y2="95" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="200" cy="95" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+      <text x="200" y="103" text-anchor="middle" font-size="16" font-weight="800" fill="var(--c1)">↑</text>
+
+      <!-- Tu ^ chia sang + va 2 -->
+      <line x1="200" y1="95" x2="130" y2="160" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="130" cy="160" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+      <text x="130" y="167" text-anchor="middle" font-size="16" font-weight="800" fill="var(--c1)">+</text>
+
+      <line x1="200" y1="95" x2="260" y2="160" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="260" cy="160" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="260" y="165" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">2</text>
+
+      <!-- Tu + con chia sang x va y -->
+      <line x1="130" y1="160" x2="90" y2="215" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="90" cy="215" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="90" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">x</text>
+
+      <line x1="130" y1="160" x2="170" y2="215" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="170" cy="215" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="170" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">y</text>
+
+      <!-- Nhanh phai: / o (540, 95) -->
+      <line x1="370" y1="35" x2="540" y2="95" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="540" cy="95" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+      <text x="540" y="103" text-anchor="middle" font-size="16" font-weight="800" fill="var(--c1)">/</text>
+
+      <!-- Tu / chia sang - va 3 -->
+      <line x1="540" y1="95" x2="470" y2="160" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="470" cy="160" r="15" fill="var(--card)" stroke="var(--c1)" stroke-width="2.5"/>
+      <text x="470" y="167" text-anchor="middle" font-size="18" font-weight="800" fill="var(--c1)">−</text>
+
+      <line x1="540" y1="95" x2="610" y2="160" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="610" cy="160" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="610" y="165" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">3</text>
+
+      <!-- Tu - con chia sang x va 4 -->
+      <line x1="470" y1="160" x2="430" y2="215" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="430" cy="215" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="430" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">x</text>
+
+      <line x1="470" y1="160" x2="510" y2="215" stroke="var(--ink)" stroke-width="2"/>
+      <circle cx="510" cy="215" r="14" fill="var(--card)" stroke="var(--c2)" stroke-width="2.5"/>
+      <text x="510" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="var(--c2)">4</text>
+    </svg>
+    <figcaption>Cây nhị phân biểu diễn biểu thức toán học: $((x + y) \uparrow 2) + ((x - 4) / 3)$.</figcaption>
+  </figure>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Loại Ký Pháp</th>
+          <th>Cách Duyệt Cây Tương Ứng</th>
+          <th>Biểu Thức Kết Quả (Ví dụ trên)</th>
+          <th>Đặc Điểm Quan Trọng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Tiền tố (Prefix / Ba Lan)</b></td>
+          <td>Duyệt Tiền tự (Pre-order)</td>
+          <td><code>+ ↑ + x y 2 / - x 4 3</code></td>
+          <td><b>Không cần bất kỳ dấu ngoặc nào</b> mà máy tính vẫn tính đúng hoàn toàn từ phải qua trái.</td>
+        </tr>
+        <tr>
+          <td><b>Trung tố (Infix)</b></td>
+          <td>Duyệt Trung tự (In-order)</td>
+          <td><code>((x + y) ↑ 2) + ((x - 4) / 3)</code></td>
+          <td>Dạng toán học tự nhiên của con người, nhưng <b>bắt buộc phải có dấu ngoặc</b> hoặc quy tắc ưu tiên toán tử.</td>
+        </tr>
+        <tr>
+          <td><b>Hậu tố (Postfix / RPN)</b></td>
+          <td>Duyệt Hậu tự (Post-order)</td>
+          <td><code>x y + 2 ↑ x 4 - 3 / +</code></td>
+          <td><b>Chuẩn mực tính toán của máy tính và máy tính bỏ túi bỏ ngoặc:</b> dùng Ngăn xếp (Stack) duyệt 1 lượt từ trái sang phải cực nhanh.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>4. Cây Khung (Spanning Tree) &amp; Thuật Toán Duyệt DFS / BFS</h2>
+  <p><b>Định nghĩa Cây khung (Spanning Tree):</b> Cây khung của một đơn đồ thị vô hướng $G$ là một đồ thị con của $G$ chứa <b>tất cả các đỉnh của $G$</b> và là một cây (nghĩa là liên thông và có đúng $|V|-1$ cạnh).</p>
+
+  <div class="box tip">
+    <b>Định lý:</b> Một đơn đồ thị có chứa ít nhất một cây khung khi và chỉ khi đồ thị đó là <b>liên thông</b>. Có thể tìm cây khung bằng cách tìm các chu trình đơn và xóa dần từng cạnh trong chu trình cho đến khi không còn chu trình nào.
+  </div>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Thuật Toán Dựng Cây Khung</th>
+          <th>Cơ Chế Khám Phá</th>
+          <th>Cấu Trúc Dữ Liệu</th>
+          <th>Phân Loại Cạnh Trong Đồ Thị</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>DFS (Depth-First Search)</b></td>
+          <td>Đi sâu nhất có thể dọc theo mỗi nhánh trước khi quay lui (Backtrack)</td>
+          <td>Ngăn xếp (Stack) hoặc Đệ quy</td>
+          <td>• <b>Cạnh cây (Tree edges):</b> Các cạnh thuộc cây khung DFS.<br/>• <b>Cạnh ngược (Back edges):</b> Nối một đỉnh với tổ tiên của nó trên cây DFS.</td>
+        </tr>
+        <tr>
+          <td><b>BFS (Breadth-First Search)</b></td>
+          <td>Thăm tất cả các đỉnh láng giềng ở mức hiện tại trước khi xuống mức tiếp theo</td>
+          <td>Hàng đợi (Queue - FIFO)</td>
+          <td>• <b>Cạnh cây (Tree edges):</b> Các cạnh thuộc cây khung BFS.<br/>• <b>Cạnh chéo (Cross edges):</b> Nối hai đỉnh ở cùng mức hoặc chênh lệch tối đa 1 mức.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>5. Cây Khung Nhỏ Nhất (MST): Thuật Toán Prim &amp; Kruskal</h2>
+  <div class="box analogy">
+    <b>Bài toán nối mạng cáp quang:</b> Bạn cần đặt cáp quang nối 6 chi nhánh công ty lại với nhau sao cho mọi chi nhánh đều có thể liên lạc thông suốt với chi phí dây cáp là <b>thấp nhất có thể</b>. Đây chính là bài toán tìm Cây Khung Nhỏ Nhất (Minimum Spanning Tree - MST)!
+  </div>
+
+  <figure class="fl">
+    <svg viewBox="0 0 740 240" role="img" style="max-width:100%;height:auto">
+      <!-- Canh do thi 6 dinh: a(80, 120), b(220, 50), c(220, 190), d(440, 50), e(440, 190), z(620, 120) -->
+      <!-- Canh loai bo khoi MST: net nhe, xam -->
+      <line x1="80" y1="120" x2="220" y2="50" stroke="var(--border)" stroke-width="1.8"/>
+      <text x="140" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">4</text>
+
+      <line x1="220" y1="190" x2="440" y2="50" stroke="var(--border)" stroke-width="1.8"/>
+      <text x="320" y="110" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">8</text>
+
+      <line x1="220" y1="190" x2="440" y2="190" stroke="var(--border)" stroke-width="1.8"/>
+      <text x="330" y="205" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">10</text>
+
+      <line x1="440" y1="50" x2="620" y2="120" stroke="var(--border)" stroke-width="1.8"/>
+      <text x="540" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="var(--mut)">6</text>
+
+      <!-- 5 Canh thuoc MST (Nét to, mau xanh var(--c2)) -->
+      <!-- bc = 1 -->
+      <line x1="220" y1="50" x2="220" y2="190" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="205" y="125" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c2)">1</text>
+
+      <!-- ac = 2 -->
+      <line x1="80" y1="120" x2="220" y2="190" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="140" y="170" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c2)">2</text>
+
+      <!-- de = 2 -->
+      <line x1="440" y1="50" x2="440" y2="190" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="455" y="125" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c2)">2</text>
+
+      <!-- ez = 3 -->
+      <line x1="440" y1="190" x2="620" y2="120" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="540" y="170" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c2)">3</text>
+
+      <!-- bd = 5 -->
+      <line x1="220" y1="50" x2="440" y2="50" stroke="var(--c2)" stroke-width="4.5"/>
+      <text x="330" y="40" text-anchor="middle" font-size="13" font-weight="900" fill="var(--c2)">5</text>
+
+      <!-- Cac dinh -->
+      <circle cx="80" cy="120" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="80" y="125" text-anchor="middle" font-weight="800" font-size="14" fill="var(--c1)">a</text>
+
+      <circle cx="220" cy="50" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="220" y="55" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">b</text>
+
+      <circle cx="220" cy="190" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="220" y="195" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">c</text>
+
+      <circle cx="440" cy="50" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="440" y="55" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">d</text>
+
+      <circle cx="440" cy="190" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="440" y="195" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">e</text>
+
+      <circle cx="620" cy="120" r="16" fill="var(--card)" stroke="var(--c1)" stroke-width="3"/>
+      <text x="620" y="125" text-anchor="middle" font-weight="800" font-size="14" fill="var(--ink)">z</text>
+
+      <text x="350" y="230" text-anchor="middle" font-weight="800" font-size="14" fill="var(--c2)">Cây khung nhỏ nhất (MST): 1 + 2 + 2 + 3 + 5 = 13 (đúng 5 cạnh = 6 − 1)</text>
+    </svg>
+    <figcaption>Cây khung nhỏ nhất (MST) trên đồ thị chuẩn của Slide: 5 cạnh xanh đậm được chọn có tổng trọng số tối thiểu bằng 13.</figcaption>
+  </figure>
+
+  <h3>So Sánh Thuật Toán Prim &amp; Kruskal</h3>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Thuật toán</th>
+          <th>Chiến lược phát triển</th>
+          <th>Độ phức tạp</th>
+          <th>Trường hợp tối ưu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Thuật toán Prim</b></td>
+          <td><b>Phát triển từ 1 đỉnh:</b> Luôn chọn cạnh nhẹ nhất nối từ tập đỉnh đã thuộc cây sang một đỉnh chưa thuộc cây.</td>
+          <td>$O(|V|^2)$ với mảng;<br/>$O(|E| \log |V|)$ với Binary Heap</td>
+          <td>Rất nhanh trên <b>đồ thị dày</b> ($|E| \approx |V|^2$).</td>
+        </tr>
+        <tr>
+          <td><b>Thuật toán Kruskal</b></td>
+          <td><b>Phát triển từ cạnh (Rừng cây):</b> Sắp xếp tất cả cạnh tăng dần; lần lượt nạp cạnh nhẹ nhất nếu nó không tạo chu trình (kiểm tra bằng Disjoint Set Union - DSU).</td>
+          <td>$O(|E| \log |E|)$<br/>(chủ yếu do bước sắp xếp cạnh)</td>
+          <td>Rất nhanh trên <b>đồ thị thưa</b> ($|E| \ll |V|^2$).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Trace Chạy Từng Bước Chi Tiết</h3>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Bước</th>
+          <th>Thuật toán Prim (Bắt đầu từ đỉnh a)</th>
+          <th>Thuật toán Kruskal (Sắp xếp toàn bộ cạnh)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>1</b></td>
+          <td>Từ đỉnh $\{a\}$, cạnh nhẹ nhất nối ra ngoài là <b>(a, c) trọng số 2</b>. Nạp đỉnh $c$. Cây có cạnh $\{ac\}$.</td>
+          <td>Cạnh nhẹ nhất đồ thị: <b>(b, c) = 1</b>. Thêm vào cây.</td>
+        </tr>
+        <tr>
+          <td><b>2</b></td>
+          <td>Từ $\{a, c\}$, cạnh nhẹ nhất nối ra ngoài là <b>(c, b) trọng số 1</b>. Nạp đỉnh $b$. Cây có $\{ac, cb\}$.</td>
+          <td>Cạnh tiếp theo: <b>(a, c) = 2</b>. Không tạo chu trình $\implies$ <b>Nhận</b>.</td>
+        </tr>
+        <tr>
+          <td><b>3</b></td>
+          <td>Từ $\{a, b, c\}$, các cạnh ra ngoài gồm $(b,d)=5, (c,d)=8, (c,e)=10$. Cạnh nhẹ nhất là <b>(b, d) trọng số 5</b>. Nạp đỉnh $d$.</td>
+          <td>Cạnh tiếp theo: <b>(d, e) = 2</b>. Không tạo chu trình $\implies$ <b>Nhận</b>.</td>
+        </tr>
+        <tr>
+          <td><b>4</b></td>
+          <td>Từ $\{a, b, c, d\}$, cạnh nhẹ nhất ra ngoài là <b>(d, e) trọng số 2</b>. Nạp đỉnh $e$. Cây có thêm cạnh $de$.</td>
+          <td>Cạnh tiếp theo: <b>(e, z) = 3</b>. Không tạo chu trình $\implies$ <b>Nhận</b>.</td>
+        </tr>
+        <tr>
+          <td><b>5</b></td>
+          <td>Từ $\{a, b, c, d, e\}$, cạnh nhẹ nhất ra đỉnh $z$ là <b>(e, z) trọng số 3</b>. Nạp đỉnh $z$. Đủ 5 cạnh $= 6-1 \implies$ Dừng!</td>
+          <td>Cạnh $(a, b) = 4$: Nối $a$ và $b$ đã cùng một thành phần liên thông $\implies$ <b>Loại bỏ vì tạo chu trình (a-c-b-a)</b>.<br/>
+          Cạnh $(b, d) = 5$: Nối 2 thành phần $\{a,b,c\}$ và $\{d,e,z\} \implies$ <b>Nhận</b>. Đủ 5 cạnh $\implies$ Dừng!</td>
+        </tr>
+        <tr>
+          <td><b>Tổng</b></td>
+          <td><b>Tổng trọng số MST: $2 + 1 + 5 + 2 + 3 = 13$</b></td>
+          <td><b>Tổng trọng số MST: $1 + 2 + 2 + 3 + 5 = 13$ (Hoàn toàn trùng khớp)</b></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>6. Hệ Thống Bài Tập Áp Dụng Có Lời Giải Chi Tiết Từng Bước</h2>
+
+  <div class="formula-card">
+    <h3>Bài Tập 1: Tính Toán Cây $m$-Phân Đầy Đủ</h3>
+    <p><b>Đề bài:</b> Một chuỗi các router trong mạng máy tính được tổ chức thành một cây 3-phân đầy đủ (mỗi router chuyển tiếp chia làm 3 nhánh). Biết rằng toàn bộ hệ thống mạng có tổng cộng 100 nút mạng lá (các máy tính trạm). Hỏi:<br/>
+    (a) Hệ thống có bao nhiêu router chuyển tiếp (đỉnh trong)?<br/>
+    (b) Toàn bộ hệ thống có tổng cộng bao nhiêu nút mạng (cả router và máy trạm)?</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-11-1')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-11-1" class="panel">
+      <div class="step"><b>Bước 1: Xác định các thông số:</b>
+      Cây 3-phân đầy đủ $\implies m = 3$.<br/>
+      Số lá $l = 100$.
+      </div>
+      <div class="step"><b>Bước 2: Tính số đỉnh trong $i$ (router chuyển tiếp):</b>
+      Áp dụng công thức liên hệ giữa số lá và đỉnh trong của cây $m$-phân đầy đủ:
+      $$l = (m - 1)i + 1 \implies i = \frac{l - 1}{m - 1}$$
+      Thay số vào:
+      $$i = \frac{100 - 1}{3 - 1} = \frac{99}{2} = 49.5$$
+      <b>Khoan đã!</b> Vì $i$ phải là số nguyên, nhưng $99$ không chia hết cho 2! Điều này chứng minh rằng: <i>Không thể tồn tại một cây 3-phân đầy đủ có đúng 100 lá!</i> Số lá trong cây 3-phân đầy đủ luôn phải là số lẻ dạng $2i + 1$.
+      </div>
+      <div class="step"><b>Nếu đề bài cho 101 lá:</b>
+      $$i = \frac{101 - 1}{3 - 1} = \frac{100}{2} = 50\ \text{đỉnh trong.}$$
+      Tổng số đỉnh $n = l + i = 101 + 50 = 151$ nút (hoặc tính bằng $n = 3 \times 50 + 1 = 151$).
+      </div>
+      <div class="ans"><b>Kết luận:</b> Với $l=100$ lá, đồ thị <b>không tồn tại</b>. Với $l=101$ lá, hệ thống có đúng <b>50 router chuyển tiếp</b> và tổng cộng <b>151 nút mạng</b>.</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 2: Xây Dựng Cây Mã Hóa Huffman Tối Ưu</h3>
+    <p><b>Đề bài:</b> Một tập tin văn bản chỉ chứa 5 ký tự với tần suất xuất hiện như sau:
+    $A: 0.35$, $B: 0.25$, $C: 0.20$, $D: 0.12$, $E: 0.08$.<br/>
+    Hãy dùng thuật toán Huffman để xây dựng cây mã hóa tối ưu, tìm từ mã nhị phân cho từng ký tự và tính chiều dài kỳ vọng (số bit trung bình trên mỗi ký tự).</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-11-2')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-11-2" class="panel">
+      <div class="step"><b>Bước 1: Khởi tạo rừng 5 cây đơn:</b>
+      $\{E: 0.08,\ D: 0.12,\ C: 0.20,\ B: 0.25,\ A: 0.35\}$.
+      </div>
+      <div class="step"><b>Bước 2: Gộp 2 cây nhẹ nhất:</b>
+      Chọn $E(0.08)$ và $D(0.12) \implies$ Tạo nút mới $(ED)$ có trọng số $0.08 + 0.12 = 0.20$.<br/>
+      Rừng còn lại: $\{(ED): 0.20,\ C: 0.20,\ B: 0.25,\ A: 0.35\}$.
+      </div>
+      <div class="step"><b>Bước 3: Gộp tiếp 2 cây nhẹ nhất:</b>
+      Chọn $(ED)$ ($0.20$) và $C$ ($0.20$) $\implies$ Tạo nút mới $(EDC)$ có trọng số $0.20 + 0.20 = 0.40$.<br/>
+      Rừng còn lại: $\{B: 0.25,\ A: 0.35,\ (EDC): 0.40\}$.
+      </div>
+      <div class="step"><b>Bước 4: Gộp tiếp 2 cây nhẹ nhất:</b>
+      Chọn $B(0.25)$ và $A(0.35) \implies$ Tạo nút mới $(BA)$ có trọng số $0.25 + 0.35 = 0.60$.<br/>
+      Rừng còn lại: $\{(EDC): 0.40,\ (BA): 0.60\}$.
+      </div>
+      <div class="step"><b>Bước 5: Gộp 2 cây cuối cùng:</b>
+      Gộp $(EDC)$ và $(BA) \implies$ Gốc cây có trọng số $0.40 + 0.60 = 1.00$.
+      </div>
+      <div class="step"><b>Bước 6: Gán nhãn bit (Quy ước: Trái = 0, Phải = 1):</b>
+        <ul>
+          <li>Gốc rẽ Phải (1) $\to$ $BA$: Rẽ trái (0) ra $B \implies$ <b>Mã của B: <code>10</code></b> (2 bit). Rẽ phải (1) ra $A \implies$ <b>Mã của A: <code>11</code></b> (2 bit).</li>
+          <li>Gốc rẽ Trái (0) $\to$ $EDC$: Rẽ phải (1) ra $C \implies$ <b>Mã của C: <code>01</code></b> (2 bit).</li>
+          <li>Rẽ trái (0) ra $ED$: Rẽ trái (0) ra $E \implies$ <b>Mã của E: <code>000</code></b> (3 bit). Rẽ phải (1) ra $D \implies$ <b>Mã của D: <code>001</code></b> (3 bit).</li>
+        </ul>
+      </div>
+      <div class="step"><b>Bước 7: Tính chiều dài kỳ vọng $L$:</b>
+      $$L = 0.35 \times 2 + 0.25 \times 2 + 0.20 \times 2 + 0.12 \times 3 + 0.08 \times 3$$
+      $$L = 0.70 + 0.50 + 0.40 + 0.36 + 0.24 = 2.20\ \text{bit/ký tự.}$$
+      (Nếu dùng mã cố định cần $\lceil \log_2 5 \rceil = 3$ bit $\implies$ tiết kiệm được $(3 - 2.2)/3 \approx 26.7\%$ dung lượng!).
+      </div>
+      <div class="ans"><b>Bảng mã tối ưu:</b> A: <code>11</code>, B: <code>10</code>, C: <code>01</code>, D: <code>001</code>, E: <code>000</code>. Chiều dài kỳ vọng: <b>2.20 bit</b>.</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 3: Duyệt Cây &amp; Tính Giá Trị Biểu Thức Hậu Tố (Stack)</h3>
+    <p><b>Đề bài:</b> Cho biểu thức dạng hậu tố (Postfix / RPN) sau:
+    <code>5 2 + 8 3 - * 4 /</code><br/>
+    (a) Hãy dựng cây nhị phân tương ứng với biểu thức này.<br/>
+    (b) Viết lại biểu thức ở dạng Tiền tố (Ba Lan) và Trung tố.<br/>
+    (c) Trace từng bước hoạt động của Ngăn xếp (Stack) để tính ra kết quả số học cuối cùng.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-11-3')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-11-3" class="panel">
+      <div class="step"><b>(a) Phân tích cấu trúc cây:</b>
+        <ul>
+          <li><code>5 2 +</code> tương ứng nhánh con trái $(5 + 2)$ với toán tử $+$ làm gốc, con là 5 và 2.</li>
+          <li><code>8 3 -</code> tương ứng nhánh con phải $(8 - 3)$ với toán tử $-$ làm gốc.</li>
+          <li>Toán tử <code>*</code> kết hợp hai nhánh trên: $((5 + 2) * (8 - 3))$.</li>
+          <li>Toán tử <code>/</code> ngoài cùng chia cho 4: $(((5 + 2) * (8 - 3)) / 4)$.</li>
+        </ul>
+      </div>
+      <div class="step"><b>(b) Chuyển đổi ký pháp:</b>
+        <ul>
+          <li><b>Tiền tố (Pre-order):</b> <code>/ * + 5 2 - 8 3 4</code></li>
+          <li><b>Trung tố (In-order):</b> <code>((5 + 2) * (8 - 3)) / 4</code></li>
+        </ul>
+      </div>
+      <div class="step"><b>(c) Trace ngăn xếp (Stack) từ trái sang phải:</b>
+        <ol>
+          <li>Gặp 5: Đẩy vào Stack $\to [5]$</li>
+          <li>Gặp 2: Đẩy vào Stack $\to [5, 2]$</li>
+          <li>Gặp <code>+</code>: Lấy 2 và 5 ra, tính $5 + 2 = 7$, đẩy vào Stack $\to [7]$</li>
+          <li>Gặp 8: Đẩy vào Stack $\to [7, 8]$</li>
+          <li>Gặp 3: Đẩy vào Stack $\to [7, 8, 3]$</li>
+          <li>Gặp <code>-</code>: Lấy 3 và 8 ra, tính $8 - 3 = 5$, đẩy vào Stack $\to [7, 5]$</li>
+          <li>Gặp <code>*</code>: Lấy 5 và 7 ra, tính $7 \times 5 = 35$, đẩy vào Stack $\to [35]$</li>
+          <li>Gặp 4: Đẩy vào Stack $\to [35, 4]$</li>
+          <li>Gặp <code>/</code>: Lấy 4 và 35 ra, tính $35 / 4 = 8.75$, đẩy vào Stack $\to [8.75]$</li>
+        </ol>
+      </div>
+      <div class="ans"><b>Kết quả:</b> Giá trị biểu thức bằng <b>$8.75$</b> (hoặc $\frac{35}{4}$).</div>
+    </div>
+  </div>
+
+  <div class="formula-card">
+    <h3>Bài Tập 4: Tìm Cây Khung Nhỏ Nhất (MST)</h3>
+    <p><b>Đề bài:</b> Cho đồ thị vô hướng $G$ gồm 5 đỉnh $\{A, B, C, D, E\}$ với các cạnh có trọng số:
+    $(A,B)=3, (A,C)=1, (B,C)=4, (B,D)=2, (C,D)=5, (C,E)=6, (D,E)=7$.<br/>
+    Hãy tìm cây khung nhỏ nhất của đồ thị bằng cả hai thuật toán Prim (bắt đầu từ A) và Kruskal. So sánh kết quả.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-sol" onclick="togglePanel('sol-11-4')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="sol-11-4" class="panel">
+      <div class="step"><b>Cách 1: Thuật toán Kruskal (Sắp xếp cạnh tăng dần):</b>
+        Danh sách cạnh:
+        $(A,C)=1,\ (B,D)=2,\ (A,B)=3,\ (B,C)=4,\ (C,D)=5,\ (C,E)=6,\ (D,E)=7$.
+        <ul>
+          <li>Xét $(A,C)=1$: Nhận $\implies$ Rừng có $\{AC\}$.</li>
+          <li>Xét $(B,D)=2$: Nhận $\implies$ Rừng có $\{AC\}, \{BD\}$.</li>
+          <li>Xét $(A,B)=3$: Nối 2 cây $\{AC\}$ và $\{BD\}$ (không tạo chu trình) $\implies$ <b>Nhận</b>. Rừng gộp thành $\{A,B,C,D\}$.</li>
+          <li>Xét $(B,C)=4$: $B$ và $C$ đã cùng thành phần $\implies$ <b>Loại</b> (tạo chu trình $A-B-C$).</li>
+          <li>Xét $(C,D)=5$: $C$ và $D$ đã cùng thành phần $\implies$ <b>Loại</b> (tạo chu trình $A-C-D-B$).</li>
+          <li>Xét $(C,E)=6$: Nối $E$ vào cây $\implies$ <b>Nhận</b>. Đã đủ $5-1=4$ cạnh $\implies$ Dừng!</li>
+        </ul>
+        Các cạnh được chọn: $(A,C), (B,D), (A,B), (C,E)$.<br/>
+        Tổng trọng số $= 1 + 2 + 3 + 6 = \mathbf{12}$.
+      </div>
+      <div class="step"><b>Cách 2: Thuật toán Prim (Bắt đầu từ đỉnh A):</b>
+        <ul>
+          <li>Từ $\{A\}$, cạnh nhỏ nhất ra ngoài là $(A,C)=1 \implies$ Thêm $C$. Cây: $\{A, C\}$.</li>
+          <li>Từ $\{A, C\}$, các cạnh nối ra ngoài là $(A,B)=3, (C,B)=4, (C,D)=5, (C,E)=6$. Cạnh nhỏ nhất là $(A,B)=3 \implies$ Thêm $B$. Cây: $\{A, B, C\}$.</li>
+          <li>Từ $\{A, B, C\}$, các cạnh nối ra ngoài là $(B,D)=2, (C,D)=5, (C,E)=6$. Cạnh nhỏ nhất là $(B,D)=2 \implies$ Thêm $D$. Cây: $\{A, B, C, D\}$.</li>
+          <li>Từ $\{A, B, C, D\}$, cạnh nối ra đỉnh $E$ duy nhất nhỏ nhất là $(C,E)=6 \implies$ Thêm $E$. Đủ 5 đỉnh $\implies$ Dừng!</li>
+        </ul>
+        Tổng trọng số $= 1 + 3 + 2 + 6 = \mathbf{12}$.
+      </div>
+      <div class="ans"><b>Kết luận:</b> Cả hai thuật toán đều cho ra cùng một cây khung nhỏ nhất gồm 4 cạnh $\{(A,C), (B,D), (A,B), (C,E)\}$ với tổng trọng số bằng <b>12</b>.</div>
+    </div>
+  </div>
+</section>
+
+<section class="sum">
+  <h2>Tổng Kết Bài 11 (Cây &amp; Cây Khung)</h2>
+  <ul>
+    <li><b>Cây:</b> Đồ thị liên thông, không chu trình $\iff n$ đỉnh có $n-1$ cạnh. Duy nhất 1 đường đi đơn giữa 2 đỉnh.</li>
+    <li><b>Cây $m$-phân đầy đủ:</b> $n = mi + 1$, $l = (m-1)i + 1$, $l \le m^h \implies h \ge \lceil \log_m l \rceil$.</li>
+    <li><b>Cây quyết định:</b> Cận dưới sắp xếp so sánh là $\Omega(n \log n)$. Cân 6 đồng xu chỉ cần 2 lần cân thăng bằng.</li>
+    <li><b>Nén Huffman:</b> Mã tiền tố tối ưu, tham lam gộp liên tiếp 2 cây có tần suất nhỏ nhất.</li>
+    <li><b>Duyệt cây:</b> Tiền tự (Root-Left-Right), Trung tự (Left-Root-Right), Hậu tự (Left-Right-Root). Biểu thức hậu tố dùng Ngăn xếp (Stack) tính toán cực nhanh.</li>
+    <li><b>Cây khung (MST):</b> Prim phát triển từ đỉnh (tốt cho đồ thị dày), Kruskal phát triển từ cạnh với DSU (tốt cho đồ thị thưa). Cả hai đều cho kết quả MST tối ưu bằng nhau.</li>
+  </ul>
+  <div class="btn-group">
+    <button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='9';loadLesson('9')">← Ôn lại Bài 9 (Lý thuyết đồ thị cơ bản)</button>
+    <button type="button" class="btn btn-hint" onclick="document.getElementById('lesson-select').value='10';loadLesson('10')">Ôn lại Bài 10 (Đường đi ngắn nhất &amp; Tô màu)</button>
+  </div>
+</section>
 </template>
 
 <script>
