@@ -1212,6 +1212,397 @@ body.lg-theme .theme-btn-action.active{
   background: rgba(255,255,255,0.18) !important;
   border-color: rgba(255,255,255,0.35) !important;
 }
+
+/* ==========================================================================
+   THEME AI: CHATGPT & CLAUDE
+   ========================================================================== */
+body.ai-theme {
+  --lg-blur: 0px !important;
+  color-scheme: dark;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+body.ai-theme #lg-orbs,
+body.ai-theme #lg-bg-ios {
+  display: none !important;
+}
+
+/* 1. Phong cách ChatGPT: Dark Modern Minimalist */
+body.ai-theme[data-ai-style="chatgpt"] {
+  --bg: #212121;
+  --card: #2a2a2a;
+  --ink: #ececec;
+  --mut: #a3a3a3;
+  --g: #383838;
+  --tint: #2f2f2f;
+  --accent: #10a37f;
+  --c1: #10a37f;
+  --c2: #19c37d;
+  --c3: #f59e0b;
+  --c4: #ef4444;
+  --c5: #10a37f;
+  background-color: #212121 !important;
+  background-image: none !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .card {
+  background: #2a2a2a !important;
+  border: 1px solid #383838 !important;
+  border-left: 6px solid var(--bc, #10a37f) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #mn {
+  background: #171717 !important;
+  border: 1px solid #333333 !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5) !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .menu-label {
+  color: #10a37f !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .theme-modal-box {
+  background: #262626 !important;
+  border: 1px solid #3c3c3c !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6) !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .theme-modal-header {
+  border-bottom-color: #383838 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .key {
+  background: #262626 !important;
+  border: 1px solid #10a37f !important;
+  box-shadow: 0 4px 18px rgba(16,163,127,0.15) !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .key::before {
+  background: #10a37f !important;
+  color: #fff !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .box {
+  background: #272727 !important;
+  border-left: 5px solid #10a37f !important;
+  color: #e5e5e5 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .box.warn {
+  border-left-color: #ef4444 !important;
+  background: #2c2424 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .box.analogy {
+  border-left-color: #19c37d !important;
+  background: #222a26 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .bridge,
+body.ai-theme[data-ai-style="chatgpt"] .f,
+body.ai-theme[data-ai-style="chatgpt"] .panel,
+body.ai-theme[data-ai-style="chatgpt"] .ans {
+  background: #262626 !important;
+  border: 1px solid #383838 !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .quiz-box {
+  background: #282828 !important;
+  border-left: 6px solid #10a37f !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .sim-widget {
+  background: #262626 !important;
+  border: 1px solid #383838 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #ls button {
+  background: #2f2f2f !important;
+  border-color: #404040 !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #ls button:hover {
+  background: #3a3a3a !important;
+  border-color: #10a37f !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #ls button.on {
+  background: #10a37f !important;
+  border-color: #10a37f !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(16,163,127,0.4) !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #toc-links a {
+  color: #b4b4b4 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #toc-links a:hover,
+body.ai-theme[data-ai-style="chatgpt"] #toc-links a.on {
+  color: #10a37f !important;
+  border-left-color: #10a37f !important;
+  background: rgba(16,163,127,0.08) !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] code {
+  background: #333333 !important;
+  color: #10a37f !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .tw th {
+  background: #303030 !important;
+  color: #10a37f !important;
+  border-bottom: 1px solid #404040 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .tw td {
+  border-bottom: 1px solid #363636 !important;
+}
+
+/* 2. Phong cách Claude: Warm Intellectual Terracotta */
+body.ai-theme[data-ai-style="claude"] {
+  --bg: #1e1e1b;
+  --card: #282723;
+  --ink: #f5efe6;
+  --mut: #b8b1a5;
+  --g: #3d3b34;
+  --tint: #31302a;
+  --accent: #da7756;
+  --c1: #da7756;
+  --c2: #8fa876;
+  --c3: #df9e52;
+  --c4: #cf6659;
+  --c5: #da7756;
+  background-color: #1e1e1b !important;
+  background-image: none !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] .card {
+  background: #282723 !important;
+  border: 1px solid #3d3b34 !important;
+  border-left: 6px solid var(--bc, #da7756) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35) !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] #mn {
+  background: #181816 !important;
+  border: 1px solid #383630 !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.55) !important;
+}
+body.ai-theme[data-ai-style="claude"] .menu-label {
+  color: #da7756 !important;
+}
+body.ai-theme[data-ai-style="claude"] .theme-modal-box {
+  background: #24231f !important;
+  border: 1px solid #423f37 !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.65) !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] .theme-modal-header {
+  border-bottom-color: #3d3b34 !important;
+}
+body.ai-theme[data-ai-style="claude"] .key {
+  background: #252420 !important;
+  border: 1px solid #da7756 !important;
+  box-shadow: 0 4px 18px rgba(218,119,86,0.18) !important;
+}
+body.ai-theme[data-ai-style="claude"] .key::before {
+  background: #da7756 !important;
+  color: #181816 !important;
+  font-weight: 800 !important;
+}
+body.ai-theme[data-ai-style="claude"] .box {
+  background: #24231f !important;
+  border-left: 5px solid #da7756 !important;
+  color: #f0e9df !important;
+}
+body.ai-theme[data-ai-style="claude"] .box.warn {
+  border-left-color: #cf6659 !important;
+  background: #2b2220 !important;
+}
+body.ai-theme[data-ai-style="claude"] .box.analogy {
+  border-left-color: #8fa876 !important;
+  background: #222720 !important;
+}
+body.ai-theme[data-ai-style="claude"] .bridge,
+body.ai-theme[data-ai-style="claude"] .f,
+body.ai-theme[data-ai-style="claude"] .panel,
+body.ai-theme[data-ai-style="claude"] .ans {
+  background: #24231f !important;
+  border: 1px solid #3d3b34 !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] .quiz-box {
+  background: #262521 !important;
+  border-left: 6px solid #da7756 !important;
+}
+body.ai-theme[data-ai-style="claude"] .sim-widget {
+  background: #24231f !important;
+  border: 1px solid #3d3b34 !important;
+}
+body.ai-theme[data-ai-style="claude"] #ls button {
+  background: #2f2e29 !important;
+  border-color: #424037 !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] #ls button:hover {
+  background: #393831 !important;
+  border-color: #da7756 !important;
+}
+body.ai-theme[data-ai-style="claude"] #ls button.on {
+  background: #da7756 !important;
+  border-color: #da7756 !important;
+  color: #181816 !important;
+  box-shadow: 0 4px 12px rgba(218,119,86,0.4) !important;
+}
+body.ai-theme[data-ai-style="claude"] #toc-links a {
+  color: #b8b1a5 !important;
+}
+body.ai-theme[data-ai-style="claude"] #toc-links a:hover,
+body.ai-theme[data-ai-style="claude"] #toc-links a.on {
+  color: #da7756 !important;
+  border-left-color: #da7756 !important;
+  background: rgba(218,119,86,0.1) !important;
+}
+body.ai-theme[data-ai-style="claude"] code {
+  background: #33322b !important;
+  color: #da7756 !important;
+}
+body.ai-theme[data-ai-style="claude"] .tw th {
+  background: #2f2e28 !important;
+  color: #da7756 !important;
+  border-bottom: 1px solid #44423a !important;
+}
+body.ai-theme[data-ai-style="claude"] .tw td {
+  border-bottom: 1px solid #383630 !important;
+}
+
+
+.theme-bg-selector{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:4px;
+}
+.theme-bg-card{
+  all:unset;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  padding:8px 8px 10px;
+  border-radius:14px;
+  background:var(--tint);
+  border:1.5px solid var(--g);
+  cursor:pointer;
+  transition:all .2s ease;
+  user-select:none;
+}
+body.lg-theme .theme-bg-card{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.16);
+}
+.theme-bg-card:hover{
+  border-color:var(--c5);
+  transform:translateY(-1px);
+}
+body.lg-theme .theme-bg-card:hover{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.35);
+}
+.theme-bg-card.active{
+  border-color:var(--c5);
+  background:var(--card);
+  box-shadow:0 0 0 2px var(--c5);
+}
+body.lg-theme .theme-bg-card.active{
+  background:linear-gradient(180deg,rgba(56,189,248,.22),rgba(14,165,233,.08)) !important;
+  border-color:#38bdf8 !important;
+  box-shadow:0 0 16px rgba(56,189,248,.35),inset 0 1px 1px rgba(255,255,255,.5) !important;
+}
+.theme-bg-preview{
+  width:100%;
+  height:46px;
+  border-radius:9px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+}
+.preview-aurora{
+  background:
+    radial-gradient(circle at 25% 35%,#38bdf8 0%,transparent 45%),
+    radial-gradient(circle at 75% 25%,#6366f1 0%,transparent 45%),
+    radial-gradient(circle at 55% 75%,#06b6d4 0%,transparent 45%),
+    #060b19;
+}
+.preview-ios{
+  background:
+    radial-gradient(circle at 80% 15%,#38bdf8 0%,transparent 50%),
+    radial-gradient(circle at 20% 45%,#ec4899 0%,transparent 50%),
+    radial-gradient(circle at 75% 85%,#6366f1 0%,transparent 50%),
+    linear-gradient(135deg,#02040d,#080d24);
+}
+.preview-ios::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(55deg,transparent 35%,rgba(255,255,255,.4) 48%,rgba(56,189,248,.7) 53%,transparent 66%);
+  filter:blur(1px);
+}
+.theme-bg-name{
+  font-size:12px;
+  font-weight:700;
+  color:inherit;
+  text-align:center;
+}
+body.lg-theme .theme-bg-name{color:#fff}
+
+.preview-chatgpt {
+  background: linear-gradient(135deg, #171717 0%, #212121 50%, #2a2a2a 100%);
+  position: relative;
+  border: 1px solid #383838;
+}
+.preview-chatgpt::after {
+  content: "ChatGPT";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  background: #10a37f;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: .4px;
+  box-shadow: 0 2px 6px rgba(16,163,127,0.3);
+}
+.preview-claude {
+  background: linear-gradient(135deg, #181816 0%, #1e1e1b 50%, #282723 100%);
+  position: relative;
+  border: 1px solid #3d3b34;
+}
+.preview-claude::after {
+  content: "Claude";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 800;
+  color: #181816;
+  background: #da7756;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: .4px;
+  box-shadow: 0 2px 6px rgba(218,119,86,0.3);
+}
+body.ai-theme[data-ai-style="chatgpt"] .theme-bg-card.active {
+  border-color: #10a37f !important;
+  background: rgba(16,163,127,0.12) !important;
+  box-shadow: 0 0 12px rgba(16,163,127,0.35) !important;
+}
+body.ai-theme[data-ai-style="claude"] .theme-bg-card.active {
+  border-color: #da7756 !important;
+  background: rgba(218,119,86,0.12) !important;
+  box-shadow: 0 0 12px rgba(218,119,86,0.35) !important;
+}
+
+/* Kiểu nút AI active trong modal */
+body.ai-theme .theme-mode-select #thm-opt-ai {
+  background: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+body.ai-theme[data-ai-style="claude"] .theme-mode-select #thm-opt-ai {
+  color: #181816 !important;
+}
 </style>
 </head>
 <body class="lg-theme" data-lg-bg="ios">
@@ -1274,15 +1665,41 @@ body.lg-theme .theme-btn-action.active{
       <button type="button" id="theme-modal-close" class="theme-modal-close-btn" aria-label="Đóng popup" style="font-size:12px;font-weight:700;width:auto;padding:4px 10px;border-radius:8px">Đóng</button>
     </div>
 
+    <!-- Chọn 3 giao diện ngang hàng: Dracula, Liquid Glass, AI -->
     <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
       <button type="button" id="thm-opt-default" class="thm-toggle-btn">Dracula</button>
       <button type="button" id="thm-opt-liquid" class="thm-toggle-btn active">Liquid Glass</button>
+      <button type="button" id="thm-opt-ai" class="thm-toggle-btn">AI</button>
     </div>
 
     <div id="default-theme-notice" class="theme-default-notice" style="display:none">
-      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> để trải nghiệm giao diện kính mờ pha lê và bật các tuỳ chỉnh chi tiết.
+      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> hoặc <b>AI</b> để thay đổi trải nghiệm đọc và bật các tuỳ chỉnh chi tiết.
     </div>
 
+    <!-- Panel tuỳ chỉnh của AI Theme -->
+    <div id="ai-settings-panel" class="theme-ctrl-group" style="display:none">
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <label id="lbl-ai-style" style="font-weight:700">Kiểu giao diện AI</label>
+          <output id="o-ai-style">ChatGPT</output>
+        </div>
+        <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-ai-style">
+          <button type="button" id="btn-ai-chatgpt" class="theme-bg-card active" data-style="chatgpt" aria-checked="true" role="radio" title="Giao diện ChatGPT tối giản hiện đại với tông xám và điểm nhấn xanh ngọc">
+            <span class="theme-bg-preview preview-chatgpt"></span>
+            <span class="theme-bg-name">ChatGPT</span>
+          </button>
+          <button type="button" id="btn-ai-claude" class="theme-bg-card" data-style="claude" aria-checked="false" role="radio" title="Giao diện Claude ấm áp với tông nâu đất nung và giấy sáp">
+            <span class="theme-bg-preview preview-claude"></span>
+            <span class="theme-bg-name">Claude</span>
+          </button>
+        </div>
+      </div>
+      <div id="ai-style-desc" class="theme-default-notice" style="margin-top:2px">
+        Tối giản, hiện đại với tông màu xám đen và điểm nhấn xanh ngọc đặc trưng của OpenAI ChatGPT.
+      </div>
+    </div>
+
+    <!-- Panel tuỳ chỉnh của Liquid Glass Theme -->
     <div id="lg-settings-panel" class="theme-ctrl-group">
       <div class="theme-ctrl-item">
         <div class="theme-ctrl-item-head">
@@ -1290,14 +1707,14 @@ body.lg-theme .theme-btn-action.active{
           <output id="o-lg-bg">iOS</output>
         </div>
         <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-lg-bg">
-          <label class="theme-bg-opt">
-            <input type="radio" name="lg-bg-choice" value="ios" checked>
-            <span>iOS</span>
-          </label>
-          <label class="theme-bg-opt">
-            <input type="radio" name="lg-bg-choice" value="aurora">
-            <span>Aurora</span>
-          </label>
+          <button type="button" id="btn-bg-ios" class="theme-bg-card active" data-bg="ios" aria-checked="true" role="radio" title="Hình nền iOS phong cách dải lụa neon Apple">
+            <span class="theme-bg-preview preview-ios"></span>
+            <span class="theme-bg-name">iOS</span>
+          </button>
+          <button type="button" id="btn-bg-aurora" class="theme-bg-card" data-bg="aurora" aria-checked="false" role="radio" title="Hình nền Aurora với các khối cầu đa sắc">
+            <span class="theme-bg-preview preview-aurora"></span>
+            <span class="theme-bg-name">Aurora</span>
+          </button>
         </div>
       </div>
 
@@ -2841,13 +3258,11 @@ function updateOLSSim() {
   svg.innerHTML = '';
 
   const cx = 250, cy = 150;
-  // Trục tọa độ
   svg.innerHTML += '<line x1="40" y1="260" x2="460" y2="260" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>';
   svg.innerHTML += '<line x1="40" y1="40" x2="40" y2="260" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>';
   svg.innerHTML += `<circle cx="${cx}" cy="${cy}" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>`;
   svg.innerHTML += `<text x="${cx + 8}" y="${cy - 6}" fill="#f59e0b" font-size="12" font-weight="bold">(x̄, ȳ)</text>`;
 
-  // 12 điểm cố định tạo xu hướng
   const basePoints = [
     [-140, -100], [-110, -70], [-80, -90], [-50, -40],
     [-20, -10], [10, 20], [40, 10], [70, 60],
@@ -2974,12 +3389,12 @@ function renderLS(activeId) {
 /* LỌC BỎ HOÀN TOÀN CÔNG THỨC TOÁN CHO TIÊU ĐỀ MỤC LỤC TRÁNH LỖI FORMAT */
 function cleanTitleForTOC(raw) {
   return raw
-    .replace(/\$[^\$]*\$/g, '')      // Xóa sạch công thức trong dấu $...$
-    .replace(/\\\(.*?\\\)/g, '')  // Xóa \(...\)
-    .replace(/\\[a-zA-Z]+/g, '')      // Xóa lệnh latex như 	imes, \mu
-    .replace(/[\\_{}^]/g, '')         // Xóa ký tự latex đặc biệt
-    .replace(/^[0-9.]+\s*/, '')        // Xóa số thứ tự đầu dòng
-    .replace(/\s+/g, ' ')              // Thu gọn khoảng trắng
+    .replace(/\$[^\$]*\$/g, '')
+    .replace(/\\\(.*?\\\)/g, '')
+    .replace(/\\[a-zA-Z]+/g, '')
+    .replace(/[\\_{}^]/g, '')
+    .replace(/^[0-9.]+\s*/, '')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
@@ -3051,7 +3466,6 @@ window.loadLesson = loadLesson;
     }
   });
 
-  /* Tô sáng mục đang xem trong mục lục */
   addEventListener('scroll', () => {
     let cur = null;
     document.querySelectorAll('#toc-links a').forEach(a => {
@@ -3062,7 +3476,6 @@ window.loadLesson = loadLesson;
     if (cur) cur.classList.add('on');
   }, { passive: true });
 
-  // Mặc định mở Tuần 1
   $('lesson-select').value = '1';
   loadLesson('1');
 })();
@@ -3070,7 +3483,7 @@ window.loadLesson = loadLesson;
 
 <script>
 /* ==========================================================================
-   QUẢN LÝ GIAO DIỆN (THEME MANAGER): MẶC ĐỊNH LIQUID GLASS + HÌNH NỀN IOS
+   QUẢN LÝ GIAO DIỆN (THEME MANAGER): DRACULA, LIQUID GLASS & AI (CHATGPT / CLAUDE)
    ========================================================================== */
 (function themeManager() {
   const root = document.documentElement;
@@ -3079,6 +3492,7 @@ window.loadLesson = loadLesson;
 
   const KEY_THEME = 'xstk-theme';
   const KEY_BG = 'xstk-lg-bg';
+  const KEY_AI_STYLE = 'xstk-ai-style';
   const KEY_BLUR = 'xstk-lg-blur';
   const KEY_FILL = 'xstk-lg-fill';
   const KEY_SAT = 'xstk-lg-sat';
@@ -3088,13 +3502,16 @@ window.loadLesson = loadLesson;
 
   let currentTheme = st(KEY_THEME) || 'liquid-glass';
   let currentBg = st(KEY_BG) || 'ios';
+  let currentAiStyle = st(KEY_AI_STYLE) || 'chatgpt';
 
   const modalOverlay = $('theme-modal-overlay');
   const btnOpenModal = $('btn-theme-settings');
   const btnCloseModal = $('theme-modal-close');
   const optDefault = $('thm-opt-default');
   const optLiquid = $('thm-opt-liquid');
+  const optAi = $('thm-opt-ai');
   const lgSettingsPanel = $('lg-settings-panel');
+  const aiSettingsPanel = $('ai-settings-panel');
   const defaultNotice = $('default-theme-notice');
 
   const rBlur = $('r-lg-blur'), oBlur = $('o-lg-blur');
@@ -3105,7 +3522,13 @@ window.loadLesson = loadLesson;
   const bRefract = $('b-lg-refract');
   const bReset = $('b-lg-reset');
   const oBgLabel = $('o-lg-bg');
-  const bgRadios = document.querySelectorAll('input[name="lg-bg-choice"]');
+  const btnBgAurora = $('btn-bg-aurora');
+  const btnBgIos = $('btn-bg-ios');
+
+  const oAiStyle = $('o-ai-style');
+  const aiStyleDesc = $('ai-style-desc');
+  const btnAiGpt = $('btn-ai-chatgpt');
+  const btnAiClaude = $('btn-ai-claude');
 
   function openModal(open) {
     modalOverlay.hidden = !open;
@@ -3130,33 +3553,79 @@ window.loadLesson = loadLesson;
     currentBg = (bgKey === 'aurora') ? 'aurora' : 'ios';
     st(KEY_BG, currentBg);
     body.setAttribute('data-lg-bg', currentBg);
-    bgRadios.forEach(r => { r.checked = (r.value === currentBg); });
+    if (btnBgAurora) {
+      btnBgAurora.classList.toggle('active', currentBg === 'aurora');
+      btnBgAurora.setAttribute('aria-checked', currentBg === 'aurora' ? 'true' : 'false');
+    }
+    if (btnBgIos) {
+      btnBgIos.classList.toggle('active', currentBg === 'ios');
+      btnBgIos.setAttribute('aria-checked', currentBg === 'ios' ? 'true' : 'false');
+    }
     if (oBgLabel) oBgLabel.textContent = (currentBg === 'aurora') ? 'Aurora' : 'iOS';
   }
 
-  bgRadios.forEach(r => {
-    r.addEventListener('change', () => { if (r.checked) setLgBg(r.value); });
-  });
+  if (btnBgAurora) btnBgAurora.onclick = () => setLgBg('aurora');
+  if (btnBgIos) btnBgIos.onclick = () => setLgBg('ios');
+
+  function setAiStyle(styleKey) {
+    currentAiStyle = (styleKey === 'claude') ? 'claude' : 'chatgpt';
+    st(KEY_AI_STYLE, currentAiStyle);
+    if (body.classList.contains('ai-theme')) {
+      body.setAttribute('data-ai-style', currentAiStyle);
+    }
+    if (btnAiGpt) {
+      btnAiGpt.classList.toggle('active', currentAiStyle === 'chatgpt');
+      btnAiGpt.setAttribute('aria-checked', currentAiStyle === 'chatgpt' ? 'true' : 'false');
+    }
+    if (btnAiClaude) {
+      btnAiClaude.classList.toggle('active', currentAiStyle === 'claude');
+      btnAiClaude.setAttribute('aria-checked', currentAiStyle === 'claude' ? 'true' : 'false');
+    }
+    if (oAiStyle) oAiStyle.textContent = (currentAiStyle === 'claude') ? 'Claude' : 'ChatGPT';
+    if (aiStyleDesc) {
+      aiStyleDesc.textContent = (currentAiStyle === 'claude')
+        ? 'Ấm áp, đậm chất tri thức với tông nâu đất nung Terracotta và nền giấy sáp của Anthropic Claude.'
+        : 'Tối giản, hiện đại với tông màu xám đen và điểm nhấn xanh ngọc đặc trưng của OpenAI ChatGPT.';
+    }
+  }
+
+  if (btnAiGpt) btnAiGpt.onclick = () => setAiStyle('chatgpt');
+  if (btnAiClaude) btnAiClaude.onclick = () => setAiStyle('claude');
 
   function setTheme(t) {
     currentTheme = t;
     st(KEY_THEME, t);
     const isLg = t === 'liquid-glass';
+    const isAi = t === 'ai';
+
+    optDefault.classList.toggle('active', t === 'default');
+    optLiquid.classList.toggle('active', isLg);
+    if (optAi) optAi.classList.toggle('active', isAi);
 
     if (isLg) {
+      body.classList.remove('ai-theme');
+      body.removeAttribute('data-ai-style');
       body.classList.add('lg-theme');
-      optLiquid.classList.add('active');
-      optDefault.classList.remove('active');
       lgSettingsPanel.style.display = '';
       defaultNotice.style.display = 'none';
+      if (aiSettingsPanel) aiSettingsPanel.style.display = 'none';
       setLgBg(currentBg);
+    } else if (isAi) {
+      body.classList.remove('lg-theme');
+      body.removeAttribute('data-lg-bg');
+      body.classList.add('ai-theme');
+      lgSettingsPanel.style.display = 'none';
+      defaultNotice.style.display = 'none';
+      if (aiSettingsPanel) aiSettingsPanel.style.display = '';
+      setAiStyle(currentAiStyle);
     } else {
       body.classList.remove('lg-theme');
-      optDefault.classList.add('active');
-      optLiquid.classList.remove('active');
+      body.classList.remove('ai-theme');
+      body.removeAttribute('data-lg-bg');
+      body.removeAttribute('data-ai-style');
       lgSettingsPanel.style.display = 'none';
       defaultNotice.style.display = '';
-      body.removeAttribute('data-lg-bg');
+      if (aiSettingsPanel) aiSettingsPanel.style.display = 'none';
     }
   }
 
@@ -3212,10 +3681,12 @@ window.loadLesson = loadLesson;
   function syncUI() {
     applyTokens();
     setLgBg(currentBg);
+    setAiStyle(currentAiStyle);
   }
 
   if (optDefault) optDefault.onclick = () => setTheme('default');
   if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
+  if (optAi) optAi.onclick = () => setTheme('ai');
 
   if (rBlur) rBlur.oninput = () => { st(KEY_BLUR, rBlur.value); applyTokens(); };
   if (rFill) rFill.oninput = () => { st(KEY_FILL, rFill.value); applyTokens(); };
@@ -3239,12 +3710,11 @@ window.loadLesson = loadLesson;
     applyTokens();
   };
 
-  // Khởi tạo trạng thái ban đầu
+  // Khởi tạo theme ban đầu
   setTheme(currentTheme);
   applyTokens();
-  setLgBg(currentBg);
 
-  // Vệt sáng chuột (Mouse glow)
+  // Vệt sáng chuột
   window.addEventListener('pointermove', e => {
     if (!body.classList.contains('lg-glow-on')) return;
     const el = e.target.closest && e.target.closest('.card, #mn, .theme-modal-box');

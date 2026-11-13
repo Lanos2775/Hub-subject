@@ -1072,6 +1072,371 @@ body.lg-theme .theme-btn-action.active{
 @media (prefers-reduced-motion:reduce){
   .btn-theme-settings,.thm-toggle-btn,.theme-btn-action,.theme-modal-overlay,.theme-modal-box{transition:none !important;animation:none !important}
 }
+
+/* ==========================================================================
+   THEME AI: CHATGPT & CLAUDE
+   ========================================================================== */
+body.ai-theme {
+  --lg-blur: 0px !important;
+  color-scheme: dark;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+body.ai-theme #lg-orbs,
+body.ai-theme #lg-bg-ios {
+  display: none !important;
+}
+
+/* 1. Phong cách ChatGPT: Dark Modern Minimalist */
+body.ai-theme[data-ai-style="chatgpt"] {
+  --bg: #212121;
+  --card: #2a2a2a;
+  --ink: #ececec;
+  --mut: #a3a3a3;
+  --g: #383838;
+  --tint: #2f2f2f;
+  --accent: #10a37f;
+  --c1: #10a37f;
+  --c2: #19c37d;
+  --c3: #f59e0b;
+  --c4: #ef4444;
+  --c5: #10a37f;
+  background-color: #212121 !important;
+  background-image: none !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] section,
+body.ai-theme[data-ai-style="chatgpt"] .card,
+body.ai-theme[data-ai-style="chatgpt"] .tile,
+body.ai-theme[data-ai-style="chatgpt"] .formula-card,
+body.ai-theme[data-ai-style="chatgpt"] .sim-card {
+  background: #2a2a2a !important;
+  border: 1px solid #383838 !important;
+  border-left: 6px solid var(--bc, #10a37f) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #mn,
+body.ai-theme[data-ai-style="chatgpt"] #hmenu,
+body.ai-theme[data-ai-style="chatgpt"] .brand-float,
+body.ai-theme[data-ai-style="chatgpt"] .vbar {
+  background: #171717 !important;
+  border: 1px solid #333333 !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5) !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .menu-label {
+  color: #10a37f !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .theme-modal-box,
+body.ai-theme[data-ai-style="chatgpt"] .fpop-box,
+body.ai-theme[data-ai-style="chatgpt"] .qzp-box {
+  background: #262626 !important;
+  border: 1px solid #3c3c3c !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6) !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .theme-modal-header {
+  border-bottom-color: #383838 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .key {
+  background: #262626 !important;
+  border: 1px solid #10a37f !important;
+  box-shadow: 0 4px 18px rgba(16,163,127,0.15) !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .key::before {
+  background: #10a37f !important;
+  color: #fff !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .box {
+  background: #272727 !important;
+  border-left: 5px solid #10a37f !important;
+  color: #e5e5e5 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .box.warn {
+  border-left-color: #ef4444 !important;
+  background: #2c2424 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .box.analogy {
+  border-left-color: #19c37d !important;
+  background: #222a26 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .bridge,
+body.ai-theme[data-ai-style="chatgpt"] .f,
+body.ai-theme[data-ai-style="chatgpt"] .panel,
+body.ai-theme[data-ai-style="chatgpt"] .ans {
+  background: #262626 !important;
+  border: 1px solid #383838 !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .quiz-box,
+body.ai-theme[data-ai-style="chatgpt"] .qz-side,
+body.ai-theme[data-ai-style="chatgpt"] .qpx {
+  background: #282828 !important;
+  border-left: 6px solid #10a37f !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .sim-widget {
+  background: #262626 !important;
+  border: 1px solid #383838 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #ls button {
+  background: #2f2f2f !important;
+  border-color: #404040 !important;
+  color: #ececec !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #ls button:hover {
+  background: #3a3a3a !important;
+  border-color: #10a37f !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #ls button.on {
+  background: #10a37f !important;
+  border-color: #10a37f !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(16,163,127,0.4) !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #toc a,
+body.ai-theme[data-ai-style="chatgpt"] #toc-links a {
+  color: #b4b4b4 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] #toc a:hover,
+body.ai-theme[data-ai-style="chatgpt"] #toc a.on,
+body.ai-theme[data-ai-style="chatgpt"] #toc-links a:hover,
+body.ai-theme[data-ai-style="chatgpt"] #toc-links a.on {
+  color: #10a37f !important;
+  border-left-color: #10a37f !important;
+  background: rgba(16,163,127,0.08) !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] code,
+body.ai-theme[data-ai-style="chatgpt"] pre {
+  background: #2a2a2a !important;
+  color: #10a37f !important;
+  border-color: #383838 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] table th,
+body.ai-theme[data-ai-style="chatgpt"] .tw th {
+  background: #303030 !important;
+  color: #10a37f !important;
+  border-bottom: 1px solid #404040 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] table td,
+body.ai-theme[data-ai-style="chatgpt"] .tw td {
+  border-bottom: 1px solid #363636 !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .tile .cd,
+body.ai-theme[data-ai-style="chatgpt"] .pill-code {
+  color: #10a37f !important;
+}
+body.ai-theme[data-ai-style="chatgpt"] .acts .btn.pri {
+  background: #10a37f !important;
+  border-color: #10a37f !important;
+  color: #fff !important;
+}
+
+/* 2. Phong cách Claude: Warm Intellectual Terracotta */
+body.ai-theme[data-ai-style="claude"] {
+  --bg: #1e1e1b;
+  --card: #282723;
+  --ink: #f5efe6;
+  --mut: #b8b1a5;
+  --g: #3d3b34;
+  --tint: #31302a;
+  --accent: #da7756;
+  --c1: #da7756;
+  --c2: #8fa876;
+  --c3: #df9e52;
+  --c4: #cf6659;
+  --c5: #da7756;
+  background-color: #1e1e1b !important;
+  background-image: none !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] section,
+body.ai-theme[data-ai-style="claude"] .card,
+body.ai-theme[data-ai-style="claude"] .tile,
+body.ai-theme[data-ai-style="claude"] .formula-card,
+body.ai-theme[data-ai-style="claude"] .sim-card {
+  background: #282723 !important;
+  border: 1px solid #3d3b34 !important;
+  border-left: 6px solid var(--bc, #da7756) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35) !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] #mn,
+body.ai-theme[data-ai-style="claude"] #hmenu,
+body.ai-theme[data-ai-style="claude"] .brand-float,
+body.ai-theme[data-ai-style="claude"] .vbar {
+  background: #181816 !important;
+  border: 1px solid #383630 !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.55) !important;
+}
+body.ai-theme[data-ai-style="claude"] .menu-label {
+  color: #da7756 !important;
+}
+body.ai-theme[data-ai-style="claude"] .theme-modal-box,
+body.ai-theme[data-ai-style="claude"] .fpop-box,
+body.ai-theme[data-ai-style="claude"] .qzp-box {
+  background: #24231f !important;
+  border: 1px solid #423f37 !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.65) !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] .theme-modal-header {
+  border-bottom-color: #3d3b34 !important;
+}
+body.ai-theme[data-ai-style="claude"] .key {
+  background: #252420 !important;
+  border: 1px solid #da7756 !important;
+  box-shadow: 0 4px 18px rgba(218,119,86,0.18) !important;
+}
+body.ai-theme[data-ai-style="claude"] .key::before {
+  background: #da7756 !important;
+  color: #181816 !important;
+  font-weight: 800 !important;
+}
+body.ai-theme[data-ai-style="claude"] .box {
+  background: #24231f !important;
+  border-left: 5px solid #da7756 !important;
+  color: #f0e9df !important;
+}
+body.ai-theme[data-ai-style="claude"] .box.warn {
+  border-left-color: #cf6659 !important;
+  background: #2b2220 !important;
+}
+body.ai-theme[data-ai-style="claude"] .box.analogy {
+  border-left-color: #8fa876 !important;
+  background: #222720 !important;
+}
+body.ai-theme[data-ai-style="claude"] .bridge,
+body.ai-theme[data-ai-style="claude"] .f,
+body.ai-theme[data-ai-style="claude"] .panel,
+body.ai-theme[data-ai-style="claude"] .ans {
+  background: #24231f !important;
+  border: 1px solid #3d3b34 !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] .quiz-box,
+body.ai-theme[data-ai-style="claude"] .qz-side,
+body.ai-theme[data-ai-style="claude"] .qpx {
+  background: #262521 !important;
+  border-left: 6px solid #da7756 !important;
+}
+body.ai-theme[data-ai-style="claude"] .sim-widget {
+  background: #24231f !important;
+  border: 1px solid #3d3b34 !important;
+}
+body.ai-theme[data-ai-style="claude"] #ls button {
+  background: #2f2e29 !important;
+  border-color: #424037 !important;
+  color: #f5efe6 !important;
+}
+body.ai-theme[data-ai-style="claude"] #ls button:hover {
+  background: #393831 !important;
+  border-color: #da7756 !important;
+}
+body.ai-theme[data-ai-style="claude"] #ls button.on {
+  background: #da7756 !important;
+  border-color: #da7756 !important;
+  color: #181816 !important;
+  box-shadow: 0 4px 12px rgba(218,119,86,0.4) !important;
+}
+body.ai-theme[data-ai-style="claude"] #toc a,
+body.ai-theme[data-ai-style="claude"] #toc-links a {
+  color: #b8b1a5 !important;
+}
+body.ai-theme[data-ai-style="claude"] #toc a:hover,
+body.ai-theme[data-ai-style="claude"] #toc a.on,
+body.ai-theme[data-ai-style="claude"] #toc-links a:hover,
+body.ai-theme[data-ai-style="claude"] #toc-links a.on {
+  color: #da7756 !important;
+  border-left-color: #da7756 !important;
+  background: rgba(218,119,86,0.1) !important;
+}
+body.ai-theme[data-ai-style="claude"] code,
+body.ai-theme[data-ai-style="claude"] pre {
+  background: #272622 !important;
+  color: #da7756 !important;
+  border-color: #3d3b34 !important;
+}
+body.ai-theme[data-ai-style="claude"] table th,
+body.ai-theme[data-ai-style="claude"] .tw th {
+  background: #2f2e28 !important;
+  color: #da7756 !important;
+  border-bottom: 1px solid #44423a !important;
+}
+body.ai-theme[data-ai-style="claude"] table td,
+body.ai-theme[data-ai-style="claude"] .tw td {
+  border-bottom: 1px solid #383630 !important;
+}
+body.ai-theme[data-ai-style="claude"] .tile .cd,
+body.ai-theme[data-ai-style="claude"] .pill-code {
+  color: #da7756 !important;
+}
+body.ai-theme[data-ai-style="claude"] .acts .btn.pri {
+  background: #da7756 !important;
+  border-color: #da7756 !important;
+  color: #181816 !important;
+}
+
+/* Kiểu nút AI active trong modal & card xem trước */
+body.ai-theme .theme-mode-select #thm-opt-ai {
+  background: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+body.ai-theme[data-ai-style="claude"] .theme-mode-select #thm-opt-ai {
+  color: #181816 !important;
+}
+
+.preview-chatgpt {
+  background: linear-gradient(135deg, #171717 0%, #212121 50%, #2a2a2a 100%);
+  position: relative;
+  border: 1px solid #383838;
+}
+.preview-chatgpt::after {
+  content: "ChatGPT";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  background: #10a37f;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: .4px;
+  box-shadow: 0 2px 6px rgba(16,163,127,0.3);
+}
+.preview-claude {
+  background: linear-gradient(135deg, #181816 0%, #1e1e1b 50%, #282723 100%);
+  position: relative;
+  border: 1px solid #3d3b34;
+}
+.preview-claude::after {
+  content: "Claude";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: 800;
+  color: #181816;
+  background: #da7756;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: .4px;
+  box-shadow: 0 2px 6px rgba(218,119,86,0.3);
+}
+body.ai-theme[data-ai-style="chatgpt"] .theme-bg-card.active {
+  border-color: #10a37f !important;
+  background: rgba(16,163,127,0.12) !important;
+  box-shadow: 0 0 12px rgba(16,163,127,0.35) !important;
+}
+body.ai-theme[data-ai-style="claude"] .theme-bg-card.active {
+  border-color: #da7756 !important;
+  background: rgba(218,119,86,0.12) !important;
+  box-shadow: 0 0 12px rgba(218,119,86,0.35) !important;
+}
+
 </style>
 </head>
 <body>
@@ -1141,13 +1506,38 @@ body.lg-theme .theme-btn-action.active{
 
     <!-- Chuyển đổi giữa 2 giao diện -->
     <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
-      <button type="button" id="thm-opt-default" class="thm-toggle-btn">Dracula</button>
-      <button type="button" id="thm-opt-liquid" class="thm-toggle-btn active">Liquid Glass</button>
-    </div>
+   <button type="button" id="thm-opt-default" class="thm-toggle-btn">Dracula</button>
+   <button type="button" id="thm-opt-liquid" class="thm-toggle-btn"> Liquid Glass </button>
+   <button type="button" id="thm-opt-ai" class="thm-toggle-btn">AI</button>
+  </div>
 
     <div id="default-theme-notice" class="theme-default-notice" style="display:none">
-      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> để trải nghiệm giao diện kính mờ pha lê và bật các tuỳ chỉnh chi tiết.
+      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> hoặc <b>AI</b> để thay đổi trải nghiệm đọc và bật các tuỳ chỉnh chi tiết.
     </div>
+
+    <!-- Panel tuỳ chỉnh của AI Theme -->
+    <div id="ai-settings-panel" class="theme-ctrl-group" style="display:none">
+      <div class="theme-ctrl-item">
+        <div class="theme-ctrl-item-head">
+          <label id="lbl-ai-style" style="font-weight:700">Kiểu giao diện AI</label>
+          <output id="o-ai-style">ChatGPT</output>
+        </div>
+        <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-ai-style">
+          <button type="button" id="btn-ai-chatgpt" class="theme-bg-card active" data-style="chatgpt" aria-checked="true" role="radio" title="Giao diện ChatGPT tối giản hiện đại với tông xám và điểm nhấn xanh ngọc">
+            <span class="theme-bg-preview preview-chatgpt"></span>
+            <span class="theme-bg-name">ChatGPT</span>
+          </button>
+          <button type="button" id="btn-ai-claude" class="theme-bg-card" data-style="claude" aria-checked="false" role="radio" title="Giao diện Claude ấm áp với tông nâu đất nung và giấy sáp">
+            <span class="theme-bg-preview preview-claude"></span>
+            <span class="theme-bg-name">Claude</span>
+          </button>
+        </div>
+      </div>
+      <div id="ai-style-desc" class="theme-default-notice" style="margin-top:2px">
+        Tối giản, hiện đại với tông màu xám đen và điểm nhấn xanh ngọc đặc trưng của OpenAI ChatGPT.
+      </div>
+    </div>
+
 
     <!-- Các thiết lập của Liquid Glass -->
     <div id="lg-settings-panel" class="theme-ctrl-group">
@@ -3924,6 +4314,14 @@ window.loadLesson = loadLesson;
   const btnCloseModal = document.getElementById('theme-modal-close');
   const optDefault = document.getElementById('thm-opt-default');
   const optLiquid = document.getElementById('thm-opt-liquid');
+  const optAi = document.getElementById('thm-opt-ai');
+  const aiSettingsPanel = document.getElementById('ai-settings-panel');
+  const btnAiGpt = document.getElementById('btn-ai-chatgpt');
+  const btnAiClaude = document.getElementById('btn-ai-claude');
+  const oAiStyle = document.getElementById('o-ai-style');
+  const aiStyleDesc = document.getElementById('ai-style-desc');
+  const KEY_AI_STYLE = 'toan-roi-rac-ai-style';
+  let currentAiStyle = st(KEY_AI_STYLE) || 'chatgpt';
   const lgSettingsPanel = document.getElementById('lg-settings-panel');
   const defaultNotice = document.getElementById('default-theme-notice');
   const orbsEl = document.getElementById('lg-orbs');
@@ -4028,24 +4426,62 @@ window.loadLesson = loadLesson;
     }
   }
 
+  
+  function setAiStyle(styleKey) {
+    currentAiStyle = (styleKey === 'claude') ? 'claude' : 'chatgpt';
+    st(KEY_AI_STYLE, currentAiStyle);
+    if (body.classList.contains('ai-theme')) {
+      body.setAttribute('data-ai-style', currentAiStyle);
+    }
+    if (btnAiGpt) {
+      btnAiGpt.classList.toggle('active', currentAiStyle === 'chatgpt');
+      btnAiGpt.setAttribute('aria-checked', currentAiStyle === 'chatgpt' ? 'true' : 'false');
+    }
+    if (btnAiClaude) {
+      btnAiClaude.classList.toggle('active', currentAiStyle === 'claude');
+      btnAiClaude.setAttribute('aria-checked', currentAiStyle === 'claude' ? 'true' : 'false');
+    }
+    if (oAiStyle) oAiStyle.textContent = (currentAiStyle === 'claude') ? 'Claude' : 'ChatGPT';
+    if (aiStyleDesc) {
+      aiStyleDesc.textContent = (currentAiStyle === 'claude')
+        ? 'Ấm áp, đậm chất tri thức với tông nâu đất nung Terracotta và nền giấy sáp của Anthropic Claude.'
+        : 'Tối giản, hiện đại với tông màu xám đen và điểm nhấn xanh ngọc đặc trưng của OpenAI ChatGPT.';
+    }
+  }
+  if (btnAiGpt) btnAiGpt.onclick = () => setAiStyle('chatgpt');
+  if (btnAiClaude) btnAiClaude.onclick = () => setAiStyle('claude');
+
   function setTheme(t) {
     currentTheme = t;
     st(KEY_THEME, t);
     const isLg = t === 'liquid-glass';
+    const isAi = t === 'ai';
 
     body.classList.toggle('lg-theme', isLg);
-    if (optDefault) optDefault.classList.toggle('active', !isLg);
+    body.classList.toggle('ai-theme', isAi);
+    if (optDefault) optDefault.classList.toggle('active', t === 'default');
     if (optLiquid) optLiquid.classList.toggle('active', isLg);
+    if (optAi) optAi.classList.toggle('active', isAi);
 
     if (lgSettingsPanel) lgSettingsPanel.style.display = isLg ? 'flex' : 'none';
-    if (defaultNotice) defaultNotice.style.display = isLg ? 'none' : 'block';
+    if (aiSettingsPanel) aiSettingsPanel.style.display = isAi ? 'flex' : 'none';
+    if (defaultNotice) defaultNotice.style.display = (t === 'default') ? 'block' : 'none';
 
     if (isLg) {
       applyLgTokens();
+      body.removeAttribute('data-ai-style');
+    } else if (isAi) {
+      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
+      if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
+      body.removeAttribute('data-lg-bg');
+      root.classList.remove('lg-refract');
+      body.setAttribute('data-ai-style', currentAiStyle);
+      setAiStyle(currentAiStyle);
     } else {
       if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
       if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
       body.removeAttribute('data-lg-bg');
+      body.removeAttribute('data-ai-style');
       root.classList.remove('lg-refract');
     }
   }
@@ -4082,6 +4518,7 @@ window.loadLesson = loadLesson;
 
   if (optDefault) optDefault.onclick = () => setTheme('default');
   if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
+  if (optAi) optAi.onclick = () => setTheme('ai');
 
   function setBg(bgKey) {
     lgConfig.bg = bgKey;
