@@ -30,7 +30,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 60px;
+  scroll-padding-top: 58px;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -40,20 +40,41 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 16px/1.75 "Roboto Mono", ui-monospace, Menlo, Consolas, monospace;
+  font: 16px/1.75 "Roboto Mono", "Be Vietnam Pro", ui-monospace, Menlo, Consolas, monospace;
   letter-spacing: 0.01em;
   overflow-x: hidden;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 46px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--g);
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(12px, 3.5vw, 36px);
+  gap: 12px;
+}
+.topbar-title {
+  font-family: "Lexend Deca", "Roboto Mono", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
 }
 
 main {
   max-width: none;
   margin: 0;
-  padding: 1.5rem clamp(1rem, 5vw, 3rem) 4rem;
+  padding: 1.25rem clamp(12px, 3.5vw, 36px) 4rem;
 }
 
-p, li { max-width: 165ch; }
+p, li { max-width: none; }
 
-header { padding: 32px 0 8px; }
+header { padding: 8px 0 8px; }
 
 h1 {
   font-size: clamp(24px, 5vw, 36px);
@@ -302,13 +323,22 @@ figure {
   width: min(100%, 920px, calc(46vh * var(--r)));
   text-align: center;
 }
-svg {
+svg:not([aria-hidden="true"]) {
   width: 100%;
   height: auto;
   display: block;
   background: var(--sub-alt);
   border-radius: var(--radius);
-  border: 1px solid var(--sub);
+  border: 1px solid var(--g);
+}
+svg[aria-hidden="true"] {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  background: none !important;
+  pointer-events: none !important;
 }
 .card { display: flow-root; }
 .bridge, .box, .f, .ans, .stepsbox, .tw { display: flow-root; }
@@ -323,7 +353,7 @@ h1, .sec-title, .card > h2 { clear: both; }
   }
 }
 
-svg text { font-family: "Roboto Mono", ui-monospace, monospace; }
+svg text { font-family: "Roboto Mono", "Be Vietnam Pro", system-ui, sans-serif; fill: var(--ink); }
 figcaption {
   font-size: 13.5px;
   color: var(--mut);
@@ -334,13 +364,8 @@ figcaption {
 
 /* ===== HAMBURGER BUTTON ===== */
 #mb {
-  position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 10px);
-  left: 12px;
-  z-index: 30;
-  width: 40px;
-  height: 40px;
-  border: 0;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius);
   background: var(--sub-alt);
   border: 1px solid var(--g);
@@ -349,29 +374,30 @@ figcaption {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
   transition: border-color .15s ease;
+  flex-shrink: 0;
 }
 #mb:hover { border-color: var(--main); }
-#mb span { width: 18px; height: 2px; border-radius: 1px; background: var(--sub); transition: background .15s; }
+#mb span { width: 16px; height: 2px; border-radius: 1px; background: var(--sub); transition: background .15s; }
 #mb:hover span { background: var(--main); }
 
 /* ===== NAV MENU ===== */
 #mn {
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 58px);
-  left: 12px;
-  z-index: 30;
-  width: min(300px, calc(100vw - 24px));
-  max-height: calc(100vh - 80px);
-  max-height: calc(100dvh - 80px);
+  top: 50px;
+  left: clamp(12px, 3.5vw, 36px);
+  z-index: 60;
+  width: min(320px, calc(100vw - 24px));
+  max-height: calc(100vh - 65px);
+  max-height: calc(100dvh - 65px);
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--sub-alt);
   border: 1px solid var(--g);
   border-radius: var(--radius);
   padding: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .5);
 }
 #mn[hidden] { display: none; }
 
@@ -429,17 +455,17 @@ figcaption {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 600px) {
   body { font-size: 15px; }
-  main { padding: 18px 12px 70px; }
-  .card { padding: 18px 14px; border-left-width: 3px; }
+  main { padding: 14px 10px 60px; }
+  .card { padding: 16px 12px; border-left-width: 3px; }
   .sec-title { font-size: 19px; }
   .pager { flex-direction: column; }
   .pg + .pg { text-align: left; }
 }
 
 /* ===== QUIZ RAIL ===== */
-body.qz-on main { padding-left: 108px; }
-body.qz-on header { padding-top: 14px; }
-body.qz-on h1 { font-size: 20px; margin: 5px 0 7px; }
+body.qz-on main { padding-left: 114px; }
+body.qz-on header { padding-top: 10px; }
+body.qz-on h1 { font-size: 20px; margin: 4px 0 6px; }
 
 .qz-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 4px 0 6px; }
 #qzTabs { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -468,8 +494,8 @@ body.qz-on h1 { font-size: 20px; margin: 5px 0 7px; }
   min-width: 0;
   max-width: 760px;
   position: sticky;
-  top: 60px;
-  max-height: calc(100vh - 80px);
+  top: 56px;
+  max-height: calc(100vh - 70px);
   overflow: auto;
   background: var(--sub-alt);
   border: 1px solid var(--g);
@@ -498,7 +524,7 @@ body.qz-on h1 { font-size: 20px; margin: 5px 0 7px; }
 .qz-q {
   padding: 9px 0 12px;
   border-bottom: 1px solid var(--g);
-  scroll-margin-top: 60px;
+  scroll-margin-top: 56px;
   font-size: 14.5px;
   line-height: 1.5;
 }
@@ -562,9 +588,9 @@ body.qz-on h1 { font-size: 20px; margin: 5px 0 7px; }
   display: none;
   position: fixed;
   left: 0;
-  top: 60px;
+  top: 48px;
   z-index: 4;
-  max-height: 50vh;
+  max-height: calc(100vh - 58px);
   overflow: auto;
   padding: 5px 5px 5px 4px;
   background: var(--sub-alt);
