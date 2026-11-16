@@ -815,416 +815,6 @@ html.lg-refract body.lg-theme #hmenu{
   #toast,.tile,.btn,.vbar,.vbar-btn,.vmenu-btn,.floating-settings-btn{transition:none !important}
 }
 
-/* ==========================================================================
-   THEME AI: CHATGPT & CLAUDE (PURE BLACK & TRANSLUCENT OBSIDIAN)
-   ========================================================================== */
-body.ai-theme {
-  --lg-blur: 0px !important;
-  color-scheme: dark;
-  background-color: #000000 !important;
-  background: #000000 !important;
-  background-image: none !important;
-  transition: background-color .25s ease, color .25s ease;
-}
-
-body.ai-theme #lg-orbs,
-body.ai-theme #lg-bg-ios {
-  display: none !important;
-}
-
-/* 1. Phong cách ChatGPT: Pure Black & Translucent Neutral Obsidian */
-body.ai-theme[data-ai-style="chatgpt"] {
-  --bg: #000000;
-  --card: rgba(24, 24, 24, 0.78);
-  --ink: #f0f0f0;
-  --mut: #9e9e9e;
-  --g: rgba(255, 255, 255, 0.12);
-  --tint: rgba(36, 36, 36, 0.65);
-  --accent: #ffffff;
-  --c1: #ffffff;
-  --c2: #d4d4d4;
-  --c3: #e5e5e5;
-  --c4: #f5f5f5;
-  --c5: #ffffff;
-  background-color: #000000 !important;
-  background: #000000 !important;
-  background-image: none !important;
-  color: #f0f0f0 !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] section,
-body.ai-theme[data-ai-style="chatgpt"] .card,
-body.ai-theme[data-ai-style="chatgpt"] .tile,
-body.ai-theme[data-ai-style="chatgpt"] .formula-card,
-body.ai-theme[data-ai-style="chatgpt"] .sim-card {
-  background: rgba(24, 24, 24, 0.78) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8) !important;
-  color: #f0f0f0 !important;
-  border-radius: 18px !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] #mn,
-body.ai-theme[data-ai-style="chatgpt"] #hmenu,
-body.ai-theme[data-ai-style="chatgpt"] .brand-float,
-body.ai-theme[data-ai-style="chatgpt"] .vbar {
-  background: rgba(16, 16, 16, 0.85) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .menu-label {
-  color: #e0e0e0 !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .theme-modal-box,
-body.ai-theme[data-ai-style="chatgpt"] .fpop-box,
-body.ai-theme[data-ai-style="chatgpt"] .qzp-box {
-  background: rgba(18, 18, 18, 0.9) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95) !important;
-  color: #f0f0f0 !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .theme-modal-header {
-  border-bottom-color: rgba(255, 255, 255, 0.12) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .key {
-  background: rgba(28, 28, 28, 0.75) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
-  border-radius: 14px !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .key::before {
-  background: rgba(255, 255, 255, 0.18) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .box {
-  background: rgba(26, 26, 26, 0.72) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-left: 3px solid rgba(255, 255, 255, 0.35) !important;
-  color: #ececec !important;
-  border-radius: 14px !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .box.warn {
-  border-left-color: rgba(255, 255, 255, 0.55) !important;
-  background: rgba(32, 28, 28, 0.72) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .box.analogy {
-  border-left-color: rgba(255, 255, 255, 0.45) !important;
-  background: rgba(28, 30, 28, 0.72) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .bridge,
-body.ai-theme[data-ai-style="chatgpt"] .f,
-body.ai-theme[data-ai-style="chatgpt"] .panel,
-body.ai-theme[data-ai-style="chatgpt"] .ans {
-  background: rgba(24, 24, 24, 0.72) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  color: #f0f0f0 !important;
-  border-radius: 14px !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .quiz-box,
-body.ai-theme[data-ai-style="chatgpt"] .qz-side,
-body.ai-theme[data-ai-style="chatgpt"] .qpx {
-  background: rgba(24, 24, 24, 0.75) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-left: 3px solid rgba(255, 255, 255, 0.4) !important;
-  border-radius: 16px !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .sim-widget {
-  background: rgba(22, 22, 22, 0.75) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-radius: 16px !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] #ls button {
-  background: rgba(30, 30, 30, 0.7) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  color: #f0f0f0 !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] #ls button:hover {
-  background: rgba(48, 48, 48, 0.8) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] #ls button.on {
-  background: rgba(255, 255, 255, 0.18) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] #toc a,
-body.ai-theme[data-ai-style="chatgpt"] #toc-links a {
-  color: #a3a3a3 !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] #toc a:hover,
-body.ai-theme[data-ai-style="chatgpt"] #toc a.on,
-body.ai-theme[data-ai-style="chatgpt"] #toc-links a:hover,
-body.ai-theme[data-ai-style="chatgpt"] #toc-links a.on {
-  color: #ffffff !important;
-  border-left-color: rgba(255, 255, 255, 0.6) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] code,
-body.ai-theme[data-ai-style="chatgpt"] pre {
-  background: rgba(16, 16, 16, 0.85) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] table th,
-body.ai-theme[data-ai-style="chatgpt"] .tw th {
-  background: rgba(32, 32, 32, 0.85) !important;
-  color: #ffffff !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] table td,
-body.ai-theme[data-ai-style="chatgpt"] .tw td {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .tile .cd,
-body.ai-theme[data-ai-style="chatgpt"] .pill-code {
-  color: #e5e5e5 !important;
-}
-body.ai-theme[data-ai-style="chatgpt"] .acts .btn.pri {
-  background: rgba(255, 255, 255, 0.18) !important;
-  border-color: rgba(255, 255, 255, 0.35) !important;
-  color: #ffffff !important;
-}
-
-/* 2. Phong cách Claude: Pure Black & Translucent Warm Charcoal */
-body.ai-theme[data-ai-style="claude"] {
-  --bg: #000000;
-  --card: rgba(26, 25, 23, 0.78);
-  --ink: #f7f4ed;
-  --mut: #a5a199;
-  --g: rgba(255, 250, 240, 0.12);
-  --tint: rgba(36, 35, 32, 0.65);
-  --accent: #f7f4ed;
-  --c1: #f7f4ed;
-  --c2: #e8e3d8;
-  --c3: #ded9cd;
-  --c4: #f0ebe0;
-  --c5: #f7f4ed;
-  background-color: #000000 !important;
-  background: #000000 !important;
-  background-image: none !important;
-  color: #f7f4ed !important;
-}
-body.ai-theme[data-ai-style="claude"] section,
-body.ai-theme[data-ai-style="claude"] .card,
-body.ai-theme[data-ai-style="claude"] .tile,
-body.ai-theme[data-ai-style="claude"] .formula-card,
-body.ai-theme[data-ai-style="claude"] .sim-card {
-  background: rgba(26, 25, 23, 0.78) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 250, 240, 0.12) !important;
-  border-left: 1px solid rgba(255, 250, 240, 0.12) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8) !important;
-  color: #f7f4ed !important;
-  border-radius: 18px !important;
-}
-body.ai-theme[data-ai-style="claude"] #mn,
-body.ai-theme[data-ai-style="claude"] #hmenu,
-body.ai-theme[data-ai-style="claude"] .brand-float,
-body.ai-theme[data-ai-style="claude"] .vbar {
-  background: rgba(16, 15, 14, 0.85) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
-  backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 250, 240, 0.14) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9) !important;
-}
-body.ai-theme[data-ai-style="claude"] .menu-label {
-  color: #e8e3d8 !important;
-}
-body.ai-theme[data-ai-style="claude"] .theme-modal-box,
-body.ai-theme[data-ai-style="claude"] .fpop-box,
-body.ai-theme[data-ai-style="claude"] .qzp-box {
-  background: rgba(18, 17, 16, 0.9) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 250, 240, 0.16) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95) !important;
-  color: #f7f4ed !important;
-}
-body.ai-theme[data-ai-style="claude"] .theme-modal-header {
-  border-bottom-color: rgba(255, 250, 240, 0.12) !important;
-}
-body.ai-theme[data-ai-style="claude"] .key {
-  background: rgba(30, 29, 26, 0.75) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 250, 240, 0.16) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
-  border-radius: 14px !important;
-}
-body.ai-theme[data-ai-style="claude"] .key::before {
-  background: rgba(255, 250, 240, 0.18) !important;
-  color: #f7f4ed !important;
-  border: 1px solid rgba(255, 250, 240, 0.25) !important;
-}
-body.ai-theme[data-ai-style="claude"] .box {
-  background: rgba(28, 27, 24, 0.72) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 250, 240, 0.12) !important;
-  border-left: 3px solid rgba(255, 250, 240, 0.35) !important;
-  color: #f0ebe0 !important;
-  border-radius: 14px !important;
-}
-body.ai-theme[data-ai-style="claude"] .box.warn {
-  border-left-color: rgba(255, 250, 240, 0.55) !important;
-  background: rgba(34, 28, 26, 0.72) !important;
-}
-body.ai-theme[data-ai-style="claude"] .box.analogy {
-  border-left-color: rgba(255, 250, 240, 0.45) !important;
-  background: rgba(26, 30, 26, 0.72) !important;
-}
-body.ai-theme[data-ai-style="claude"] .bridge,
-body.ai-theme[data-ai-style="claude"] .f,
-body.ai-theme[data-ai-style="claude"] .panel,
-body.ai-theme[data-ai-style="claude"] .ans {
-  background: rgba(26, 25, 23, 0.72) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 250, 240, 0.12) !important;
-  color: #f7f4ed !important;
-  border-radius: 14px !important;
-}
-body.ai-theme[data-ai-style="claude"] .quiz-box,
-body.ai-theme[data-ai-style="claude"] .qz-side,
-body.ai-theme[data-ai-style="claude"] .qpx {
-  background: rgba(26, 25, 23, 0.75) !important;
-  border: 1px solid rgba(255, 250, 240, 0.12) !important;
-  border-left: 3px solid rgba(255, 250, 240, 0.4) !important;
-  border-radius: 16px !important;
-}
-body.ai-theme[data-ai-style="claude"] .sim-widget {
-  background: rgba(24, 23, 21, 0.75) !important;
-  border: 1px solid rgba(255, 250, 240, 0.12) !important;
-  border-radius: 16px !important;
-}
-body.ai-theme[data-ai-style="claude"] #ls button {
-  background: rgba(32, 31, 28, 0.7) !important;
-  border: 1px solid rgba(255, 250, 240, 0.14) !important;
-  color: #f7f4ed !important;
-}
-body.ai-theme[data-ai-style="claude"] #ls button:hover {
-  background: rgba(50, 48, 44, 0.8) !important;
-  border-color: rgba(255, 250, 240, 0.3) !important;
-}
-body.ai-theme[data-ai-style="claude"] #ls button.on {
-  background: rgba(255, 250, 240, 0.18) !important;
-  border-color: rgba(255, 250, 240, 0.45) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 16px rgba(255, 250, 240, 0.1) !important;
-}
-body.ai-theme[data-ai-style="claude"] #toc a,
-body.ai-theme[data-ai-style="claude"] #toc-links a {
-  color: #a5a199 !important;
-}
-body.ai-theme[data-ai-style="claude"] #toc a:hover,
-body.ai-theme[data-ai-style="claude"] #toc a.on,
-body.ai-theme[data-ai-style="claude"] #toc-links a:hover,
-body.ai-theme[data-ai-style="claude"] #toc-links a.on {
-  color: #ffffff !important;
-  border-left-color: rgba(255, 250, 240, 0.6) !important;
-  background: rgba(255, 250, 240, 0.08) !important;
-}
-body.ai-theme[data-ai-style="claude"] code,
-body.ai-theme[data-ai-style="claude"] pre {
-  background: rgba(18, 17, 16, 0.85) !important;
-  color: #f7f4ed !important;
-  border: 1px solid rgba(255, 250, 240, 0.12) !important;
-}
-body.ai-theme[data-ai-style="claude"] table th,
-body.ai-theme[data-ai-style="claude"] .tw th {
-  background: rgba(34, 33, 30, 0.85) !important;
-  color: #ffffff !important;
-  border-bottom: 1px solid rgba(255, 250, 240, 0.18) !important;
-}
-body.ai-theme[data-ai-style="claude"] table td,
-body.ai-theme[data-ai-style="claude"] .tw td {
-  border-bottom: 1px solid rgba(255, 250, 240, 0.08) !important;
-}
-body.ai-theme[data-ai-style="claude"] .tile .cd,
-body.ai-theme[data-ai-style="claude"] .pill-code {
-  color: #f0ebe0 !important;
-}
-body.ai-theme[data-ai-style="claude"] .acts .btn.pri {
-  background: rgba(255, 250, 240, 0.18) !important;
-  border-color: rgba(255, 250, 240, 0.35) !important;
-  color: #ffffff !important;
-}
-
-/* Kiểu nút AI active trong modal & card xem trước */
-body.ai-theme .theme-mode-select #thm-opt-ai {
-  background: rgba(255, 255, 255, 0.22) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
-}
-
-.preview-chatgpt {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1f1f1f 100%);
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-.preview-chatgpt::after {
-  content: "ChatGPT";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 10px;
-  font-weight: 800;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 2px 7px;
-  border-radius: 4px;
-  letter-spacing: .4px;
-}
-.preview-claude {
-  background: linear-gradient(135deg, #0a0a0a 0%, #201e19 100%);
-  position: relative;
-  border: 1px solid rgba(255, 250, 240, 0.15);
-}
-.preview-claude::after {
-  content: "Claude";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 10px;
-  font-weight: 800;
-  color: #f7f4ed;
-  background: rgba(255, 250, 240, 0.16);
-  border: 1px solid rgba(255, 250, 240, 0.25);
-  padding: 2px 7px;
-  border-radius: 4px;
-  letter-spacing: .4px;
-}
-body.ai-theme[data-ai-style="chatgpt"] .theme-bg-card.active,
-.theme-bg-card[data-style="chatgpt"].active {
-  border-color: rgba(255, 255, 255, 0.5) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.2) !important;
-}
-body.ai-theme[data-ai-style="claude"] .theme-bg-card.active,
-.theme-bg-card[data-style="claude"].active {
-  border-color: rgba(255, 250, 240, 0.5) !important;
-  background: rgba(255, 250, 240, 0.1) !important;
-  box-shadow: 0 0 14px rgba(255, 250, 240, 0.2) !important;
-}
-
 </style>
 </head>
 <body>
@@ -1329,36 +919,11 @@ body.ai-theme[data-ai-style="claude"] .theme-bg-card.active,
     <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
    <button type="button" id="thm-opt-default" class="thm-toggle-btn">Dracula</button>
    <button type="button" id="thm-opt-liquid" class="thm-toggle-btn"> Axolotl Glass </button>
-   <button type="button" id="thm-opt-ai" class="thm-toggle-btn">AI</button>
-  </div>
+    </div>
 
     <div id="default-theme-notice" class="theme-default-notice" style="display:none">
-      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> hoặc <b>AI</b> để thay đổi trải nghiệm đọc và bật các tuỳ chỉnh chi tiết.
+      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> để thay đổi trải nghiệm đọc và bật các tuỳ chỉnh chi tiết.
     </div>
-
-    <!-- Panel tuỳ chỉnh của AI Theme -->
-    <div id="ai-settings-panel" class="theme-ctrl-group" style="display:none">
-      <div class="theme-ctrl-item">
-        <div class="theme-ctrl-item-head">
-          <label id="lbl-ai-style" style="font-weight:700">Kiểu giao diện AI</label>
-          <output id="o-ai-style">ChatGPT</output>
-        </div>
-        <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-ai-style">
-          <button type="button" id="btn-ai-chatgpt" class="theme-bg-card active" data-style="chatgpt" aria-checked="true" role="radio" title="Giao diện ChatGPT tối giản hiện đại với tông xám và điểm nhấn xanh ngọc">
-            <span class="theme-bg-preview preview-chatgpt"></span>
-            <span class="theme-bg-name">ChatGPT</span>
-          </button>
-          <button type="button" id="btn-ai-claude" class="theme-bg-card" data-style="claude" aria-checked="false" role="radio" title="Giao diện Claude ấm áp với tông nâu đất nung và giấy sáp">
-            <span class="theme-bg-preview preview-claude"></span>
-            <span class="theme-bg-name">Claude</span>
-          </button>
-        </div>
-      </div>
-      <div id="ai-style-desc" class="theme-default-notice" style="margin-top:2px">
-        Nền đen thuần tối giản, các khung xám đen mờ bán trong suốt phong cách ChatGPT.
-      </div>
-    </div>
-
 
     <!-- Các thiết lập của Liquid Glass -->
     <div id="lg-settings-panel" class="theme-ctrl-group">
@@ -1850,6 +1415,7 @@ window.addEventListener("keydown",e=>{
 
   const DEF_LG = { blur: 16, fill: 14, tint: 16, sat: 200, orbBlur: 18, refract: false, glow: false, bg: 'ios' };
   let currentTheme = st('axolotl-theme') || 'liquid-glass';
+  if (currentTheme === 'ai') currentTheme = 'liquid-glass';
   let lgConfig = Object.assign({}, DEF_LG, st('axolotl-lg-settings') || {});
 
   const modalOverlay = document.getElementById('theme-modal-overlay');
@@ -1857,14 +1423,6 @@ window.addEventListener("keydown",e=>{
   const btnCloseModal = document.getElementById('theme-modal-close');
   const optDefault = document.getElementById('thm-opt-default');
   const optLiquid = document.getElementById('thm-opt-liquid');
-  const optAi = document.getElementById('thm-opt-ai');
-  const aiSettingsPanel = document.getElementById('ai-settings-panel');
-  const btnAiGpt = document.getElementById('btn-ai-chatgpt');
-  const btnAiClaude = document.getElementById('btn-ai-claude');
-  const oAiStyle = document.getElementById('o-ai-style');
-  const aiStyleDesc = document.getElementById('ai-style-desc');
-  const KEY_AI_STYLE = 'axolotl-ai-style';
-  let currentAiStyle = st(KEY_AI_STYLE) || 'chatgpt';
   const lgSettingsPanel = document.getElementById('lg-settings-panel');
   const defaultNotice = document.getElementById('default-theme-notice');
   const orbsEl = document.getElementById('lg-orbs');
@@ -1976,61 +1534,28 @@ window.addEventListener("keydown",e=>{
   }
 
   
-  function setAiStyle(styleKey) {
-    currentAiStyle = (styleKey === 'claude') ? 'claude' : 'chatgpt';
-    st(KEY_AI_STYLE, currentAiStyle);
-    if (body.classList.contains('ai-theme')) {
-      body.setAttribute('data-ai-style', currentAiStyle);
-    }
-    if (btnAiGpt) {
-      btnAiGpt.classList.toggle('active', currentAiStyle === 'chatgpt');
-      btnAiGpt.setAttribute('aria-checked', currentAiStyle === 'chatgpt' ? 'true' : 'false');
-    }
-    if (btnAiClaude) {
-      btnAiClaude.classList.toggle('active', currentAiStyle === 'claude');
-      btnAiClaude.setAttribute('aria-checked', currentAiStyle === 'claude' ? 'true' : 'false');
-    }
-    if (oAiStyle) oAiStyle.textContent = (currentAiStyle === 'claude') ? 'Claude' : 'ChatGPT';
-    if (aiStyleDesc) {
-      aiStyleDesc.textContent = (currentAiStyle === 'claude')
-        ? 'Nền đen thuần êm dịu, các khung than chì mờ bán trong suốt cùng chữ ngà ấm áp phong cách Claude.'
-        : 'Nền đen thuần tối giản, các khung xám đen mờ bán trong suốt phong cách ChatGPT.';
-    }
-  }
-  if (btnAiGpt) btnAiGpt.onclick = () => setAiStyle('chatgpt');
-  if (btnAiClaude) btnAiClaude.onclick = () => setAiStyle('claude');
 
-  function setTheme(t) {
+    function setTheme(t) {
+    if (t === 'ai') t = 'liquid-glass';
     currentTheme = t;
     st('axolotl-theme', t);
     const isLg = t === 'liquid-glass';
-    const isAi = t === 'ai';
 
     body.classList.toggle('lg-theme', isLg);
-    body.classList.toggle('ai-theme', isAi);
+    body.classList.remove('ai-theme');
+    body.removeAttribute('data-ai-style');
     if (optDefault) optDefault.classList.toggle('active', t === 'default');
     if (optLiquid) optLiquid.classList.toggle('active', isLg);
-    if (optAi) optAi.classList.toggle('active', isAi);
 
     if (lgSettingsPanel) lgSettingsPanel.style.display = isLg ? 'flex' : 'none';
-    if (aiSettingsPanel) aiSettingsPanel.style.display = isAi ? 'flex' : 'none';
     if (defaultNotice) defaultNotice.style.display = (t === 'default') ? 'block' : 'none';
 
     if (isLg) {
       applyLgTokens();
-      body.removeAttribute('data-ai-style');
-    } else if (isAi) {
-      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
-      if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
-      body.removeAttribute('data-lg-bg');
-      root.classList.remove('lg-refract');
-      body.setAttribute('data-ai-style', currentAiStyle);
-      setAiStyle(currentAiStyle);
     } else {
       if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
       if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
       body.removeAttribute('data-lg-bg');
-      body.removeAttribute('data-ai-style');
       root.classList.remove('lg-refract');
     }
   }
@@ -2067,7 +1592,6 @@ window.addEventListener("keydown",e=>{
 
   if (optDefault) optDefault.onclick = () => setTheme('default');
   if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
-  if (optAi) optAi.onclick = () => setTheme('ai');
 
   function setBg(bgKey) {
     lgConfig.bg = bgKey;
