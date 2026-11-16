@@ -20,11 +20,41 @@ window.MathJax = {
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute;margin:0;border:0;background:none" aria-hidden="true"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c2)"/></marker><marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c4)"/></marker><marker id="ar5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c5)"/></marker></defs></svg>
+<svg width="0" height="0" style="position:absolute;margin:0;border:0;background:none" aria-hidden="true">
+  <defs>
+    <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--mut)"/></marker>
+    <marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c2)"/></marker>
+    <marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c4)"/></marker>
+    <marker id="ar5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c5)"/></marker>
+    <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 11H5L3 7zm2 13h14v2H5v-2z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.500L18.500 9H13z"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M20 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zM6 8h2v2H6V8zm0 4h2v2H6v-2zm3 0h2v2H9v-2zm0-4h2v2H9V8zm3 0h2v2h-2V8zm0 4h2v2h-2v-2zm3-4h2v2h-2V8zm0 4h2v2h-2v-2zm3-4h2v2h-2V8zm0 4h2v2h-2v-2zM7 16h10v1.5H7V16z"/></symbol>
+  </defs>
+</svg>
 
 <header class="topbar">
-  <button id="mb" type="button" aria-label="Mở menu và mục lục" aria-expanded="false" aria-controls="mn"><span></span><span></span><span></span></button>
-  <span class="topbar-title">Tín Hiệu &amp; Hệ Thống</span>
+  <div class="topbar-left">
+    <button id="mb" class="logo-btn" type="button" aria-label="Mở mục lục bài học" title="Mục lục bài học" aria-expanded="false" aria-controls="mn">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="5 7 11 12 5 17" />
+          <line x1="13" y1="17" x2="19" y2="17" />
+        </svg>
+      </span>
+    </button>
+    <div class="topbar-lesson">
+      <span class="k" id="lesson-chip"></span>
+      <h1 class="topbar-title" id="lesson-title"></h1>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" id="btn-quiz-pop" type="button" aria-label="Quiz trắc nghiệm" title="Luyện tập Quiz (Phím M)">
+      <svg><use href="#i-crown"/></svg>
+    </button>
+    <button class="icon-btn" id="btn-fpop" type="button" aria-label="Bảng tra công thức" title="Bảng tra công thức Fourier (Phím H)">
+      <svg><use href="#i-file"/></svg>
+    </button>
+  </div>
 </header>
 
 <nav id="mn" hidden aria-label="Mục lục">
@@ -34,16 +64,6 @@ window.MathJax = {
   <div id="ls"></div><div id="toc"></div>
 </nav>
 <main>
-<header>
-<span class="k" id="lesson-chip"></span>
-<h1 id="lesson-title"></h1>
-<div class="tabs" id="tabs">
-<button type="button" class="tab" data-filter="all">Toàn bộ bài</button>
-<button type="button" class="tab" data-filter="overview">Lý thuyết gốc</button>
-<button type="button" class="tab" data-filter="exercises">Bài tập Quiz</button>
-<button type="button" class="tab" data-filter="summary">Tổng kết &amp; Bẫy thi</button>
-</div>
-</header>
 <article id="lesson-container"></article>
 <div class="pager"><button type="button" class="pg" id="btn-prev"></button><button type="button" class="pg" id="btn-next"></button></div>
 </main>

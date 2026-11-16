@@ -1000,11 +1000,10 @@
 
             $('lesson-chip').textContent = `Bài ${lesson.number}`;
             $('lesson-title').textContent = lesson.shortTitle;
-            document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.filter === state.sectionFilter));
 
             state.tocItems = [];
             state.cardN = 0;
-            const keys = state.sectionFilter === 'all' ? ['overview', 'exercises', 'summary'] : [state.sectionFilter];
+            const keys = ['overview', 'exercises', 'summary'];
             let html = '';
             keys.forEach(k => {
                 if (lesson.sections[k]) {
@@ -1013,7 +1012,8 @@
             });
             const container = $('lesson-container');
             document.body.classList.toggle('qz-on', !!lesson.quiz);
-            $('tabs').style.display = lesson.quiz ? 'none' : '';
+            const tabsEl = $('tabs');
+            if (tabsEl) tabsEl.style.display = lesson.quiz ? 'none' : '';
             if (lesson.quiz) { container.innerHTML = ''; QZ.mount(container); }
             else { QZ.unmount(); container.innerHTML = html; }
 
@@ -1072,12 +1072,31 @@
             if (b) { selectLesson(+b.dataset.i); return; }
             if (e.target.closest('#toc a')) openMenu(false);
         });
-        $('tabs').addEventListener('click', e => {
-            const b = e.target.closest('.tab');
-            if (!b) return;
-            state.sectionFilter = b.dataset.filter;
-            renderCurrentLesson();
-        });
+        const tabsEl = $('tabs');
+        if (tabsEl) {
+            tabsEl.addEventListener('click', e => {
+                const b = e.target.closest('.tab');
+                if (!b) return;
+                state.sectionFilter = b.dataset.filter;
+                renderCurrentLesson();
+            });
+        }
+        const btnQuiz = $('btn-quiz-pop');
+        if (btnQuiz) {
+            btnQuiz.onclick = () => {
+                openMenu(false);
+                if (isFPopOpen()) toggleFPop(false);
+                QZ.toggle();
+            };
+        }
+        const btnFpop = $('btn-fpop');
+        if (btnFpop) {
+            btnFpop.onclick = () => {
+                openMenu(false);
+                if (QZ.isOpen()) QZ.toggle(false);
+                toggleFPop();
+            };
+        }
         $('btn-prev').onclick = () => selectLesson(state.currentLessonIndex - 1);
         $('btn-next').onclick = () => selectLesson(state.currentLessonIndex + 1);
 
