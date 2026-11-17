@@ -2609,6 +2609,7 @@ function renderLS(curId) {
   lsEl.innerHTML = BAN_DAN_LESSONS.map(l =>
     `<button type="button" data-id="${l.id}" title="${l.title}" aria-label="${l.title}" class="${String(l.id) === String(curId) ? 'on' : ''}">${l.id}</button>`
   ).join('');
+  if (window.updateTaskbar) window.updateTaskbar(curId);
 }
 
 // Khởi chạy menu 3 gạch góc trên bên trái và nạp Buổi 7
@@ -2644,284 +2645,6 @@ function renderLS(curId) {
   renderLS('7');
 })();
 
-(function themeManager() {
-  const root = document.documentElement;
-  const body = document.body;
-  const st = (k, v) => {
-    try {
-      if (typeof v !== 'undefined') localStorage.setItem(k, JSON.stringify(v));
-      const val = localStorage.getItem(k);
-      return val ? JSON.parse(val) : null;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  const DEF_LG = { blur: 14, fill: 12, tint: 16, sat: 200, orbBlur: 16, refract: false, glow: false, bg: 'ios' };
-  let currentTheme = st('ban-dan-theme') || 'liquid-glass';
-  let lgConfig = Object.assign({}, DEF_LG, st('ban-dan-lg-settings') || {});
-  if (!lgConfig.bg) lgConfig.bg = 'ios';
-
-  const modalOverlay = document.getElementById('theme-modal-overlay');
-  const btnSettings = document.getElementById('btn-theme-settings');
-  const btnCloseModal = document.getElementById('theme-modal-close');
-  const optDefault = document.getElementById('thm-opt-default');
-  const optLiquid = document.getElementById('thm-opt-liquid');
-  const lgSettingsPanel = document.getElementById('lg-settings-panel');
-  const defaultNotice = document.getElementById('default-theme-notice');
-  const orbsEl = document.getElementById('lg-orbs');
-  const bgIosEl = document.getElementById('lg-bg-ios');
-  const btnBgAurora = document.getElementById('btn-bg-aurora');
-  const btnBgIos = document.getElementById('btn-bg-ios');
-  const oBg = document.getElementById('o-lg-bg');
-
-  const rBlur = document.getElementById('r-lg-blur');
-  const oBlur = document.getElementById('o-lg-blur');
-  const rFill = document.getElementById('r-lg-fill');
-  const oFill = document.getElementById('o-lg-fill');
-  const rTint = document.getElementById('r-lg-tint');
-  const oTint = document.getElementById('o-lg-tint');
-  const rSat = document.getElementById('r-lg-sat');
-  const oSat = document.getElementById('o-lg-sat');
-  const rOrbBlur = document.getElementById('r-lg-orb-blur');
-  const oOrbBlur = document.getElementById('o-lg-orb-blur');
-  const bGlow = document.getElementById('b-lg-glow');
-  const bRefract = document.getElementById('b-lg-refract');
-  const bReset = document.getElementById('b-lg-reset');
-
-  const canRefract = () => /Chrom(e|ium)\//.test(navigator.userAgent) && window.CSS && CSS.supports && CSS.supports('backdrop-filter', 'blur(1px)');
-
-  function applyLgTokens() {
-    const s = root.style;
-    s.setProperty('--lg-blur', lgConfig.blur + 'px');
-    s.setProperty('--lg-fill', (lgConfig.fill / 100).toFixed(2));
-    s.setProperty('--lg-tint', (lgConfig.tint / 100).toFixed(2));
-    s.setProperty('--lg-sat', lgConfig.sat + '%');
-
-    // Quản lý nền (iOS Silk Wave hoặc Aurora Orbs)
-    const bg = lgConfig.bg || 'ios';
-    body.setAttribute('data-lg-bg', bg);
-    if (bg === 'ios') {
-      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
-      if (bgIosEl) {
-        if (lgConfig.orbBlur === 0) {
-          bgIosEl.classList.add('lg-orbs-hidden');
-        } else {
-          bgIosEl.classList.remove('lg-orbs-hidden');
-          bgIosEl.style.filter = 'blur(' + (lgConfig.orbBlur * 0.4) + 'px)';
-        }
-      }
-    } else {
-      if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
-      if (lgConfig.orbBlur === 0) {
-        if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
-        s.setProperty('--lg-orb-blur', '0px');
-      } else {
-        if (orbsEl) {
-          orbsEl.classList.remove('lg-orbs-hidden');
-          orbsEl.style.filter = 'blur(' + lgConfig.orbBlur + 'px)';
-        }
-        s.setProperty('--lg-orb-blur', lgConfig.orbBlur + 'px');
-      }
-    }
-
-    // Vệt sáng chuột
-    body.classList.toggle('lg-glow-on', !!lgConfig.glow);
-    if (bGlow) {
-      bGlow.classList.toggle('active', !!lgConfig.glow);
-      bGlow.setAttribute('aria-pressed', !!lgConfig.glow);
-      bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
-    }
-
-    // Refraction
-    root.classList.toggle('lg-refract', !!lgConfig.refract);
-    if (bRefract) {
-      bRefract.classList.toggle('active', !!lgConfig.refract);
-      bRefract.setAttribute('aria-pressed', !!lgConfig.refract);
-      if (!canRefract()) {
-        bRefract.disabled = true;
-        bRefract.textContent = 'Khúc xạ: cần Chrome / Edge';
-      } else {
-        bRefract.textContent = 'Khúc xạ (Chrome): ' + (lgConfig.refract ? 'Bật' : 'Tắt');
-      }
-    }
-  }
-
-  function syncControlUI() {
-    const bg = lgConfig.bg || 'ios';
-    if (btnBgAurora) {
-      btnBgAurora.classList.toggle('active', bg === 'aurora');
-      btnBgAurora.setAttribute('aria-checked', bg === 'aurora' ? 'true' : 'false');
-    }
-    if (btnBgIos) {
-      btnBgIos.classList.toggle('active', bg === 'ios');
-      btnBgIos.setAttribute('aria-checked', bg === 'ios' ? 'true' : 'false');
-    }
-    if (oBg) oBg.textContent = bg === 'ios' ? 'iOS' : 'Aurora';
-
-    if (rBlur) { rBlur.value = lgConfig.blur; oBlur.textContent = lgConfig.blur + 'px'; }
-    if (rFill) { rFill.value = lgConfig.fill; oFill.textContent = (lgConfig.fill / 100).toFixed(2); }
-    if (rTint) { rTint.value = lgConfig.tint; oTint.textContent = (lgConfig.tint / 100).toFixed(2); }
-    if (rSat) { rSat.value = lgConfig.sat; oSat.textContent = lgConfig.sat + '%'; }
-    if (rOrbBlur) {
-      rOrbBlur.value = lgConfig.orbBlur;
-      oOrbBlur.textContent = lgConfig.orbBlur === 0 ? 'Ẩn vòng tròn' : lgConfig.orbBlur + 'px';
-    }
-    if (bGlow) {
-      bGlow.classList.toggle('active', !!lgConfig.glow);
-      bGlow.setAttribute('aria-pressed', !!lgConfig.glow);
-      bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
-    }
-  }
-
-  function setTheme(t) {
-    currentTheme = t;
-    st('ban-dan-theme', t);
-    const isLg = t === 'liquid-glass';
-
-    body.classList.toggle('lg-theme', isLg);
-    if (optDefault) optDefault.classList.toggle('active', !isLg);
-    if (optLiquid) optLiquid.classList.toggle('active', isLg);
-
-    if (lgSettingsPanel) lgSettingsPanel.style.display = isLg ? 'flex' : 'none';
-    if (defaultNotice) defaultNotice.style.display = isLg ? 'none' : 'block';
-
-    if (isLg) {
-      applyLgTokens();
-    } else {
-      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
-      if (bgIosEl) bgIosEl.classList.add('lg-orbs-hidden');
-      body.removeAttribute('data-lg-bg');
-      root.classList.remove('lg-refract');
-    }
-  }
-
-  // Open / Close modal
-  function openModal() {
-    if (modalOverlay) {
-      modalOverlay.hidden = false;
-      syncControlUI();
-    }
-  }
-  function closeModal() {
-    if (modalOverlay) modalOverlay.hidden = true;
-  }
-
-  if (btnSettings) {
-    btnSettings.onclick = (e) => {
-      e.stopPropagation();
-      const nav = document.getElementById('mn');
-      const mb = document.getElementById('mb');
-      if (nav) nav.hidden = true;
-      if (mb) {
-        mb.setAttribute('aria-expanded', 'false');
-        mb.setAttribute('aria-label', 'Mở menu chọn bài và mục lục');
-      }
-      openModal();
-    };
-  }
-  if (btnCloseModal) btnCloseModal.onclick = closeModal;
-  if (modalOverlay) {
-    modalOverlay.onclick = (e) => {
-      if (e.target === modalOverlay) closeModal();
-    };
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalOverlay && !modalOverlay.hidden) {
-      e.stopPropagation();
-      closeModal();
-    }
-  }, true);
-
-  if (optDefault) optDefault.onclick = () => setTheme('default');
-  if (optLiquid) optLiquid.onclick = () => setTheme('liquid-glass');
-
-  function setBg(bgKey) {
-    lgConfig.bg = bgKey;
-    st('ban-dan-lg-settings', lgConfig);
-    syncControlUI();
-    applyLgTokens();
-  }
-  if (btnBgAurora) btnBgAurora.onclick = () => setBg('aurora');
-  if (btnBgIos) btnBgIos.onclick = () => setBg('ios');
-
-  // Sliders
-  function bindSlider(slider, output, key, transformOut, onApply) {
-    if (!slider || !output) return;
-    slider.oninput = () => {
-      const v = +slider.value;
-      lgConfig[key] = v;
-      output.textContent = transformOut(v);
-      onApply(v);
-      st('ban-dan-lg-settings', lgConfig);
-    };
-  }
-
-  bindSlider(rBlur, oBlur, 'blur', v => v + 'px', v => root.style.setProperty('--lg-blur', v + 'px'));
-  bindSlider(rFill, oFill, 'fill', v => (v / 100).toFixed(2), v => root.style.setProperty('--lg-fill', (v / 100).toFixed(2)));
-  bindSlider(rTint, oTint, 'tint', v => (v / 100).toFixed(2), v => root.style.setProperty('--lg-tint', (v / 100).toFixed(2)));
-  bindSlider(rSat, oSat, 'sat', v => v + '%', v => root.style.setProperty('--lg-sat', v + '%'));
-  bindSlider(rOrbBlur, oOrbBlur, 'orbBlur', v => v === 0 ? 'Ẩn vòng tròn' : v + 'px', v => {
-    if (v === 0) {
-      if (orbsEl) orbsEl.classList.add('lg-orbs-hidden');
-    } else {
-      if (orbsEl) {
-        orbsEl.classList.remove('lg-orbs-hidden');
-        orbsEl.style.filter = 'blur(' + v + 'px)';
-      }
-    }
-    root.style.setProperty('--lg-orb-blur', v + 'px');
-  });
-
-  if (bGlow) {
-    bGlow.onclick = () => {
-      lgConfig.glow = !lgConfig.glow;
-      body.classList.toggle('lg-glow-on', lgConfig.glow);
-      bGlow.classList.toggle('active', lgConfig.glow);
-      bGlow.setAttribute('aria-pressed', lgConfig.glow);
-      bGlow.textContent = 'Vệt sáng chuột: ' + (lgConfig.glow ? 'Bật' : 'Tắt');
-      st('ban-dan-lg-settings', lgConfig);
-    };
-  }
-
-  if (bRefract) {
-    bRefract.onclick = () => {
-      if (!canRefract()) return;
-      lgConfig.refract = !lgConfig.refract;
-      root.classList.toggle('lg-refract', lgConfig.refract);
-      bRefract.classList.toggle('active', lgConfig.refract);
-      bRefract.setAttribute('aria-pressed', lgConfig.refract);
-      bRefract.textContent = 'Khúc xạ (Chrome): ' + (lgConfig.refract ? 'Bật' : 'Tắt');
-      st('ban-dan-lg-settings', lgConfig);
-    };
-  }
-
-  if (bReset) {
-    bReset.onclick = () => {
-      lgConfig = Object.assign({}, DEF_LG);
-      st('ban-dan-lg-settings', lgConfig);
-      syncControlUI();
-      applyLgTokens();
-    };
-  }
-
-  // Pointer light tracking in liquid glass mode (chỉ chạy khi bật vệt sáng chuột)
-  if (window.matchMedia && matchMedia('(pointer:fine)').matches) {
-    document.addEventListener('pointermove', (e) => {
-      if (!body.classList.contains('lg-theme') || !lgConfig.glow) return;
-      const el = e.target.closest && e.target.closest('section, .sim-card, .formula-card, #mn, .theme-modal-box');
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
-    }, { passive: true });
-  }
-
-  // Init
-  syncControlUI();
-  setTheme(currentTheme);
-})();
 
 /* ===== Ghim công thức (phím T) ===== */
 (function(){
@@ -3135,4 +2858,47 @@ function renderLS(curId) {
 
   window.formulaPin={toggle,open:()=>setOpen(true),close:()=>setOpen(false),pins:()=>rows.flat().map(c=>c.h)};
   if(store.get('open',false))setOpen(true);
+})();
+
+
+/* ===== Thanh taskbar: nhãn bài, ghim công thức, chuyển buổi, lên đầu ===== */
+(function taskbar() {
+  const $ = id => document.getElementById(id);
+  let cur = '7';
+  const idx = () => BAN_DAN_LESSONS.findIndex(l => String(l.id) === String(cur));
+  window.updateTaskbar = id => {
+    cur = String(id);
+    const i = idx(), l = BAN_DAN_LESSONS[i];
+    if (!l) return;
+    $('tb-badge').textContent = 'Buổi ' + l.id;
+    $('tb-title').textContent = l.title.replace(/^Buổi\s*\d+\s*:\s*/, '');
+    $('tb-prev').disabled = i <= 0;
+    $('tb-next').disabled = i >= BAN_DAN_LESSONS.length - 1;
+  };
+  const go = d => {
+    const l = BAN_DAN_LESSONS[idx() + d];
+    if (!l) return;
+    loadLesson(l.id);
+    renderLS(l.id);
+    window.scrollTo(0, 0);
+  };
+  $('tb-prev').onclick = () => go(-1);
+  $('tb-next').onclick = () => go(1);
+  $('tb-top').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  const fp = $('fp'), bf = $('tb-fp');
+  bf.onclick = () => {
+    if (!window.formulaPin) return;
+    fp.classList.contains('on') ? window.formulaPin.close() : window.formulaPin.open();
+  };
+  if (fp) {
+    const sync = () => {
+      const on = fp.classList.contains('on');
+      bf.classList.toggle('on', on);
+      bf.setAttribute('aria-pressed', on);
+    };
+    new MutationObserver(sync).observe(fp, { attributes: true, attributeFilter: ['class'] });
+    sync();
+  }
+  const i0 = BAN_DAN_LESSONS.find(l => $('ls') && $('ls').querySelector('button.on') && String(l.id) === $('ls').querySelector('button.on').dataset.id);
+  window.updateTaskbar(i0 ? i0.id : '7');
 })();
