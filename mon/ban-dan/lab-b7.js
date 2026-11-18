@@ -300,30 +300,14 @@ LABS.push({
    ========================================================================== */
 LABS.push({
   id: 'hall', name: 'Hall', sec: 8,
-  S: { B: .2, I: 1, N: 1e16, d: 5, type: 'p' },
-  VH() { const S = this.S; return 1e3 * (S.type === 'p' ? 1 : -1) * S.I * 1e-3 * S.B / (Q * S.N * 1e6 * S.d * 1e-6); },
-  cols: '1.7fr 1fr', rows: '1.3fr 1fr', areas: '"a l" "c l"',
+  S: { B: .25, I: 1, N: 1e16, d: 5, type: 'p', flip: 0 },
+  VH() { const S = this.S; return 1e3 * (S.flip ? -1 : 1) * (S.type === 'p' ? 1 : -1) * S.I * 1e-3 * S.B / (Q * S.N * 1e6 * S.d * 1e-6); },
+  cols: '1.7fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [
-    { title: 'Thí nghiệm Hall tự chạy', area: 'a', host: true,
-      mount(p, box) {
-        box.className += ' lb-hall';
-        box.innerHTML = '<canvas></canvas><div class="hall-cap">…</div><div class="hall-chips">' + Array.from({ length: 10 }, (_, i) => '<span class="hall-chip">' + (i + 1) + '</span>').join('') + '</div>';
-        initHallSim(box);
-      } },
-    { title: 'Mặt cắt thanh: điện tích dồn về một mặt', area: 'c', anim: true,
-      ctrls: [{ k: 'B', l: 'B', min: 0, max: .5, step: .01, f: v => v.toFixed(2) + ' T' }, { k: 'I', l: 'I', min: .1, max: 5, step: .1, f: v => v.toFixed(1) + ' mA' }, { k: 'N', l: 'n', min: 14, max: 18, step: .1, log: 1, f: v => p10(Math.round(Math.log10(v))) }, { k: 'd', l: 'd', min: 1, max: 50, step: 1, f: v => v + ' µm' }, { k: 'type', seg: [['p', 'Loại P'], ['n', 'Loại N']] }],
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, VH = p.tab.VH(), pos = VH > 0, col = pos ? C.c4 : C.c2, k = clamp(Math.abs(VH) / 60, .05, 1);
-        const bx = 28, bw = W - 56, bh = Math.min(H * .46, 90), by = H / 2 - bh / 2 + 6;
-        rr(ctx, bx, by, bw, bh, 6); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.4; ctx.stroke();
-        arr(ctx, bx + 6, by - 12, bx + 66, by - 12, C.main, 3); txt(ctx, 'I', bx + 74, by - 12, C.main, 13, 'left', 700);
-        const n = Math.round(2 + k * 10);
-        for (let i = 0; i < n; i++) { const x = bx + 10 + (i + .5) * (bw - 20) / n; txt(ctx, pos ? '+' : '−', x, by + bh - 8, col, 15, 'center', 800); txt(ctx, pos ? '−' : '+', x, by + 9, pos ? C.c2 : C.c4, 15, 'center', 800); }
-        const cx = W / 2 + 40; ctx.beginPath(); ctx.arc(cx, by + bh / 2, 9, 0, TAU2); ctx.strokeStyle = C.c3; ctx.lineWidth = 2; ctx.stroke(); dot(ctx, cx, by + bh / 2, 2.5, C.c3); txt(ctx, 'B', cx + 16, by + bh / 2, C.c3, 13, 'left', 700);
-        const ex = W / 2 - 50; arr(ctx, ex, by + bh / 2 + (pos ? 26 : -26), ex, by + bh / 2 - (pos ? 26 : -26), C.main, 3); txt(ctx, 'E_H', ex + 8, by + bh / 2, C.main, 12.5, 'left', 700);
-        txt(ctx, 'V_H = ' + (VH >= 0 ? '+' : '−') + Math.abs(VH).toFixed(1) + ' mV', W / 2, 16, col, 15, 'center', 700);
-        txt(ctx, 'R_H = ' + (pos ? '+' : '−') + sci(1 / (Q * S.N), 2) + ' cm³/C', W / 2, H - 14, C.mut, 12, 'center', 600);
-      } }
+    { title: 'Hiệu ứng Hall: kéo B để đưa nam châm vào', area: 'a', host: true,
+      ctrls: [{ k: 'type', seg: [['p', 'Loại P'], ['n', 'Loại N']] }, { k: 'flip', seg: [[0, 'Nam châm: S trên'], [1, 'Đảo cực']] }, { k: 'B', l: 'B', min: 0, max: .5, step: .01, f: v => v.toFixed(2) + ' T' }, { k: 'I', l: 'I', min: .1, max: 5, step: .1, f: v => v.toFixed(1) + ' mA' },
+        { k: 'N', l: 'n', min: 14, max: 18, step: .1, log: 1, f: v => p10(Math.round(Math.log10(v))) }, { k: 'd', l: 'd', min: 1, max: 50, step: 1, f: v => v + ' µm' }],
+      mount(p, box) { box.className += ' lb-hall'; box.innerHTML = '<canvas></canvas>'; initHallSim(box, p.S); } }
   ]
 });
 
@@ -446,12 +430,14 @@ LD.hall = {
     ['w', 'Lỗ trống hay electron đều bị đẩy về cùng một mặt (đổi dấu điện tích và đổi chiều chạy triệt tiêu nhau). Khác nhau ở chỗ ai tích tụ.'],
     ['w', 'Điện tích dồn lại tạo điện trường Hall E_H đẩy ngược lực từ. Khi hai lực cân bằng, điện áp V_H ổn định.'],
     ['i', 'Dấu của V_H cho biết loại hạt tải: V_H > 0 là loại P, V_H < 0 là loại N.'],
-    ['i', 'Độ lớn V_H = IB/(q·n·d) cho biết nồng độ n, rồi R_H = 1/(q·n).']
+    ['i', 'Độ lớn V_H = IB/(q·n·d) cho biết nồng độ n, rồi R_H = 1/(q·n).'],
+    ['v', 'Kéo B để đưa nam châm vào, đổi loại P/N, chỉnh I, n, d và xem V_H trên vôn kế.']
   ],
   react(S, k, P, say) {
     const tab = LABS.find(l => l.id === 'hall'), V = tab.VH();
-    say('v', `V_H = ${V >= 0 ? '+' : '−'}${Math.abs(V).toFixed(1)} mV → loại ${V >= 0 ? 'P (lỗ trống)' : 'N (electron)'}.`);
-    if (k === 'type') say('w', 'Đổi loại hạt tải: cùng lực từ nhưng điện tích tích tụ trái dấu nên V_H đổi dấu.');
+    say('v', `V_H = ${V >= 0 ? '+' : '−'}${Math.abs(V).toFixed(1)} mV → loại ${S.type === 'p' ? 'P (lỗ trống)' : 'N (electron)'}.` + (S.flip ? ' B đang đảo chiều nên dấu V_H ngược lại: phải biết chiều B mới suy ra loại hạt tải.' : ''));
+    if (k === 'flip') say('w', S.flip ? 'Đảo cực: B đổi chiều (từ S xuống N), lực từ đổi hướng, hạt bị đẩy về mặt sau, V_H đổi dấu.' : 'Về cực chuẩn: B hướng từ N lên S, hạt bị đẩy về mặt trước.');
+    else if (k === 'type') say('w', 'Đổi loại hạt tải: cùng lực từ nhưng điện tích tích tụ trái dấu nên V_H đổi dấu.');
     else if (k === 'N') say('w', `n = ${pw(S.N)} → R_H = ${sci(1 / (Q * S.N), 2)} cm³/C. Ít hạt tải hơn thì V_H lớn hơn.`);
     else if (k === 'd') say('w', 'Thanh mỏng hơn (d nhỏ) thì cùng dòng I mật độ hạt dồn nhiều hơn, V_H lớn hơn.');
     else say('w', `V_H tỉ lệ thuận với ${k === 'B' ? 'B' : 'I'}: gấp đôi ${k === 'B' ? 'từ trường' : 'dòng điện'} thì V_H gấp đôi.`);
@@ -459,377 +445,118 @@ LD.hall = {
 };
 LABS.forEach(l => { l.log = LD[l.id]; });
 
-function initHallSim(host) {
-  const cv = host.querySelector('canvas');
-  if (!cv) return;
+/* ---------- Mô phỏng Hall 3D phẳng (chiếu xiên), điều khiển bằng thanh trượt, không có kịch bản tự chạy ---------- */
+function initHallSim(host, S) {
+  const cv = host.querySelector('canvas'); if (!cv) return;
   if (window.__b7HallRAF) { cancelAnimationFrame(window.__b7HallRAF); window.__b7HallRAF = null; }
-  const capEl = host.querySelector('.hall-cap');
-  const chips = Array.from(host.querySelectorAll('.hall-chip'));
-  const ctx = cv.getContext('2d');
-  const CW = 800, CH = 480;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  cv.width = CW * dpr; cv.height = CH * dpr;
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const ctx = cv.getContext('2d'), CW = 800, CH = 470, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = CW * dpr; cv.height = CH * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  /* ---------- hình học 3D -> 2D (chiếu xiên) ---------- */
-  const L = 330, WD = 120, D = 46;
-  const OX = 190, OY = 320;
-  const P = (x, y, z) => [OX + x + 0.55 * y, OY - z - 0.30 * y];
-
-  /* ---------- kịch bản tự động (giây) ---------- */
-  const CYCLE = 44;
-  const STAGES = [
-    [0, '1 · Mẫu P, chưa có B: V_H = 0'],
-    [4, '2 · Đưa nam châm vào: B xuyên qua thanh'],
-    [7, '3 · Lực từ đẩy lỗ trống về mặt trước (+)'],
-    [12, '4 · Cân bằng F_E = F_B: V_H > 0 ⇒ loại P'],
-    [17, '5 · Rút nam châm: V_H về 0'],
-    [20, '6 · Đổi sang mẫu N: electron chạy ngược chiều dòng'],
-    [23, '7 · Đưa nam châm vào lại, cùng chiều B'],
-    [26, '8 · Electron cũng bị đẩy về mặt trước (−)'],
-    [32, '9 · Cân bằng: V_H < 0 ⇒ loại N'],
-    [38, '10 · Rút nam châm: lặp lại']
-  ];
-  const stageOf = t => { let s = 0; for (let i = 0; i < STAGES.length; i++) if (t >= STAGES[i][0]) s = i; return s; };
-  const smooth = x => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
-  function magnetP(t) {
-    if (t < 4) return 0;
-    if (t < 7) return smooth((t - 4) / 3);
-    if (t < 17) return 1;
-    if (t < 20) return 1 - smooth((t - 17) / 3);
-    if (t < 23) return 0;
-    if (t < 26) return smooth((t - 23) / 3);
-    if (t < 38) return 1;
-    if (t < 41) return 1 - smooth((t - 38) / 3);
-    return 0;
+  const OX = 170, OY = 300, L = 330, WD = 120, D = 46;           // x: dọc thanh, y: bề rộng (y = 0 là mặt trước), z: bề dày
+  const P = (x, y, z) => [OX + x + .55 * y, OY - z - .30 * y];
+  const poly = (pts, fill, al, stroke) => {
+    ctx.beginPath(); pts.forEach((a, i) => i ? ctx.lineTo(a[0], a[1]) : ctx.moveTo(a[0], a[1])); ctx.closePath();
+    if (fill) { ctx.globalAlpha = al == null ? 1 : al; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; }
+    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.6; ctx.stroke(); }
+  };
+  const shade = (pts, a) => { ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fillStyle = 'rgba(0,0,0,' + a + ')'; ctx.fill(); };
+  function slab(x0, x1, y0, y1, z0, z1, col, al, label, onTop) {
+    const f = [P(x0, y0, z0), P(x1, y0, z0), P(x1, y0, z1), P(x0, y0, z1)], r = [P(x1, y0, z0), P(x1, y1, z0), P(x1, y1, z1), P(x1, y0, z1)], t = [P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)];
+    poly(f, col, al); shade(f, .18 * al); poly(r, col, al); shade(r, .38 * al); poly(t, col, al);
+    ctx.globalAlpha = al; [f, r, t].forEach(q => poly(q, null, 1, C.bg)); ctx.globalAlpha = 1;
+    const c = onTop ? P((x0 + x1) / 2, (y0 + y1) / 2, z1) : P((x0 + x1) / 2, y0, (z0 + z1) / 2);
+    ctx.globalAlpha = al; txt(ctx, label, c[0], c[1], C.bg, 15, 'center', 800); ctx.globalAlpha = 1;
   }
-  const isN = t => t >= 20;
 
-  /* ---------- hạt tải ---------- */
-  const N = 60;
-  const TH = 46;          // tốc độ nhiệt (px/s)
-  const AE = 280;         // gia tốc do điện trường dọc thanh
-  const W0 = 1.6;         // tần số cyclotron khi có nam châm
-  const KH = 3.0;         // hệ số đẩy lại của điện trường Hall (trường trung bình)
-  const TAU = 0.25;
-  const rnd = (a, b) => a + Math.random() * (b - a);
-  const gauss = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
-  const ps = [];
-  for (let i = 0; i < N; i++) {
-    ps.push({ x: rnd(0, L), y: rnd(8, WD - 8), z: rnd(8, D - 8), vx: gauss() * TH, vy: gauss() * TH, tn: rnd(0, TAU * 2), trail: [] });
-  }
-  let nType = false;        // false = P, true = N
-  let ybar = WD / 2, ybarS = WD / 2;
-  let vH = 0, needle = 0;
-  let sim = 0, lastTs = null, paused = false, lastStage = -1;
+  const N = 56, TH = 46, W0 = 1.6, KH = 3.0, TAU = .25;
+  const ps = Array.from({ length: N }, () => ({ x: rnd(0, L), y: rnd(8, WD - 8), z: rnd(8, D - 8), vx: gauss() * TH, vy: gauss() * TH, tn: rnd(0, TAU * 2) }));
+  let trail = [], nType = S.type === 'n', ybar = WD / 2, ybarS = WD / 2, vH = 0, needle = 0, mpS = 0, lastTs = null, flow = 0;
+  const sBf = () => S.flip ? -1 : 1;
+  const hallV = () => 1e3 * sBf() * (S.type === 'p' ? 1 : -1) * S.I * 1e-3 * S.B / (Q * S.N * 1e6 * S.d * 1e-6);
 
-  function step(dt, mp) {
-    const s = nType ? -1 : 1;
-    const dirx = nType ? -1 : 1;
-    const om = W0 * mp;
-    let sy = 0;
+  function step(dt) {
+    const s = nType ? -1 : 1, dirx = nType ? -1 : 1, AE = 100 + 60 * S.I, mp = mpS, om = W0 * mp * sBf(); let sy = 0;
     for (const p of ps) {
-      const ax = dirx * AE + s * om * p.vy;
-      const ay = -s * om * p.vx - KH * (ybar - WD / 2);
-      p.vx += ax * dt; p.vy += ay * dt;
-      p.x += p.vx * dt; p.y += p.vy * dt;
-      p.tn -= dt;
-      if (p.tn <= 0) {
-        p.vx = gauss() * TH; p.vy = gauss() * TH;
-        p.tn = -Math.log(1 - Math.random()) * TAU;
-      }
-      if (p.y < 4) { p.y = 4; p.vy = Math.abs(p.vy) * 0.4; }
-      if (p.y > WD - 4) { p.y = WD - 4; p.vy = -Math.abs(p.vy) * 0.4; }
-      if (p.x > L) p.x -= L;
-      if (p.x < 0) p.x += L;
+      p.vx += (dirx * AE + s * om * p.vy) * dt; p.vy += (-s * om * p.vx - KH * (ybar - WD / 2)) * dt;
+      p.x += p.vx * dt; p.y += p.vy * dt; p.tn -= dt;
+      if (p.tn <= 0) { p.vx = gauss() * TH; p.vy = gauss() * TH; p.tn = -Math.log(1 - Math.random()) * TAU; }
+      if (p.y < 6) { p.y = 6; p.vy = Math.abs(p.vy) * .4; } if (p.y > WD - 6) { p.y = WD - 6; p.vy = -Math.abs(p.vy) * .4; }
+      if (p.x > L) { p.x -= L; if (p === ps[0]) trail = []; } if (p.x < 0) { p.x += L; if (p === ps[0]) trail = []; }
       sy += p.y;
     }
-    ybar = sy / N;
-    const k = 1 - Math.exp(-dt / 0.6);
-    ybarS += (ybar - ybarS) * k;
-    let shift = WD / 2 - ybarS;
-    const dz = 3.5; shift = Math.sign(shift) * Math.max(0, Math.abs(shift) - dz) * (24 / (24 - dz));
-    const target = (nType ? -1 : 1) * 0.052 * shift;
-    vH += (target - vH) * (1 - Math.exp(-dt / 0.15));
-    needle += ((Math.max(-1, Math.min(1, vH / 1.6))) - needle) * (1 - Math.exp(-dt / 0.12));
-    const tr = ps[0];
-    tr.trail.push(P(tr.x, tr.y, tr.z));
-    if (tr.trail.length > 46) tr.trail.shift();
-    if (Math.abs(tr.vx) > 0 && tr.trail.length > 1) {
-      const a = tr.trail[tr.trail.length - 1], b = tr.trail[tr.trail.length - 2];
-      if (Math.hypot(a[0] - b[0], a[1] - b[1]) > 40) tr.trail.length = 0;
+    ybar = sy / N; ybarS += (ybar - ybarS) * (1 - Math.exp(-dt / .6));
+    vH += (hallV() - vH) * (1 - Math.exp(-dt / .25));
+    needle += (clamp(vH / 50, -1, 1) - needle) * (1 - Math.exp(-dt / .15));
+    trail.push([ps[0].x, ps[0].y, ps[0].z]); if (trail.length > 50) trail.shift();
+    flow = (flow + dt * 60) % 26;
+  }
+
+  const Lc = P(0, 0, D / 2), Rc = P(L, WD / 2, D / 2);
+  const WIRE = [[250, 440], [110, 440], [110, Lc[1]], [Lc[0], Lc[1]], [Rc[0], Rc[1]], [580, Rc[1]], [580, 440], [290, 440]];
+  const segs = WIRE.slice(1).map((b, i) => [WIRE[i], b, Math.hypot(b[0] - WIRE[i][0], b[1] - WIRE[i][1])]), WLEN = segs.reduce((s, q) => s + q[2], 0);
+  function wirePt(d) { for (const q of segs) { if (d <= q[2]) return [q[0][0] + (q[1][0] - q[0][0]) * d / q[2], q[0][1] + (q[1][1] - q[0][1]) * d / q[2]]; d -= q[2]; } return null; }
+  const path = pts => { ctx.beginPath(); pts.forEach((a, i) => i ? ctx.lineTo(a[0], a[1]) : ctx.moveTo(a[0], a[1])); };
+
+  function draw() {
+    ctx.clearRect(0, 0, CW, CH); ctx.fillStyle = C.bg; ctx.fillRect(0, 0, CW, CH);
+    const colQ = nType ? C.c2 : C.c4, q = Math.sqrt(clamp(Math.abs(vH) / 40, 0, 1)), mp = mpS, al = clamp(mp * 4, 0, 1), gap = (1 - mp) * 50;
+    txt(ctx, nType ? 'LOẠI N · hạt tải là electron (−)' : 'LOẠI P · hạt tải là lỗ trống (+)', CW / 2, 26, colQ, 16, 'center', 700);
+    /* mạch điện */
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = C.sub; ctx.lineWidth = 3;
+    path([WIRE[0], WIRE[1], WIRE[2], WIRE[3]]); ctx.stroke(); path([WIRE[4], WIRE[5], WIRE[6], WIRE[7]]); ctx.stroke();
+    ln(ctx, 256, 422, 256, 458, C.ink, 3); ln(ctx, 284, 430, 284, 450, C.ink, 5);
+    txt(ctx, '+', 240, 424, C.c4, 15, 'center', 800); txt(ctx, '−', 300, 424, C.c5, 15, 'center', 800);
+    for (let d = flow; d < WLEN; d += 26) { const pt = wirePt(d); if (pt && !(Math.abs(pt[1] - Lc[1]) < 1 && pt[0] > Lc[0] + 2 && pt[0] < Rc[0] - 2) && !(pt[0] > Lc[0] && pt[0] < Rc[0] && Math.abs(pt[1] - Rc[1]) < 30 && pt[1] !== 440)) dot(ctx, pt[0], pt[1], 3.2, C.main); }
+    arr(ctx, 80, 380, 80, 340, C.main, 2.5); txt(ctx, 'I', 66, 360, C.main, 14, 'center', 700);
+    /* nam châm dưới (cực N) */
+    if (al > .01) slab(20, 260, 15, 105, -34 - gap - 22, -34 - gap, S.flip ? C.c5 : C.c4, al, S.flip ? 'S' : 'N', false);
+    /* thanh bán dẫn: mặt sau, hạt, rồi các mặt trong mờ */
+    const back = [P(0, WD, 0), P(L, WD, 0), P(L, WD, D), P(0, WD, D)], front = [P(0, 0, 0), P(L, 0, 0), P(L, 0, D), P(0, 0, D)], top = [P(0, 0, D), P(L, 0, D), P(L, WD, D), P(0, WD, D)], right = [P(L, 0, 0), P(L, WD, 0), P(L, WD, D), P(L, 0, D)];
+    poly(back, C.card, 1); poly([P(0, 0, 0), P(L, 0, 0), P(L, WD, 0), P(0, WD, 0)], C.card, 1);
+    poly(back, colQ, .1); poly(top, colQ, .08);
+    if (trail.length > 1) { ctx.beginPath(); trail.forEach((a, i) => { const pt = P(a[0], a[1], a[2]); i ? ctx.lineTo(pt[0], pt[1]) : ctx.moveTo(pt[0], pt[1]); }); ctx.strokeStyle = C.main; ctx.lineWidth = 2; ctx.stroke(); }
+    ps.slice().sort((a, b) => b.y - a.y).forEach(p => { const pt = P(p.x, p.y, p.z), r = 5.5 + 1.5 * (1 - p.y / WD); dot(ctx, pt[0], pt[1], r, colQ); txt(ctx, nType ? '−' : '+', pt[0], pt[1] + .5, C.bg, 11, 'center', 800); });
+    const tp = ps[0], tpp = P(tp.x, tp.y, tp.z); ctx.beginPath(); ctx.arc(tpp[0], tpp[1], 9, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 2; ctx.stroke();
+    poly(top, C.tint, .35); poly(front, C.card, .35); poly(right, C.g, .55); [back, top, front, right].forEach(f => poly(f, null, 1, C.sub));
+    /* điện tích tích tụ: mặt trước (cùng dấu hạt tải) và mép mặt sau (dấu ngược lại) */
+    const nq = Math.round(q * 11);
+    for (let i = 0; i < nq; i++) { const x = 16 + (i + .5) * (L - 32) / 11, a = P(x, 0, D / 2), b = P(x, WD - 8, D);
+      const pos = vH >= 0; txt(ctx, pos ? '+' : '−', a[0], a[1], pos ? C.c4 : C.c2, 17, 'center', 800); txt(ctx, pos ? '−' : '+', b[0], b[1], pos ? C.c2 : C.c4, 17, 'center', 800); }
+    txt(ctx, 'mặt trước', OX + 6, OY + 15, C.mut, 11.5, 'left', 600);
+    /* điện trường Hall E_H nằm ngang theo y */
+    if (q > .1) { const dir = vH >= 0 ? 1 : -1, xe = L * .62, a = P(xe, dir > 0 ? 14 : WD - 14, D / 2), b = P(xe, dir > 0 ? WD - 14 : 14, D / 2); ctx.globalAlpha = q; arr(ctx, a[0], a[1], b[0], b[1], C.main, 3.5); txt(ctx, 'E_H', (a[0] + b[0]) / 2 + 6, (a[1] + b[1]) / 2 - 14, C.main, 13, 'left', 700); ctx.globalAlpha = 1; }
+    /* lực trên hạt được theo dõi (dọc trục y): F_B về phía trước, F_E đẩy ngược lại */
+    if (mp > .3) { const l = 16 + 24 * mp; const sg = sBf(); arr(ctx, tpp[0], tpp[1], tpp[0] - sg * .88 * l, tpp[1] + sg * .48 * l, C.c3, 3); txt(ctx, 'F_B', tpp[0] - sg * .88 * l - 4 * sg, tpp[1] + sg * .48 * l + 12 * sg, C.c3, 12, sg > 0 ? 'right' : 'left', 700); }
+    if (q > .15) { const l = 16 + 24 * q; const sg = sBf(); arr(ctx, tpp[0], tpp[1], tpp[0] + sg * .88 * l, tpp[1] - sg * .48 * l, C.main, 3); txt(ctx, 'F_E', tpp[0] + sg * (.88 * l + 4), tpp[1] - sg * (.48 * l + 8), C.main, 12, sg > 0 ? 'left' : 'right', 700); }
+    /* đường sức từ (từ N lên S) và nam châm trên (cực S) */
+    if (al > .01) {
+      ctx.globalAlpha = al; [[70, 35], [70, 85], [190, 35], [190, 85]].forEach(a => { const s = P(a[0], a[1], -30), e = P(a[0], a[1], D + 26); ln(ctx, s[0], s[1], e[0], e[1], C.c3, 1.8, [5, 4]); S.flip ? arr(ctx, s[0], s[1] - 8, s[0], s[1], C.c3, 2) : arr(ctx, e[0], e[1] + 8, e[0], e[1], C.c3, 2); });
+      ctx.globalAlpha = 1; slab(20, 260, 15, 105, D + 34 + gap, D + 34 + gap + 22, S.flip ? C.c4 : C.c5, al, S.flip ? 'N' : 'S', true);
+      txt(ctx, 'B', P(20, 15, D + 34 + gap + 22)[0] - 14, P(20, 15, D + 34 + gap + 22)[1] - 6, C.c3, 15, 'center', 700);
     }
+    /* vôn kế: đầu + nối mặt trước, đầu − nối mặt sau */
+    const mx = 620, my = 130, mw = 160, mh = 120, cx = mx + mw / 2, cyy = my + mh - 32, F = P(290, 0, 0), K = P(290, WD, D);
+    path([F, [F[0], 395], [cx - 30, 395], [cx - 30, my + mh]]); ctx.strokeStyle = C.c4; ctx.lineWidth = 2.5; ctx.stroke();
+    path([K, [K[0], 108], [cx + 30, 108], [cx + 30, my]]); ctx.strokeStyle = C.c5; ctx.stroke();
+    dot(ctx, F[0], F[1], 4, C.c4); dot(ctx, K[0], K[1], 4, C.c5);
+    rr(ctx, mx, my, mw, mh, 10); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cyy, 56, Math.PI * 1.17, Math.PI * 1.83); ctx.strokeStyle = C.g; ctx.lineWidth = 6; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cyy, 56, Math.PI * 1.5 - .02, Math.PI * 1.5 + .02); ctx.strokeStyle = C.mut; ctx.stroke();
+    txt(ctx, '−', cx - 50, cyy - 38, C.c5, 14, 'center', 800); txt(ctx, '+', cx + 50, cyy - 38, C.c4, 14, 'center', 800);
+    const ang = -Math.PI / 2 + needle * (Math.PI * .33); arr(ctx, cx, cyy, cx + Math.cos(ang) * 50, cyy + Math.sin(ang) * 50, C.main, 3); dot(ctx, cx, cyy, 5, C.main);
+    const av = Math.abs(vH); txt(ctx, 'V_H = ' + (vH >= 0 ? '+' : '−') + (av >= 100 ? av.toFixed(0) : av.toFixed(1)) + ' mV', cx, my + mh - 12, av < .05 ? C.mut : (vH > 0 ? C.c4 : C.c2), 14, 'center', 700);
+    txt(ctx, '+', cx - 30, my + mh + 12, C.c4, 14, 'center', 800); txt(ctx, '−', cx + 30, my - 10, C.c5, 14, 'center', 800);
   }
 
-  /* ---------- tiện ích vẽ ---------- */
-  function poly(pts, fill, stroke, lw) {
-    ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-    ctx.closePath();
-    if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw || 1.2; ctx.stroke(); }
-  }
-  function box(x0, x1, y0, y1, z0, z1, cFront, cTop, cRight, label, labelCol) {
-    // mặt phải
-    poly([P(x1, y0, z0), P(x1, y1, z0), P(x1, y1, z1), P(x1, y0, z1)], cRight, 'rgba(255,255,255,.35)', 1);
-    // mặt trên
-    poly([P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)], cTop, 'rgba(255,255,255,.35)', 1);
-    // mặt trước
-    poly([P(x0, y0, z0), P(x1, y0, z0), P(x1, y0, z1), P(x0, y0, z1)], cFront, 'rgba(255,255,255,.45)', 1.2);
-    if (label) {
-      const c = P((x0 + x1) / 2, y0, (z0 + z1) / 2);
-      ctx.fillStyle = labelCol || '#fff'; ctx.font = '700 26px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(label, c[0], c[1] + 1);
-    }
-  }
-  function line(pts, col, lw, dash) {
-    ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-    ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.setLineDash(dash || []); ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); ctx.setLineDash([]);
-  }
-  function arrow(x1, y1, x2, y2, col, lw, head) {
-    const a = Math.atan2(y2 - y1, x2 - x1); head = head || 9;
-    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - head * Math.cos(a - 0.45), y2 - head * Math.sin(a - 0.45));
-    ctx.lineTo(x2 - head * Math.cos(a + 0.45), y2 - head * Math.sin(a + 0.45)); ctx.closePath(); ctx.fillStyle = col; ctx.fill();
-  }
-  function text(s, x, y, col, size, weight, align) {
-    ctx.fillStyle = col; ctx.font = (weight || 600) + ' ' + (size || 13) + 'px Arial'; ctx.textAlign = align || 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(s, x, y);
-  }
-  function carrier(x, y, r, isHole, ring) {
-    ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832);
-    if (isHole) { ctx.fillStyle = '#ff7fb0'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x - r * .5, y); ctx.lineTo(x + r * .5, y); ctx.moveTo(x, y - r * .5); ctx.lineTo(x, y + r * .5); ctx.stroke(); }
-    else { ctx.fillStyle = '#5b9bff'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x - r * .5, y); ctx.lineTo(x + r * .5, y); ctx.stroke(); }
-    if (ring) { ctx.beginPath(); ctx.arc(x, y, r + 4, 0, 6.2832); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 2; ctx.stroke(); }
-  }
-
-  /* ---------- dây điện ---------- */
-  const pl = P(0, WD / 2, D / 2), pr = P(L, WD / 2, D / 2);
-  const cf = P(L / 2, 0, D / 2), cb = P(L / 2, WD, D / 2);
-  const wireIn = [[50, 330], [50, pl[1]], [pl[0] - 6, pl[1]]];
-  const wireOut = [[pr[0] + 6, pr[1]], [600, pr[1]], [600, 450], [50, 450], [50, 346]];
-  const pathPts = wireIn.concat([]);
-  function pointsAlong(pts, d) {
-    let acc = 0;
-    for (let i = 1; i < pts.length; i++) {
-      const sl = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
-      if (d <= acc + sl) { const u = (d - acc) / sl; return [pts[i - 1][0] + (pts[i][0] - pts[i - 1][0]) * u, pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * u]; }
-      acc += sl;
-    }
-    return pts[pts.length - 1];
-  }
-  const lenOf = pts => { let a = 0; for (let i = 1; i < pts.length; i++) a += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return a; };
-  const lenIn = lenOf(wireIn), lenOut = lenOf(wireOut);
-
-  function draw(t, mp) {
-    const stg = stageOf(t);
-    // nền
-    const g = ctx.createLinearGradient(0, 0, 0, CH);
-    g.addColorStop(0, '#0e1430'); g.addColorStop(1, '#1d2650');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
-    // bóng dưới sàn
-    ctx.save(); ctx.globalAlpha = .35; ctx.fillStyle = '#000';
-    ctx.beginPath(); ctx.ellipse(OX + L / 2 + 40, OY + 18, L / 2 + 40, 20, 0, 0, 6.2832); ctx.fill(); ctx.restore();
-
-    const s = nType ? -1 : 1;
-    const gapTop = 34 + 130 * (1 - mp);
-    const zTb = D + gapTop, zTt = zTb + 50;
-    const zBt = -26 - 130 * (1 - mp), zBb = zBt - 50;
-
-    // nam châm dưới (N)
-    box(24, L - 24, -10, WD + 10, zBb, zBt, '#d9444f', '#ee6a73', '#a8303a', 'N', '#fff');
-
-    // dây vôn kế phía sau (nối mặt sau)
-    ctx.save();
-    line([[cb[0], cb[1]], [632, cb[1]], [640, 262]], '#cfd6ee', 2.6);
-    ctx.restore();
-    circ(cb[0], cb[1], 5, '#cfd6ee', '#fff');
-
-    // mặt sau / trên / phải của thanh bán dẫn (thể tích)
-    const gBack = ctx.createLinearGradient(0, OY - D, 0, OY);
-    poly([P(0, WD, 0), P(L, WD, 0), P(L, WD, D), P(0, WD, D)], 'rgba(120,140,190,.20)', 'rgba(200,215,255,.45)', 1);
-    poly([P(0, 0, D), P(L, 0, D), P(L, WD, D), P(0, WD, D)], 'rgba(170,190,235,.26)', 'rgba(220,230,255,.7)', 1.3);
-    poly([P(L, 0, 0), P(L, WD, 0), P(L, WD, D), P(L, 0, D)], 'rgba(100,120,170,.30)', 'rgba(210,222,255,.65)', 1.3);
-
-    // điện tích mặt sau (nhìn xuyên)
-    let shift = WD / 2 - ybarS; shift = Math.sign(shift) * Math.max(0, Math.abs(shift) - 3.5) * (24 / 20.5);
-    const amt = Math.max(0, Math.min(1, Math.abs(shift) / 24));
-    const nSym = Math.round(amt * 8);
-    for (let i = 0; i < nSym; i++) {
-      const q = P(34 + i * (L - 68) / 7, WD - 1, D * 0.55);
-      ctx.globalAlpha = .55; symbol(q[0], q[1], nType ? '+' : '−', nType ? '#ff7fb0' : '#6aa7ff'); ctx.globalAlpha = 1;
-    }
-
-    // đường sức từ (xuyên qua thanh)
-    if (mp > 0.02) {
-      ctx.save(); ctx.globalAlpha = 0.55 * mp;
-      for (let ix = 0; ix < 4; ix++) for (let iy = 0; iy < 3; iy++) {
-        const x = 55 + ix * 74, y = 22 + iy * 38;
-        const a = P(x, y, zBt), b = P(x, y, zTb);
-        ctx.setLineDash([5, 5]); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); ctx.setLineDash([]);
-        const mid = P(x, y, (zBt + zTb) / 2 + 20);
-        arrow(mid[0], mid[1] + 8, mid[0], mid[1] - 6, '#ffd166', 1.6, 7);
-      }
-      ctx.restore();
-    }
-
-    // hạt tải (xa -> gần)
-    const order = ps.slice().sort((a, b) => b.y - a.y);
-    for (const p of order) {
-      const q = P(p.x, p.y, p.z);
-      if (p === ps[0] && p.trail.length > 2) {
-        ctx.beginPath(); ctx.moveTo(p.trail[0][0], p.trail[0][1]);
-        for (let i = 1; i < p.trail.length; i++) ctx.lineTo(p.trail[i][0], p.trail[i][1]);
-        ctx.strokeStyle = 'rgba(255,209,102,.85)'; ctx.lineWidth = 1.8; ctx.stroke();
-      }
-      carrier(q[0], q[1], 5.2, !nType, p === ps[0]);
-    }
-    // lực từ lên hạt theo dõi
-    if (mp > 0.2) {
-      const tr = ps[0], q = P(tr.x, tr.y, tr.z);
-      const dx = -0.55 * 34 * mp, dy = 0.30 * 34 * mp;     // hướng -y (về phía người xem)
-      arrow(q[0], q[1], q[0] + dx, q[1] + dy, '#ffa94d', 3, 9);
-      text('F = q·v×B', q[0] + dx - 6, q[1] + dy + 14, '#ffa94d', 12, 700, 'right');
-    }
-
-    // mặt trước của thanh (phủ lên hạt)
-    const gf = ctx.createLinearGradient(0, OY - D, 0, OY);
-    gf.addColorStop(0, 'rgba(190,205,245,.30)'); gf.addColorStop(1, 'rgba(90,105,160,.30)');
-    poly([P(0, 0, 0), P(L, 0, 0), P(L, 0, D), P(0, 0, D)], gf, 'rgba(235,242,255,.85)', 1.6);
-    // điện cực hai đầu
-    poly([P(-7, 0, 0), P(0, 0, 0), P(0, 0, D), P(-7, 0, D)], '#d08a4b', 'rgba(255,255,255,.6)', 1);
-    poly([P(L, 0, 0), P(L + 7, 0, 0), P(L + 7, 0, D), P(L, 0, D)], '#d08a4b', 'rgba(255,255,255,.6)', 1);
-    text('mẫu bán dẫn ' + (nType ? 'loại N' : 'loại P'), P(L / 2, 0, D * 0.2)[0], P(L / 2, 0, D * 0.2)[1], 'rgba(255,255,255,.85)', 11, 600);
-
-    // điện tích mặt trước
-    for (let i = 0; i < nSym; i++) {
-      const q = P(34 + i * (L - 68) / 7, 0, D * 0.62);
-      symbol(q[0], q[1], nType ? '−' : '+', nType ? '#6aa7ff' : '#ff7fb0', true);
-    }
-    // điện trường Hall
-    if (amt > 0.05) {
-      const a = nType ? P(L * 0.62, WD - 10, D / 2) : P(L * 0.62, 10, D / 2);
-      const b = nType ? P(L * 0.62, 10, D / 2) : P(L * 0.62, WD - 10, D / 2);
-      ctx.save(); ctx.globalAlpha = Math.min(1, amt * 1.2);
-      arrow(a[0], a[1], b[0], b[1], '#ffd166', 3.6, 11);
-      const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-      text('E_H', m[0] + 18, m[1] - 8, '#ffd166', 13, 700);
-      ctx.restore();
-    }
-    // kích thước
-    text('d', P(-14, 0, D / 2)[0] - 4, P(-14, 0, D / 2)[1], 'rgba(255,255,255,.55)', 12, 600);
-    text('W', P(L + 8, WD / 2, 0)[0] + 12, P(L + 8, WD / 2, 0)[1] + 4, 'rgba(255,255,255,.55)', 12, 600);
-
-    // nam châm trên (S)
-    box(24, L - 24, -10, WD + 10, zTb, zTt, '#3f73d6', '#6a98ec', '#2c56a8', 'S', '#fff');
-    if (mp > 0.5) text('B ↑', P(L - 10, WD + 6, zTb + 62)[0] + 18, P(L - 10, WD + 6, zTb + 62)[1], '#ffd166', 14, 700, 'left');
-
-    // pin + dây dòng điện
-    line(wireIn, '#ffd166', 3); line(wireOut, '#ffd166', 3);
-    ctx.fillStyle = '#d08a4b'; ctx.fillRect(pl[0] - 10, pl[1] - 2, 5, 4); ctx.fillRect(pr[0] + 5, pr[1] - 2, 5, 4);
-    // pin
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(30, 330); ctx.lineTo(70, 330); ctx.stroke();
-    ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(40, 346); ctx.lineTo(60, 346); ctx.stroke();
-    text('+', 84, 328, '#ff9aa8', 16, 700); text('−', 84, 348, '#9ec5ff', 18, 700); text('pin', 22, 338, '#aab3d6', 12, 600, 'right');
-    // chấm dòng điện quy ước chạy dọc dây
-    const sp = 90, gap = 30, tt = (t * sp) % gap;
-    for (let d = tt; d < lenIn; d += gap) { const q = pointsAlong(wireIn, d); circ(q[0], q[1], 3, '#fff6c7'); }
-    for (let d = tt; d < lenOut; d += gap) { const q = pointsAlong(wireOut, d); circ(q[0], q[1], 3, '#fff6c7'); }
-    text('I', 120, pl[1] - 12, '#ffd166', 14, 700);
-    arrow(98, pl[1] - 0, 136, pl[1] - 0, 'rgba(255,209,102,.0)', 1, 1);
-
-    // dây vôn kế phía trước (nối mặt trước) có "cầu" bắc qua dây pin
-    line([[cf[0], cf[1]], [cf[0], 408], [594, 408]], '#ff6b81', 2.6);
-    ctx.beginPath(); ctx.arc(600, 408, 6, Math.PI, 0); ctx.strokeStyle = '#ff6b81'; ctx.lineWidth = 2.6; ctx.stroke();
-    line([[606, 408], [630, 408], [630, 300], [640, 300]], '#ff6b81', 2.6);
-    circ(cf[0], cf[1], 5, '#ff6b81', '#fff');
-
-    // vôn kế
-    const bx = 640, by = 232, bw = 130, bh = 108;
-    const gm = ctx.createLinearGradient(0, by, 0, by + bh);
-    gm.addColorStop(0, '#2a3366'); gm.addColorStop(1, '#161c40');
-    ctx.fillStyle = gm; roundRect(bx, by, bw, bh, 10); ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.6; roundRect(bx, by, bw, bh, 10); ctx.stroke();
-    // mặt đồng hồ
-    ctx.fillStyle = '#f3efe0'; roundRect(bx + 10, by + 24, bw - 20, 64, 8); ctx.fill();
-    const pvx = bx + bw / 2 + 4, pvy = by + 84;
-    ctx.strokeStyle = '#6b6f86'; ctx.lineWidth = 1.5;
-    for (let k = -4; k <= 4; k++) {
-      const an = (-90 + k * 14.5) * Math.PI / 180;
-      const r1 = 46, r2 = k % 2 === 0 ? 40 : 43;
-      ctx.beginPath(); ctx.moveTo(pvx + r1 * Math.cos(an), pvy + r1 * Math.sin(an)); ctx.lineTo(pvx + r2 * Math.cos(an), pvy + r2 * Math.sin(an)); ctx.stroke();
-    }
-    text('−', pvx - 40, by + 44, '#4a4e66', 13, 700); text('0', pvx, by + 40, '#4a4e66', 11, 700); text('+', pvx + 40, by + 44, '#4a4e66', 13, 700);
-    const ang = (-90 + needle * 58) * Math.PI / 180;
-    ctx.strokeStyle = '#d6303f'; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(pvx, pvy); ctx.lineTo(pvx + 42 * Math.cos(ang), pvy + 42 * Math.sin(ang)); ctx.stroke();
-    circ(pvx, pvy, 4.5, '#333', '#999');
-    const vs = (vH >= 0 ? '+' : '−') + Math.abs(vH).toFixed(2) + ' mV';
-    const colV = Math.abs(vH) < 0.03 ? '#ffffff' : (vH > 0 ? '#ff9ec0' : '#8cb8ff');
-    text('V_H = ' + vs, bx + bw / 2, by + 13, colV, 14, 700);
-    // cực
-    circ(bx, 300, 6, '#ff6b81', '#fff'); circ(bx, 262, 6, '#cfd6ee', '#fff');
-    text('+', bx + 14, 300, '#ff9aa8', 14, 700); text('−', bx + 14, 262, '#cfd6ee', 15, 700);
-    text('vôn kế', bx + bw / 2, by + bh + 14, '#aab3d6', 12, 600);
-
-    // nhãn mẫu
-    ctx.save();
-    ctx.fillStyle = nType ? 'rgba(91,155,255,.22)' : 'rgba(255,127,176,.22)';
-    roundRect(24, 20, 220, 50, 10); ctx.fill();
-    ctx.strokeStyle = nType ? '#5b9bff' : '#ff7fb0'; ctx.lineWidth = 1.6; roundRect(24, 20, 220, 50, 10); ctx.stroke();
-    carrier(46, 45, 6.5, !nType, false);
-    text(nType ? 'Loại N: electron (−)' : 'Loại P: lỗ trống (+)', 60, 36, '#fff', 14, 700, 'left');
-    text(nType ? 'chạy NGƯỢC chiều dòng điện' : 'chạy CÙNG chiều dòng điện', 60, 56, 'rgba(255,255,255,.8)', 12, 600, 'left');
-    ctx.restore();
-    text('mặt trước (y = 0)', P(L / 2, 0, 0)[0], P(L / 2, 0, 0)[1] + 16, 'rgba(255,255,255,.5)', 11, 600);
-    text('mặt sau', P(L * 0.85, WD, 0)[0] + 8, P(L * 0.85, WD, 0)[1] + 12, 'rgba(255,255,255,.4)', 11, 600);
-
-    // phụ đề
-    if (stg !== lastStage) {
-      lastStage = stg;
-      if (capEl) capEl.textContent = STAGES[stg][1];
-      chips.forEach((c, i) => c.classList.toggle('on', i === stg));
-    }
-    if (paused) { ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(0, 0, CW, CH); text('Tạm dừng · nhấn để chạy tiếp', CW / 2, CH / 2, '#fff', 20, 700); }
-  }
-  function circ(x, y, r, fill, stroke) {
-    ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fillStyle = fill; ctx.fill();
-    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.2; ctx.stroke(); }
-  }
-  function roundRect(x, y, w, h, r) {
-    ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
-  }
-  function symbol(x, y, ch, col, glow) {
-    if (glow) { ctx.beginPath(); ctx.arc(x, y, 9, 0, 6.2832); ctx.fillStyle = col; ctx.globalAlpha *= .28; ctx.fill(); ctx.globalAlpha /= .28; }
-    text(ch, x, y, col, 20, 800);
-  }
-
-  cv.style.cursor = 'pointer';
-  cv.onclick = () => { paused = !paused; };
-
-  /* ---------- vòng lặp ---------- */
   function frame(ts) {
     if (!cv.isConnected) { window.__b7HallRAF = null; return; }
-    if (lastTs === null) lastTs = ts;
-    let dt = Math.min(0.033, (ts - lastTs) / 1000);
-    lastTs = ts;
-    if (!paused) {
-      sim += dt;
-      if (sim >= CYCLE) { sim -= CYCLE; }
-      const wantN = isN(sim);
-      if (wantN !== nType) {
-        nType = wantN;
-        for (const p of ps) { p.vx = gauss() * TH; p.vy = gauss() * TH; }
-        ybarS = ybar = WD / 2 - (WD / 2 - ybarS) * 0; ps.forEach(p => { p.y = rnd(10, WD - 10); });
-        ybar = ybarS = WD / 2; ps[0].trail.length = 0;
-      }
-      step(dt, magnetP(sim));
-    }
-    draw(sim, magnetP(sim));
-    window.__b7HallRAF = requestAnimationFrame(frame);
+    if (lastTs === null) lastTs = ts; const dt = Math.min(.033, (ts - lastTs) / 1000); lastTs = ts;
+    const wantN = S.type === 'n';
+    if (wantN !== nType) { nType = wantN; ps.forEach(p => { p.vx = gauss() * TH; p.vy = gauss() * TH; p.y = rnd(10, WD - 10); }); ybar = ybarS = WD / 2; trail = []; }
+    mpS += (clamp(S.B / .5, 0, 1) - mpS) * (1 - Math.exp(-dt / .25));
+    step(dt); draw(); window.__b7HallRAF = requestAnimationFrame(frame);
   }
   window.__b7HallRAF = requestAnimationFrame(frame);
-  window.__b7HallDbg = () => ({ t: sim, vH, ybarS });
 }
 
 
@@ -874,12 +601,8 @@ const CSS = `
 .lb-ln.w{color:var(--ink)}.lb-ln.w::before{content:'◆';color:var(--c2);font-size:10px;top:2px}
 .lb-ln.v{color:var(--main)}.lb-ln.v::before{content:'=';color:var(--main)}
 @keyframes lbin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.lb-hall{display:flex;flex-direction:column;background:#0e1430}
+.lb-hall{display:flex;flex-direction:column;background:var(--bg)}
 .lb-hall canvas{position:static!important;flex:1;min-height:0;width:100%;height:100%;object-fit:contain}
-.lb-hall .hall-cap{padding:6px 12px;font-size:14px;min-height:0;border-top:1px solid rgba(255,255,255,.15);color:#fff;background:#0f1530;flex:none}
-.lb-hall .hall-chips{padding:0 12px 8px;flex:none;background:#0f1530;display:flex;gap:6px}
-.lb-hall .hall-chip{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font:700 11px Arial;color:#aab3d6;border:1.5px solid rgba(255,255,255,.25);transition:all .25s}
-.lb-hall .hall-chip.on{background:#ffd166;color:#1b2147;border-color:#ffd166;transform:scale(1.15)}
 .lab-m{appearance:none;border:0;background:transparent;color:var(--sub);cursor:pointer;padding:2px 3px;margin-left:6px;border-radius:5px;vertical-align:middle;opacity:.65;line-height:0;transition:color .15s,opacity .15s,transform .15s}
 .lab-m svg{width:.8em;height:.8em;min-width:14px;min-height:14px;display:inline-block;margin:0;background:none;border:0;border-radius:0;max-height:none}
 .lab-m:hover,.lab-m:focus-visible{color:var(--main);opacity:1;transform:rotate(-12deg) scale(1.15)}
