@@ -26,8 +26,8 @@ window.MathJax = {
     <marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c2)"/></marker>
     <marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c4)"/></marker>
     <marker id="ar5" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--c5)"/></marker>
-    <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 11H5L3 7zm2 13h14v2H5v-2z"/></symbol>
-    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.500L18.500 9H13z"/></symbol>
+    <symbol id="i-quiz" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></g></symbol>
+    <symbol id="i-sigma" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2"/></g></symbol><symbol id="i-lab" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></g></symbol>
     <symbol id="i-keyboard" viewBox="0 0 24 24"><path d="M20 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zM6 8h2v2H6V8zm0 4h2v2H6v-2zm3 0h2v2H9v-2zm0-4h2v2H9V8zm3 0h2v2h-2V8zm0 4h2v2h-2v-2zm3-4h2v2h-2V8zm0 4h2v2h-2v-2zm3-4h2v2h-2V8zm0 4h2v2h-2v-2zM7 16h10v1.5H7V16z"/></symbol>
   </defs>
 </svg>
@@ -48,10 +48,13 @@ window.MathJax = {
     </div>
     <div class="topbar-actions">
       <button class="icon-btn" id="btn-quiz-pop" type="button" aria-label="Quiz trắc nghiệm" title="Luyện tập Quiz (Phím M)">
-        <svg><use href="#i-crown"/></svg>
+        <svg><use href="#i-quiz"/></svg>
       </button>
       <button class="icon-btn" id="btn-fpop" type="button" aria-label="Bảng tra công thức" title="Bảng tra công thức Fourier (Phím H)">
-        <svg><use href="#i-file"/></svg>
+        <svg><use href="#i-sigma"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-lab" type="button" aria-label="Phòng thí nghiệm" title="Phòng thí nghiệm (Phím L)">
+        <svg><use href="#i-lab"/></svg>
       </button>
     </div>
   </div>

@@ -17,7 +17,8 @@
             { id: 7, shortTitle: "Chuỗi Fourier và Biến đổi Fourier" },
             { id: 8, shortTitle: "Biến đổi Fourier ngược" },
             { id: 9, shortTitle: "Đáp ứng tần số của hệ thống LTI" },
-            { id: 10, shortTitle: "Đồ thị phổ của tín hiệu" }
+            { id: 10, shortTitle: "Đồ thị phổ của tín hiệu" },
+            { id: 11, shortTitle: "Biến đổi Laplace" }
         ];
 
         // Parse Raw Verbatim Content into Structured Lessons
@@ -461,6 +462,40 @@
             const w0 = sb('ω', '0'), T0 = sb('T', '0'), N0 = sb('N', '0');
 
             return {
+                // BÀI 11 — Laplace
+                'L.1': () => {
+                    const X = u => 40 + u * 105, Y = v => 110 - v * 5.2;
+                    const e1 = sample(u => Math.exp(.45 * u), 0, 6.4, 60, X, Y), e2 = sample(u => -Math.exp(.45 * u), 0, 6.4, 60, X, Y);
+                    const cur = sample(u => Math.exp(.45 * u) * Math.sin(7 * u), 0, 6.4, 260, X, Y);
+                    return sv(760, 230, ax(30, 740, 110) + tx(735, 98, 't', { s: 15, c: MUT }) +
+                        pa(pts(e1), { c: C4, d: '5 4', op: .8, w: 2 }) + pa(pts(e2), { c: C4, d: '5 4', op: .8, w: 2 }) + pa(pts(cur), { c: C1, w: 2.5 }) +
+                        tx(300, 30, 'e^{σt}·sin(ωt), σ > 0: biên độ tăng theo hàm mũ', { s: 15, c: C4, w: 700 }) +
+                        tx(300, 215, 'e^{st} = e^{σt}·e^{jωt},  s = σ + jω', { s: 15, c: MUT, w: 600 }));
+                },
+                'L.2': () => {
+                    const X = (x, y) => ln(x - 6, y - 6, x + 6, y + 6, { c: C4, w: 3 }) + ln(x - 6, y + 6, x + 6, y - 6, { c: C4, w: 3 });
+                    const panel = (x0, title, right, lab) => {
+                        const p = x0 + 80, o = x0 + 130, xe = x0 + 250;
+                        const band = right ? pts([[p, 25], [xe, 25], [xe, 185], [p, 185]], true) : pts([[x0, 25], [p, 25], [p, 185], [x0, 185]], true);
+                        return pa(band, { c: 'none', f: C1, fo: .22 }) + ax(x0, xe, 105) + ay(o, 195, 12) + tx(xe - 8, 92, 'σ', { s: 15, c: MUT }) + tx(o + 12, 22, 'jω', { s: 15, c: MUT, a: 'start' }) +
+                            ln(p, 25, p, 185, { c: C1, d: '5 4', w: 2 }) + X(p, 105) + tx(p, 126, '−a', { s: 14, c: C4, w: 700 }) +
+                            tx(x0 + 125, 214, title, { s: 14, c: C1, w: 700 }) + tx(right ? p + 80 : p - 40, 60, lab, { s: 14, c: C2, w: 700 });
+                    };
+                    return sv(760, 230, panel(20, 'e^{−at}u(t): Re[s] > −a', true, 'ROC') + panel(390, '−e^{−at}u(−t): Re[s] < −a', false, 'ROC'));
+                },
+                'L.3': () => {
+                    const X = (x, y) => ln(x - 6, y - 6, x + 6, y + 6, { c: C4, w: 3 }) + ln(x - 6, y + 6, x + 6, y - 6, { c: C4, w: 3 });
+                    const S = s => 440 + s * 85, top = 20, bot = 190;
+                    const band = (a, b, c) => pa(pts([[a, top], [b, top], [b, bot], [a, bot]], true), { c: 'none', f: c, fo: .22 });
+                    return sv(760, 245, band(30, S(-2), C3) + band(S(-2), S(-1), C2) + band(S(-1), 730, C1) +
+                        ax(30, 735, 105) + ay(440, 195, 12) + tx(728, 92, 'σ', { s: 15, c: MUT }) + tx(452, 22, 'jω', { s: 15, c: MUT, a: 'start' }) +
+                        ln(S(-2), top, S(-2), bot, { c: MUT, d: '5 4', w: 1.5 }) + ln(S(-1), top, S(-1), bot, { c: MUT, d: '5 4', w: 1.5 }) +
+                        X(S(-2), 105) + X(S(-1), 105) + ci(S(1), 105, 6, { f: 'none', c: C5, w: 3 }) +
+                        tx(S(-2), 126, '−2', { s: 14, c: C4, w: 700 }) + tx(S(-1) + 4, 126, '−1', { s: 14, c: C4, w: 700 }) + tx(S(1), 126, '1', { s: 14, c: C5, w: 700 }) +
+                        tx((30 + S(-2)) / 2, 215, 'ROC 1', { s: 15, c: C3, w: 800 }) + tx((S(-2) + S(-1)) / 2, 215, 'ROC 2', { s: 15, c: C2, w: 800 }) + tx((S(-1) + 730) / 2 + 40, 215, 'ROC 3', { s: 15, c: C1, w: 800 }) +
+                        tx(130, 40, '× cực,  ○ không', { s: 14, c: MUT, w: 600, a: 'start' }));
+                },
+
                 // BÀI 5B — tích chập và đáp ứng xung
                 'TC.1': () => {
                     const X = u => 530 + u * 30, Y = v => 150 - v * 62;
@@ -1097,6 +1132,35 @@
                 toggleFPop();
             };
         }
+        // Phòng thí nghiệm (tải lười từ phong-thi-nghiem.js/.css)
+        let labP = null;
+        const isLabOpen = () => !!(window.LAB && window.LAB.isOpen());
+        function loadLab() {
+            if (window.LAB) return Promise.resolve(window.LAB);
+            if (labP) return labP;
+            labP = new Promise((res, rej) => {
+                const l = document.createElement('link');
+                l.rel = 'stylesheet'; l.href = 'phong-thi-nghiem.css';
+                document.head.appendChild(l);
+                const s = document.createElement('script');
+                s.src = 'phong-thi-nghiem.js';
+                s.onload = () => res(window.LAB);
+                s.onerror = () => { labP = null; rej(new Error('lab load failed')); };
+                document.head.appendChild(s);
+            });
+            return labP;
+        }
+        function toggleLab(open) {
+            openMenu(false);
+            if (QZ.isOpen()) QZ.toggle(false);
+            if (isFPopOpen()) toggleFPop(false);
+            loadLab().then(L => {
+                const cur = state.lessons[state.currentLessonIndex];
+                L.toggle(cur ? cur.number : 0, open);
+            }).catch(() => {});
+        }
+        const btnLab = $('btn-lab');
+        if (btnLab) btnLab.onclick = () => toggleLab();
         $('btn-prev').onclick = () => selectLesson(state.currentLessonIndex - 1);
         $('btn-next').onclick = () => selectLesson(state.currentLessonIndex + 1);
 
@@ -1126,6 +1190,7 @@
         });
 
         document.addEventListener('keydown', e => {
+            if (isLabOpen()) return; // phòng thí nghiệm tự xử lý phím
             if (e.key === 'Escape') {
                 if (isFPopOpen()) { toggleFPop(false); return; }
                 if (QZ.isOpen()) { QZ.toggle(false); return; }
@@ -1140,6 +1205,11 @@
                 openMenu(false);
                 if (QZ.isOpen()) QZ.toggle(false);
                 toggleFPop();
+                return;
+            }
+            if (e.key === 'l' || e.key === 'L') {
+                e.preventDefault();
+                toggleLab();
                 return;
             }
             if (e.key === 'm' || e.key === 'M') {
