@@ -111,8 +111,12 @@
             };
             const nextColor = () => `c${state.cardN++ % 5}`;
 
+            // Dấu mở phòng thí nghiệm: [LAB:bài.tab] → nút biểu tượng bình thí nghiệm nhỏ
+            const LAB_RE = /\s*\[LAB:(\d+)\.(\d+)\]/g;
+            const LAB_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg>';
             const formatInline = (str) => {
                 let s = str.trim();
+                s = s.replace(LAB_RE, (_, l, t) => `<button type="button" class="lab-hook" data-lab="${l}.${t}" title="Mở mô phỏng (phòng thí nghiệm)" aria-label="Mở mô phỏng">${LAB_SVG}</button>`);
                 // Bold **...**
                 s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
                 // Italic *...*
@@ -238,7 +242,7 @@
                     const anchorId = `sec-${sectionType}-${tocCollector.length}`;
                     tocCollector.push({
                         id: anchorId,
-                        title: restoreMath(titleText),
+                        title: restoreMath(titleText.replace(LAB_RE, '')),
                         level: 1,
                         sectionType
                     });
@@ -254,7 +258,7 @@
                     const anchorId = `part-${sectionType}-${tocCollector.length}`;
                     tocCollector.push({
                         id: anchorId,
-                        title: restoreMath(titleText),
+                        title: restoreMath(titleText.replace(LAB_RE, '')),
                         level: 2,
                         sectionType
                     });
@@ -271,7 +275,7 @@
                     const anchorId = `sub-${sectionType}-${tocCollector.length}`;
                     tocCollector.push({
                         id: anchorId,
-                        title: restoreMath(titleText),
+                        title: restoreMath(titleText.replace(LAB_RE, '')),
                         level: 3,
                         sectionType
                     });
@@ -1132,7 +1136,7 @@
                 toggleFPop();
             };
         }
-        // Phòng thí nghiệm (tải lười từ phong-thi-nghiem.js/.css)
+        // Phòng thí nghiệm (tải lười từ lab.js/.css)
         let labP = null;
         const isLabOpen = () => !!(window.LAB && window.LAB.isOpen());
         function loadLab() {
@@ -1140,25 +1144,33 @@
             if (labP) return labP;
             labP = new Promise((res, rej) => {
                 const l = document.createElement('link');
-                l.rel = 'stylesheet'; l.href = 'phong-thi-nghiem.css';
+                l.rel = 'stylesheet'; l.href = 'lab.css';
                 document.head.appendChild(l);
                 const s = document.createElement('script');
-                s.src = 'phong-thi-nghiem.js';
+                s.src = 'lab.js';
                 s.onload = () => res(window.LAB);
                 s.onerror = () => { labP = null; rej(new Error('lab load failed')); };
                 document.head.appendChild(s);
             });
             return labP;
         }
-        function toggleLab(open) {
+        function toggleLab(open, num, tab) {
             openMenu(false);
             if (QZ.isOpen()) QZ.toggle(false);
             if (isFPopOpen()) toggleFPop(false);
             loadLab().then(L => {
                 const cur = state.lessons[state.currentLessonIndex];
-                L.toggle(cur ? cur.number : 0, open);
+                L.toggle(num != null ? num : (cur ? cur.number : 0), open, tab);
             }).catch(() => {});
         }
+        // Bấm dấu bình thí nghiệm trong bài → mở thẳng lab của phần đó
+        document.addEventListener('click', e => {
+            const b = e.target.closest && e.target.closest('.lab-hook');
+            if (!b) return;
+            e.preventDefault();
+            const [l, t] = b.dataset.lab.split('.').map(Number);
+            toggleLab(true, l, t - 1);
+        });
         const btnLab = $('btn-lab');
         if (btnLab) btnLab.onclick = () => toggleLab();
         $('btn-prev').onclick = () => selectLesson(state.currentLessonIndex - 1);

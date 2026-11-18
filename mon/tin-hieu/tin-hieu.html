@@ -3439,7 +3439,7 @@ $$y(t) = \begin{cases}0 & t<1\\ t-1 & 1\leq t<3\\ 5-t & 3\leq t<5\\ 0 & t\geq 5\
 
 ## Phần B. Fourier Series (FS) — Tín hiệu tuần hoàn liên tục
 
-### B.1. Ý tưởng cốt lõi
+### B.1. Ý tưởng cốt lõi [LAB:7.1]
 
 [P] Mọi tín hiệu tuần hoàn $x(t)$ chu kỳ $T_0$ (với điều kiện Dirichlet nhẹ) đều có thể biểu diễn thành **tổng vô hạn các mũ phức** có tần số là bội nguyên của tần số cơ sở:
 [FORMULA: key]
@@ -3455,7 +3455,7 @@ $$c_k = \frac{1}{T_0}\int_{T_0} x(t)\,e^{-jk\omega_0 t}\,dt$$
 
 [BOX: analogy] **Ẩn dụ**: Tín hiệu $x(t)$ giống như một **hợp âm** piano. Hệ số $c_k$ giống như **âm lượng** của từng nốt (tần số $k\omega_0$). Tổng vô hạn các nốt với âm lượng tương ứng tạo thành hợp âm. Nếu bạn biết tất cả $c_k$, bạn biết chính xác hợp âm — không cần nghe lại tín hiệu gốc. Đó là sức mạnh của FS: biến tín hiệu phức tạp thành bộ số $(c_k)$.
 
-### B.2. Dạng lượng giác — Cách viết khác
+### B.2. Dạng lượng giác — Cách viết khác [LAB:7.1]
 
 [P] Nếu $x(t)$ là **thực**, có thể viết FS dưới dạng sin/cos thực:
 [FORMULA]
@@ -3469,7 +3469,7 @@ $$a_k = \frac{2}{T_0}\int_{T_0}x(t)\cos(k\omega_0 t)dt, \quad b_k = \frac{2}{T_0
 
 [BOX: warn] **Dùng dạng nào?** Trong thực hành, dạng mũ phức gọn hơn (một tổng duy nhất) và xử lý được tín hiệu phức. Dạng lượng giác chỉ hữu ích khi cần tách phần thực/ảo rõ ràng. Hầu hết đề thi cho dạng mũ phức — hãy quen với nó.
 
-### B.3. Phương pháp tìm $c_k$ — 3 trường hợp
+### B.3. Phương pháp tìm $c_k$ — 3 trường hợp [LAB:7.2]
 
 **Trường hợp 1: Tín hiệu là tổ hợp sin/cos đã biết**
 
@@ -3512,7 +3512,7 @@ $$= \underbrace{\frac{3}{2}e^{j\pi/4}}_{c_1} e^{j\pi t/2} + \underbrace{\frac{3}
   - $2\cos(\pi t/2) = e^{j3\pi t/6} + e^{-j3\pi t/6}$ → $c_3 = 1$, $c_{-3} = 1$.
 - Vậy: $c_2 = -1/2$, $c_{-2} = -1/2$, $c_3 = 1$, $c_{-3} = 1$, các $c_k$ khác = 0.
 
-### B.4. Phổ biên độ và phổ pha
+### B.4. Phổ biên độ và phổ pha [LAB:7.2]
 
 [P] Viết $c_k = |c_k|e^{j\varphi_k}$. Khi đó:
 - **Phổ biên độ**: đồ thị $|c_k|$ theo $k\omega_0$.
@@ -3537,7 +3537,7 @@ $$P = \frac{1}{T_0}\int_{T_0}|x(t)|^2dt = \sum_{k=-\infty}^{\infty}|c_k|^2$$
 
 ## Phần C. Fourier Transform (FT) — Tín hiệu không tuần hoàn liên tục
 
-### C.1. Từ FS sang FT — Ý tưởng
+### C.1. Từ FS sang FT — Ý tưởng [LAB:7.3]
 
 [P] Tín hiệu không tuần hoàn có thể coi là tín hiệu tuần hoàn có chu kỳ $T_0 \to \infty$. Khi $T_0 \to \infty$:
 - Khoảng cách giữa các vạch phổ $\omega_0 = 2\pi/T_0 \to 0$ → phổ rời rạc thành **liên tục**.
@@ -3553,7 +3553,7 @@ $$x(t) = \mathcal{F}^{-1}\{X(\omega)\} = \frac{1}{2\pi}\int_{-\infty}^{\infty}X(
 
 [BOX: analogy] **Ẩn dụ**: FS giống như **quang phổ vạch** của đèn neon — chỉ có vài vạch sáng ở tần số cụ thể. FT giống như **quang phổ liên tục** của ánh sáng mặt trời — trải đều trên mọi tần số. Tín hiệu tuần hoàn có phổ vạch; tín hiệu không tuần hoàn có phổ liên tục.
 
-### C.2. Tính chất quan trọng của FT
+### C.2. Tính chất quan trọng của FT [LAB:7.4]
 
 [TABLE]
 | Tính chất | Miền thời gian | Miền tần số |
@@ -3574,7 +3574,7 @@ $$x(t) = \mathcal{F}^{-1}\{X(\omega)\} = \frac{1}{2\pi}\int_{-\infty}^{\infty}X(
 1. **Dịch thời gian**: $x(t-t_0) \leftrightarrow e^{-j\omega t_0}X(\omega)$ — dịch đi $t_0$ thì nhân với pha $e^{-j\omega t_0}$. Đây là lý do "dịch chuyển thời gian = thay đổi pha" (như slide bài giảng nói).
 2. **Tích chập**: $x_1 * x_2 \leftrightarrow X_1\cdot X_2$ — đây là nền tảng của phân tích hệ LTI trong miền tần số.
 
-### C.3. Cặp biến đổi thông dụng — Phải thuộc lòng
+### C.3. Cặp biến đổi thông dụng — Phải thuộc lòng [LAB:7.4]
 
 [TABLE]
 | $x(t)$ | $X(\omega)$ |
@@ -3605,7 +3605,7 @@ $$x(t) = \mathcal{F}^{-1}\{X(\omega)\} = \frac{1}{2\pi}\int_{-\infty}^{\infty}X(
 3. **Bước 3 — Tính tích phân**: Thường dùng dạng $\int e^{ct}dt = e^{ct}/c$. Với tín hiệu có dạng $e^{-at}u(t)$, cận từ 0 đến $\infty$; với tín hiệu hữu hạn, cận hữu hạn.
 [/STEPS]
 
-### C.5. Ví dụ chi tiết — FT của xung vuông
+### C.5. Ví dụ chi tiết — FT của xung vuông [LAB:7.4]
 
 [P] **Đề**: Tính FT của $p_a(t) = 1$ với $|t| < a$, $0$ ngoài.
 
@@ -3634,7 +3634,7 @@ $$x[n] = \sum_{k=0}^{N_0-1}c_k e^{jk\Omega_0 n}, \qquad c_k = \frac{1}{N_0}\sum_
 - Chu kỳ $N_0 = 3$. Trên một chu kỳ $n \in \{0, 1, 2\}$: $x[0] = 1$, $x[1] = x[2] = 0$.
 - $c_k = \frac{1}{3}\sum_{n=0}^{2}x[n]e^{-jk(2\pi/3)n} = \frac{1}{3}\cdot 1\cdot e^0 = \frac{1}{3}$.
 
-### D.2. DTFT — Tín hiệu không tuần hoàn rời rạc
+### D.2. DTFT — Tín hiệu không tuần hoàn rời rạc [LAB:7.5]
 
 [FORMULA: key]
 $$X(\Omega) = \sum_{n=-\infty}^{\infty}x[n]e^{-j\Omega n}, \qquad x[n] = \frac{1}{2\pi}\int_{2\pi}X(\Omega)e^{j\Omega n}d\Omega$$
@@ -3977,14 +3977,14 @@ $$X[k] = \frac{1}{2}\int_0^1 1\cdot e^{-jk\pi t}dt = \frac{1}{2}\left[\frac{e^{-
 
 ## Phần B. Công thức biến đổi ngược — Bốn loại
 
-### B.1. FS ngược (từ $c_k$ về $x(t)$)
+### B.1. FS ngược (từ $c_k$ về $x(t)$) [LAB:8.1]
 
 [P] Cho hệ số Fourier $c_k$ của tín hiệu tuần hoàn $x(t)$ chu kỳ $T_0$, tần số cơ sở $\omega_0 = 2\pi/T_0$:
 [FORMULA: key]
 $$x(t) = \sum_{k=-\infty}^{\infty} c_k e^{jk\omega_0 t}$$
 [/FORMULA]
 
-### B.2. FT ngược (từ $X(\omega)$ về $x(t)$)
+### B.2. FT ngược (từ $X(\omega)$ về $x(t)$) [LAB:8.2]
 
 [FORMULA: key]
 $$x(t) = \frac{1}{2\pi}\int_{-\infty}^{\infty}X(\omega)e^{j\omega t}d\omega$$
@@ -3992,7 +3992,7 @@ $$x(t) = \frac{1}{2\pi}\int_{-\infty}^{\infty}X(\omega)e^{j\omega t}d\omega$$
 
 [BOX: warn] **Đừng quên $\frac{1}{2\pi}$!** Đây là hệ số phân biệt FT với FS. FS không có hệ số này vì $c_k$ đã chứa sẵn $\frac{1}{T_0}$. FT có vì tích phân liên tục không có "trọng số tự nhiên".
 
-### B.3. DTFS ngược (từ $X[k]$ về $x[n]$)
+### B.3. DTFS ngược (từ $X[k]$ về $x[n]$) [LAB:8.3]
 
 [P] Cho hệ số DTFS $X[k]$ (hoặc $c_k$) của tín hiệu tuần hoàn rời rạc $x[n]$ chu kỳ $N_0$, tần số góc cơ sở $\Omega_0 = 2\pi/N_0$:
 [FORMULA: key]
@@ -4013,7 +4013,7 @@ $$x[n] = \frac{1}{2\pi}\int_{2\pi}X(\Omega)e^{j\Omega n}d\Omega$$
 
 ## Phần C. Phương pháp giải — Từ hệ số về tín hiệu
 
-### C.1. Ý tưởng cốt lõi — "Nhận diện mũ phức"
+### C.1. Ý tưởng cốt lõi — "Nhận diện mũ phức" [LAB:8.1]
 
 [P] Trong hầu hết bài tập, hệ số $X[k]$ (hoặc $c_k$) có dạng **tổng các delta** $\delta[k - k_0]$ — tức là chỉ có vài tần số đóng góp. Khi đó, biến đổi ngược trở nên rất đơn giản:
 [FORMULA: key]
@@ -4062,7 +4062,7 @@ $$\text{Nếu } X[k] = A\,\delta[k - k_0] \text{ thì } x[n] = A\,e^{jk_0\Omega_
 
 ## Phần D. Ví dụ chi tiết từng loại
 
-### D.1. FS ngược — Từ $c_k$ về $x(t)$
+### D.1. FS ngược — Từ $c_k$ về $x(t)$ [LAB:8.1]
 
 [P] **Ví dụ**: Cho $c_k = -j\delta[k-2] + j\delta[k+2] + 2\delta[k-3] + 2\delta[k+3]$ với $\omega_0 = \pi$. Tìm $x(t)$.
 
@@ -4085,7 +4085,7 @@ $$x(t) = -j e^{j2\pi t} + j e^{-j2\pi t} + 2e^{j3\pi t} + 2e^{-j3\pi t}$$
 
 [BOX: warn] **Lưu ý dấu**: $-j\delta[k-2] + j\delta[k+2]$ → hệ số của $e^{j2\pi t}$ là $-j$, của $e^{-j2\pi t}$ là $+j$. Nhóm lại: $-j e^{j\theta} + j e^{-j\theta} = -j(e^{j\theta} - e^{-j\theta}) = -j\cdot 2j\sin\theta = +2\sin\theta$. **Không phải** $-2\sin\theta$ — đừng nhầm dấu!
 
-### D.2. DTFS ngược — Từ $X[k]$ về $x[n]$
+### D.2. DTFS ngược — Từ $X[k]$ về $x[n]$ [LAB:8.3]
 
 [P] **Ví dụ**: $X[k] = \cos(4\pi k/11) + 2j\sin(6\pi k/11)$, $N=11$. Tìm một chu kỳ của $x[n]$.
 
@@ -4399,7 +4399,7 @@ $$H(\omega) = |H(\omega)|\,e^{j\angle H(\omega)}$$
 - $\angle H(\omega)$: **đáp ứng pha** — cho biết hệ thống dịch pha bao nhiêu tại tần số $\omega$.
 [FIG: 8.1] Đáp ứng tần số của hệ LTI. Tín hiệu cos vào hệ thống, đầu ra vẫn là cos **cùng tần số** — chỉ khác biên độ (nhân $|H(\omega_0)|$) và pha (cộng $\angle H(\omega_0)$).
 
-### B.2. Tính chất eigenfunction — Trái tim của bài này
+### B.2. Tính chất eigenfunction — Trái tim của bài này [LAB:9.3]
 
 [P] Khi đưa $x(t) = e^{j\omega_0 t}$ vào hệ thống LTI có đáp ứng xung $h(t)$:
 $$y(t) = \int h(\tau)x(t-\tau)d\tau = \int h(\tau)e^{j\omega_0(t-\tau)}d\tau = e^{j\omega_0 t}\underbrace{\int h(\tau)e^{-j\omega_0\tau}d\tau}_{H(\omega_0)}$$
@@ -4416,7 +4416,7 @@ $$\boxed{y(t) = H(\omega_0)\,e^{j\omega_0 t}}$$
 
 Đây chính là lý do Fourier "hợp" với hệ LTI: cả hai đều làm việc với tần số.
 
-### B.3. Hệ quả — Đáp ứng với sin/cos
+### B.3. Hệ quả — Đáp ứng với sin/cos [LAB:9.1]
 
 [P] Từ eigenfunction, suy ra công thức cực kỳ quan trọng:
 [FORMULA: key]
@@ -4427,7 +4427,7 @@ $$\text{Nếu } x(t) = A\cos(\omega_0 t + \phi) \text{ thì } y(t) = A|H(\omega_
 
 [BOX: warn] **Chú ý**: Công thức này chỉ áp dụng khi đầu vào là **một sin/cos duy nhất** ở tần số $\omega_0$. Nếu đầu vào có nhiều tần số, phải xử lý từng tần số riêng rồi cộng lại (tính tuyến tính).
 
-### B.4. Hệ quả — Đáp ứng với hằng số (DC)
+### B.4. Hệ quả — Đáp ứng với hằng số (DC) [LAB:9.1]
 
 [P] Hằng số $A$ có thể coi là $\cos(0\cdot t)$ với tần số $\omega_0 = 0$. Áp dụng công thức:
 $$y = A\cdot H(0)$$
@@ -4445,7 +4445,7 @@ Nếu đề cho $H(\omega)$ dạng phân thức, chỉ cần thay $\omega = 0$ v
 
 ## Phần C. Phương pháp giải — 3 dạng bài chính
 
-### C.1. Dạng 1 — Cho $H(\omega)$ và $x(t)$ dạng sin/cos + hằng số
+### C.1. Dạng 1 — Cho $H(\omega)$ và $x(t)$ dạng sin/cos + hằng số [LAB:9.1] [LAB:9.2]
 
 [P] **Quy trình 4 bước**:
 
@@ -4467,7 +4467,7 @@ Nếu đề cho $H(\omega)$ dạng phân thức, chỉ cần thay $\omega = 0$ v
 
 [BOX: analogy] **Mẹo nhớ công thức $\cos$**: "**Biên độ nhân |H|, pha cộng ∠H, tần số giữ nguyên**". Ba việc — chỉ vậy thôi. Đừng thay đổi tần số!
 
-### C.2. Dạng 2 — Cho $h(t)$ hoặc $h[n]$, tìm đáp ứng với sin/cos + hằng số
+### C.2. Dạng 2 — Cho $h(t)$ hoặc $h[n]$, tìm đáp ứng với sin/cos + hằng số [LAB:9.2]
 
 [P] **Quy trình 3 bước**:
 
@@ -4836,7 +4836,7 @@ $$y_2(t) = \frac{\sqrt{2}}{4}\cdot\frac{\sqrt{2}}{2}[\cos(2t) + \sin(2t)] = \fra
 
 ## Phần B. Hai loại phổ và tính chất đối xứng
 
-### B.1. Phổ biên độ và phổ pha
+### B.1. Phổ biên độ và phổ pha [LAB:10.1]
 
 [P] Với tín hiệu $x(t)$ có biến đổi Fourier $X(\omega)$, viết dưới dạng cực:
 $$X(\omega) = |X(\omega)|\,e^{j\angle X(\omega)}$$
@@ -4846,7 +4846,7 @@ $$X(\omega) = |X(\omega)|\,e^{j\angle X(\omega)}$$
 
 [BOX: analogy] **Ẩn dụ**: Phổ biên độ giống như "âm lượng" của từng nốt trong hợp âm; phổ pha giống như "thời điểm bắt đầu" của từng nốt. Hai bản nhạc có cùng âm lượng nhưng khác thời điểm bắt đầu sẽ nghe khác nhau — tương tự, hai tín hiệu có cùng phổ biên độ nhưng khác phổ pha sẽ có dạng sóng khác nhau.
 
-### B.2. Tính chất đối xứng — Cực kỳ quan trọng
+### B.2. Tính chất đối xứng — Cực kỳ quan trọng [LAB:10.1]
 
 [P] Với tín hiệu **thực** $x(t)$ (đây là trường hợp phổ biến trong đề thi), phổ Fourier có **đối xứng liên hợp**:
 [FORMULA: key]
@@ -4868,7 +4868,7 @@ $$\angle X(-\omega) = -\angle X(\omega) \quad \text{(phổ pha lẻ)}$$
 
 ## Phần C. Công thức tái tạo tín hiệu từ phổ
 
-### C.1. Công thức then chốt
+### C.1. Công thức then chốt [LAB:10.1]
 
 [P] Với tín hiệu thực có phổ vạch (rời rạc) tại các tần số $0, \pm\omega_1, \pm\omega_2, \ldots$:
 [FORMULA: key]
@@ -4899,7 +4899,7 @@ $$A_k e^{j\omega_k t} + A_k^* e^{-j\omega_k t} = 2\,\text{Re}(A_k e^{j\omega_k t
 [BOX: analogy] **Cách nhớ**: Mỗi **cặp vạch đối xứng** $\pm\omega_k$ trong phổ tương ứng với **một làn sóng cos** trong miền thời gian. Biên độ làn sóng = $2\times$ biên độ vạch (vì có hai vạch cộng lại). Pha làn sóng = pha của vạch dương.
 [FIG: 9.2] Mỗi cặp vạch đối xứng $\pm\omega_k$ trong phổ tương ứng với một làn sóng cos trong miền thời gian. Biên độ cos = $2|X(\omega_k)|$ (vì có hai vạch cộng lại).
 
-### C.3. Quy trình đọc đồ thị phổ — 4 bước
+### C.3. Quy trình đọc đồ thị phổ — 4 bước [LAB:10.1] [LAB:10.2]
 
 [STEPS]
 1. **Bước 1 — Đọc phổ biên độ**: Liệt kê các tần số có vạch, ghi biên độ $|X|$ tại mỗi tần số. Đừng bỏ sót vạch ở $\omega = 0$ (DC).
@@ -5209,7 +5209,7 @@ $$X_I(s)=\int_{0^-}^{\infty}x(t)e^{-st}dt$$
 [/FORMULA]
 [P] Hai dạng **tương đương** khi $x(t)=0$ với $t<0$. Dùng $0^-$ để cận tích phân **bao trọn** các xung $\delta(t)$ và đạo hàm của chúng tại $t=0$.
 
-### B.2. Ý nghĩa: Fourier thêm "hệ số tắt dần"
+### B.2. Ý nghĩa: Fourier thêm "hệ số tắt dần" [LAB:11.1]
 
 [P] Phân tích Laplace biểu diễn $x(t)$ là tổng các sóng $A_ke^{\sigma t}\cos(\omega_kt+\phi_k)$ với $A_k=|X(\sigma+j\omega_k)|$ và $\phi_k=\angle X(\sigma+j\omega_k)$; còn Fourier là tổng sóng cos biên độ không đổi $A_k\cos(\omega_kt+\phi_k)$. Fourier là **lát cắt** của Laplace dọc trục $j\omega$ (mặt phẳng $s$).
 
@@ -5226,7 +5226,7 @@ $$H(s)=\int_{-\infty}^{\infty}h(\tau)e^{-s\tau}d\tau\quad\Rightarrow\quad y(t)=\
 
 ## Phần C. Vùng hội tụ (ROC)
 
-### C.1. Khái niệm
+### C.1. Khái niệm [LAB:11.2]
 
 [P] Thay $s=\sigma+j\omega$: $X(s)=\int x(t)e^{-\sigma t}e^{-j\omega t}dt=\mathrm{FT}[x(t)e^{-\sigma t}]$. Tức Laplace **bằng** Fourier của $x(t)e^{-\sigma t}$. Tập các $s$ làm tích phân hội tụ gọi là **vùng hội tụ ROC**:
 [FORMULA: key]
@@ -5234,7 +5234,7 @@ $$\int_{-\infty}^{+\infty}|x(t)e^{-\sigma t}|dt<+\infty\ \Longrightarrow\ \sigma
 [/FORMULA]
 [P] ROC luôn là **dải thẳng đứng** (chỉ phụ thuộc $\sigma$) — một dải, nửa mặt phẳng phải, nửa mặt phẳng trái, hoặc toàn mặt phẳng.
 
-### C.2. Ví dụ gốc: $e^{-at}u(t)$ (a thực)
+### C.2. Ví dụ gốc: $e^{-at}u(t)$ (a thực) [LAB:11.2]
 
 [P] Tích phân $\int_0^\infty e^{-(s+a)t}dt=\left[-\frac1{s+a}e^{-(s+a)t}\right]_0^\infty$. Số hạng cận trên $e^{-(\sigma+a)t}e^{-j\omega t}\to0$ chỉ khi $\sigma+a>0$:
 [FORMULA: key]
@@ -5267,7 +5267,7 @@ $$X(s)=\frac{a_0s^m+\dots+a_m}{b_0s^n+\dots+b_n}=\frac{a_0}{b_0}\frac{(s-z_1)\cd
 - Điểm cực **luôn nằm ngoài ROC** vì $X(s)$ không hội tụ tại đó; điểm không có thể trong hoặc ngoài ROC.
 - Ngoại trừ hằng số $a_0/b_0$, $X(s)$ **hoàn toàn xác định** bởi các điểm không và điểm cực.
 
-### D.1. Ví dụ
+### D.1. Ví dụ [LAB:11.3]
 
 [P] $x(t)=3e^{-2t}u(t)-2e^{-t}u(t)$, ROC $\mathrm{Re}[s]>-1$:
 $$X(s)=\frac{s-1}{s^2+3s+2}=\frac{s-1}{(s+1)(s+2)}$$
@@ -5325,7 +5325,7 @@ $$X(s)=\frac1{s+2}+\frac{s+1}{(s+1)^2+9}=\frac{2s^2+5s+12}{(s^2+2s+10)(s+2)}$$
 
 ---
 
-## Phần G. Tính chất của biến đổi Laplace
+## Phần G. Tính chất của biến đổi Laplace [LAB:11.5]
 
 | Tính chất | Tín hiệu | Biến đổi | ROC |
 |---|---|---|---|
@@ -5366,7 +5366,7 @@ $$X(s)=\frac{\lambda_1}{s-p_i}+\frac{\lambda_2}{(s-p_i)^2}+\dots+\frac{\lambda_r
 $$\frac{B_1s+B_2}{(s-\alpha)^2+\omega_o^2}=\frac{C_1(s-\alpha)}{(s-\alpha)^2+\omega_o^2}+\frac{C_2\omega_o}{(s-\alpha)^2+\omega_o^2}$$
 $$C_1e^{\alpha t}\cos(\omega_ot)u(t)\leftrightarrow\frac{C_1(s-\alpha)}{(s-\alpha)^2+\omega_o^2},\qquad C_2e^{\alpha t}\sin(\omega_ot)u(t)\leftrightarrow\frac{C_2\omega_o}{(s-\alpha)^2+\omega_o^2}$$
 
-### H.4. Chọn nghiệm theo ROC
+### H.4. Chọn nghiệm theo ROC [LAB:11.4]
 
 [P] Với mỗi phân thức $\frac{b_i}{s-p_i}$: nếu $\mathrm{Re}[s]>p_i$ thì $b_ie^{p_it}u(t)$; nếu $\mathrm{Re}[s]<p_i$ thì $-b_ie^{p_it}u(-t)$. **ROC quyết định** chọn nhánh nào cho từng cực.
 
@@ -5374,7 +5374,7 @@ $$C_1e^{\alpha t}\cos(\omega_ot)u(t)\leftrightarrow\frac{C_1(s-\alpha)}{(s-\alph
 
 ## Phần I. Hàm truyền của hệ LTI và phân loại hệ thống
 
-### I.1. Hàm truyền
+### I.1. Hàm truyền [LAB:11.6]
 
 [FORMULA: key]
 $$\sum_{k=0}^Na_ks^kY(s)=\sum_{k=0}^Mb_ks^kX(s),\quad y=x*h\Rightarrow Y(s)=X(s)H(s)\Rightarrow H(s)=\frac{Y(s)}{X(s)}=\frac{\sum_{k=0}^Mb_ks^k}{\sum_{k=0}^Na_ks^k}$$
@@ -5384,7 +5384,7 @@ $$\sum_{k=0}^Na_ks^kY(s)=\sum_{k=0}^Mb_ks^kX(s),\quad y=x*h\Rightarrow Y(s)=X(s)
 
 [P] Hệ LTI **nhân quả** nếu $h(t)=0$ với $t<0$ ⇒ $h(t)$ phía phải ⇒ ROC của $H(s)$ có dạng $\mathrm{Re}(s)>\sigma_{\max}$. Nhân quả **và** $H(s)$ hữu tỉ ⇒ ROC là nửa mặt phẳng phải kể từ **cực phải nhất**. (Chiều ngược lại cần thêm $H(s)$ hữu tỉ.)
 
-### I.3. Tính ổn định
+### I.3. Tính ổn định [LAB:11.6]
 
 [P] Hệ **ổn định** nếu $\int|h(t)|dt<\infty$. Khi đó $|H(j\omega)|\le\int|h(t)|dt<\infty$ nghĩa là $H(s)$ hội tụ tại $s=j\omega$:
 [FORMULA: key]
@@ -5404,7 +5404,7 @@ $$\text{Ổn định}\iff\text{ROC của }H(s)\text{ chứa trục }j\omega,\qqu
 
 [P] Ví dụ: $h=e^{-t}u(t)\leftrightarrow\frac1{s+1}$ ($\mathrm{Re}>-1$): nhân quả, ổn định. $h=e^{2t}u(t)\leftrightarrow\frac1{s-2}$ ($\mathrm{Re}>2$): nhân quả, **không** ổn định vì $j\omega\notin$ ROC.
 
-### I.5. Ghép nối hệ thống
+### I.5. Ghép nối hệ thống [LAB:11.7]
 
 [FORMULA: key]
 $$\text{Nối tiếp: }H=H_1H_2\ (h=h_1*h_2);\quad \text{Song song: }H=H_1+H_2\ (h=h_1+h_2);\quad \text{Phản hồi: }H=\frac{H_1}{1+H_1H_2}$$
@@ -5425,7 +5425,7 @@ $$\int_{0^-}^tx(\tau)d\tau\leftrightarrow\frac1sX_I(s),\qquad \int_{-\infty}^tx(
 [/FORMULA]
 [P] Đạo hàm một phía **tự mang điều kiện đầu** $x^{(r)}(0^-)=\frac{d^rx}{dt^r}\Big|_{t=0^-}$ — nên giải trực tiếp phương trình vi phân có điều kiện đầu.
 
-### J.2. Mạch điện trong miền $s$
+### J.2. Mạch điện trong miền $s$ [LAB:11.8]
 
 | Phần tử | Miền $t$ | Miền $s$ |
 |---|---|---|

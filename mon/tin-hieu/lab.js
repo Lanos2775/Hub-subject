@@ -1,5 +1,5 @@
 /* ===== PHÒNG THÍ NGHIỆM — Tín hiệu & Hệ thống =====
-   Tải lười bởi tin-hieu.js. API: LAB.toggle(soBai, forceOpen), LAB.isOpen().
+   Tải lười bởi tin-hieu.js. API: LAB.toggle(soBai, forceOpen, chỉSốTab), LAB.isOpen().
    Thêm bài mới: LAB.register(soBai, { title, tabs:[{name,tip,build(ui)}] }). */
 (function () {
   'use strict';
@@ -563,6 +563,207 @@
     ui.update = () => { zs = run(0, 0, src); zi = run(v0, i0, 0); const d = R * R - 4; pS.tags([d < 0 ? ['dao động tắt dần', 'neu'] : ['quá tắt', 'neu']]); ui.refresh(); };
   } });
 
+  /* =====================================================================
+     BÀI 7–10 — FOURIER (chuỗi, biến đổi, đáp ứng tần số, đọc phổ)
+     ===================================================================== */
+  const PI = Math.PI, sx = w => (Math.abs(w) < 1e-9 ? 1 : Math.sin(w) / w);
+  const wrapPi = t => ((t + PI) % TAU + TAU) % TAU - PI;
+  const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  const pif = v => { const r = +(v).toFixed(2); return r === 0 ? '0' : (r === 1 ? '' : r === -1 ? '−' : tl(r)) + 'π'; };
+  /* cột + chấm tại các điểm [x,y] */
+  function stems(c, v, pts, col, lw = 2, r = 3.2, dx = 0) {
+    c.save(); clipTo(c, v); c.strokeStyle = col; c.fillStyle = col; c.lineWidth = lw;
+    for (const [x, y] of pts) { const X = v.X(x) + dx, Y0 = v.Y(0), Y = v.Y(y); c.beginPath(); c.moveTo(X, Y0); c.lineTo(X, Y); c.stroke(); c.beginPath(); c.arc(X, Y, r, 0, TAU); c.fill(); }
+    c.restore();
+  }
+  const range = (a, b) => { const o = []; for (let i = a; i <= b; i++) o.push(i); return o; };
+  const lbl = (c, v, s, col) => txt(c, s, v.P.l + v.iw - 4, v.P.t + 10, col, 'right');
+  const L7 = [], L8 = [], L9 = [], L10 = [];
+
+  /* B7·1 — Chuỗi Fourier: tổng riêng và hiện tượng Gibbs */
+  L7.push({ name: 'Tổng các hài', tip: 'B.1–B.2 · cộng dần các hài, sóng càng giống tín hiệu gốc', build(ui) {
+    let N = 5, ty = 'sq';
+    const term = (k, t) => ty === 'sq' ? (k % 2 ? 4 / (PI * k) * Math.sin(k * t) : 0) : ty === 'saw' ? 2 * (k % 2 ? 1 : -1) / (PI * k) * Math.sin(k * t) : (k % 2 ? 8 / (PI * PI * k * k) * Math.cos(k * t) : 0);
+    const amp = k => ty === 'sq' ? (k % 2 ? 4 / (PI * k) : 0) : ty === 'saw' ? 2 / (PI * k) : (k % 2 ? 8 / (PI * PI * k * k) : 0);
+    const ideal = t => { const w = wrapPi(t); return ty === 'sq' ? (w > 0 ? 1 : -1) : ty === 'saw' ? w / PI : 1 - 2 * Math.abs(w) / PI; };
+    const part = t => { let s = 0; for (let k = 1; k <= N; k++) s += term(k, t); return s; };
+    const pT = ui.panel('<i>x</i>(<i>t</i>) và tổng riêng <i>S<sub>N</sub></i>(<i>t</i>)', 'a'), pS = ui.panel('biên độ các hài |<i>a<sub>k</sub></i>|, |<i>b<sub>k</sub></i>|', 'b');
+    ui.layout(['a', 'b'], '1fr', '1.5fr 1fr');
+    ui.slider('N', 1, 40, 1, N, 0, v => { N = v; ui.update(); });
+    ui.seg([['sq', 'vuông'], ['saw', 'răng cưa'], ['tri', 'tam giác']], ty, k => { ty = k; ui.update(); });
+    pT.draw = (c, w, h) => { const v = mkView(w, h, -2, 2, -1.5, 1.5); axes(c, v, { xl: 't/π', xfmt: x => tl(x) });
+      curve(c, v, u => ideal(u * PI), -2, 2, COL.sub, 1.5, 800, { dash: [5, 4], jump: 1 }); curve(c, v, u => part(u * PI), -2, 2, COL.main, 2.2, 900); };
+    pS.draw = (c, w, h) => { const K = 40, v = mkView(w, h, 0, K + 1, 0, 1.4 * Math.max(amp(1), amp(2)) + .01); axes(c, v, { xl: 'k' });
+      stems(c, v, range(1, N).map(k => [k, amp(k)]), COL.main, 3, 2.8); stems(c, v, range(N + 1, K).map(k => [k, amp(k)]), COL.sub, 2, 2.2); };
+    ui.update = () => { let m = -9; for (let i = 0; i < 800; i++) m = Math.max(m, part(-PI + 2 * PI * i / 800)); pT.tags(ty === 'sq' ? [['đỉnh ' + fx(m, 2) + ' (Gibbs ≈ 1.18)', m > 1.05 ? 'bad' : 'ok']] : [['đỉnh ' + fx(m, 2), 'neu']]); ui.refresh(); };
+  } });
+
+  /* B7·2 — Phổ vạch của tổng cos */
+  L7.push({ name: 'Phổ vạch', tip: 'B.3–B.4 · A cos(ωt+φ) → c₁ = (A/2)e^{jφ}, c₋₁ = c₁*', build(ui) {
+    let A1 = 2, f1 = 45, A2 = 1, f2 = -90, m = 3;
+    const pT = ui.panel('<i>x</i>(<i>t</i>) = <i>A</i>₁cos(<i>t</i>+φ₁) + <i>A</i>₂cos(<i>mt</i>+φ₂)', 'a'), pA = ui.panel('phổ biên độ |<i>c<sub>k</sub></i>|', 'b'), pP = ui.panel('phổ pha ∠<i>c<sub>k</sub></i> (độ)', 'c');
+    ui.layout(['a a', 'b c'], '1fr 1fr', '1.1fr 1fr');
+    ui.slider('A₁', 0, 3, .1, A1, 1, v => { A1 = v; ui.update(); }); ui.slider('φ₁°', -180, 180, 15, f1, 0, v => { f1 = v; ui.update(); });
+    ui.slider('m', 2, 5, 1, m, 0, v => { m = v; ui.update(); }); ui.slider('A₂', 0, 3, .1, A2, 1, v => { A2 = v; ui.update(); }); ui.slider('φ₂°', -180, 180, 15, f2, 0, v => { f2 = v; ui.update(); });
+    const ck = () => { const o = {}; const r = PI / 180; o[1] = [A1 / 2 * Math.cos(f1 * r), A1 / 2 * Math.sin(f1 * r)]; o[-1] = [o[1][0], -o[1][1]]; o[m] = [A2 / 2 * Math.cos(f2 * r), A2 / 2 * Math.sin(f2 * r)]; o[-m] = [o[m][0], -o[m][1]]; return o; };
+    pT.draw = (c, w, h) => { const r = PI / 180, f = u => A1 * Math.cos(u * 2 * PI + f1 * r) + A2 * Math.cos(m * u * 2 * PI + f2 * r), M = Math.max(1, A1 + A2) * 1.1, v = mkView(w, h, -1, 1, -M, M); axes(c, v, { xl: 't/T₀' });
+      curve(c, v, f, -1, 1, COL.main, 2.2, 900); };
+    pA.draw = (c, w, h) => { const o = ck(), v = mkView(w, h, -6, 6, 0, 1.6); axes(c, v, { xl: 'k', yn: 3 }); stems(c, v, Object.keys(o).map(k => [+k, cabs(o[k])]), COL.c2, 3); };
+    pP.draw = (c, w, h) => { const o = ck(), v = mkView(w, h, -6, 6, -200, 200); axes(c, v, { xl: 'k', yn: 4 }); stems(c, v, Object.keys(o).filter(k => cabs(o[k]) > 1e-3).map(k => [+k, carg(o[k]) * 180 / PI]), COL.c1, 3); };
+    ui.update = () => { pT.tags([['T₀ = 2π', 'neu']]); pP.tags([['pha lẻ: ∠c₋ₖ = −∠cₖ', 'ok']]); ui.refresh(); };
+  } });
+
+  /* B7·3 — Từ FS sang FT */
+  L7.push({ name: 'FS → FT', tip: 'C.1 · T₀ → ∞: vạch phổ khít lại thành phổ liên tục', build(ui) {
+    let T0 = 4;
+    const pT = ui.panel('xung vuông (độ rộng 2) lặp lại mỗi <i>T</i>₀', 'a'), pS = ui.panel('<i>T</i>₀·<i>c<sub>k</sub></i> tại ω = <i>k</i>ω₀  và đường bao <i>X</i>(ω) = 2sin ω / ω', 'b');
+    ui.layout(['a', 'b'], '1fr', '1fr 1.5fr');
+    ui.slider('T₀', 2.5, 40, .5, T0, 1, v => { T0 = v; ui.update(); });
+    pT.draw = (c, w, h) => { const v = mkView(w, h, -20, 20, -.3, 1.4); axes(c, v, { xl: 't', yn: 2 }); c.save(); clipTo(c, v); c.fillStyle = COL.c1; c.globalAlpha = .5; c.strokeStyle = COL.c1;
+      for (let k = Math.floor(-20 / T0) - 1; k <= 20 / T0 + 1; k++) { const a = v.X(k * T0 - 1), b = v.X(k * T0 + 1); c.fillRect(a, v.Y(1), b - a, v.Y(0) - v.Y(1)); } c.restore(); };
+    pS.draw = (c, w, h) => { const v = mkView(w, h, -12, 12, -1, 2.4); axes(c, v, { xl: 'ω', yn: 3 }); curve(c, v, x => 2 * sx(x), -12, 12, COL.sub, 1.5, 600, { dash: [5, 4] });
+      const w0 = TAU / T0, ks = []; for (let k = Math.ceil(-12 / w0); k <= 12 / w0; k++) ks.push([k * w0, 2 * sx(k * w0)]); stems(c, v, ks, COL.main, ks.length > 120 ? 1 : 2, ks.length > 120 ? 1.4 : 3); };
+    ui.update = () => { pS.tags([['ω₀ = ' + fx(TAU / T0, 2), 'neu'], [T0 > 15 ? 'gần như liên tục' : 'rời rạc', T0 > 15 ? 'ok' : 'neu']]); ui.refresh(); };
+  } });
+
+  /* B7·4 — Xung vuông ↔ sinc, dịch thời gian */
+  L7.push({ name: 'Xung ↔ sinc', tip: 'C.3–C.5 · hẹp ↔ rộng; dịch t₀ chỉ đổi pha', build(ui) {
+    let a = 1, t0 = 0;
+    const pT = ui.panel('<i>p<sub>a</sub></i>(<i>t</i> − <i>t</i>₀)', 'a'), pM = ui.panel('|<i>X</i>(ω)| = |2sin(ωa)/ω|', 'b'), pP = ui.panel('∠<i>X</i>(ω) = −ω<i>t</i>₀ (+π khi sinc < 0)', 'c');
+    ui.layout(['a a', 'b c'], '1fr 1fr', '.8fr 1.2fr');
+    ui.slider('a', .3, 3, .1, a, 1, v => { a = v; ui.update(); }); ui.slider('t₀', -3, 3, .1, t0, 1, v => { t0 = v; ui.update(); });
+    const re = w => 2 * a * sx(w * a);
+    pT.draw = (c, w, h) => { const v = mkView(w, h, -8, 8, -.3, 1.4); axes(c, v, { xl: 't', yn: 2 }); const f = t => (Math.abs(t - t0) < a ? 1 : 0); curve(c, v, f, -8, 8, COL.main, 2.4, 1200, { jump: .5 }); area(c, v, f, -8, 8, COL.main, .15, 1200); };
+    pM.draw = (c, w, h) => { const v = mkView(w, h, -12, 12, 0, 6.4); axes(c, v, { xl: 'ω', yn: 3 }); curve(c, v, w2 => Math.abs(re(w2)), -12, 12, COL.c2, 2.2, 700); };
+    pP.draw = (c, w, h) => { const v = mkView(w, h, -12, 12, -PI * 1.1, PI * 1.1); axes(c, v, { xl: 'ω', yn: 4, yfmt: pif }); curve(c, v, w2 => { const s = re(w2); return Math.abs(s) < 1e-3 ? NaN : Math.atan2(-s * Math.sin(w2 * t0), s * Math.cos(w2 * t0)); }, -12, 12, COL.c1, 2, 900, { jump: 3 }); };
+    ui.update = () => { pM.tags([['lobe chính 2π/a = ' + fx(TAU / a, 1), 'neu']]); pP.tags([[Math.abs(t0) < .05 ? 'pha 0 / π' : 'đường thẳng dốc −t₀', 'ok']]); ui.refresh(); };
+  } });
+
+  /* B7·5 — DTFT */
+  L7.push({ name: 'DTFT', tip: 'D.2 · aⁿu[n] ↔ 1/(1−ae^{−jΩ}); X tuần hoàn 2π', build(ui) {
+    let a = .5;
+    const pX = ui.panel('<i>x</i>[<i>n</i>] = <i>a<sup>n</sup></i><i>u</i>[<i>n</i>]', 'a'), pM = ui.panel('|<i>X</i>(Ω)| (hai chu kỳ)', 'b'), pP = ui.panel('∠<i>X</i>(Ω)', 'c');
+    ui.layout(['a b', 'a c'], '1fr 1.4fr', '1fr 1fr');
+    ui.slider('a', -.9, .95, .05, a, 2, v => { a = v; ui.update(); });
+    const D = W => [1 - a * Math.cos(W), a * Math.sin(W)];
+    pX.draw = (c, w, h) => { const v = mkView(w, h, -3, 14, -1.2, 1.2); axes(c, v, { xl: 'n', yn: 4 }); stems(c, v, range(0, 14).map(n => [n, Math.pow(a, n)]), COL.main, 2.4); };
+    pM.draw = (c, w, h) => { const v = mkView(w, h, -2, 2, 0, Math.max(2.2, 1.1 / (1 - Math.abs(a)))); axes(c, v, { xl: 'Ω/π', xfmt: x => tl(x), yn: 3 }); curve(c, v, u => 1 / cabs(D(u * PI)), -2, 2, COL.c2, 2.2, 600); };
+    pP.draw = (c, w, h) => { const v = mkView(w, h, -2, 2, -PI * 1.1, PI * 1.1); axes(c, v, { xl: 'Ω/π', xfmt: x => tl(x), yn: 4, yfmt: pif }); curve(c, v, u => -carg(D(u * PI)), -2, 2, COL.c1, 2.2, 600, { jump: 3 }); };
+    ui.update = () => { pM.tags([[a > 0 ? 'thông thấp' : a < 0 ? 'thông cao' : 'phẳng', 'ok'], ['|X(0)| = ' + fx(1 / (1 - a), 2), 'neu']]); ui.refresh(); };
+  } });
+
+  /* B8·1 — Từ phổ cộng lại thành tín hiệu */
+  L8.push({ name: 'Từ phổ → x(t)', tip: 'Thực chẵn → cos; ảo lẻ → sin (Quiz 7, câu 6–7)', build(ui) {
+    let A = [2, 1, .5], ty = 'cos';
+    const pS = ui.panel('phổ <i>c<sub>k</sub></i>: <span style="color:var(--c1)">Re</span> · <span style="color:var(--c2)">Im</span>', 'a'), pT = ui.panel('<i>x</i>(<i>t</i>) = Σ <i>c<sub>k</sub></i>e<sup>jkω₀t</sup>', 'b');
+    ui.layout(['a b'], '1fr 1.5fr', '1fr');
+    A.forEach((v0, i) => ui.slider('A' + (i + 1), 0, 3, .1, v0, 1, v => { A[i] = v; ui.update(); }));
+    ui.seg([['cos', 'c thực, chẵn'], ['sin', 'c ảo, lẻ']], ty, k => { ty = k; ui.update(); });
+    const f = (u, i) => ty === 'cos' ? A[i] * Math.cos((i + 1) * u * TAU) : A[i] * Math.sin((i + 1) * u * TAU);
+    pS.draw = (c, w, h) => { const v = mkView(w, h, -3.6, 3.6, -1.7, 1.7); axes(c, v, { xl: 'k', yn: 4 }); const pts = [[], []];
+      for (let i = 0; i < 3; i++) { const k = i + 1, h2 = A[i] / 2; if (ty === 'cos') { pts[0].push([k, h2], [-k, h2]); } else { pts[1].push([k, -h2], [-k, h2]); } }
+      stems(c, v, pts[0], COL.c1, 3, 3, -3); stems(c, v, pts[1], COL.c2, 3, 3, 3); };
+    pT.draw = (c, w, h) => { const M = Math.max(1, A[0] + A[1] + A[2]) * 1.1, v = mkView(w, h, -1, 1, -M, M); axes(c, v, { xl: 't/T₀' });
+      for (let i = 0; i < 3; i++) curve(c, v, u => f(u, i), -1, 1, COL.sub, 1, 600, { dash: [4, 4] }); curve(c, v, u => f(u, 0) + f(u, 1) + f(u, 2), -1, 1, COL.main, 2.4, 900); };
+    ui.update = () => { pS.tags([[ty === 'cos' ? 'c₋ₖ = cₖ = A/2 ⇒ A·cos' : 'cₖ = −jA/2, c₋ₖ = +jA/2 ⇒ A·sin', 'ok']]); ui.refresh(); };
+  } });
+
+  /* B8·2 — FT ngược của phổ vuông */
+  L8.push({ name: 'Phổ vuông → sinc', tip: 'Đối ngẫu: phổ rộng ↔ xung hẹp, 1/(2π) trong FT ngược', build(ui) {
+    let W = 3;
+    const pS = ui.panel('<i>X</i>(ω) = <i>p<sub>W</sub></i>(ω)', 'a'), pT = ui.panel('<i>x</i>(<i>t</i>) = sin(<i>W t</i>) / (π<i>t</i>)', 'b');
+    ui.layout(['a b'], '1fr 1.5fr', '1fr');
+    ui.slider('W', .5, 6, .25, W, 2, v => { W = v; ui.update(); });
+    pS.draw = (c, w, h) => { const v = mkView(w, h, -8, 8, -.3, 1.4); axes(c, v, { xl: 'ω', yn: 2 }); const f = x => (Math.abs(x) < W ? 1 : 0); curve(c, v, f, -8, 8, COL.main, 2.4, 1200, { jump: .5 }); area(c, v, f, -8, 8, COL.main, .15, 1200); };
+    pT.draw = (c, w, h) => { const v = mkView(w, h, -10, 10, -.3 * 6 / PI, 6.4 / PI); axes(c, v, { xl: 't', yn: 4 }); curve(c, v, t => W / PI * sx(W * t), -10, 10, COL.c2, 2.2, 1200); };
+    ui.update = () => { pT.tags([['x(0) = W/π = ' + fx(W / PI, 2), 'neu'], ['lobe 2π/W = ' + fx(TAU / W, 2), 'ok']]); ui.refresh(); };
+  } });
+
+  /* B8·3 — DTFS ngược */
+  L8.push({ name: 'DTFS ngược', tip: 'X[k] = δ[k−k₀] ⇒ x[n] = e^{jk₀Ω₀n}: chu kỳ cơ bản N/gcd(N,k₀)', build(ui) {
+    let N = 8, k0 = 1, cs = 0;
+    const pS = ui.panel('<i>X</i>[<i>k</i>]', 'a'), pT = ui.panel('<i>x</i>[<i>n</i>]: <span style="color:var(--c1)">Re</span> · <span style="color:var(--c2)">Im</span>', 'b'), pC = ui.panel('các điểm e<sup>jk₀Ω₀n</sup> trên đường tròn đơn vị', 'c');
+    ui.layout(['a c', 'b c'], '1.4fr 1fr', '1fr 1fr');
+    ui.slider('N', 4, 16, 1, N, 0, v => { N = v; ui.update(); }); ui.slider('k₀', 0, 15, 1, k0, 0, v => { k0 = v; ui.update(); });
+    ui.seg([['0', 'δ[k−k₀]'], ['1', 'δ[k−k₀]+δ[k+k₀]']], '0', k => { cs = +k; ui.update(); });
+    const kk = () => k0 % N, val = n => { const a = TAU * kk() * n / N; return cs ? [2 * Math.cos(a), 0] : [Math.cos(a), Math.sin(a)]; };
+    pS.draw = (c, w, h) => { const v = mkView(w, h, -.5, N - .5, 0, 1.4 * (cs ? 1 : 1)); axes(c, v, { xl: 'k', xn: N, yn: 2 }); const k = kk(); stems(c, v, cs ? [[k, 1], [(N - k) % N, 1]] : [[k, 1]], COL.main, 3.4); };
+    pT.draw = (c, w, h) => { const M = cs ? 2.4 : 1.4, v = mkView(w, h, -.5, 2 * N - .5, -M, M); axes(c, v, { xl: 'n', xn: 2 * N, yn: 4 }); const ns = range(0, 2 * N - 1);
+      stems(c, v, ns.map(n => [n, val(n)[0]]), COL.c1, 2.4, 3, -2); if (!cs) stems(c, v, ns.map(n => [n, val(n)[1]]), COL.c2, 2.4, 3, 2); };
+    pC.draw = (c, w, h) => { const R = Math.min(w, h) / 2 - 22, cx = w / 2, cy = h / 2; c.save(); c.strokeStyle = COL.grid; c.beginPath(); c.arc(cx, cy, R, 0, TAU); c.moveTo(cx - R, cy); c.lineTo(cx + R, cy); c.moveTo(cx, cy - R); c.lineTo(cx, cy + R); c.stroke(); c.restore();
+      for (let n = 0; n < N; n++) { const a = TAU * kk() * n / N, x = cx + R * Math.cos(a), y = cy - R * Math.sin(a); mark(c, 'd', x, y, n ? COL.c1 : COL.main); txt(c, n, x + (Math.cos(a) >= 0 ? 9 : -9), y - 8, COL.sub, Math.cos(a) >= 0 ? 'left' : 'right'); } };
+    ui.update = () => { const k = kk(), P = k ? N / gcd(N, k) : 1; pT.tags([['chu kỳ cơ bản = ' + P, 'ok']]); pC.tags([['Ω₀k₀ = ' + fx(2 * k / N, 2) + 'π', 'neu']]); ui.refresh(); };
+  } });
+
+  /* B9·1 — Đáp ứng tần số liên tục */
+  L9.push({ name: 'H(ω) liên tục', tip: 'x = DC + cos ω₀t qua H = 1/(a+jω): đo |H|, ∠H tại ω₀ và 0', build(ui) {
+    let a = 1, w0 = 2, dc = 1;
+    const pM = ui.panel('|<i>H</i>(ω)|', 'a'), pP = ui.panel('∠<i>H</i>(ω)', 'b'), pT = ui.panel('<i>x</i>(<i>t</i>) <span style="color:var(--sub)">- -</span> và <i>y</i>(<i>t</i>) = <i>H</i>(0)·DC + |<i>H</i>|cos(ω₀<i>t</i>+∠<i>H</i>)', 'c');
+    ui.layout(['a c', 'b c'], '1fr 1.5fr', '1fr 1fr');
+    ui.slider('a', .2, 4, .1, a, 1, v => { a = v; ui.update(); }); ui.slider('ω₀', 0, 8, .1, w0, 1, v => { w0 = v; ui.update(); }); ui.slider('DC', 0, 2, .1, dc, 1, v => { dc = v; ui.update(); });
+    const H = w => cdiv([1, 0], [a, w]);
+    pM.draw = (c, w, h) => { const v = mkView(w, h, -10, 10, 0, Math.max(1.2, 1.2 / a)); axes(c, v, { xl: 'ω', yn: 3 }); curve(c, v, w2 => cabs(H(w2)), -10, 10, COL.c2, 2.2, 500); for (const s of [-1, 1]) mark(c, 'd', v.X(s * w0), v.Y(cabs(H(w0))), COL.main); };
+    pP.draw = (c, w, h) => { const v = mkView(w, h, -10, 10, -PI / 2 * 1.15, PI / 2 * 1.15); axes(c, v, { xl: 'ω', yn: 4, yfmt: pif }); curve(c, v, w2 => carg(H(w2)), -10, 10, COL.c1, 2.2, 500); for (const s of [-1, 1]) mark(c, 'd', v.X(s * w0), v.Y(carg(H(s * w0))), COL.main); };
+    pT.draw = (c, w, h) => { const hm = cabs(H(w0)), ph = carg(H(w0)), M = (dc + 1) * 1.1 + .1, v = mkView(w, h, 0, 12, -M, M); axes(c, v, { xl: 't' });
+      curve(c, v, t => dc + Math.cos(w0 * t), 0, 12, COL.sub, 1.5, 900, { dash: [5, 4] }); curve(c, v, t => dc / a + hm * Math.cos(w0 * t + ph), 0, 12, COL.main, 2.4, 900); };
+    ui.update = () => { const hm = cabs(H(w0)); pM.tags([['|H(ω₀)| = ' + fx(hm, 2), 'neu'], ['H(0) = ' + fx(1 / a, 2), 'neu']]); pP.tags([['∠H(ω₀) = ' + fx(carg(H(w0)) / PI, 2) + 'π', 'neu']]); ui.refresh(); };
+  } });
+
+  /* B9·2 — Đáp ứng tần số rời rạc */
+  L9.push({ name: 'H(Ω) rời rạc', tip: 'x[n] = DC + cos Ω₀n qua H = 1/(1−ae^{−jΩ}) (Quiz 8, câu 4–5)', build(ui) {
+    let a = -.5, u0 = .5, dc = 1;
+    const pM = ui.panel('|<i>H</i>(Ω)|', 'a'), pP = ui.panel('∠<i>H</i>(Ω)', 'b'), pT = ui.panel('<i>x</i>[<i>n</i>] (xám) và <i>y</i>[<i>n</i>] (vàng)', 'c');
+    ui.layout(['a c', 'b c'], '1fr 1.5fr', '1fr 1fr');
+    ui.slider('a', -.9, .9, .05, a, 2, v => { a = v; ui.update(); }); ui.slider('Ω₀/π', 0, 1, .0625, u0, 2, v => { u0 = v; ui.update(); }); ui.slider('DC', 0, 2, .1, dc, 1, v => { dc = v; ui.update(); });
+    const H = W => cdiv([1, 0], [1 - a * Math.cos(W), a * Math.sin(W)]);
+    pM.draw = (c, w, h) => { const v = mkView(w, h, -1, 1, 0, Math.max(2, 1.15 / (1 - Math.abs(a)))); axes(c, v, { xl: 'Ω/π', xfmt: x => tl(x), yn: 3 }); curve(c, v, u => cabs(H(u * PI)), -1, 1, COL.c2, 2.2, 400); for (const s of [-1, 1]) mark(c, 'd', v.X(s * u0), v.Y(cabs(H(s * u0 * PI))), COL.main); };
+    pP.draw = (c, w, h) => { const v = mkView(w, h, -1, 1, -PI * 1.1, PI * 1.1); axes(c, v, { xl: 'Ω/π', xfmt: x => tl(x), yn: 4, yfmt: pif }); curve(c, v, u => carg(H(u * PI)), -1, 1, COL.c1, 2.2, 400, { jump: 3 }); for (const s of [-1, 1]) mark(c, 'd', v.X(s * u0), v.Y(carg(H(s * u0 * PI))), COL.main); };
+    pT.draw = (c, w, h) => { const W = u0 * PI, hm = cabs(H(W)), ph = carg(H(W)), h0 = cabs(H(0)), M = (dc * h0 + hm) * 1.1 + 1.2, v = mkView(w, h, -1, 30, -M, M); axes(c, v, { xl: 'n', yn: 4 }); const ns = range(0, 29);
+      stems(c, v, ns.map(n => [n, dc + Math.cos(W * n)]), COL.sub, 1.6, 2.6, -2); stems(c, v, ns.map(n => [n, dc * h0 + hm * Math.cos(W * n + ph)]), COL.main, 2.4, 3, 2); };
+    ui.update = () => { const W = u0 * PI; pM.tags([['|H(Ω₀)| = ' + fx(cabs(H(W)), 2), 'neu'], ['H(0) = ' + fx(cabs(H(0)), 3), 'neu']]); ui.refresh(); };
+  } });
+
+  /* B9·3 — Lọc nhiều thành phần tần số */
+  L9.push({ name: 'Lọc nhiều tần số', tip: 'Y = X·H: mỗi vạch phổ được nhân riêng với H tại tần số của nó', build(ui) {
+    let wc = 2, w1 = 1, w2 = 5;
+    const pS = ui.panel('vạch phổ vào (xám) và ra (vàng)', 'a'), pH = ui.panel('|<i>H</i>(ω)| = 1/√(1+(ω/ω<sub>c</sub>)²)', 'b'), pT = ui.panel('<i>x</i>(<i>t</i>) = 1 + cos ω₁<i>t</i> + cos ω₂<i>t</i>  →  <i>y</i>(<i>t</i>)', 'c');
+    ui.layout(['a b', 'c c'], '1.3fr 1fr', '1fr 1.2fr');
+    ui.slider('ω<sub>c</sub>', .5, 6, .1, wc, 1, v => { wc = v; ui.update(); }); ui.slider('ω₁', .5, 8, .1, w1, 1, v => { w1 = v; ui.update(); }); ui.slider('ω₂', .5, 8, .1, w2, 1, v => { w2 = v; ui.update(); });
+    const H = w => cdiv([1, 0], [1, w / wc]);
+    pS.draw = (c, w, h) => { const v = mkView(w, h, -9, 9, 0, 1.3); axes(c, v, { xl: 'ω', yn: 3 }); const L = [[0, 1], [w1, .5], [-w1, .5], [w2, .5], [-w2, .5]];
+      stems(c, v, L, COL.sub, 3, 3, -3); stems(c, v, L.map(([x, y]) => [x, y * cabs(H(x))]), COL.main, 3, 3, 3); };
+    pH.draw = (c, w, h) => { const v = mkView(w, h, -9, 9, 0, 1.2); axes(c, v, { xl: 'ω', yn: 3 }); curve(c, v, x => cabs(H(x)), -9, 9, COL.c2, 2.2, 400); };
+    pT.draw = (c, w, h) => { const v = mkView(w, h, 0, 14, -1.4, 3.4); axes(c, v, { xl: 't' }); const y = t => 1 + cabs(H(w1)) * Math.cos(w1 * t + carg(H(w1))) + cabs(H(w2)) * Math.cos(w2 * t + carg(H(w2)));
+      curve(c, v, t => 1 + Math.cos(w1 * t) + Math.cos(w2 * t), 0, 14, COL.sub, 1.4, 1200, { dash: [5, 4] }); curve(c, v, y, 0, 14, COL.main, 2.4, 1200); };
+    ui.update = () => { pS.tags([[w1 < wc ? 'ω₁ qua' : 'ω₁ bị chặn', w1 < wc ? 'ok' : 'bad'], [w2 < wc ? 'ω₂ qua' : 'ω₂ bị chặn', w2 < wc ? 'ok' : 'bad']]); ui.refresh(); };
+  } });
+
+  /* B10 — Đọc đồ thị phổ → tín hiệu (builder dùng cho 2 tab) */
+  function specTab(filt) {
+    return { name: filt ? 'Y = X·H' : 'Phổ → x(t)', tip: filt ? 'Nhân phổ với H(kω₀): đổi biên độ và cộng pha' : 'Quiz 9 · đọc |X|, ∠X tại 0, ±200π, ±400π rồi dựng x(t)', build(ui) {
+      let A0 = 1, s0 = 0, A = [.75, 1], P = [-45, 45], sym = 1, kc = 1;
+      const pA = ui.panel(filt ? '|<i>X</i>| (xám) và |<i>Y</i>| (vàng) theo <i>k</i> (ω = <i>k</i>·200π)' : '|<i>X</i>(ω)| tại ω = <i>k</i>·200π', 'a'), pP = ui.panel('∠<i>X</i>(ω) (độ)', 'b'),
+        pT = ui.panel('<span style="color:var(--c1)">Re</span><i>x</i>(<i>t</i>) · <span style="color:var(--c2)">Im</span><i>x</i>(<i>t</i>)' + (filt ? ' · <span style="color:var(--main)">Re <i>y</i></span>' : ''), 'c');
+      ui.layout(['a b', 'c c'], '1fr 1fr', '1fr 1.2fr');
+      ui.slider('|X(0)|', 0, 2, .05, A0, 2, v => { A0 = v; ui.update(); }); ui.seg([['0', '∠X(0)=0'], ['1', '∠X(0)=π']], '0', k => { s0 = +k; ui.update(); });
+      ui.slider('|X₁|', 0, 2, .05, A[0], 2, v => { A[0] = v; ui.update(); }); ui.slider('∠X₁°', -180, 180, 15, P[0], 0, v => { P[0] = v; ui.update(); });
+      ui.slider('|X₂|', 0, 2, .05, A[1], 2, v => { A[1] = v; ui.update(); }); ui.slider('∠X₂°', -180, 180, 15, P[1], 0, v => { P[1] = v; ui.update(); });
+      ui.seg([['1', 'pha lẻ (x thực)'], ['-1', 'pha chẵn (x phức)']], '1', k => { sym = +k; ui.update(); });
+      if (filt) ui.slider('k<sub>c</sub>', .3, 4, .1, kc, 1, v => { kc = v; ui.update(); });
+      const r = PI / 180, Hk = k => (filt ? cdiv([1, 0], [1, k / kc]) : [1, 0]);
+      const X = () => { const o = {}; o[0] = [s0 ? -A0 : A0, 0]; for (let i = 0; i < 2; i++) { const k = i + 1, c1 = [A[i] * Math.cos(P[i] * r), A[i] * Math.sin(P[i] * r)]; o[k] = c1; o[-k] = [c1[0], -sym * c1[1]]; } return o; };
+      const Y = () => { const o = X(); for (const k in o) o[k] = cmul(o[k], Hk(+k)); return o; };
+      const ev = (o, u) => { let s = [0, 0]; for (const k in o) s = cadd(s, cmul(o[k], [Math.cos(TAU * k * u), Math.sin(TAU * k * u)])); return s; };
+      pA.draw = (c, w, h) => { const o = X(), y = Y(), v = mkView(w, h, -3, 3, 0, 2.2); axes(c, v, { xl: 'k', xn: 6, yn: 3 }); stems(c, v, Object.keys(o).map(k => [+k, cabs(o[k])]), COL.sub, 3, 3, filt ? -3 : 0); if (filt) stems(c, v, Object.keys(y).map(k => [+k, cabs(y[k])]), COL.main, 3, 3, 3); };
+      pP.draw = (c, w, h) => { const o = X(), y = filt ? Y() : o, v = mkView(w, h, -3, 3, -200, 200); axes(c, v, { xl: 'k', xn: 6, yn: 4 }); const ph = q => Object.keys(q).filter(k => cabs(q[k]) > 1e-3).map(k => [+k, carg(q[k]) * 180 / PI]);
+        stems(c, v, ph(o), COL.c1, 3, 3, filt ? -3 : 0); if (filt) stems(c, v, ph(y), COL.main, 3, 3, 3); };
+      pT.draw = (c, w, h) => { const o = X(), y = Y(); let M = .5; for (let i = 0; i <= 80; i++) { const u = -1 + i / 40, s = ev(o, u), q = ev(y, u); M = Math.max(M, Math.abs(s[0]), Math.abs(s[1]), Math.abs(q[0])); }
+        const v = mkView(w, h, -1, 1, -M * 1.12, M * 1.12); axes(c, v, { xl: 't/T₀ (T₀ = 10 ms)' }); curve(c, v, u => ev(o, u)[0], -1, 1, COL.c1, 2.4, 800); if (sym < 0) curve(c, v, u => ev(o, u)[1], -1, 1, COL.c2, 2, 800); if (filt) curve(c, v, u => ev(y, u)[0], -1, 1, COL.main, 2.4, 800); };
+      ui.update = () => { let mi = 0; const o = X(); for (let i = 0; i <= 80; i++) mi = Math.max(mi, Math.abs(ev(o, -1 + i / 40)[1])); pT.tags([mi < 1e-6 ? ['x(t) thực', 'ok'] : ['x(t) phức', 'bad']]); ui.refresh(); };
+    } };
+  }
+  L10.push(specTab(false), specTab(true));
+
   /* ---------- lõi popup ---------- */
   const LESSONS = {};
   let pop, tabsEl, bodyEl, ctlEl, titleEl, open = false, curLesson = null, ui = null, raf = 0, last = 0, idx = 0;
@@ -598,14 +799,18 @@
     L.tabs.forEach((t, i) => { const b = el('button', 'lab-tab', t.name); b.type = 'button'; b.title = (t.tip || '') + ' (phím ' + (i + 1) + ')'; b.onclick = () => selectTab(i); tabsEl.append(b); });
     selectTab(0);
   }
-  function toggle(num, force) {
+  function toggle(num, force, tab) {
     ensureDOM(); readColors();
     const want = force === undefined ? !open : !!force;
     if (want === open) return;
     open = want; pop.classList.toggle('open', open);
-    if (open) { setLesson(num); if (ui) { ui.refresh(); if (ui.anim && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } } }
+    if (open) { setLesson(num); if (tab != null && curLesson && curLesson.tabs[tab] && tab !== idx) selectTab(tab); if (ui) { ui.refresh(); if (ui.anim && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } } }
     else stopLoop();
   }
   window.LAB = { toggle, isOpen: () => open, register: (num, def) => { LESSONS[num] = def; } };
+  LESSONS[7] = { title: 'Bài 7 · Chuỗi & biến đổi Fourier', tabs: L7 };
+  LESSONS[8] = { title: 'Bài 8 · Fourier ngược', tabs: L8 };
+  LESSONS[9] = { title: 'Bài 9 · Đáp ứng tần số', tabs: L9 };
+  LESSONS[10] = { title: 'Bài 10 · Đồ thị phổ', tabs: L10 };
   LESSONS[11] = { title: 'Bài 11 · Laplace', tabs: L11 };
 })();

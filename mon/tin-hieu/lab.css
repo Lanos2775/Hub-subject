@@ -1,4 +1,4 @@
-/* ===== PHÒNG THÍ NGHIỆM — tải lười, tách khỏi tin-hieu.css ===== */
+/* ===== PHÒNG THÍ NGHIỆM (lab.css) — tải lười, tách khỏi tin-hieu.css ===== */
 .lab-pop {
   position: fixed; inset: 0; z-index: 80;
   display: none; align-items: center; justify-content: center;
