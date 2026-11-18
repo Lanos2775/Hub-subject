@@ -164,6 +164,19 @@ body {
   fill: none;
   display: block;
 }
+#btn-lab { position: relative; }
+#btn-lab.has-lab { color: var(--main); }
+#btn-lab.has-lab::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 4.5px;
+  height: 4.5px;
+  border-radius: 50%;
+  background: var(--c2);
+  box-shadow: 0 0 6px var(--c2);
+}
 
 .topbar svg {
   background: none !important;
@@ -446,6 +459,115 @@ figcaption {
   padding: 0 6px;
 }
 
+/* ===== DẤU HIỆU MÔ PHỎNG TINH TẾ TRONG BÀI HỌC (KHÔNG DÙNG NÚT) ===== */
+@keyframes labPulse {
+  0%, 100% { opacity: .45; transform: scale(.92); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+.lab-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 9px;
+  padding: 2px 4px;
+  vertical-align: middle;
+  color: var(--main);
+  opacity: .56;
+  cursor: pointer;
+  user-select: none;
+  font: 500 12px/1 "Roboto Mono", ui-monospace, monospace;
+  letter-spacing: 0;
+  transition: opacity .18s ease, color .18s ease;
+}
+.lab-cue .lab-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c2);
+  box-shadow: 0 0 6px var(--c2);
+  animation: labPulse 2.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.lab-cue svg.lab-wv {
+  width: 15px !important;
+  height: 15px !important;
+  display: inline-block !important;
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  flex-shrink: 0;
+}
+.lab-cue .lab-cue-lbl {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--main);
+  border-bottom: 1px dashed rgba(226, 183, 20, .55);
+  padding-bottom: 1px;
+  transition: max-width .22s cubic-bezier(.2, .8, .2, 1), opacity .18s ease;
+}
+h2:hover .lab-cue,
+h3:hover .lab-cue,
+.lab-cue:hover,
+.lab-cue:focus-visible {
+  opacity: 1;
+}
+h2:hover .lab-cue .lab-cue-lbl,
+h3:hover .lab-cue .lab-cue-lbl,
+.lab-cue:hover .lab-cue-lbl,
+.lab-cue:focus-visible .lab-cue-lbl {
+  max-width: 120px;
+  opacity: .95;
+}
+
+/* Hình vẽ tĩnh sống dậy khi có mô phỏng tương ứng */
+figure.lab-fig {
+  cursor: pointer;
+  position: relative;
+}
+figure.lab-fig .lab-fig-frame {
+  position: relative;
+}
+figure.lab-fig .lab-fig-frame::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 6.5px;
+  height: 6.5px;
+  border-radius: 50%;
+  background: var(--c2);
+  box-shadow: 0 0 0 3px rgba(56, 217, 169, .18), 0 0 8px var(--c2);
+  animation: labPulse 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+figure.lab-fig svg:not([aria-hidden="true"]) {
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+figure.lab-fig:hover svg:not([aria-hidden="true"]),
+figure.lab-fig:focus-visible svg:not([aria-hidden="true"]) {
+  border-color: rgba(226, 183, 20, .68);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .28);
+  transform: translateY(-1px);
+}
+figure.lab-fig .lab-fig-whisper {
+  color: var(--main);
+  opacity: .68;
+  font-size: 12px;
+  margin-left: 5px;
+  white-space: nowrap;
+  transition: opacity .15s ease;
+}
+figure.lab-fig:hover .lab-fig-whisper {
+  opacity: 1;
+  text-decoration: underline dashed;
+  text-underline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-cue .lab-dot, figure.lab-fig .lab-fig-frame::after { animation: none; }
+}
+
 /* ===== NAV MENU ===== */
 #mn {
   position: fixed;
@@ -472,6 +594,7 @@ figcaption {
   margin-bottom: 7px;
 }
 #ls button {
+  position: relative;
   border: 0;
   border-radius: 4px;
   padding: 7px 0;
@@ -481,6 +604,17 @@ figcaption {
   cursor: pointer;
   transition: all .12s ease;
 }
+#ls button.has-lab::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--c2);
+}
+#ls button.on.has-lab::after { background: var(--bg); }
 #ls button:hover { color: var(--main); }
 #ls button.on { background: var(--main); color: var(--bg); }
 

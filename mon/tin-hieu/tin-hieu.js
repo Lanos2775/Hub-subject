@@ -18,7 +18,7 @@
             { id: 8, shortTitle: "Biến đổi Fourier ngược" },
             { id: 9, shortTitle: "Đáp ứng tần số của hệ thống LTI" },
             { id: 10, shortTitle: "Đồ thị phổ của tín hiệu" },
-            { id: 11, shortTitle: "Biến đổi Laplace" }
+            { id: 11, shortTitle: "Biến đổi Laplace", hasLab: true }
         ];
 
         // Parse Raw Verbatim Content into Structured Lessons
@@ -58,6 +58,7 @@
                     index: idx,
                     number: meta.id,
                     shortTitle: meta.shortTitle,
+                    hasLab: !!meta.hasLab,
                     sections
                 };
             });
@@ -110,6 +111,14 @@
                 }
             };
             const nextColor = () => `c${state.cardN++ % 5}`;
+
+            const extractLabTag = (str) => {
+                const m = str.match(/\s*\[LAB:\s*([^\]]+)\]\s*$/);
+                return m ? { clean: str.slice(0, m.index).trim(), lab: m[1].trim() } : { clean: str, lab: '' };
+            };
+            const labCueHTML = (spec) => spec
+                ? `<span class="lab-cue" role="link" tabindex="0" data-lab="${spec}" title="Mở mô phỏng trực quan phần này"><i class="lab-dot"></i><svg class="lab-wv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h2.5l2.2-5.5 3.6 11 3.4-9 2.3 3.5H22"/></svg><span class="lab-cue-lbl">mô phỏng ↗</span></span>`
+                : '';
 
             const formatInline = (str) => {
                 let s = str.trim();
@@ -250,7 +259,7 @@
                 // ## Major Part Heading
                 if (line.startsWith('## ')) {
                     closeQuizCardIfNeeded();
-                    const titleText = line.slice(3).trim();
+                    const { clean: titleText, lab } = extractLabTag(line.slice(3).trim());
                     const anchorId = `part-${sectionType}-${tocCollector.length}`;
                     tocCollector.push({
                         id: anchorId,
@@ -259,7 +268,7 @@
                         sectionType
                     });
                     openCard = 'part';
-                    html += `<section id="${anchorId}" class="card ${nextColor()}"><h2>${formatInline(titleText)}</h2>`;
+                    html += `<section id="${anchorId}" class="card ${nextColor()}"><h2>${formatInline(titleText)}${labCueHTML(lab)}</h2>`;
                     i++;
                     continue;
                 }
@@ -267,7 +276,8 @@
                 // ### Sub-heading or [H3] Quiz Question Heading
                 if (line.startsWith('### ') || line.startsWith('[H3]')) {
                     const isH3Tag = line.startsWith('[H3]');
-                    const titleText = isH3Tag ? line.replace('[H3]', '').trim() : line.slice(4).trim();
+                    const rawTitle = isH3Tag ? line.replace('[H3]', '').trim() : line.slice(4).trim();
+                    const { clean: titleText, lab } = extractLabTag(rawTitle);
                     const anchorId = `sub-${sectionType}-${tocCollector.length}`;
                     tocCollector.push({
                         id: anchorId,
@@ -279,21 +289,26 @@
                     if (sectionType === 'exercises' && isH3Tag) {
                         closeQuizCardIfNeeded();
                         openCard = 'quiz';
-                        html += `<section id="${anchorId}" class="card quiz ${nextColor()}"><h3>${formatInline(titleText)}</h3>`;
+                        html += `<section id="${anchorId}" class="card quiz ${nextColor()}"><h3>${formatInline(titleText)}${labCueHTML(lab)}</h3>`;
                     } else {
                         if (openCard === 'quiz') closeQuizCardIfNeeded();
-                        html += `<h3 id="${anchorId}">${formatInline(titleText)}</h3>`;
+                        html += `<h3 id="${anchorId}">${formatInline(titleText)}${labCueHTML(lab)}</h3>`;
                     }
                     i++;
                     continue;
                 }
 
-                // [FIG: id] caption
+                // [FIG: id] hoặc [FIG: id | tab:preset] caption
                 if (line.startsWith('[FIG:')) {
-                    const fm = line.match(/^\[FIG:\s*([\w.]+)\]\s*(.*)$/);
+                    const fm = line.match(/^\[FIG:\s*([\w.]+)(?:\s*\|\s*([^\]]+))?\]\s*(.*)$/);
                     if (fm && FIGS[fm[1]]) {
                         const svgStr = FIGS[fm[1]](); const vb = svgStr.match(/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/); const ratio = vb ? (vb[1] / vb[2]).toFixed(3) : 2;
-                        html += `<figure style="--r:${ratio}">${svgStr}<figcaption>${formatInline(fm[2])}</figcaption></figure>`;
+                        const labSpec = fm[2] ? fm[2].trim() : '';
+                        if (labSpec) {
+                            html += `<figure class="lab-fig" style="--r:${ratio}" data-lab="${labSpec}" tabindex="0" role="button" aria-label="Mở mô phỏng trực quan cho hình vẽ"><div class="lab-fig-frame">${svgStr}</div><figcaption>${formatInline(fm[3])}<span class="lab-fig-whisper">· tương tác ↗</span></figcaption></figure>`;
+                        } else {
+                            html += `<figure style="--r:${ratio}">${svgStr}<figcaption>${formatInline(fm[3])}</figcaption></figure>`;
+                        }
                     }
                     i++;
                     continue;
@@ -1060,8 +1075,11 @@
             nb.disabled = !next;
             nb.textContent = next ? `Bài ${next.number}: ${next.shortTitle} →` : '';
 
+            const bLab = $('btn-lab');
+            if (bLab) bLab.classList.toggle('has-lab', !!lesson.hasLab);
+
             $('ls').innerHTML = state.lessons.map((l, i) =>
-                `<button type="button" data-i="${i}" title="${l.shortTitle}" aria-label="Bài ${l.number}: ${l.shortTitle}" class="${i === state.currentLessonIndex ? 'on' : ''}">${l.number}</button>`
+                `<button type="button" data-i="${i}" title="${l.shortTitle}${l.hasLab ? ' · Có phòng thí nghiệm' : ''}" aria-label="Bài ${l.number}: ${l.shortTitle}" class="${i === state.currentLessonIndex ? 'on' : ''}${l.hasLab ? ' has-lab' : ''}">${l.number}</button>`
             ).join('');
             renderTOCList();
 
@@ -1150,17 +1168,33 @@
             });
             return labP;
         }
-        function toggleLab(open) {
+        function toggleLab(open, opts) {
             openMenu(false);
             if (QZ.isOpen()) QZ.toggle(false);
             if (isFPopOpen()) toggleFPop(false);
             loadLab().then(L => {
                 const cur = state.lessons[state.currentLessonIndex];
-                L.toggle(cur ? cur.number : 0, open);
+                L.toggle(cur ? cur.number : 0, open, opts);
             }).catch(() => {});
         }
         const btnLab = $('btn-lab');
         if (btnLab) btnLab.onclick = () => toggleLab();
+        const lessonWrap = $('lesson-container');
+        if (lessonWrap) {
+            lessonWrap.addEventListener('click', e => {
+                const trg = e.target.closest('[data-lab]');
+                if (!trg) return;
+                e.preventDefault();
+                toggleLab(true, trg.dataset.lab);
+            });
+            lessonWrap.addEventListener('keydown', e => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                const trg = e.target.closest('[data-lab]');
+                if (!trg) return;
+                e.preventDefault();
+                toggleLab(true, trg.dataset.lab);
+            });
+        }
         $('btn-prev').onclick = () => selectLesson(state.currentLessonIndex - 1);
         $('btn-next').onclick = () => selectLesson(state.currentLessonIndex + 1);
 
@@ -1229,7 +1263,12 @@
             parseCourseContent();
             state.lessons.unshift({ index: 0, number: 0, shortTitle: 'Quiz trắc nghiệm 109 câu', sections: {}, quiz: true });
             state.lessons.forEach((l, i) => { l.index = i; });
-            state.currentLessonIndex = 1;
+            const sp = new URLSearchParams(location.search);
+            const initBai = +(sp.get('bai') || 0);
+            const found = initBai ? state.lessons.findIndex(l => l.number === initBai) : -1;
+            state.currentLessonIndex = found >= 0 ? found : 1;
             renderCurrentLesson();
+            const initLab = sp.get('lab');
+            if (initLab) toggleLab(true, initLab === '1' ? undefined : initLab);
         });
 
