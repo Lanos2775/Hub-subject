@@ -175,7 +175,7 @@ body{padding-top:40px}
 #toc-links a.grp{font-weight:600;margin-top:2px;color:var(--ink)}
 
 /* ---- Popup ghim công thức ---- */
-#fp{position:fixed;left:auto;right:12px;top:calc(env(safe-area-inset-top,0px) + 48px);width:max-content;min-width:150px;max-width:calc(100vw - 24px);max-height:calc(100vh - 60px);z-index:48;display:none;flex-direction:column;background:var(--card);color:var(--ink);border:1px solid var(--main);border-radius:var(--r);box-shadow:0 8px 26px rgba(0,0,0,.5);font-family:var(--font-ui);overflow:hidden}
+#fp{position:fixed;left:auto;right:12px;top:calc(env(safe-area-inset-top,0px) + 58px);width:max-content;min-width:150px;max-width:calc(100vw - 24px);max-height:calc(100vh - 60px);z-index:48;display:none;flex-direction:column;background:var(--card);color:var(--ink);border:1px solid var(--main);border-radius:var(--r);box-shadow:0 8px 26px rgba(0,0,0,.5);font-family:var(--font-ui);overflow:hidden}
 #fp.on{display:flex}
 #fp.col .fp-l{display:none}
 #fp.col .fp-h{border-bottom:0}

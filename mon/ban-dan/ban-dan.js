@@ -2383,7 +2383,7 @@ function renderLS(curId) {
   function applyPos(p){
     if(!p){fp.style.left='';fp.style.top='';fp.style.right='';fp.style.maxWidth='';return}
     const r=fp.getBoundingClientRect();
-    const x=Math.max(0,Math.min(p.x,innerWidth-Math.min(r.width,80))),y=Math.max(0,Math.min(p.y,innerHeight-24));
+    const x=Math.max(0,Math.min(p.x,innerWidth-Math.min(r.width,80))),y=Math.max(($('tb')?$('tb').offsetHeight:46)+8,Math.min(p.y,innerHeight-24));
     fp.style.right='auto';fp.style.left=x+'px';fp.style.top=y+'px';fp.style.maxWidth=Math.max(150,innerWidth-x-4)+'px';
   }
   addEventListener('resize',()=>{if(fp.classList.contains('on'))applyPos(store.get('pos',null))});
