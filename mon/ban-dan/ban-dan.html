@@ -26,6 +26,7 @@ window.MathJax = {
   <span id="tb-badge" class="tb-badge">Buổi</span>
   <span id="tb-title" class="tb-title"></span>
   <button id="tb-fp" class="tb-b" type="button" aria-pressed="false" aria-label="Ghim công thức (T)" title="Ghim công thức (T)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 3.5h-8l4 4.5-4 4.5h8"/></svg></button>
+  <button id="tb-lab" class="tb-b" type="button" aria-pressed="false" aria-label="Phòng thí nghiệm (L)" title="Phòng thí nghiệm (L)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h4M6.800 2v4.200L3 12.600A1.200 1.200 0 0 0 4 14.400h8a1.200 1.200 0 0 0 1-1.800L9.200 6.200V2"/><path d="M4.600 10h6.800"/></svg></button>
   <button id="tb-top" class="tb-b" type="button" aria-label="Lên đầu trang" title="Lên đầu trang"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3.5M4 7l4-4 4 4"/></svg></button>
   <span class="tb-sp"></span>
   <div class="tb-r">
@@ -5048,21 +5049,6 @@ window.MathJax = {
 
     <h3>8.1. Bố trí thí nghiệm (hình 5.10)</h3>
     <p>Mẫu bán dẫn hình hộp có chiều dài $L$ (theo $x$), chiều rộng $W$ (theo $y$) và độ dày $d$ (theo $z$). Ta cho <b>dòng điện $I_x$</b> chạy dọc mẫu theo $+x$ (từ pin $V_x$ nối hai đầu) và đặt <b>từ trường $B_z$</b> theo trục $z$, vuông góc với mẫu. Hai đầu dò đặt ở hai mặt bên đối nhau (hai mặt cách nhau $W$ theo $y$) để đo <b>điện áp Hall $V_H$</b>.</p>
-    <h3>Mô phỏng động: thí nghiệm Hall tự chạy</h3>
-    <p>Hình dưới là <b>thí nghiệm Hall chạy tự động, lặp lại liên tục</b>, em chỉ cần xem. Mỗi bước có lời chú thích ngay bên dưới hình. Nhấn vào hình để tạm dừng hoặc chạy tiếp.</p>
-    <div class="hall-sim" id="b7-hall-sim">
-      <canvas aria-label="Mô phỏng động hiệu ứng Hall: nam châm, thanh bán dẫn, pin, dây nối, vôn kế và chuyển động của hạt tải"></canvas>
-      <div class="hall-cap">Đang tải mô phỏng...</div>
-      <div class="hall-chips"><span class="hall-chip">1</span><span class="hall-chip">2</span><span class="hall-chip">3</span><span class="hall-chip">4</span><span class="hall-chip">5</span><span class="hall-chip">6</span><span class="hall-chip">7</span><span class="hall-chip">8</span><span class="hall-chip">9</span><span class="hall-chip">10</span></div>
-    </div>
-    <div class="box tip"><b>Cách xem hình</b><ul>
-      <li><b>Pin và dây vàng:</b> tạo dòng điện $I_x$ chạy dọc thanh bán dẫn từ trái sang phải (các chấm sáng trên dây là chiều dòng quy ước).</li>
-      <li><b>Hai khối nam châm:</b> cực N (đỏ, phía dưới) và cực S (xanh, phía trên) tạo từ trường $B_z$ hướng <b>từ N lên S</b>, xuyên qua bề dày $d$ của thanh. Các đường nét đứt vàng là đường sức từ.</li>
-      <li><b>Hạt tải:</b> chấm hồng có dấu + là lỗ trống, chấm xanh có dấu − là electron. Một hạt có viền vàng được theo dõi, để lại vệt đường đi và mũi tên lực từ $F=q\,\vec v\times\vec B$ khi có nam châm.</li>
-      <li><b>Điện tích mặt bên và mũi tên $E_H$:</b> khi hạt tải dồn về mặt trước, các dấu + hoặc − hiện trên mặt trước và mặt sau, và điện trường Hall $E_H$ xuất hiện.</li>
-      <li><b>Vôn kế:</b> đầu + (dây hồng) nối mặt trước, đầu − (dây xám) nối mặt sau. Kim lệch phải nghĩa là $V_H>0$, lệch trái nghĩa là $V_H<0$.</li></ul>
-      Chuyển động trong hình là mô hình định tính: số hạt, tốc độ và thang đo được chọn để nhìn rõ; thang vôn kế cỡ $\pm1.25\text{ mV}$ cho dễ so với ví dụ 5.8. Mỗi hạt vẫn bị va chạm ngẫu nhiên (thời gian tự do trung bình), bị lực từ bẻ cong, rồi bị điện trường Hall đẩy lại. Khi hạt dồn về mặt trước, điện trường Hall đẩy ngược lại đủ để cân bằng lực từ, nên dịch chuyển trung bình ngang thanh dừng lại và $V_H$ ổn định.</div>
-
     <h3>8.2. Lực từ lên hạt tải (lực Lorentz)</h3>
     <div class="box explain"><b>Khái niệm: tích có hướng $\vec v\times\vec B$ và quy tắc bàn tay phải</b><br>Lực Lorentz $\vec F=q\,\vec v\times\vec B$ có độ lớn $qvB\sin\theta$ và <b>vuông góc với cả $\vec v$ lẫn $\vec B$</b>. Hướng của $\vec v\times\vec B$ xác định bằng quy tắc bàn tay phải: bốn ngón theo $\vec v$, xoay về phía $\vec B$, ngón cái chỉ hướng $\vec v\times\vec B$. Với các vectơ đơn vị: $\hat x\times\hat y=\hat z$, $\hat y\times\hat z=\hat x$, $\hat z\times\hat x=\hat y$ (hoán vị vòng thì giữ dấu), còn đổi thứ tự thì đổi dấu, ví dụ $\hat x\times\hat z=-\hat y$. Đó là lý do chuyển động theo $+x$ trong từ trường theo $+z$ bị đẩy về phía $-y$. Lực từ luôn vuông góc vận tốc nên <b>không sinh công</b>, chỉ bẻ hướng chuyển động.</div>
     <p>Theo quy ước tọa độ của slide, lực Lorentz $\vec F=q\,\vec v\times\vec B$ lên hạt tải là:</p>
@@ -5421,5 +5407,6 @@ window.MathJax = {
 </template>
 
 <script src="ban-dan.js"></script>
+<script src="lab-b7.js"></script>
 
 </body></html>

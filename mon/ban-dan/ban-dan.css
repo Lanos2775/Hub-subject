@@ -154,6 +154,7 @@ body{padding-top:40px}
 .tb-b svg{width:16px;height:16px;display:block;margin:0;background:none;border:0;border-radius:0}
 .tb-b:hover{color:var(--ink);background:var(--tint)}
 .tb-b.on,.tb-b[aria-expanded=true]{color:var(--main)}
+.tb-b[hidden]{display:none}
 .tb-b:disabled{opacity:.3;pointer-events:none}
 .tb-logo{width:30px;color:var(--main);margin-right:4px}
 .tb-logo svg{width:20px;height:20px}
@@ -205,13 +206,5 @@ mjx-container{color:var(--ink) !important}
 body.fp-pick,body.fp-pick *{cursor:crosshair !important}
 body.fp-pick #fp .fp-h,body.fp-pick #fp .fp-h *{cursor:pointer !important}
 .fp-hl{outline:2px solid var(--main) !important;outline-offset:2px}
-
-/* ---- Mô phỏng động Hall (Buổi 7) ---- */
-.hall-sim{margin:12px 0;border-radius:var(--r);overflow:hidden;border:1px solid var(--g);background:#0e1430}
-.hall-sim canvas{display:block;width:100%;height:auto;aspect-ratio:800/480}
-.hall-sim .hall-cap{padding:8px 14px;font-size:14.5px;line-height:1.55;color:#fff;background:#0f1530;min-height:3em;border-top:1px solid rgba(255,255,255,.15)}
-.hall-sim .hall-chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 10px;background:#0f1530}
-.hall-sim .hall-chip{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font:700 12px Arial;color:#aab3d6;border:1.5px solid rgba(255,255,255,.25);transition:all .25s}
-.hall-sim .hall-chip.on{background:#ffd166;color:#1b2147;border-color:#ffd166;transform:scale(1.15)}
 
 @media(prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;scroll-behavior:auto !important}}
