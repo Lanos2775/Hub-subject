@@ -5391,6 +5391,587 @@ window.MathJax = {
   </section>
 </template>
 
+<template id="tpl-buoi-8">
+  <header>
+    <span class="k b2">HỌC PHẦN ENP2209 · BUỔI 8</span>
+    <h1>Hạt Tải Dư Trong Bán Dẫn: Sinh, Tái Hợp và Vận Chuyển Lưỡng Cực</h1>
+    <p class="mut">Hạt tải dư và kích thích mức thấp, thời gian sống, phương trình liên tục, phương trình vận chuyển lưỡng cực, độ dài khuếch tán, thời gian phục hồi điện môi, thí nghiệm Haynes–Shockley và các mức Fermi giả.</p>
+    <div class="roadmap"><p><b>Bản đồ Buổi 8: từ "hạt tải ở yên trạng thái cân bằng" sang "hạt tải bị khuấy động"</b></p><ol>
+      <li><b>Mục 1:</b> Cân bằng nhiệt thực ra là gì? (sinh và tái hợp bù nhau).</li>
+      <li><b>Mục 2:</b> Phá cân bằng bằng ánh sáng: hạt tải dư $\delta n,\delta p$.</li>
+      <li><b>Mục 3:</b> Hạt tải dư biến mất ra sao? Tái hợp, kích thích mức thấp, thời gian sống $\tau$.</li>
+      <li><b>Mục 4:</b> Khi hạt tải còn chuyển động trong không gian: phương trình liên tục.</li>
+      <li><b>Mục 5:</b> Ghép liên tục với trôi và khuếch tán (Buổi 7): phương trình khuếch tán phụ thuộc thời gian.</li>
+      <li><b>Mục 6:</b> Electron dư và lỗ trống dư không đi riêng được: vận chuyển lưỡng cực.</li>
+      <li><b>Mục 7:</b> Rút gọn phương trình lưỡng cực: quy tắc hạt thiểu số.</li>
+      <li><b>Mục 8:</b> Giải bốn bài toán điển hình: tắt sáng, bật sáng, phân bố theo khoảng cách, xung lan truyền.</li>
+      <li><b>Mục 9:</b> Vì sao được phép coi $\delta n\approx\delta p$? Thời gian phục hồi điện môi.</li>
+      <li><b>Mục 10:</b> Đo thực nghiệm $\mu_p,D_p,\tau_p$: thí nghiệm Haynes–Shockley.</li>
+      <li><b>Mục 11:</b> Vẽ lại giản đồ năng lượng khi mất cân bằng: các mức Fermi giả.</li>
+      <li><b>Mục 12:</b> Bài tập có lời giải.</li></ol></div>
+  </header>
+
+  <section>
+    <h2>Mở đầu: Từ "đếm hạt" và "chuyển động hạt" sang "khuấy động hạt"</h2>
+    <p>Chào em! Hãy nhìn lại hai buổi trước. Ở <b>Buổi 5 và 6</b>, ta học cách <b>đếm</b> hạt tải khi bán dẫn đứng yên ở cân bằng nhiệt: có $n_0$ electron và $p_0$ lỗ trống, với $n_0p_0=n_i^2$. Ở <b>Buổi 7</b>, ta học hạt tải <b>chuyển động</b> thế nào: trôi theo điện trường và khuếch tán theo chênh lệch nồng độ.</p>
+    <p>Nhưng linh kiện thật chỉ làm việc khi ta <b>phá</b> trạng thái cân bằng đó. Pin mặt trời hứng ánh sáng, đi-ốt phát quang (LED) được bơm dòng, cảm biến ảnh nhận photon, transistor lưỡng cực bơm hạt tải từ cực này sang cực kia. Trong mọi trường hợp đó có thêm những hạt tải <b>vượt quá</b> mức cân bằng. Buổi này trả lời một chuỗi câu hỏi nối tiếp nhau:</p>
+    <ol>
+      <li>Hạt tải thừa được <b>sinh ra</b> và <b>mất đi</b> theo cách nào, nhanh hay chậm? (Mục 1–3)</li>
+      <li>Số hạt thừa tại một điểm thay đổi theo thời gian và vị trí thì tuân theo <b>phương trình</b> nào? (Mục 4–5)</li>
+      <li>Electron thừa và lỗ trống thừa mang điện trái dấu, vậy chúng chạy riêng hay cùng nhau? (Mục 6–7)</li>
+      <li>Giải phương trình đó cho những bài toán cụ thể thì được kết quả gì? (Mục 8)</li>
+      <li>Giả thiết ta dùng có <b>đúng</b> không, và có <b>đo</b> được các thông số không? (Mục 9–10)</li>
+      <li>Giản đồ năng lượng với một mức Fermi duy nhất còn dùng được không? (Mục 11)</li>
+    </ol>
+
+    <div class="box why"><b>Buổi này nằm ở đâu trong bài giảng?</b> Đây là toàn bộ <b>Chương 6 "Nonequilibrium Excess Carriers" (Hạt tải dư ngoài cân bằng)</b>, bài giảng số 10 của học phần UET.ENP2209. Slide chia chương thành bốn khối: động học hạt tải dư và kích thích mức thấp; phương trình vận chuyển lưỡng cực; giải bài toán biên và đo thông số; giản đồ năng lượng ngoài cân bằng. Bảng dưới giúp em đối chiếu khi mở slide:</div>
+    <div class="tw"><table><tr><th>Mục trên trang này</th><th>Mục trong slide (Chương 6)</th><th>Nội dung</th></tr>
+      <tr><td>Mục 1–2</td><td>6.1.1</td><td>Sinh, tái hợp, cân bằng nhiệt, hạt tải dư</td></tr>
+      <tr><td>Mục 3</td><td>6.1.2</td><td>Tái hợp trực tiếp, kích thích mức thấp, thời gian sống, tốc độ tái hợp dư, ví dụ và bài tập</td></tr>
+      <tr><td>Mục 4–5</td><td>6.2.1, 6.2.2</td><td>Phương trình liên tục, phương trình khuếch tán phụ thuộc thời gian</td></tr>
+      <tr><td>Mục 6</td><td>6.3.1</td><td>Thiết lập phương trình vận chuyển lưỡng cực</td></tr>
+      <tr><td>Mục 7</td><td>6.3.2</td><td>Giới hạn ngoại lai và kích thích mức thấp</td></tr>
+      <tr><td>Mục 8</td><td>6.3.3</td><td>Ví dụ 6.2 đến 6.5 (tắt sáng, bật sáng, trạng thái dừng theo $x$, xung)</td></tr>
+      <tr><td>Mục 9</td><td>6.3.4</td><td>Thời gian phục hồi điện môi, Ví dụ 6.6</td></tr>
+      <tr><td>Mục 10</td><td>6.3.5</td><td>Thí nghiệm Haynes–Shockley</td></tr>
+      <tr><td>Mục 11</td><td>6.4</td><td>Mức Fermi giả, Ví dụ 6.7</td></tr>
+      <tr><td>Mục 12</td><td>các bài tập trong slide + bài bổ sung</td><td>Luyện tập</td></tr></table></div>
+    <div class="box key"><b>Mục tiêu học tập của buổi (theo slide)</b><ul>
+      <li><b>LLO 10.1:</b> mô tả và mô hình hóa bằng toán học sự <b>sinh hạt tải dư</b>, các cơ chế <b>tái hợp</b> và động học <b>kích thích mức thấp</b>.</li>
+      <li><b>LLO 10.2:</b> thiết lập và giải <b>phương trình vận chuyển lưỡng cực</b> để phân tích sự khuếch tán, trôi và thời gian sống của hạt tải dư trong linh kiện.</li>
+      <li>Hình thức đánh giá của cả hai mục tiêu: bài kiểm tra nhanh (quiz) và kiểm tra giữa kỳ.</li></ul></div>
+    <div class="box tip"><b>Một lưu ý về phạm vi.</b> Phần "xem trước" của slide có nhắc <b>tái hợp bề mặt</b> (vận tốc tái hợp bề mặt $S$) và hai cơ chế tái hợp khác (SRH, Auger), nhưng phần thân slide chỉ trình bày chi tiết đến hết mục 6.4. Vì vậy trang này chỉ giải thích ngắn gọn <b>khái niệm</b> của SRH và Auger ở Mục 3 để em biết tên và ý nghĩa; không đi sâu công thức.</div>
+  </section>
+
+  <section>
+    <h2>1. Sinh và Tái Hợp ở Trạng Thái Cân Bằng Nhiệt</h2>
+    <div class="box why"><b>Học phần này để làm gì?</b> Muốn nói "có thêm hạt tải dư" thì trước hết phải hiểu rõ trạng thái <b>không</b> có hạt dư trông như thế nào. Mục này cho em hai khái niệm sinh và tái hợp, và chỉ ra rằng cân bằng nhiệt là một sự <b>cân bằng động</b>, không phải trạng thái đứng yên.</div>
+
+    <h3>1.1. Hai quá trình ngược nhau: sinh và tái hợp</h3>
+    <p><b>Sinh hạt tải (generation)</b> là quá trình tạo ra electron và lỗ trống. Về mặt vật lý: một electron ở dải hóa trị (VB) nhận được năng lượng không nhỏ hơn độ rộng vùng cấm $E_g$ thì nhảy lên dải dẫn (CB). Nó để lại ở VB một chỗ trống mang điện dương, tức một <b>lỗ trống</b>. Vì vậy mỗi lần sinh luôn tạo ra <b>một cặp electron – lỗ trống</b>.</p>
+    <p><b>Tái hợp (recombination)</b> là quá trình ngược lại: một electron ở CB rơi xuống lấp đúng chỗ trống ở VB. Cả electron tự do và lỗ trống tự do cùng <b>biến mất</b> (slide dùng chữ <i>annihilated</i>, nghĩa là bị triệt tiêu). Năng lượng $\approx E_g$ được giải phóng dưới dạng ánh sáng hoặc nhiệt.</p>
+    <div class="box analogy"><b>Hình dung:</b> Một bể nước có vòi chảy vào và lỗ thoát chảy ra. Mực nước đứng yên không phải vì nước không chảy, mà vì lượng vào đúng bằng lượng ra. Cân bằng nhiệt của bán dẫn cũng vậy: liên tục có cặp hạt mới được sinh ra bởi nhiệt, và liên tục có cặp hạt cũ tái hợp. Số hạt tải trung bình $n_0,p_0$ không đổi vì hai quá trình này bù nhau.</div>
+
+    <h3>1.2. Các tốc độ và điều kiện cân bằng</h3>
+    <p>Để nói định lượng, ta dùng bốn <b>tốc độ</b> (số hạt sinh ra hoặc mất đi trong 1 cm³ mỗi giây, đơn vị $\text{cm}^{-3}\text{s}^{-1}$). Chỉ số dưới "0" luôn nhắc rằng đang ở <b>cân bằng nhiệt</b>.</p>
+    <div class="box legend"><b>Đọc các ký hiệu</b><ul>
+      <li>$G_{n0}$: tốc độ sinh <b>electron</b> do kích thích nhiệt từ VB lên CB.</li>
+      <li>$G_{p0}$: tốc độ sinh <b>lỗ trống</b> do kích thích nhiệt (chính là phía VB của cùng những lần nhảy đó).</li>
+      <li>$R_{n0}$: tốc độ electron ở CB rơi xuống gặp lỗ trống ở VB (tái hợp rồi biến mất).</li>
+      <li>$R_{p0}$: tốc độ lỗ trống ở VB bị electron lấp đầy (tái hợp rồi biến mất).</li></ul></div>
+    <p>Vì electron và lỗ trống luôn sinh ra thành cặp và mất đi thành cặp, nên từng đôi tốc độ bằng nhau. Cân bằng nhiệt đòi hỏi cả sinh lẫn tái hợp bằng nhau:</p>
+    <div class="f key">$$G_{n0}=G_{p0}=R_{n0}=R_{p0}$$</div>
+    <div class="box explain"><b>Vì sao đây là điều kiện cân bằng?</b> Nếu sinh nhiều hơn tái hợp, số hạt tải sẽ tăng dần theo thời gian; nếu ít hơn thì giảm dần. Nồng độ $n_0,p_0$ chỉ đứng yên khi hai tốc độ bằng nhau. Đây cũng là gốc của hệ thức $n_0p_0=n_i^2$ em đã biết: nó là kết quả của cuộc cân đo giữa sinh và tái hợp, và ta sẽ thấy lại điều này ở Mục 3.</div>
+  </section>
+
+  <section>
+    <h2>2. Hạt Tải Dư: Phá Vỡ Cân Bằng</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> ở cân bằng, sinh do nhiệt đúng bằng tái hợp. Bây giờ ta thêm một nguồn sinh thứ hai từ bên ngoài và xem điều gì thay đổi.</div>
+
+    <h3>2.1. Hạt tải dư sinh ra như thế nào?</h3>
+    <p>Chiếu một dòng photon vào bán dẫn. Mỗi photon có năng lượng $h\nu\ge E_g$ bị hấp thụ sẽ kích thích một electron từ VB lên CB, giống hệt kích thích nhiệt nhưng đến từ bên ngoài. Các hạt tải <b>thêm vào</b> ngoài lượng cân bằng gọi là <b>hạt tải dư (excess carriers)</b>. Chúng cũng sinh thành cặp, nên tốc độ sinh dư của electron và lỗ trống bằng nhau:</p>
+    <div class="f">$$g_n'=g_p'$$</div>
+    <p>Dấu phẩy "$'$" trong ký hiệu luôn có nghĩa là phần <b>dư</b> do kích thích ngoài, tách khỏi phần cân bằng nhiệt có chỉ số "0".</p>
+    <h3>2.2. Nồng độ tổng và nồng độ dư</h3>
+    <p>Mỗi nồng độ tổng bằng nồng độ cân bằng cộng với phần dư. Slide tổng hợp ký hiệu thành một bảng mà em sẽ dùng suốt chương:</p>
+    <div class="f key">$$n=n_0+\delta n\qquad\qquad p=p_0+\delta p$$</div>
+    <div class="tw"><table><tr><th>Ký hiệu</th><th>Ý nghĩa</th></tr>
+      <tr><td>$n_0,\ p_0$</td><td>Nồng độ electron, lỗ trống ở cân bằng nhiệt (không phụ thuộc thời gian, thường cũng không phụ thuộc vị trí)</td></tr>
+      <tr><td>$n,\ p$</td><td>Nồng độ <b>tổng</b> (có thể thay đổi theo thời gian và vị trí)</td></tr>
+      <tr><td>$\delta n,\ \delta p$</td><td>Nồng độ <b>dư</b> (có thể thay đổi theo thời gian và vị trí)</td></tr>
+      <tr><td>$g_n',\ g_p'$</td><td>Tốc độ <b>sinh dư</b> của electron, của lỗ trống</td></tr>
+      <tr><td>$R_n',\ R_p'$</td><td>Tốc độ <b>tái hợp dư</b> của electron, của lỗ trống</td></tr>
+      <tr><td>$\tau_{n0},\ \tau_{p0}$</td><td><b>Thời gian sống</b> của electron dư, của lỗ trống dư (hạt thiểu số)</td></tr></table></div>
+    <p>Vì hạt tải dư sinh ra và mất đi thành từng cặp nên $\delta n=\delta p$. Đây là cơ sở của mọi phép rút gọn về sau.</p>
+
+    <h3>2.3. Điều kiện "mất cân bằng"</h3>
+    <p>Ở cân bằng nhiệt, tích nồng độ bị "khóa" bởi $n_0p_0=n_i^2$. Khi có hạt tải dư, tích này bị phá vỡ:</p>
+    <div class="f">$$np\neq n_0p_0=n_i^2$$</div>
+    <div class="box explain"><b>Xem độ lớn của sự "phá vỡ" bằng con số.</b> Lấy Si loại P với $p_0=5\times10^{16}\text{ cm}^{-3}$, $n_i=1.5\times10^{10}\text{ cm}^{-3}$, nên $n_0=n_i^2/p_0=4.5\times10^3\text{ cm}^{-3}$. Chiếu sáng tạo $\delta n=\delta p=10^{14}\text{ cm}^{-3}$. Khi đó $n\approx10^{14}$ và $p\approx5.01\times10^{16}$, nên $np\approx5\times10^{30}$ trong khi $n_i^2=2.25\times10^{20}$: lớn hơn <b>mười bậc độ lớn</b>. Chú ý: lỗ trống (hạt đa số) chỉ tăng $0.2\%$, còn electron (hạt thiểu số) tăng từ $10^3$ lên $10^{14}$, tức tăng gấp hàng chục tỉ lần. Hạt thiểu số luôn là bên "nhạy" với việc thêm hạt dư. Điều này giải thích vì sao Mục 3 và Mục 7 đều xoay quanh hạt thiểu số.</div>
+    <div class="box tip"><b>Ngoài ánh sáng còn cách nào sinh hạt dư?</b> Bơm dòng qua tiếp xúc p–n (đi-ốt phân cực thuận), chùm electron năng lượng cao, hay va chạm ion hóa. Slide dùng ánh sáng làm ví dụ vì dễ hình dung nhất: mỗi photon cho đúng một cặp.</div>
+  </section>
+
+  <section>
+    <h2>3. Tái Hợp Trực Tiếp, Kích Thích Mức Thấp và Thời Gian Sống</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> hạt tải dư không tồn tại mãi. Hệ luôn có xu hướng quay về cân bằng, và công cụ để làm việc đó là <b>tái hợp</b>. Mục này tìm một quy luật định lượng cho tốc độ hạt dư biến mất, rồi rút ra một con số đặc trưng: <b>thời gian sống</b>.</div>
+
+    <h3>3.1. Tái hợp trực tiếp (band-to-band) và hệ số $\alpha_r$</h3>
+    <p>Ở <b>tái hợp trực tiếp</b>, một electron ở CB rơi thẳng xuống VB và gặp một lỗ trống. Muốn một lần tái hợp xảy ra, phải có cả electron lẫn lỗ trống ở gần nhau. Vì vậy tốc độ tái hợp tỉ lệ với <b>tích</b> $n\,p$: càng nhiều electron và càng nhiều lỗ trống thì càng nhiều cuộc "gặp gỡ". Ngược lại, tốc độ sinh do nhiệt không phụ thuộc $n,p$ (nhiệt không quan tâm đã có bao nhiêu hạt). Viết gộp hai vế, slide cho:</p>
+    <div class="f key">$$\frac{dn(t)}{dt}=\alpha_r\left[n_i^2-n(t)\,p(t)\right]$$</div>
+    <div class="box legend"><b>Đọc công thức</b><ul>
+      <li>$\dfrac{dn}{dt}$: tốc độ thay đổi nồng độ electron theo thời gian (dương nghĩa là đang tăng).</li>
+      <li>$\alpha_r$: <b>hệ số tái hợp (recombination coefficient)</b>, hằng số của từng vật liệu, đơn vị $\text{cm}^3/\text{s}$. Vật liệu vùng cấm thẳng như GaAs có $\alpha_r$ lớn (cỡ $10^{-10}\text{ cm}^3/\text{s}$), nên phát sáng tốt. Slide ở bài tập ký hiệu hệ số này là $B_r$.</li>
+      <li>$\alpha_r n_i^2$: phần <b>sinh do nhiệt</b> (không đổi theo $n,p$).</li>
+      <li>$\alpha_r\,n\,p$: phần <b>tái hợp</b> (tỉ lệ tích $np$).</li>
+      <li><b>Kiểm tra ở cân bằng:</b> khi $np=n_0p_0=n_i^2$ thì dấu ngoặc bằng 0, $dn/dt=0$. Đúng là cân bằng, và cũng cho thấy $n_0p_0=n_i^2$ chính là điều kiện sinh nhiệt bằng tái hợp (Mục 1).</li></ul></div>
+
+    <h3>3.2. Thay nồng độ tổng bằng "cân bằng + dư"</h3>
+    <p>Ta chỉ quan tâm phần dư nên thế $n=n_0+\delta n$, $p=p_0+\delta p$ với $\delta n=\delta p$. Vì $n_0$ và $p_0$ không đổi theo thời gian, $dn/dt=d(\delta n)/dt$. Triển khai ngoặc:</p>
+    <div class="f">$$\frac{d(\delta n)}{dt}=\alpha_r\left[n_i^2-(n_0+\delta n)(p_0+\delta n)\right]=\alpha_r\left[\underbrace{n_i^2-n_0p_0}_{=\,0}-\delta n\,(n_0+p_0)-\delta n^2\right]$$</div>
+    <p>Số hạng đầu triệt tiêu vì $n_0p_0=n_i^2$. Còn lại:</p>
+    <div class="f key">$$\frac{d(\delta n(t))}{dt}=-\alpha_r\,\delta n(t)\left[(n_0+p_0)+\delta n(t)\right]$$</div>
+    <p>Phương trình này là <b>phi tuyến</b> vì có số hạng $\delta n^2$ (nghiệm không đơn giản). Để giải gọn ta cần thêm một điều kiện: kích thích nhẹ.</p>
+
+    <h3>3.3. Kích thích mức thấp (Low-Level Injection, LLI)</h3>
+    <p><b>Kích thích mức thấp</b> nghĩa là nồng độ hạt dư <b>nhỏ hơn rất nhiều</b> so với nồng độ hạt <b>đa số</b> ở cân bằng. Hạt đa số (majority) là loại có nồng độ lớn: electron ở bán dẫn loại N, lỗ trống ở loại P. Hạt còn lại gọi là hạt <b>thiểu số (minority)</b>.</p>
+    <p>Xét bán dẫn <b>loại P</b>: $p_0\gg n_0$ và LLI nghĩa là $\delta n\ll p_0$. Khi đó trong ngoặc $[(n_0+p_0)+\delta n]\approx p_0$, và phương trình trở thành <b>tuyến tính</b>:</p>
+    <div class="f key">$$\frac{d(\delta n(t))}{dt}=-\alpha_r\,p_0\,\delta n(t)$$</div>
+    <p>Đây là phương trình mà đạo hàm của một đại lượng tỉ lệ với chính nó (có dấu trừ), nên nghiệm là hàm mũ giảm. Em có thể tự kiểm tra: lấy $\delta n(t)=\delta n(0)e^{-\alpha_r p_0 t}$, đạo hàm theo $t$ được đúng $-\alpha_r p_0\,\delta n(t)$.</p>
+    <div class="f key">$$\delta n(t)=\delta n(0)\,e^{-\alpha_r p_0 t}=\delta n(0)\,e^{-t/\tau_{n0}}$$</div>
+    <p>Số mũ viết gọn bằng một thời gian đặc trưng gọi là <b>thời gian sống của hạt thiểu số (minority carrier lifetime)</b>:</p>
+    <div class="f key">$$\text{loại P: }\ \tau_{n0}=\frac{1}{\alpha_r\,p_0}\qquad\qquad \text{loại N: }\ \tau_{p0}=\frac{1}{\alpha_r\,n_0}$$</div>
+    <div class="box legend"><b>Đọc công thức và cách dùng</b><ul>
+      <li>$\tau_{n0}$ là thời gian sống của <b>electron dư</b> (hạt thiểu số trong loại P). $\tau_{p0}$ là của <b>lỗ trống dư</b> (hạt thiểu số trong loại N). Chữ $n$ hay $p$ ở chỉ số là loại <b>hạt dư</b>, không phải loại bán dẫn.</li>
+      <li><b>Ý nghĩa:</b> sau thời gian $t=\tau$ thì hạt dư còn $e^{-1}\approx36.8\%$ lượng ban đầu; sau $3\tau$ còn $5\%$; sau $4.6\tau$ còn $1\%$. $\tau$ càng lớn thì hạt dư sống càng lâu.</li>
+      <li><b>Vì sao $\tau\propto1/p_0$?</b> Một electron dư trong loại P chỉ tái hợp được khi gặp lỗ trống; lỗ trống (hạt đa số) càng nhiều thì càng dễ gặp, nên sống càng ngắn.</li>
+      <li><b>Cách dùng:</b> biết $\alpha_r$ và nồng độ hạt đa số thì tính được $\tau$; hoặc đo $\tau$ từ đường cong tắt dần rồi suy ra $\alpha_r$.</li></ul></div>
+    <div class="box warn"><b>Dễ nhầm:</b> điều kiện LLI so sánh $\delta n$ với nồng độ hạt <b>đa số</b> $p_0$, không so với $n_0$. Trong ví dụ Mục 2, $\delta n=10^{14}$ gấp hàng chục tỉ lần $n_0$ nhưng vẫn chỉ bằng $0.2\%$ của $p_0$, nên đó vẫn là kích thích mức thấp. Về thực hành người ta thường coi $\delta n\lesssim0.1\,p_0$ là đủ nhỏ (đây là quy ước thực hành, slide không nêu ngưỡng số).</div>
+
+    <h3>3.4. Tốc độ tái hợp dư $R'$ và liên hệ với sinh dư $g'$</h3>
+    <p><b>Tốc độ tái hợp dư $R_n'$</b> là số electron dư <b>biến mất</b> mỗi cm³ mỗi giây. Nó chính là độ giảm của $\delta n$ theo thời gian, lấy dấu dương:</p>
+    <div class="f key">$$R_n'=-\frac{d(\delta n(t))}{dt}=\alpha_r\,p_0\,\delta n(t)=\frac{\delta n(t)}{\tau_{n0}}$$</div>
+    <p>Vì tái hợp xảy ra theo cặp, $R_n'=R_p'$. Với loại P viết là $R_n'=R_p'=\dfrac{\delta n}{\tau_{n0}}$; với loại N (LLI, $\delta n\ll n_0$) viết là $R_n'=R_p'=\dfrac{\delta p}{\tau_{p0}}$. Tóm lại: <b>tốc độ tái hợp dư = nồng độ dư chia cho thời gian sống của hạt thiểu số</b>.</p>
+    <div class="box explain"><b>Phân biệt $R$ và $R'$:</b> $R$ là tốc độ tái hợp <b>tổng</b> (gồm cả phần cân bằng $R_{n0}$ vốn đang được sinh nhiệt bù lại). $R'$ là phần <b>vượt trên</b> cân bằng, tức phần có nhiệm vụ đưa lượng hạt dư về 0. Ta có $R=R_{n0}+R'$ và tương tự $g=G_{n0}+g'$. Vì $R_{n0}=G_{n0}$ nên khi tính hiệu $g-R$ chỉ còn $g'-R'$. Đây là mẹo sẽ dùng nhiều ở Mục 7.</div>
+    <div class="box tip"><b>Trạng thái dừng khi chiếu sáng đều.</b> Chiếu sáng liên tục và đều làm hạt dư tăng cho tới khi tái hợp dư đuổi kịp sinh dư. Khi đó $g'=R'=\delta n/\tau_{n0}$, suy ra $\delta n=g'\,\tau_{n0}$. Đây là công thức "một dòng": tốc độ sinh nhân thời gian sống.</div>
+
+    <h3>3.5. Các cơ chế tái hợp khác (chỉ để biết tên)</h3>
+    <p>Tái hợp trực tiếp là cơ chế đơn giản nhất. Trong thực tế còn hai cơ chế khác (phần xem trước của slide nhắc tới):</p>
+    <ul>
+      <li><b>Tái hợp gián tiếp SRH (Shockley–Read–Hall):</b> electron rơi vào một <b>bẫy</b> (mức năng lượng do khuyết tật hoặc tạp chất tạo ra giữa vùng cấm), rồi từ bẫy mới xuống lấp lỗ trống. Cơ chế này thường chi phối ở Si, vì Si có vùng cấm xiên nên tái hợp trực tiếp rất yếu.</li>
+      <li><b>Tái hợp Auger:</b> năng lượng giải phóng khi tái hợp không phát thành photon mà truyền cho một hạt tải thứ ba. Chỉ đáng kể khi nồng độ hạt tải rất cao (pha tạp nặng hoặc kích thích mạnh).</li>
+    </ul>
+    <p>Dù cơ chế nào, trong vùng LLI người ta vẫn gói toàn bộ hiệu ứng vào <b>một</b> thời gian sống $\tau$ và dùng $R'=\delta n/\tau$. Vì thế các mục sau chỉ cần biết $\tau$, không cần biết nó đến từ cơ chế nào.</p>
+    <div class="box tip"><b>Ví dụ và bài tập của mục này</b> (Si loại P chiếu sáng đều rồi tắt, và bài GaAs loại N) có lời giải chi tiết ở <b>Mục 12, Câu 1 và Câu 2</b>.</div>
+  </section>
+
+  <section>
+    <h2>4. Phương Trình Liên Tục</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Mục 3 chỉ xét hạt tải dư ở một chỗ, bỏ qua việc chúng có thể chạy đi nơi khác. Thực tế hạt tải di chuyển (Buổi 7), nên số hạt trong một vùng nhỏ còn thay đổi vì <b>hạt chạy vào hoặc chạy ra</b>. Ta cần một phương trình "kế toán" ghi đủ mọi nguyên nhân làm số hạt thay đổi. Đó là phương trình liên tục.</div>
+
+    <h3>4.1. Ý tưởng: bảo toàn hạt như một tài khoản ngân hàng</h3>
+    <p>Số tiền trong tài khoản thay đổi nhờ: tiền chuyển vào, tiền chuyển ra, tiền gửi thêm và tiền rút đi. Số lỗ trống trong một thể tích nhỏ cũng vậy: lỗ trống chạy vào, chạy ra, được <b>sinh</b> thêm bên trong, và bị <b>tái hợp</b> bên trong. Không có lỗ trống nào tự biến mất hoặc tự xuất hiện ngoài hai cách sinh và tái hợp. Phương trình liên tục chỉ là phát biểu toán học của sự bảo toàn này.</p>
+
+    <h3>4.2. Dòng hạt qua một khối thể tích nhỏ</h3>
+    <p>Xét một khối nhỏ có kích thước $dx\times dy\times dz$. Lỗ trống chạy theo phương $x$. Ta dùng <b>thông lượng hạt (particle flux)</b> $F_p^+$: số lỗ trống đi qua một $\text{cm}^2$ mỗi giây, đơn vị $\text{cm}^{-2}\text{s}^{-1}$. Dấu "+" nhắc đó là hạt mang điện dương. Thông lượng đi vào mặt tại $x$ là $F_p^+(x)$; thông lượng đi ra mặt tại $x+dx$ là $F_p^+(x+dx)$.</p>
+    <p>Vì $dx$ rất nhỏ, ta dùng <b>khai triển Taylor</b>: giá trị của hàm tại điểm kế bên bằng giá trị cũ cộng độ dốc nhân khoảng dịch:</p>
+    <div class="f">$$F_p^+(x+dx)=F_p^+(x)+\frac{\partial F_p^+}{\partial x}\,dx$$</div>
+    <p>Số lỗ trống tăng thêm trong khối mỗi giây do dòng hạt là (vào trừ ra), nhân với diện tích mặt $dy\,dz$:</p>
+    <div class="f">$$\left[F_p^+(x)-F_p^+(x+dx)\right]dy\,dz=-\frac{\partial F_p^+}{\partial x}\,dx\,dy\,dz$$</div>
+
+    <h3>4.3. Thêm sinh và tái hợp rồi chia cho thể tích</h3>
+    <p>Bên trong khối còn được sinh thêm $g_p\,dx\,dy\,dz$ lỗ trống mỗi giây và mất đi $R_p\,dx\,dy\,dz$ do tái hợp. Tổng thay đổi bằng $\dfrac{\partial p}{\partial t}\,dx\,dy\,dz$. Chia hai vế cho thể tích $dx\,dy\,dz$ được <b>phương trình liên tục</b>:</p>
+    <div class="f key">$$\frac{\partial p}{\partial t}=-\frac{\partial F_p^+}{\partial x}+g_p-R_p\qquad\qquad \frac{\partial n}{\partial t}=-\frac{\partial F_n^-}{\partial x}+g_n-R_n$$</div>
+    <div class="box legend"><b>Đọc công thức</b><ul>
+      <li>$\dfrac{\partial p}{\partial t}$: tốc độ thay đổi nồng độ lỗ trống theo thời gian tại một điểm. Dùng đạo hàm <b>riêng</b> ($\partial$) vì $p$ phụ thuộc cả $t$ lẫn $x$.</li>
+      <li>$-\dfrac{\partial F_p^+}{\partial x}$: phần thay đổi do <b>dòng hạt</b>. Nếu thông lượng giảm dần theo $x$ (đạo hàm âm) thì hạt "dồn lại", nồng độ tăng, nên có dấu trừ.</li>
+      <li>$g_p,\ g_n$: tốc độ <b>sinh</b> (nhiệt và ánh sáng, tức gồm cả $G_0$ lẫn $g'$).</li>
+      <li>$R_p,\ R_n$: tốc độ <b>tái hợp</b> tổng.</li>
+      <li>Phương trình cho electron dùng $F_n^-$: thông lượng của hạt mang điện âm, cùng dạng.</li></ul></div>
+    <div class="box explain"><b>Kiểm tra bằng trường hợp đã biết.</b> Nếu mẫu đều (không có dòng hạt, $\partial F/\partial x=0$) thì phương trình liên tục chỉ còn $\dfrac{\partial p}{\partial t}=g_p-R_p$. Với phần dư đó là $\dfrac{d(\delta p)}{dt}=g'-R'$, đúng bằng kết quả Mục 3. Vậy Mục 3 chính là trường hợp đặc biệt của phương trình liên tục khi bỏ phần dòng hạt.</div>
+  </section>
+
+  <section>
+    <h2>5. Phương Trình Khuếch Tán Phụ Thuộc Thời Gian</h2>
+    <div class="bridge"><b>Nối từ Mục 4:</b> phương trình liên tục còn một ẩn số chưa biết: thông lượng $F$. Nhưng Buổi 7 đã cho ta chính xác thứ đó: dòng điện gồm <b>trôi cộng khuếch tán</b>. Chỉ cần thế vào.</div>
+
+    <h3>5.1. Từ mật độ dòng điện sang thông lượng hạt</h3>
+    <p>Theo Buổi 7, một chiều ($x$), mật độ dòng của lỗ trống và electron gồm thành phần trôi và khuếch tán:</p>
+    <div class="f">$$J_p=e\mu_p\,p\,E-eD_p\frac{\partial p}{\partial x}\qquad\qquad J_n=e\mu_n\,n\,E+eD_n\frac{\partial n}{\partial x}$$</div>
+    <p>$J$ đo <b>điện tích</b> chạy qua mỗi cm² mỗi giây, còn $F$ đo <b>số hạt</b>. Muốn đổi, chia cho điện tích mỗi hạt: $+e$ với lỗ trống, $-e$ với electron. Ta được:</p>
+    <div class="f">$$F_p^+=\frac{J_p}{e}=\mu_p\,p\,E-D_p\frac{\partial p}{\partial x}\qquad\qquad F_n^-=-\frac{J_n}{e}=-\mu_n\,n\,E-D_n\frac{\partial n}{\partial x}$$</div>
+    <div class="box explain"><b>Kiểm tra dấu:</b> lỗ trống trôi cùng chiều $E$ (số hạng $+\mu_pE p$) và khuếch tán xuôi chiều giảm của nồng độ (số hạng $-D_p\,\partial p/\partial x$). Electron trôi ngược chiều $E$ (số hạng $-\mu_n nE$) và cũng khuếch tán xuôi chiều giảm của $n$ (số hạng $-D_n\,\partial n/\partial x$). Hai dấu trừ cuối cùng giống nhau vì khuếch tán không quan tâm hạt mang điện dương hay âm.</div>
+
+    <h3>5.2. Thay vào phương trình liên tục</h3>
+    <p>Thế $F$ vào phương trình liên tục. Lấy đạo hàm tích bằng quy tắc nhân $\dfrac{\partial(pE)}{\partial x}=E\dfrac{\partial p}{\partial x}+p\dfrac{\partial E}{\partial x}$ (đây là quy tắc "đạo hàm của tích" em đã học). Kết quả là hai <b>phương trình khuếch tán phụ thuộc thời gian</b>:</p>
+    <div class="f key">$$D_p\frac{\partial^2 p}{\partial x^2}-\mu_p\left(E\frac{\partial p}{\partial x}+p\frac{\partial E}{\partial x}\right)+g_p-R_p=\frac{\partial p}{\partial t}$$
+    $$D_n\frac{\partial^2 n}{\partial x^2}+\mu_n\left(E\frac{\partial n}{\partial x}+n\frac{\partial E}{\partial x}\right)+g_n-R_n=\frac{\partial n}{\partial t}$$</div>
+    <p>Trong mẫu đồng nhất, $n_0$ và $p_0$ không phụ thuộc $t$ lẫn $x$, nên các đạo hàm của $p=p_0+\delta p$ chỉ còn tác dụng lên phần dư $\delta p$ (tương tự cho $n$). Phần $p\,\partial E/\partial x$ vẫn giữ $p$ tổng. Dạng dùng cho hạt dư:</p>
+    <div class="f key">$$D_p\frac{\partial^2(\delta p)}{\partial x^2}-\mu_p\left(E\frac{\partial(\delta p)}{\partial x}+p\frac{\partial E}{\partial x}\right)+g_p-R_p=\frac{\partial(\delta p)}{\partial t}$$
+    $$D_n\frac{\partial^2(\delta n)}{\partial x^2}+\mu_n\left(E\frac{\partial(\delta n)}{\partial x}+n\frac{\partial E}{\partial x}\right)+g_n-R_n=\frac{\partial(\delta n)}{\partial t}$$</div>
+    <div class="box legend"><b>Mỗi số hạng của phương trình nói gì</b> (lấy phương trình lỗ trống)<ul>
+      <li>$D_p\,\partial^2(\delta p)/\partial x^2$: <b>khuếch tán</b>. Đạo hàm bậc hai đo độ "cong" của phân bố; chỗ lồi (đỉnh) bị loang bớt, chỗ lõm được lấp.</li>
+      <li>$-\mu_pE\,\partial(\delta p)/\partial x$: <b>trôi</b> làm cả phân bố dịch chuyển theo hướng điện trường.</li>
+      <li>$-\mu_p\,p\,\partial E/\partial x$: phần do điện trường <b>không đều</b> theo vị trí (nếu $E$ đều thì bằng 0).</li>
+      <li>$g_p-R_p$: sinh trừ tái hợp.</li>
+      <li>$\partial(\delta p)/\partial t$: tốc độ thay đổi theo thời gian (vế "kết quả").</li></ul></div>
+    <div class="box warn"><b>Vấn đề còn lại:</b> hai phương trình này liên kết với nhau (cùng chứa $E$), và bản thân $E$ lại bị chính các hạt tải dư làm thay đổi (Mục 6). Có hai ẩn là $\delta n,\delta p$ cộng thêm $E$. Mục 6 và 7 sẽ rút gọn chúng thành <b>một</b> phương trình cho <b>một</b> ẩn.</div>
+  </section>
+
+  <section>
+    <h2>6. Vận Chuyển Lưỡng Cực (Ambipolar)</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> ta có hai phương trình cho $\delta n$ và $\delta p$, cùng chứa điện trường $E$. Nhưng $E$ không chỉ do nguồn ngoài: khi electron và lỗ trống dư bị kéo đi với tốc độ khác nhau, chúng tách điện tích và <b>tự tạo ra điện trường nội</b>. Mục này tìm cách gộp hai phương trình thành một.</div>
+
+    <h3>6.1. Vì sao hai loại hạt dư phải đi chung với nhau?</h3>
+    <p>Giả sử tạo một xung electron và lỗ trống dư ở cùng chỗ, rồi đặt điện trường ngoài. Electron nhẹ hơn (linh động hơn) nên muốn chạy nhanh hơn lỗ trống. Nếu chúng thật sự tách ra, phía electron mang điện âm, phía lỗ trống mang điện dương, và sinh ra một điện trường <b>kéo chúng lại gần nhau</b>. Điện trường này rất mạnh nên chỉ cần tách một chút là đủ để giữ hai đám hạt dư đi cùng nhau. Hiện tượng hai loại hạt dư trôi và khuếch tán như <b>một khối</b> được gọi là <b>vận chuyển lưỡng cực (ambipolar transport)</b>. Đại lượng mô tả khối này là $D'$ và $\mu'$ (ở 6.4).</p>
+    <div class="box analogy"><b>Hình dung:</b> hai người đi bộ nối với nhau bằng sợi dây thun. Một người khỏe hơn muốn chạy nhanh, nhưng dây thun kéo người kia theo, nên cả hai cùng di chuyển với một tốc độ trung bình nào đó, không ai đi theo tốc độ riêng của mình.</div>
+
+    <h3>6.2. Điện trường tổng và phương trình Poisson</h3>
+    <p>Điện trường tác dụng lên hạt gồm hai phần:</p>
+    <div class="f key">$$E=E_{app}+E_{int}$$</div>
+    <ul>
+      <li>$E_{app}$ (applied): điện trường <b>đặt từ ngoài</b> (pin, nguồn).</li>
+      <li>$E_{int}$ (internal): điện trường <b>nội</b> do chính các hạt dư tách điện tích tạo ra.</li>
+    </ul>
+    <p>Điện trường nội liên hệ với mật độ điện tích bằng <b>phương trình Poisson</b>: điện trường biến thiên mạnh ở đâu có điện tích thừa:</p>
+    <div class="f key">$$\frac{\partial E_{int}}{\partial x}=\frac{e\,(\delta p-\delta n)}{\epsilon_s}$$</div>
+    <div class="box legend"><b>Đọc công thức</b><ul>
+      <li>$e(\delta p-\delta n)$: <b>mật độ điện tích thừa</b>. Lỗ trống dư đóng góp $+e\,\delta p$, electron dư đóng góp $-e\,\delta n$. Nếu $\delta p=\delta n$ thì điện tích thừa bằng 0, tức mẫu trung hòa.</li>
+      <li>$\epsilon_s$: hằng số điện môi của bán dẫn (F/cm).</li>
+      <li>$\partial E_{int}/\partial x$: độ dốc của điện trường nội; có điện tích thừa mới có độ dốc.</li></ul></div>
+
+    <h3>6.3. Hai xấp xỉ để bỏ các số hạng phiền phức</h3>
+    <p>Hệ số $e/\epsilon_s$ rất lớn, nên chỉ cần một chênh lệch rất nhỏ $\delta p-\delta n$ cũng đủ tạo ra điện trường nội đáng kể. Điều đó dẫn tới <b>xấp xỉ gần trung hòa điện</b>: giữ $\delta n\approx\delta p$ với độ chính xác rất cao, mặc dù chênh lệch nhỏ đó vẫn đủ để sinh ra $E_{int}$. Slide ghi chú rằng chênh lệch này chỉ cỡ $1\%$ hoặc nhỏ hơn, nên coi:</p>
+    <ul>
+      <li><b>Trong các số hạng khuếch tán và tái hợp:</b> dùng $\delta n=\delta p$ (bỏ sự chênh lệch).</li>
+      <li><b>Trong số hạng $\partial E/\partial x$ của phương trình Mục 5:</b> <b>không</b> được bỏ, vì chính chênh lệch nhỏ $\delta p-\delta n$ qua Poisson mới cho ra $\partial E_{int}/\partial x$.</li>
+    </ul>
+    <div class="box warn"><b>Dễ sai:</b> "$\delta n=\delta p$" là xấp xỉ dùng cho nồng độ, không có nghĩa $E_{int}=0$. Em hãy nhớ: chênh lệch nhỏ xíu của nồng độ ⟹ điện trường nội đáng kể. Hai điều này không mâu thuẫn.</div>
+    <p>Hai phương trình đều có $g-R$ giống nhau (mỗi lần sinh hoặc tái hợp tạo hoặc mất đúng <b>một cặp</b>), nên $g_n-R_n=g_p-R_p\equiv g-R$, và $\partial(\delta n)/\partial t=\partial(\delta p)/\partial t$. Vì vậy vế phải của hai phương trình Mục 5 là một đại lượng chung.</p>
+
+    <h3>6.4. Gộp hai phương trình: nhân rồi cộng</h3>
+    <p>Mục tiêu là khử số hạng $\partial E/\partial x$ (chứa ẩn chưa biết $E_{int}$). Viết hai phương trình Mục 5 (với $\partial_t$ chung) rồi:</p>
+    <ol>
+      <li><b>Nhân</b> phương trình của lỗ trống với $\mu_n n$ và phương trình của electron với $\mu_p p$.</li>
+      <li><b>Cộng</b> hai vế lại. Số hạng $\mu_p\mu_n\,n\,p\,\partial E/\partial x$ xuất hiện ở hai phương trình với dấu <b>ngược nhau</b> nên triệt tiêu.</li>
+      <li><b>Chia</b> cho $\mu_n n+\mu_p p$ để quy về dạng phương trình khuếch tán quen thuộc.</li>
+    </ol>
+    <p>Kết quả là <b>phương trình lưỡng cực</b> với chỉ một ẩn $\delta n$:</p>
+    <div class="f key">$$D'\frac{\partial^2(\delta n)}{\partial x^2}+\mu'E\,\frac{\partial(\delta n)}{\partial x}+g-R=\frac{\partial(\delta n)}{\partial t}$$</div>
+    <p>với hai hệ số lưỡng cực:</p>
+    <div class="f key">$$D'=\frac{\mu_nD_p\,p+\mu_pD_n\,n}{\mu_n\,n+\mu_p\,p}\qquad\qquad \mu'=\frac{\mu_n\mu_p\,(p-n)}{\mu_n\,n+\mu_p\,p}$$</div>
+    <div class="box legend"><b>Đọc công thức và cách dùng</b><ul>
+      <li>$D'$: <b>hệ số khuếch tán lưỡng cực</b> (cm²/s). Nó là một trung bình có trọng số của $D_n$ và $D_p$; hạt nào nhiều thì ảnh hưởng nhiều. Đây là "tốc độ loang" của cả khối hạt dư.</li>
+      <li>$\mu'$: <b>độ linh động lưỡng cực</b> (cm²/V·s). Nó có thể dương, âm hoặc bằng 0. Dấu của $\mu'$ cho biết khối hạt dư trôi <b>theo hướng của loại hạt nào</b>: dương nghĩa là theo lỗ trống (cùng chiều $E$), âm nghĩa là theo electron.</li>
+      <li>$n,\,p$ ở đây là nồng độ <b>tổng</b> (cân bằng cộng dư): $n=n_0+\delta n$, $p=p_0+\delta p$.</li>
+      <li>$g-R$: sinh trừ tái hợp, sẽ rút gọn theo cách ở Mục 7.</li>
+      <li>$E$ trong phương trình là điện trường <b>ngoài</b> $E_{app}$, vì phần $E_{int}$ đã bị khử.</li></ul></div>
+    <div class="box warn"><b>Phi tuyến:</b> $D'$ và $\mu'$ chứa $n$ và $p$, mà $n,p$ lại chứa $\delta n$. Nghĩa là hệ số phụ thuộc vào nghiệm cần tìm, phương trình tổng quát là <b>phi tuyến</b> và khó giải. Muốn giải được, ta phải biến $D',\mu'$ thành <b>hằng số</b>. Đó là việc của Mục 7.</div>
+  </section>
+
+  <section>
+    <h2>7. Bán Dẫn Pha Tạp và Kích Thích Mức Thấp: Đơn Giản Hóa</h2>
+    <div class="bridge"><b>Nối từ Mục 6:</b> $D'$ và $\mu'$ phụ thuộc $n,p$ nên làm phương trình phi tuyến. Hai điều kiện trong thực tế rất thường gặp (<b>pha tạp</b> và <b>LLI</b>) sẽ biến chúng thành hằng số, và phương trình thành tuyến tính, giải được.</div>
+
+    <h3>7.1. Bán dẫn loại P với LLI</h3>
+    <p>Với loại P: $p_0\gg n_0$ và LLI cho $\delta n\ll p_0$. Khi đó $p=p_0+\delta p\approx p_0$ và $n=n_0+\delta n\ll p$. Trong $D'$ và $\mu'$, các số hạng chứa $n$ (cả tử lẫn mẫu) rất nhỏ so với số hạng chứa $p$:</p>
+    <p>Trước hết dùng quan hệ Einstein $D_p/\mu_p=D_n/\mu_n=kT/e$, suy ra $\mu_nD_p=\mu_pD_n=\mu_n\mu_p\,kT/e$. Tử của $D'$ gom lại thành $\mu_n\mu_p\,(kT/e)\,(p+n)$. Với $n\ll p$: tử $\approx\mu_n\mu_p(kT/e)\,p$, mẫu $\approx\mu_p\,p$, nên $D'\approx\mu_n\,kT/e=D_n$. Tương tự $\mu'\approx\mu_n\mu_p\,p/(\mu_p\,p)=\mu_n$. Kết quả của slide:</p>
+    <div class="f key">$$\text{Loại P, LLI:}\qquad D'\approx D_n,\qquad \mu'\approx\mu_n$$</div>
+    <h3>7.2. Bán dẫn loại N với LLI</h3>
+    <p>Hoàn toàn tương tự, đổi vai trò electron và lỗ trống: $n\gg p$, nên khối hạt dư đi theo hạt thiểu số là <b>lỗ trống</b>:</p>
+    <div class="f key">$$\text{Loại N, LLI:}\qquad D'\approx D_p,\qquad \mu'\approx-\mu_p$$</div>
+    <div class="box explain"><b>Vì sao $\mu'\approx-\mu_p$ có dấu trừ?</b> Công thức $\mu'$ có tử $(p-n)$. Ở loại N, $p-n<0$ nên $\mu'<0$. Phương trình lưỡng cực có số hạng trôi $+\mu'E\,\partial\delta n/\partial x$; còn lỗ trống trôi cùng chiều $E$ nên số hạng của nó là $-\mu_pE\,\partial\delta p/\partial x$. Đồng nhất hai dạng cho $\mu'=-\mu_p$. Điều cần nhớ: <b>khối hạt dư trôi theo hạt thiểu số</b>, và độ lớn là $\mu_p$.</div>
+
+    <h3>7.3. Quy tắc hạt thiểu số (minority carrier rule)</h3>
+    <div class="box key"><b>Quy tắc:</b> với bán dẫn pha tạp ở mức kích thích thấp, các tính chất của hạt tải dư (trôi, khuếch tán, tái hợp) được quyết định bởi <b>hạt thiểu số</b>. Hạt đa số chỉ "đi theo" để giữ trung hòa điện, đóng vai trò thụ động.</div>
+    <p>Lý do: số hạt đa số quá nhiều, một lượng hạt dư không làm thay đổi đáng kể nồng độ của chúng, còn nồng độ hạt thiểu số thì thay đổi theo bậc độ lớn. Mọi thứ "đáng chú ý" đều xảy ra ở hạt thiểu số. Từ đây mới có chuyện ở Mục 3 ta dùng $\tau_{n0}$ cho loại P và $\tau_{p0}$ cho loại N.</p>
+    <p>Với loại P, ta thu được <b>phương trình khuếch tán cho electron thiểu số</b> (dạng dùng cho bài tập):</p>
+    <div class="f key">$$D_n\frac{\partial^2(\delta n)}{\partial x^2}+\mu_nE\frac{\partial(\delta n)}{\partial x}+g'-\frac{\delta n}{\tau_{n0}}=\frac{\partial(\delta n)}{\partial t}$$</div>
+    <p>Phương trình cho lỗ trống thiểu số trong loại N có dạng giống hệt, thay $n\to p$, $D_n\to D_p$, $\tau_{n0}\to\tau_{p0}$, và dấu của số hạng trôi đổi theo $\mu'\approx-\mu_p$:</p>
+    <div class="f key">$$D_p\frac{\partial^2(\delta p)}{\partial x^2}-\mu_pE\frac{\partial(\delta p)}{\partial x}+g'-\frac{\delta p}{\tau_{p0}}=\frac{\partial(\delta p)}{\partial t}$$</div>
+    <div class="box legend"><b>Cách thu "$g'-\delta n/\tau$"</b><ul>
+      <li>Ta có $g-R=(G_{n0}+g')-(R_{n0}+R')$.</li>
+      <li>Ở cân bằng $G_{n0}=R_{n0}$, nên $g-R=g'-R'$.</li>
+      <li>Theo Mục 3, $R'=\delta n/\tau_{n0}$ (loại P) hoặc $\delta p/\tau_{p0}$ (loại N).</li></ul></div>
+
+    <h3>7.4. Bảng "số hạng nào bị bỏ" cho từng bài toán</h3>
+    <p>Phương trình ở trên là phương trình tổng quát. Mỗi ví dụ ở Mục 8 chỉ là việc <b>gạt bỏ các số hạng không có mặt</b>. Đây là bảng em nên thuộc cách đọc:</p>
+    <table class="tw">
+      <tr><th>Ví dụ</th><th>Điều kiện</th><th>Số hạng bị gạt</th><th>Phương trình còn lại</th></tr>
+      <tr><td>6.2: tắt sáng đều</td><td>đều theo $x$, $E=0$, $g'=0$</td><td>khuếch tán, trôi, sinh</td><td>$\dfrac{d\,\delta n}{dt}=-\dfrac{\delta n}{\tau_{n0}}$</td></tr>
+      <tr><td>6.3: bật sáng đều</td><td>đều theo $x$, $E=0$, $g'$ không đổi</td><td>khuếch tán, trôi</td><td>$\dfrac{d\,\delta n}{dt}=g'-\dfrac{\delta n}{\tau_{n0}}$</td></tr>
+      <tr><td>6.4: sáng một đầu, dừng</td><td>$\partial/\partial t=0$, $E=0$, $g'=0$ (trong mẫu)</td><td>trôi, sinh, thời gian</td><td>$D_n\dfrac{d^2\delta n}{dx^2}=\dfrac{\delta n}{\tau_{n0}}$</td></tr>
+      <tr><td>6.5: xung Gauss</td><td>$E=0$, $g'=0$ sau khi xung đã tạo ra</td><td>trôi, sinh</td><td>$D_n\dfrac{\partial^2\delta n}{\partial x^2}-\dfrac{\delta n}{\tau_{n0}}=\dfrac{\partial\delta n}{\partial t}$</td></tr>
+    </table>
+    <div class="box warn"><b>Trường hợp ngoại lệ: bán dẫn thuần (intrinsic).</b> Khi $n=p$, công thức $\mu'$ cho $\mu'=0$ (vì $p-n=0$) và $D'=\dfrac{\mu_nD_p+\mu_pD_n}{\mu_n+\mu_p}=\dfrac{2D_nD_p}{D_n+D_p}$ (qua Einstein). Lúc này không có hạt nào là "thiểu số", cả hai loại tham gia như nhau. Quy tắc hạt thiểu số <b>không</b> áp dụng; xem Câu 6, Mục 12.</div>
+  </section>
+
+  <section>
+    <h2>8. Các Ví Dụ: Phương Trình Lưỡng Cực Đã Giải Được Gì?</h2>
+    <div class="bridge"><b>Nối từ Mục 7:</b> ta đã có một phương trình thật gọn cho hạt thiểu số. Bốn ví dụ trong slide là bốn "ca sử dụng" tăng dần độ khó: chỉ có <b>thời gian</b> (6.2, 6.3), chỉ có <b>vị trí</b> (6.4), và có <b>cả hai</b> (6.5). Mọi ví dụ đều xét <b>bán dẫn loại P</b>, hạt dư là electron.</div>
+
+    <h3>8.1. Ví dụ 6.2: Tắt ánh sáng, hạt dư tắt dần</h3>
+    <p><b>Bối cảnh.</b> Mẫu loại P được chiếu sáng đều đến khi đạt trạng thái dừng, $\delta n(0)=g'\tau_{n0}$. Tại $t=0$ tắt sáng. Hỏi $\delta n(t)$ ra sao?</p>
+    <p><b>Chọn số hạng.</b> Đều theo $x$ nên đạo hàm theo $x$ bằng 0; không có điện trường nên $E=0$; tắt sáng nên $g'=0$. Chỉ còn tái hợp và thời gian:</p>
+    <div class="f key">$$\frac{d(\delta n)}{dt}=-\frac{\delta n}{\tau_{n0}}\ \Longrightarrow\ \delta n(t)=\delta n(0)\,e^{-t/\tau_{n0}}\ \ (t\ge0)$$</div>
+    <p>Đây đúng là kết quả Mục 3 nhưng ta đã chứng minh nó <b>từ phương trình tổng quát</b>. Nhờ vậy em hiểu: Mục 3 chỉ là trường hợp riêng.</p>
+
+    <h3>8.2. Ví dụ 6.3: Bật ánh sáng, hạt dư tăng dần</h3>
+    <p><b>Bối cảnh.</b> Mẫu đang tối ($\delta n(0)=0$), tại $t=0$ bật sáng đều với $g'$ không đổi.</p>
+    <div class="f key">$$\frac{d(\delta n)}{dt}=g'-\frac{\delta n}{\tau_{n0}}\ \Longrightarrow\ \delta n(t)=g'\tau_{n0}\left(1-e^{-t/\tau_{n0}}\right)$$</div>
+    <div class="box legend"><b>Đọc nghiệm</b><ul>
+      <li>Lúc đầu ($t$ nhỏ) tái hợp còn yếu vì $\delta n$ nhỏ, hạt dư tăng nhanh gần như $g't$.</li>
+      <li>Khi $\delta n$ lớn dần, tái hợp $\delta n/\tau_{n0}$ tăng, "ăn" bớt phần sinh, đường cong cong xuống.</li>
+      <li>Khi $t\gg\tau_{n0}$: $\delta n\to g'\tau_{n0}$, đúng <b>trạng thái dừng</b> ở Mục 3.4 (sinh = tái hợp).</li>
+      <li>Ví dụ 6.2 và 6.3 là hai mặt của cùng một chuyện: <b>bật</b> thì đi lên $g'\tau$, <b>tắt</b> thì đi về 0, cùng hằng số thời gian $\tau_{n0}$.</li></ul></div>
+
+    <h3>8.3. Ví dụ 6.4: Trạng thái dừng, chiếu sáng một đầu và độ dài khuếch tán</h3>
+    <p><b>Bối cảnh.</b> Mẫu loại P kéo dài (bán vô hạn, $x\ge0$). Hạt dư được tạo ra liên tục ở mặt $x=0$ nên $\delta n(0)=\delta n_0$ cố định, bên trong không còn ánh sáng ($g'=0$), $E=0$. Ở <b>trạng thái dừng</b> ($\partial/\partial t=0$):</p>
+    <div class="f">$$D_n\frac{d^2(\delta n)}{dx^2}-\frac{\delta n}{\tau_{n0}}=0\ \Longrightarrow\ \frac{d^2(\delta n)}{dx^2}=\frac{\delta n}{D_n\tau_{n0}}$$</div>
+    <p>Đặt <b>độ dài khuếch tán</b> $L_n=\sqrt{D_n\,\tau_{n0}}$ thì phương trình thành $\dfrac{d^2\delta n}{dx^2}=\dfrac{\delta n}{L_n^2}$. Nghiệm tổng quát là $Ae^{x/L_n}+Be^{-x/L_n}$. Vì $\delta n$ không thể tăng vô hạn khi $x\to\infty$ nên $A=0$, và điều kiện $\delta n(0)=\delta n_0$ cho $B=\delta n_0$:</p>
+    <div class="f key">$$\delta n(x)=\delta n_0\,e^{-x/L_n},\qquad L_n=\sqrt{D_n\tau_{n0}}$$</div>
+    <div class="box legend"><b>Ý nghĩa của $L_n$ và cách dùng</b><ul>
+      <li>$L_n$ (đơn vị cm hoặc µm) là <b>quãng đường trung bình mà hạt thiểu số khuếch tán được trước khi tái hợp</b>. Cách nhớ: loang nhanh ($D_n$ lớn) và sống lâu ($\tau_{n0}$ lớn) thì đi xa.</li>
+      <li>Tại $x=L_n$, $\delta n$ còn $36.8\%$ của $\delta n_0$; tại $3L_n$ còn $5\%$. Quy tắc nhanh: sâu quá khoảng vài $L_n$ coi như hết hạt dư.</li>
+      <li>Hình thức giống hệt Ví dụ 6.2, nhưng biến là <b>vị trí</b> thay cho thời gian, và $L_n$ thay cho $\tau$. Đây là sự tương đồng không phải ngẫu nhiên: cùng một phương trình toán học.</li></ul></div>
+    <div class="box tip"><b>Ví dụ số (minh họa, em tự đặt):</b> Si loại P có $D_n=35\ \text{cm}^2/\text{s}$ và $\tau_{n0}=5\ \mu\text{s}$. Khi đó $L_n=\sqrt{35\times5\times10^{-6}}\approx1.32\times10^{-2}\ \text{cm}\approx132\ \mu\text{m}$. Còn nếu $\tau_{n0}=0.5\ \mu\text{s}$ thì $L_n\approx41.8\ \mu\text{m}$: thời gian sống giảm 10 lần mà quãng đường chỉ giảm $\sqrt{10}\approx3.16$ lần, vì $L\propto\sqrt{\tau}$.</div>
+
+    <h3>8.4. Ví dụ 6.5: Xung Gauss, vừa loang vừa tắt</h3>
+    <p><b>Bối cảnh.</b> Tại $t=0$, một xung ánh sáng rất hẹp tạo ra $N$ cặp electron–lỗ trống trên một đơn vị diện tích, tập trung ở $x=0$ (như một "vạch"). Sau đó mẫu loại P được để yên ($E=0$, $g'=0$). Hạt dư vừa <b>loang rộng ra</b> (khuếch tán) vừa <b>mất dần</b> (tái hợp). Phương trình đầy đủ cả thời gian lẫn vị trí:</p>
+    <div class="f">$$D_n\frac{\partial^2(\delta n)}{\partial x^2}-\frac{\delta n}{\tau_{n0}}=\frac{\partial(\delta n)}{\partial t}$$</div>
+    <p>Mẹo giải: tách phần tái hợp ra bằng cách đặt $\delta n(x,t)=e^{-t/\tau_{n0}}\,u(x,t)$. Thế vào thì phần $-\delta n/\tau_{n0}$ bị khử, và $u$ chỉ còn tuân theo phương trình khuếch tán thuần $D_n\,\partial^2u/\partial x^2=\partial u/\partial t$, mà nghiệm của nó cho xung tức thời là hàm Gauss. Kết quả:</p>
+    <div class="f key">$$\delta n(x,t)=\frac{N}{\sqrt{4\pi D_nt}}\ \exp\!\left(-\frac{x^2}{4D_nt}\right)\exp\!\left(-\frac{t}{\tau_{n0}}\right)$$</div>
+    <div class="box legend"><b>Ba thừa số, ba ý nghĩa</b><ul>
+      <li>$\dfrac{N}{\sqrt{4\pi D_nt}}$: <b>biên độ đỉnh</b>. Giảm theo $t^{-1/2}$ vì cùng một lượng hạt loang ra rộng hơn nên đỉnh thấp xuống.</li>
+      <li>$\exp\!\left(-\dfrac{x^2}{4D_nt}\right)$: <b>hình chuông Gauss</b>. Độ rộng đặc trưng (độ lệch chuẩn) $\sigma=\sqrt{2D_nt}$ tăng theo $\sqrt t$: xung càng lâu càng bè ra.</li>
+      <li>$\exp(-t/\tau_{n0})$: <b>tái hợp</b> làm tổng số hạt giảm đều theo hàm mũ, không làm đổi hình dạng chuông.</li></ul></div>
+    <div class="box warn"><b>Hiểu lầm hay gặp:</b> đỉnh xung thấp xuống <b>không</b> có nghĩa hạt đã biến mất hết. Phần lớn sự giảm đỉnh lúc đầu là do loang rộng (hạt vẫn còn đó, chỉ nằm trải ra). Chỉ có thừa số $e^{-t/\tau_{n0}}$ mới phản ánh mất hạt thật. Tổng số hạt: $\int\delta n\,dx=N\,e^{-t/\tau_{n0}}$.</div>
+    <div class="box explain"><b>Vì sao có ví dụ này?</b> Đây là kịch bản thật của thí nghiệm "bắn một xung hạt dư rồi theo dõi nó" nên là nền cho Mục 10 (Haynes–Shockley), nơi có thêm điện trường để xung <b>dịch chuyển</b> thay vì đứng yên.</div>
+  </section>
+
+  <section>
+    <h2>9. Thời Gian Phục Hồi Điện Môi</h2>
+    <div class="bridge"><b>Nối từ Mục 6–8:</b> toàn bộ phần vận chuyển lưỡng cực dựa trên giả thiết <b>gần trung hòa điện</b> ($\delta n\approx\delta p$). Giả thiết đó có thật sự đúng không? Nếu em bơm vào chỉ <b>một loại</b> hạt (chẳng hạn chỉ lỗ trống) mà không có electron đi kèm, mẫu sẽ mất trung hòa trong bao lâu? Câu trả lời là <b>thời gian phục hồi điện môi</b>.</div>
+
+    <h3>9.1. Ba phương trình và một phép thế</h3>
+    <p>Xét mẫu loại N bị bơm đột ngột một lượng lỗ trống dư. Gọi $\rho$ là mật độ điện tích thừa (ban đầu $\rho(0)$), $\epsilon_s$ là hằng số điện môi, $\sigma$ là độ dẫn. Dùng ba định luật quen thuộc:</p>
+    <ol>
+      <li><b>Poisson:</b> $\nabla\cdot E=\dfrac{\rho}{\epsilon_s}$. Điện tích thừa tạo ra điện trường.</li>
+      <li><b>Định luật Ohm (dạng vi phân):</b> $J=\sigma E$. Điện trường đẩy dòng điện của hạt đa số.</li>
+      <li><b>Phương trình liên tục</b> (bỏ sinh và tái hợp vì khoảng thời gian rất ngắn): $\nabla\cdot J=-\dfrac{\partial\rho}{\partial t}$. Điện tích thừa giảm đi khi dòng điện chảy ra khỏi vùng đó.</li>
+    </ol>
+    <p>Lấy "độ phân kỳ" ($\nabla\cdot$) của Ohm: $\nabla\cdot J=\sigma\,\nabla\cdot E=\sigma\rho/\epsilon_s$. Thế vào phương trình liên tục ta được phương trình bậc nhất:</p>
+    <div class="f key">$$\frac{\partial\rho}{\partial t}=-\frac{\sigma}{\epsilon_s}\rho\ \Longrightarrow\ \rho(t)=\rho(0)\,e^{-t/\tau_d},\qquad \tau_d=\frac{\epsilon_s}{\sigma}$$</div>
+    <div class="box legend"><b>Đọc công thức và cách dùng</b><ul>
+      <li>$\tau_d$: <b>hằng số thời gian phục hồi điện môi</b> (dielectric relaxation time), đơn vị giây. Nó cho biết điện tích thừa tan đi nhanh cỡ nào, giống hệt vai trò của $\tau$ ở Mục 3.</li>
+      <li>$\epsilon_s=\epsilon_r\,\epsilon_0$: $\epsilon_r$ là hằng số điện môi tương đối (Si khoảng $11.7$), $\epsilon_0=8.85\times10^{-14}\text{ F/cm}$.</li>
+      <li>$\sigma$: độ dẫn điện của <b>hạt đa số</b> (vì chính chúng chạy tới trung hòa). Pha tạp càng nặng, $\sigma$ càng lớn, $\tau_d$ càng nhỏ.</li>
+      <li><b>Hình dung:</b> điện tích dương thừa hút electron đa số từ xung quanh lao vào ngay lập tức. Nhiều electron sẵn sàng (độ dẫn lớn) thì trung hòa càng nhanh.</li></ul></div>
+
+    <h3>9.2. Ví dụ 6.6: tính $\tau_d$ cho Si loại N</h3>
+    <p><b>Đề:</b> Si loại N, $N_d=10^{16}\text{ cm}^{-3}$, $\mu_n=1200\text{ cm}^2/\text{V·s}$. Tính $\tau_d$.</p>
+    <div class="step">
+      <span class="cmt">// Bước 1: độ dẫn, chỉ electron đa số đóng góp ($n\approx N_d$):</span>
+      $$\sigma\approx e\mu_nN_d=(1.6\times10^{-19})(1200)(10^{16})=\mathbf{1.92\ (\Omega\cdot\text{cm})^{-1}}$$
+      <span class="cmt">// Bước 2: hằng số điện môi:</span>
+      $$\epsilon_s=11.7\times8.85\times10^{-14}\approx1.036\times10^{-12}\text{ F/cm}$$
+      <span class="cmt">// Bước 3: chia:</span>
+      $$\tau_d=\frac{\epsilon_s}{\sigma}=\frac{1.036\times10^{-12}}{1.92}\approx\mathbf{5.39\times10^{-13}\text{ s}=0.539\text{ ps}}$$
+    </div>
+    <div class="box explain"><b>Ý nghĩa:</b> sau khoảng $4\tau_d\approx2\text{ ps}$ điện tích thừa gần như hết. So với thời gian sống hạt dư thường cỡ $0.1\ \mu\text{s}$ (nhanh hơn hàng chục ngàn lần), điện tích thừa biến mất <b>gần như tức thì</b>. Đây chính là lý do chính đáng để dùng xấp xỉ gần trung hòa $\delta n\approx\delta p$ ở Mục 6: mỗi khi có sự mất cân bằng điện tích, hạt đa số kịp chạy tới bù trong vài ps, nhanh hơn rất nhiều so với mọi quá trình khác ta quan tâm.</div>
+  </section>
+
+  <section>
+    <h2>10. Thí Nghiệm Haynes–Shockley</h2>
+    <div class="bridge"><b>Nối từ Mục 6–8:</b> ta có công thức cho một xung hạt dư thiểu số vừa trôi vừa loang vừa mất (Ví dụ 6.5 thêm điện trường). Vậy hãy làm ngược lại: <b>đo</b> hình dạng xung rồi suy ra các thông số vật liệu $\mu$, $D$, $\tau$. Đó là thí nghiệm Haynes–Shockley.</div>
+
+    <h3>10.1. Bố trí và phương trình xung</h3>
+    <p>Một thanh bán dẫn loại N (hạt thiểu số là lỗ trống). Tại <b>tiếp điểm A</b> ($x=0$), một xung điện (hoặc ánh sáng) bơm một xung lỗ trống dư. Một <b>điện trường ngoài $E$</b> quét xung chạy dọc thanh tới <b>tiếp điểm B</b> cách A một đoạn $d$, nơi ta đọc điện áp ra, tỉ lệ với lượng lỗ trống đến đó. Khi có thêm trôi, nghiệm Ví dụ 6.5 trở thành:</p>
+    <div class="f key">$$\delta p(x,t)=\frac{N}{\sqrt{4\pi D_pt}}\exp\!\left[-\frac{(x-\mu_pEt)^2}{4D_pt}\right]\exp\!\left(-\frac{t}{\tau_{p0}}\right)$$</div>
+    <p>So với Mục 8.4, vị trí $x$ được thay bằng $x-\mu_pEt$: chuông Gauss <b>dịch</b> với vận tốc trôi $v=\mu_pE$ trong khi vẫn bè ra và nhỏ đi. Từ một đường cong đo được, ta rút ra ba đại lượng:</p>
+
+    <h3>10.2. (1) Độ linh động $\mu_p$ từ thời điểm đỉnh xung tới B</h3>
+    <p>Đỉnh xung nằm ở chỗ số mũ Gauss bằng 0: $x-\mu_pEt=0$. Xung tới B ($x=d$) tại thời điểm $t_0$ ($t_0$ là thời gian trôi, đo trên máy hiện sóng). Vậy:</p>
+    <div class="f key">$$d-\mu_pE\,t_0=0\ \Longrightarrow\ \mu_p=\frac{d}{E\,t_0}$$</div>
+    <p>Đây đơn giản là "vận tốc = quãng đường / thời gian", sau đó chia cho $E$. Mọi đại lượng $d,E,t_0$ đều đo trực tiếp được.</p>
+
+    <h3>10.3. (2) Hệ số khuếch tán $D_p$ từ độ rộng xung</h3>
+    <p>Xét hai thời điểm $t_1<t_0<t_2$ mà tại đó xung bằng $e^{-1}$ giá trị đỉnh. Khi đó số mũ Gauss thỏa $(d-\mu_pEt)^2\approx4D_p\,t_0$ (lấy $t\approx t_0$ ở mẫu số). Hai nghiệm cách nhau $\Delta t=t_2-t_1=\dfrac{4\sqrt{D_pt_0}}{\mu_pE}$. Giải ra:</p>
+    <div class="f key">$$D_p=\frac{(\mu_pE)^2\,(\Delta t)^2}{16\,t_0}$$</div>
+    <p>Xung càng rộng ($\Delta t$ lớn) tức khuếch tán càng mạnh. Đây là cách <b>đo $D$ độc lập</b>, rồi kiểm lại bằng hệ thức Einstein $D_p/\mu_p=kT/e$ (Buổi 7).</p>
+
+    <h3>10.4. (3) Thời gian sống $\tau_{p0}$ từ diện tích xung</h3>
+    <p>Diện tích dưới xung tỉ lệ với số lỗ trống chưa tái hợp, tức $A\propto\exp(-t_0/\tau_{p0})$. Thay đổi $E$ (do đó $t_0$ đổi) rồi đo $A$, vẽ $\ln A$ theo $t_0$ được <b>đường thẳng có hệ số góc $-1/\tau_{p0}$</b>. Hay với hai phép đo: $\tau_{p0}=\dfrac{t_{0,2}-t_{0,1}}{\ln(A_1/A_2)}$.</p>
+    <div class="box tip"><b>Tại sao thí nghiệm này quan trọng:</b> đây là cách đo <b>trực tiếp</b> hạt <b>thiểu số</b> chạy như thế nào, và nó chứng minh luôn quy tắc ở Mục 7: hạt đi cùng nhau như một khối theo hạt thiểu số, với $\mu'\to\mu_p$ và $D'\to D_p$. Câu 4 ở Mục 12 là một bài số.</div>
+  </section>
+
+  <section>
+    <h2>11. Mức Fermi Chuẩn (Quasi-Fermi)</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> ở Mục 2 ta thấy khi có hạt dư thì $np\neq n_i^2$, nghĩa là hệ <b>không còn ở cân bằng nhiệt</b>. Ở cân bằng, <b>một</b> mức Fermi $E_F$ mô tả cả $n$ lẫn $p$. Khi mất cân bằng, một con số không đủ để mô tả hai nồng độ độc lập. Ta cần <b>hai</b> mức Fermi.</div>
+
+    <h3>11.1. Cân bằng và mất cân bằng</h3>
+    <p>Ở cân bằng nhiệt, nồng độ hạt liên hệ với $E_F$ và mức Fermi thuần $E_{Fi}$:</p>
+    <div class="f">$$n_0=n_i\exp\!\left(\frac{E_F-E_{Fi}}{kT}\right),\qquad p_0=n_i\exp\!\left(\frac{E_{Fi}-E_F}{kT}\right)$$</div>
+    <p>Khi có hạt dư ($\delta n=\delta p>0$), $E_F$ không còn xác định (vì $np\ne n_i^2$). Ta <b>định nghĩa</b> hai mức Fermi chuẩn, một cho electron và một cho lỗ trống, sao cho các công thức cũ vẫn dùng được với nồng độ <b>mới</b>:</p>
+    <div class="f key">$$n_0+\delta n=n_i\exp\!\left(\frac{E_{Fn}-E_{Fi}}{kT}\right),\qquad p_0+\delta p=n_i\exp\!\left(\frac{E_{Fi}-E_{Fp}}{kT}\right)$$</div>
+    <div class="box legend"><b>Đọc công thức và cách dùng</b><ul>
+      <li>$E_{Fn}$: mức Fermi chuẩn của <b>electron</b>. Nó càng lên cao (xa $E_{Fi}$) thì $n$ càng lớn.</li>
+      <li>$E_{Fp}$: mức Fermi chuẩn của <b>lỗ trống</b>. Nó càng xuống thấp thì $p$ càng lớn.</li>
+      <li>$E_{Fi}$: mức Fermi của bán dẫn thuần, gần giữa vùng cấm, dùng làm gốc so sánh.</li>
+      <li>Cách tính: lấy nồng độ <b>tổng</b>, chia $n_i$, lấy $\ln$, nhân $kT$. Ví dụ $E_{Fn}-E_{Fi}=kT\ln\dfrac{n_0+\delta n}{n_i}$ và $E_{Fi}-E_{Fp}=kT\ln\dfrac{p_0+\delta p}{n_i}$.</li>
+      <li><b>Kiểm tra cân bằng:</b> khi $\delta n=\delta p=0$ thì $E_{Fn}=E_{Fp}=E_F$. Khi mất cân bằng, hai mức tách ra.</li></ul></div>
+    <div class="box key"><b>Độ tách hai mức đo mức độ mất cân bằng:</b> nhân hai công thức trên:
+      $$np=n_i^2\exp\!\left(\frac{E_{Fn}-E_{Fp}}{kT}\right)$$
+      Hai mức Fermi chuẩn càng xa nhau, tích $np$ càng vượt $n_i^2$.</div>
+
+    <h3>11.2. Ví dụ 6.7: mức Fermi chuẩn trong Si loại N</h3>
+    <p><b>Đề:</b> bán dẫn loại N ở $T=300\text{ K}$ ($kT=0.0259\text{ eV}$), $n_0=10^{15}\text{ cm}^{-3}$, $n_i=10^{10}\text{ cm}^{-3}$ (nên $p_0=n_i^2/n_0=10^{5}\text{ cm}^{-3}$). Chiếu sáng cho $\delta n=\delta p=10^{13}\text{ cm}^{-3}$. Tìm $E_F$, $E_{Fn}$, $E_{Fp}$ so với $E_{Fi}$.</p>
+    <div class="step">
+      <span class="cmt">// Cân bằng:</span>
+      $$E_F-E_{Fi}=kT\ln\frac{n_0}{n_i}=0.0259\ln10^{5}=\mathbf{0.2982\text{ eV}}$$
+      <span class="cmt">// Electron (đa số): $n=10^{15}+10^{13}=1.01\times10^{15}$, tăng chỉ 1%:</span>
+      $$E_{Fn}-E_{Fi}=0.0259\ln\frac{1.01\times10^{15}}{10^{10}}=\mathbf{0.2984\text{ eV}}$$
+      <span class="cmt">// Lỗ trống (thiểu số): $p=10^{5}+10^{13}\approx10^{13}$, tăng 8 bậc độ lớn:</span>
+      $$E_{Fi}-E_{Fp}=0.0259\ln\frac{10^{13}}{10^{10}}=0.0259\ln10^{3}=\mathbf{0.179\text{ eV}}$$
+    </div>
+    <div class="box explain"><b>Đọc kết quả:</b> $E_{Fn}$ chỉ nhích $0.0002\text{ eV}$ so với $E_F$: đa số gần như không đổi nên mức Fermi của chúng gần như đứng yên. Còn $E_{Fp}$ rời hẳn khỏi $E_F$ xuống gần vùng hóa trị (nằm dưới $E_{Fi}$ $0.179\text{ eV}$, trong khi $E_F$ nằm trên $E_{Fi}$ $0.298\text{ eV}$): hạt thiểu số thay đổi cực mạnh. Đây là cái nhìn "trên giản đồ năng lượng" của quy tắc hạt thiểu số ở Mục 7. Kiểm tra bằng công thức tích: $E_{Fn}-E_{Fp}=0.2984+0.179=0.477\text{ eV}$ và $np\approx1.01\times10^{28}=n_i^2\,e^{0.477/0.0259}$ ✓.</div>
+  </section>
+
+  <section>
+    <h2>12. Bài Tập Củng Cố</h2>
+    <p>Các bài dưới đây đi theo thứ tự các mục. Hãy tự làm rồi mới xem gợi ý và lời giải. Dùng $kT=0.0259\text{ eV}$ ở $300\text{ K}$.</p>
+
+    <h3>Câu 1. Tắt ánh sáng trong Si loại P (Mục 3, 8.1)</h3>
+    <p><b>Đề:</b> Si loại P, $N_a=10^{16}\text{ cm}^{-3}$, $n_i=1.5\times10^{10}\text{ cm}^{-3}$, $\tau_{n0}=10\ \mu\text{s}$. Chiếu sáng đều tới trạng thái dừng được $\delta n(0)=10^{14}\text{ cm}^{-3}$, rồi tắt sáng tại $t=0$.<br>
+    (1) Tính $n_0$ và kiểm tra LLI. (2) Tính $\delta n$ tại $t=10\ \mu\text{s}$. (3) Tính $R'$ tại $t=0$. (4) Bao lâu thì $\delta n$ còn $1\%$?</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-hint" onclick="togglePanel('b8-hint1')">Xem Gợi ý</button>
+      <button type="button" class="btn btn-sol" onclick="togglePanel('b8-sol1')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="b8-hint1" class="panel"><b>Hướng đi:</b> $n_0=n_i^2/p_0$ với $p_0\approx N_a$. LLI so $\delta n$ với $p_0$. Sau khi tắt: $\delta n=\delta n(0)e^{-t/\tau}$ và $R'=\delta n/\tau$. Thời điểm còn $1\%$: $t=\tau\ln100$.</div>
+    <div id="b8-sol1" class="panel"><b>Lời giải:</b>
+      <div class="step">
+        <span class="cmt">// (1)</span>
+        $$n_0=\frac{n_i^2}{N_a}=\frac{2.25\times10^{20}}{10^{16}}=\mathbf{2.25\times10^{4}\text{ cm}^{-3}}$$
+        <span class="cmt">// LLI: $\delta n/p_0=10^{14}/10^{16}=1\%\ll1$ nên đúng LLI.</span>
+        <span class="cmt">// (2)</span>
+        $$\delta n(10\mu\text{s})=10^{14}e^{-1}\approx\mathbf{3.68\times10^{13}\text{ cm}^{-3}}$$
+        <span class="cmt">// (3)</span>
+        $$R'(0)=\frac{\delta n(0)}{\tau_{n0}}=\frac{10^{14}}{10^{-5}}=\mathbf{10^{19}\text{ cm}^{-3}\text{s}^{-1}}$$
+        <span class="cmt">// (4)</span>
+        $$t=\tau_{n0}\ln100=10\times4.605\approx\mathbf{46\ \mu\text{s}}$$
+      </div></div>
+
+    <h3>Câu 2. GaAs loại N (bài thực hành trong slide, Mục 3)</h3>
+    <p><b>Đề (slide):</b> GaAs loại N ($E_g=1.42\text{ eV}$, $T=300\text{ K}$), $N_d=10^{16}\text{ cm}^{-3}$, $n_i=1.8\times10^6\text{ cm}^{-3}$, hệ số tái hợp bức xạ $B_r=7.2\times10^{-10}\text{ cm}^3/\text{s}$.<br>
+    (1) Tính $p_0$. (2) Tính $\tau_{p0}$ ở LLI. (3) Chiếu sáng đều cho $\delta p=5\times10^{13}\text{ cm}^{-3}$, tính tốc độ tái hợp ròng $U$.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-hint" onclick="togglePanel('b8-hint2')">Xem Gợi ý</button>
+      <button type="button" class="btn btn-sol" onclick="togglePanel('b8-sol2')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="b8-hint2" class="panel"><b>Hướng đi:</b> loại N nên hạt thiểu số là lỗ trống: $p_0=n_i^2/N_d$. Thời gian sống $\tau_{p0}=1/(B_r\,n_0)$ với $n_0\approx N_d$. Tái hợp dư $U=R'=\delta p/\tau_{p0}$.</div>
+    <div id="b8-sol2" class="panel"><b>Lời giải:</b>
+      <div class="step">
+        $$p_0=\frac{n_i^2}{N_d}=\frac{(1.8\times10^6)^2}{10^{16}}=\frac{3.24\times10^{12}}{10^{16}}=\mathbf{3.24\times10^{-4}\text{ cm}^{-3}}$$
+        <span class="cmt">// Nghĩa là trong 1 cm³ trung bình chưa tới 1 lỗ trống nhiệt: GaAs có vùng cấm rộng nên $n_i$ rất bé.</span>
+        $$\tau_{p0}=\frac{1}{B_r\,N_d}=\frac{1}{(7.2\times10^{-10})(10^{16})}=\frac{1}{7.2\times10^{6}}\approx\mathbf{1.39\times10^{-7}\text{ s}=139\text{ ns}}$$
+        $$U=R'=\frac{\delta p}{\tau_{p0}}=\frac{5\times10^{13}}{1.39\times10^{-7}}\approx\mathbf{3.6\times10^{20}\text{ cm}^{-3}\text{s}^{-1}}$$
+        <span class="cmt">// Kiểm tra LLI: $\delta p/N_d=5\times10^{13}/10^{16}=0.5\%$, hợp lệ. Ở trạng thái dừng thì $g'$ cũng bằng giá trị này.</span>
+      </div></div>
+
+    <h3>Câu 3. Độ dài khuếch tán (Mục 8.3)</h3>
+    <p><b>Đề:</b> Si loại P có $D_n=25\text{ cm}^2/\text{s}$, $\tau_{n0}=4\ \mu\text{s}$, mẫu bán vô hạn, giữ $\delta n(0)=10^{14}\text{ cm}^{-3}$ tại mặt. (1) Tính $L_n$. (2) Tính $\delta n$ tại $x=200\ \mu\text{m}$. (3) Tại độ sâu nào $\delta n$ còn $1\%$?</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-hint" onclick="togglePanel('b8-hint3')">Xem Gợi ý</button>
+      <button type="button" class="btn btn-sol" onclick="togglePanel('b8-sol3')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="b8-hint3" class="panel"><b>Hướng đi:</b> $L_n=\sqrt{D_n\tau_{n0}}$ (đổi $\mu\text{s}$ ra s). Dùng $\delta n(x)=\delta n_0e^{-x/L_n}$. Mốc $1\%$: $x=L_n\ln100$.</div>
+    <div id="b8-sol3" class="panel"><b>Lời giải:</b>
+      <div class="step">
+        $$L_n=\sqrt{25\times4\times10^{-6}}=\sqrt{10^{-4}}=10^{-2}\text{ cm}=\mathbf{100\ \mu\text{m}}$$
+        $$\delta n(200\mu\text{m})=10^{14}e^{-2}\approx\mathbf{1.35\times10^{13}\text{ cm}^{-3}}$$
+        $$x=L_n\ln100=100\times4.605\approx\mathbf{460\ \mu\text{m}}$$
+      </div></div>
+
+    <h3>Câu 4. Thí nghiệm Haynes–Shockley (Mục 10)</h3>
+    <p><b>Đề:</b> Thanh loại N, $d=1\text{ cm}$, $E=10\text{ V/cm}$. Đỉnh xung tới B sau $t_0=100\ \mu\text{s}$, độ rộng giữa hai điểm $e^{-1}$ là $\Delta t=20\ \mu\text{s}$. Khi đổi $E$ để $t_0=200\ \mu\text{s}$, diện tích xung giảm còn $0.368$ lần so với lần đầu.<br>
+    (1) Tính $\mu_p$. (2) Tính $D_p$ và kiểm tra bằng hệ thức Einstein. (3) Tính $\tau_{p0}$.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-hint" onclick="togglePanel('b8-hint4')">Xem Gợi ý</button>
+      <button type="button" class="btn btn-sol" onclick="togglePanel('b8-sol4')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="b8-hint4" class="panel"><b>Hướng đi:</b> $\mu_p=d/(Et_0)$; $D_p=(\mu_pE\Delta t)^2/(16t_0)$; Einstein: $D/\mu$ phải gần $0.0259\text{ V}$; $\tau=\Delta t_0/\ln(A_1/A_2)$.</div>
+    <div id="b8-sol4" class="panel"><b>Lời giải:</b>
+      <div class="step">
+        $$\mu_p=\frac{1}{10\times10^{-4}}=\mathbf{1000\text{ cm}^2/\text{V·s}}$$
+        $$D_p=\frac{(1000\cdot10\cdot20\times10^{-6})^2}{16\times100\times10^{-6}}=\frac{0.2^2}{1.6\times10^{-3}}=\mathbf{25\text{ cm}^2/\text{s}}$$
+        <span class="cmt">// Kiểm tra Einstein: $D/\mu=25/1000=0.025\text{ V}\approx kT/e$ ✓.</span>
+        $$\tau_{p0}=\frac{200-100}{\ln(1/0.368)}\ \mu\text{s}=\frac{100}{1.0}\ \mu\text{s}=\mathbf{100\ \mu\text{s}}$$
+      </div></div>
+
+    <h3>Câu 5. Xung hạt dư: dịch chuyển, bè ra, còn sống (Mục 8.4, 10)</h3>
+    <p><b>Đề:</b> Si loại P, $D_n=25\text{ cm}^2/\text{s}$, $\mu_n=1350\text{ cm}^2/\text{V·s}$, $\tau_{n0}=10\ \mu\text{s}$. Tại $t=0$ có xung $N$ hạt/cm² ở $x=0$, rồi đặt $E=10\text{ V/cm}$. Tại $t=2\ \mu\text{s}$ tìm: (1) vị trí tâm xung; (2) độ rộng $\sigma=\sqrt{2D_nt}$; (3) tỉ lệ số hạt còn sống; (4) biên độ đỉnh theo $N$.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-hint" onclick="togglePanel('b8-hint5')">Xem Gợi ý</button>
+      <button type="button" class="btn btn-sol" onclick="togglePanel('b8-sol5')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="b8-hint5" class="panel"><b>Hướng đi:</b> tâm: $x_c=\mu_nEt$. Độ rộng: $\sigma=\sqrt{2D_nt}$. Còn sống: $e^{-t/\tau}$. Đỉnh: $\dfrac{N}{\sqrt{4\pi D_nt}}e^{-t/\tau}$.</div>
+    <div id="b8-sol5" class="panel"><b>Lời giải:</b>
+      <div class="step">
+        $$x_c=1350\times10\times2\times10^{-6}=0.027\text{ cm}=\mathbf{270\ \mu\text{m}}$$
+        $$\sigma=\sqrt{2\times25\times2\times10^{-6}}=\sqrt{10^{-4}}=0.01\text{ cm}=\mathbf{100\ \mu\text{m}}$$
+        $$e^{-t/\tau}=e^{-0.2}\approx\mathbf{0.82\ (82\%)}$$
+        $$\frac{N}{\sqrt{4\pi\cdot25\cdot2\times10^{-6}}}e^{-0.2}=\frac{N}{0.0251}\times0.819\approx\mathbf{32.7\,N\ \text{cm}^{-1}}$$
+        <span class="cmt">// Nhận xét: tâm đã dịch 270 µm nhưng xung đã bè ra cỡ 100 µm; phần lớn sự giảm đỉnh đến từ bè ra chứ không phải tái hợp.</span>
+      </div></div>
+
+    <h3>Câu 6. Bán dẫn thuần: ngoại lệ của quy tắc thiểu số (Mục 7.4)</h3>
+    <p><b>Đề:</b> Si thuần ($n=p$) có $D_n=35\text{ cm}^2/\text{s}$, $D_p=12.4\text{ cm}^2/\text{s}$. Tính $D'$ và $\mu'$, so sánh với $D_n$, $D_p$.</p>
+    <div class="btn-group">
+      <button type="button" class="btn btn-hint" onclick="togglePanel('b8-hint6')">Xem Gợi ý</button>
+      <button type="button" class="btn btn-sol" onclick="togglePanel('b8-sol6')">Xem Lời giải chi tiết</button>
+    </div>
+    <div id="b8-hint6" class="panel"><b>Hướng đi:</b> đặt $n=p$ vào công thức $D'$ và $\mu'$; dùng Einstein để quy $\mu$ về $D$: $D'=\dfrac{2D_nD_p}{D_n+D_p}$.</div>
+    <div id="b8-sol6" class="panel"><b>Lời giải:</b>
+      <div class="step">
+        $$\mu'=\frac{\mu_n\mu_p(p-n)}{\mu_nn+\mu_pp}=\mathbf{0}\quad(\text{vì }p=n)$$
+        $$D'=\frac{2D_nD_p}{D_n+D_p}=\frac{2(35)(12.4)}{47.4}=\frac{868}{47.4}\approx\mathbf{18.3\text{ cm}^2/\text{s}}$$
+        <span class="cmt">// $D'$ nằm giữa $D_p$ và $D_n$ (trung bình điều hòa), không bám theo hạt nào, và không có trôi lưỡng cực ($\mu'=0$).</span>
+      </div></div>
+  </section>
+
+  <section>
+    <h2>Nối Các Mục: Chuỗi "Vì Sao Có Nó"</h2>
+    <table class="tw">
+      <tr><th>Từ</th><th>Câu hỏi nảy sinh</th><th>Đến</th></tr>
+      <tr><td>Mục 1–2: sinh, tái hợp, hạt dư</td><td>Hạt dư biến mất nhanh cỡ nào?</td><td>Mục 3: tái hợp, LLI, $\tau$</td></tr>
+      <tr><td>Mục 3: $\tau$ (một điểm)</td><td>Hạt còn chạy đi chỗ khác thì sao?</td><td>Mục 4: phương trình liên tục</td></tr>
+      <tr><td>Mục 4: có thông lượng $F$</td><td>$F$ là gì?</td><td>Mục 5: trôi + khuếch tán (Buổi 7)</td></tr>
+      <tr><td>Mục 5: hai phương trình, $E$ chung</td><td>$E$ do hạt dư tự tạo ra thì sao?</td><td>Mục 6: lưỡng cực ($D',\mu'$)</td></tr>
+      <tr><td>Mục 6: hệ số phi tuyến</td><td>Làm sao giải được?</td><td>Mục 7: pha tạp và LLI, quy tắc thiểu số</td></tr>
+      <tr><td>Mục 7: phương trình gọn</td><td>Dùng vào việc gì?</td><td>Mục 8: bốn ví dụ</td></tr>
+      <tr><td>Mục 6: giả thiết trung hòa</td><td>Giả thiết đó có đúng không?</td><td>Mục 9: $\tau_d\sim$ ps</td></tr>
+      <tr><td>Mục 8.4: xung Gauss</td><td>Đo thực nghiệm được không?</td><td>Mục 10: Haynes–Shockley</td></tr>
+      <tr><td>Mục 2: $np\ne n_i^2$</td><td>Mô tả trên giản đồ năng lượng?</td><td>Mục 11: mức Fermi chuẩn</td></tr>
+    </table>
+
+    <h3>Bảng Thuật Ngữ Mới</h3>
+    <table class="tw">
+      <tr><th>Thuật ngữ</th><th>Nghĩa ngắn gọn</th></tr>
+      <tr><td>Sinh $G$ / tái hợp $R$</td><td>Tạo / mất cặp electron–lỗ trống (cm⁻³s⁻¹)</td></tr>
+      <tr><td>Hạt tải dư $\delta n,\delta p$</td><td>Phần nồng độ vượt trên cân bằng</td></tr>
+      <tr><td>LLI</td><td>Hạt dư ≪ nồng độ hạt đa số</td></tr>
+      <tr><td>Hạt thiểu số / đa số</td><td>Loại ít / nhiều hơn ở cân bằng</td></tr>
+      <tr><td>Thời gian sống $\tau$</td><td>Thời gian để hạt dư giảm còn $1/e$</td></tr>
+      <tr><td>Hệ số tái hợp $\alpha_r$ ($B_r$)</td><td>Hằng số tái hợp trực tiếp (cm³/s)</td></tr>
+      <tr><td>Thông lượng $F$</td><td>Số hạt qua 1 cm² mỗi giây</td></tr>
+      <tr><td>Phương trình liên tục</td><td>Bảo toàn hạt: dòng + sinh − tái hợp</td></tr>
+      <tr><td>Lưỡng cực (ambipolar)</td><td>Electron và lỗ trống dư đi cùng như một khối</td></tr>
+      <tr><td>$D'$, $\mu'$</td><td>Hệ số khuếch tán / độ linh động lưỡng cực</td></tr>
+      <tr><td>Độ dài khuếch tán $L$</td><td>$\sqrt{D\tau}$, quãng đường tới khi tái hợp</td></tr>
+      <tr><td>$\tau_d$</td><td>Thời gian điện tích thừa tan đi ($\epsilon_s/\sigma$)</td></tr>
+      <tr><td>Mức Fermi chuẩn $E_{Fn},E_{Fp}$</td><td>Hai mức Fermi riêng khi mất cân bằng</td></tr>
+    </table>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Buổi 8: Những Điểm Cốt Lõi Cần Nằm Lòng</h2>
+    <ul>
+      <li><b>Hạt dư:</b> $\delta n=\delta p$, làm $np\neq n_i^2$.</li>
+      <li><b>Tái hợp (LLI):</b> $R'=\delta n/\tau_{n0}$ (loại P), $\tau_{n0}=1/(\alpha_rp_0)$; tắt sáng: $\delta n=\delta n(0)e^{-t/\tau}$; bật sáng dừng: $\delta n=g'\tau$.</li>
+      <li><b>Phương trình liên tục:</b> $\partial p/\partial t=-\partial F/\partial x+g-R$.</li>
+      <li><b>Lưỡng cực:</b> $D'=\dfrac{\mu_nD_pp+\mu_pD_nn}{\mu_nn+\mu_pp}$, $\mu'=\dfrac{\mu_n\mu_p(p-n)}{\mu_nn+\mu_pp}$.</li>
+      <li><b>Quy tắc thiểu số:</b> loại P: $D'\approx D_n,\mu'\approx\mu_n$; loại N: $D'\approx D_p,\mu'\approx-\mu_p$.</li>
+      <li><b>Độ dài khuếch tán:</b> $L=\sqrt{D\tau}$, $\delta n(x)=\delta n_0e^{-x/L}$.</li>
+      <li><b>Xung Gauss:</b> bè ra $\sigma=\sqrt{2Dt}$, dịch $\mu Et$, mất $e^{-t/\tau}$.</li>
+      <li><b>Phục hồi điện môi:</b> $\tau_d=\epsilon_s/\sigma\sim$ ps, nên gần trung hòa là hợp lý.</li>
+      <li><b>Haynes–Shockley:</b> $\mu=d/(Et_0)$, $D=(\mu E\Delta t)^2/(16t_0)$, $\tau$ từ $\ln A$ theo $t_0$.</li>
+      <li><b>Mức Fermi chuẩn:</b> $np=n_i^2e^{(E_{Fn}-E_{Fp})/kT}$.</li>
+    </ul>
+    <div class="next"><b>Tiếp theo trong môn học:</b> Với hạt dư và phương trình khuếch tán lưỡng cực, em đã có đủ công cụ để phân tích tiếp xúc p-n và diode, nơi hạt thiểu số được bơm qua tiếp giáp.</div>
+  </section>
+</template>
+
+
 <template id="tpl-buoi-pending">
   <header>
     <span class="k b3" id="pending-badge">ĐANG CHỜ NỐI TIẾP</span>

@@ -2196,6 +2196,8 @@ function loadLesson(lessonId) {
     const tpl = $('tpl-buoi-7');
     mainEl.innerHTML = tpl.innerHTML;
     if (window.LabB7) LabB7.mark(mainEl);
+  } else if (lessonId === '8') {
+    mainEl.innerHTML = $('tpl-buoi-8').innerHTML;
   } else {
     const tpl = $('tpl-buoi-pending');
     mainEl.innerHTML = tpl.innerHTML;
@@ -2223,7 +2225,8 @@ const BAN_DAN_LESSONS = [
   { id: '4', title: 'Buổi 4: Lý thuyết lượng tử chất rắn' },
   { id: '5', title: 'Buổi 5: Bán dẫn ở trạng thái cân bằng' },
   { id: '6', title: 'Buổi 6: Bán dẫn pha tạp & Bán dẫn suy biến' },
-  { id: '7', title: 'Buổi 7: Vận chuyển hạt tải (Trôi & Khuếch tán)' }
+  { id: '7', title: 'Buổi 7: Vận chuyển hạt tải (Trôi & Khuếch tán)' },
+  { id: '8', title: 'Buổi 8: Hạt tải dư (Sinh, tái hợp & vận chuyển lưỡng cực)' }
 ];
 function renderLS(curId) {
   const lsEl = $('ls');
