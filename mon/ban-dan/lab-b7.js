@@ -624,7 +624,7 @@ function ensureDom() {
   root.querySelector('.lb-x').onclick = close;
   root.addEventListener('mousedown', e => { if (e.target === root) close(); });
   document.addEventListener('keydown', e => {
-    if (root.hidden) { const ty = e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName); if ((e.key === 'l' || e.key === 'L') && !e.ctrlKey && !e.metaKey && !e.altKey && !ty && window.LabB7 && document.getElementById('tb-lab') && !document.getElementById('tb-lab').hidden) { e.preventDefault(); open(); } return; }
+    if (root.hidden) { const ty = e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName); if ((e.key === 'l' || e.key === 'L') && !e.ctrlKey && !e.metaKey && !e.altKey && !ty && window.LabB7 && document.getElementById('tb-lab') && !document.getElementById('tb-lab').hidden && (document.getElementById('tb-badge')||{}).textContent === 'Buổi 7') { e.preventDefault(); open(); } return; }
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
   }, true);
 }
