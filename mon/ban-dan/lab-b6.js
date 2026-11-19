@@ -336,6 +336,195 @@ LABS.push({
 });
 
 /* ==========================================================================
+   KHUNG 3D DÙNG CHUNG (chiếu phối cảnh, kéo chuột để xoay, lăn để phóng to)
+   ========================================================================== */
+function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function mk3(p, ctx, W, H, dt, sc0) {
+  const st = p.st;
+  if (!st.cam) {
+    const cam = st.cam = { yaw: .55, pitch: .32, zoom: 1, auto: true }, cv = p.cv; let d = null;
+    cv.style.cursor = 'grab'; cv.style.touchAction = 'none';
+    cv.addEventListener('pointerdown', e => { d = [e.clientX, e.clientY]; cam.auto = false; cv.setPointerCapture(e.pointerId); cv.style.cursor = 'grabbing'; });
+    cv.addEventListener('pointermove', e => { if (!d) return; cam.yaw += (e.clientX - d[0]) * .01; cam.pitch = clamp(cam.pitch + (e.clientY - d[1]) * .01, -1.3, 1.3); d = [e.clientX, e.clientY]; });
+    const up = () => { d = null; cv.style.cursor = 'grab'; }; cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    cv.addEventListener('wheel', e => { e.preventDefault(); cam.zoom = clamp(cam.zoom * (e.deltaY < 0 ? 1.1 : .9), .5, 2.6); }, { passive: false });
+  }
+  const cam = st.cam; if (cam.auto) cam.yaw += dt * .1;
+  const sc = sc0 * cam.zoom, items = [], cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw), cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch), D = 8;
+  const P = (x, y, z) => { const X = x * cy + z * sy; let Z = -x * sy + z * cy; const Y = y * cp - Z * sp; Z = y * sp + Z * cp; const f = D / (D + Z); return [W / 2 + X * sc * f, H / 2 - Y * sc * f, Z, f]; };
+  const fade = Z => clamp(1 - Z * .05, .5, 1);
+  return {
+    cam, sc, P,
+    sphere(x, y, z, r, col, al, label, ring) {
+      const q = P(x, y, z); items.push([q[2], () => {
+        const R = Math.max(1.5, r * sc * q[3]); ctx.globalAlpha = (al == null ? 1 : al) * fade(q[2]);
+        ctx.beginPath(); ctx.arc(q[0], q[1], R, 0, TAU2);
+        if (ring) { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke(); } else { ctx.fillStyle = col; ctx.fill(); ctx.globalAlpha *= .3; ctx.beginPath(); ctx.arc(q[0] - R * .3, q[1] - R * .3, R * .38, 0, TAU2); ctx.fillStyle = '#fff'; ctx.fill(); }
+        ctx.globalAlpha = 1; if (label && R > 5) txt(ctx, label, q[0], q[1] + .5, C.bg, Math.min(16, R * 1.3), 'center', 800);
+      }]);
+    },
+    line(a, b, col, w, al, dash) {
+      const A = P(a[0], a[1], a[2]), B = P(b[0], b[1], b[2]); items.push([(A[2] + B[2]) / 2, () => { ctx.globalAlpha = (al == null ? 1 : al) * fade((A[2] + B[2]) / 2); ln(ctx, A[0], A[1], B[0], B[1], col, w || 1, dash); ctx.globalAlpha = 1; }]);
+    },
+    box(x0, x1, y0, y1, z0, z1, col, w, al) {
+      const c = [[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]];
+      [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]].forEach(e => this.line(c[e[0]], c[e[1]], col, w, al));
+    },
+    arrow(a, b, col, w) {
+      const A = P(a[0], a[1], a[2]), B = P(b[0], b[1], b[2]); items.push([Math.min(A[2], B[2]) - .5, () => { arr(ctx, A[0], A[1], B[0], B[1], col, w || 3); }]);
+    },
+    flush() { items.sort((a, b) => b[0] - a[0]); items.forEach(i => i[1]()); },
+    hint() { txt(ctx, 'kéo chuột để xoay · lăn để phóng', W - 8, H - 10, C.sub, 10.5, 'right', 600); }
+  };
+}
+function crystalSites(nx, ny, nz) { const s = []; for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) for (let k = 0; k < nz; k++) s.push([i - (nx - 1) / 2, j - (ny - 1) / 2, k - (nz - 1) / 2]); return s; }
+function drawCrystal(g, sites, dims, t, amp, skip, atomCol, atomR) {
+  const [nx, ny, nz] = dims, id = (i, j, k) => (i * ny + j) * nz + k, pos = sites.map((s, n) => { const ph = n * 1.7; return [s[0] + amp * Math.sin(t * 5 + ph), s[1] + amp * Math.sin(t * 4.3 + ph * 1.3), s[2] + amp * Math.sin(t * 4.7 + ph * .7)]; });
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) for (let k = 0; k < nz; k++) { const a = id(i, j, k);
+    if (i + 1 < nx) g.line(pos[a], pos[id(i + 1, j, k)], C.sub, 1, .22); if (j + 1 < ny) g.line(pos[a], pos[id(i, j + 1, k)], C.sub, 1, .22); if (k + 1 < nz) g.line(pos[a], pos[id(i, j, k + 1)], C.sub, 1, .22);
+    if (!skip || !skip.has(a)) g.sphere(pos[a][0], pos[a][1], pos[a][2], atomR || .15, atomCol || C.sub, .75); }
+  return pos;
+}
+function wander(e, B, dt, v) { for (let a = 0; a < 3; a++) { e.v[a] += gauss() * dt * 3; e.v[a] = clamp(e.v[a], -v, v); e.p[a] += e.v[a] * dt; if (e.p[a] < B[a][0]) { e.p[a] = B[a][0]; e.v[a] = Math.abs(e.v[a]); } if (e.p[a] > B[a][1]) { e.p[a] = B[a][1]; e.v[a] = -Math.abs(e.v[a]); } } }
+const newE = B => ({ p: B.map(b => b[0] + Math.random() * (b[1] - b[0])), v: [gauss(), gauss(), gauss()].map(x => x * .8) });
+function repPanel(id, idx, spec) { const l = LABS.find(x => x.id === id); l.panels[idx] = spec; return l; }
+
+/* ============ TAB 2: FERMI–DIRAC → KHÔNG GIAN k (quả cầu Fermi) ============ */
+{
+  const l = LABS.find(x => x.id === 'fd'), ctrls = l.panels[0].ctrls;
+  l.panels[0] = { title: 'Không gian xung lượng k: electron lấp đầy từ tâm ra', area: 'a', anim: true, ctrls,
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, M = p.tab.M, g = mk3(p, ctx, W, H, dt, Math.min(W, H) / 7.4), R = Math.sqrt(Math.max(S.eta, 0) + 9);
+      if (!M.pts) { const r = rng(7); M.pts = []; while (M.pts.length < 900) { const x = r() * 2 - 1, y = r() * 2 - 1, z = r() * 2 - 1; if (x * x + y * y + z * z <= 1) M.pts.push([x, y, z, r()]); } }
+      const Rb = 3.2; g.box(-Rb, Rb, -Rb, Rb, -Rb, Rb, C.sub, 1, .35);
+      g.line([-Rb, 0, 0], [Rb, 0, 0], C.sub, 1, .5); g.line([0, -Rb, 0], [0, Rb, 0], C.sub, 1, .5); g.line([0, 0, -Rb], [0, 0, Rb], C.sub, 1, .5);
+      const R2 = Math.min(R, Rb) / 1; let on = 0;
+      M.pts.forEach(q => { const x = q[0] * Rb, y = q[1] * Rb, z = q[2] * Rb, e = x * x + y * y + z * z, f = 1 / (1 + Math.exp(e - S.eta)); if (q[3] < f) { on++; g.sphere(x, y, z, .075 + .045 * f, C.c2, .95); } else if (e < 16) g.sphere(x, y, z, .05, C.sub, .4); });
+      if (S.eta > 0) { const kF = Math.sqrt(S.eta), N = 36; for (let a = 0; a < N; a++) { const t1 = a / N * TAU2, t2 = (a + 1) / N * TAU2; g.line([kF * Math.cos(t1), kF * Math.sin(t1), 0], [kF * Math.cos(t2), kF * Math.sin(t2), 0], C.main, 2.2, .9); g.line([kF * Math.cos(t1), 0, kF * Math.sin(t1)], [kF * Math.cos(t2), 0, kF * Math.sin(t2)], C.main, 2.2, .9); } }
+      g.flush(); g.hint();
+      txt(ctx, S.eta > 0 ? 'Quả cầu Fermi: E_F nằm trong dải, suy biến' : S.eta > -3 ? 'Đám mây đang đặc dần' : 'Vài electron rải rác quanh tâm: không suy biến', 10, 14, S.eta > 0 ? C.main : C.ink, 12.5, 'left', 700);
+      txt(ctx, 'mỗi chấm xanh là một trạng thái k đã có electron', 10, H - 10, C.sub, 10.5, 'left', 600);
+    } };
+}
+
+/* ============ TAB 3: ION HÓA — TINH THỂ 3D ============ */
+{
+  const l = LABS.find(x => x.id === 'ion'), ctrls = l.panels[0].ctrls, DIM = [6, 4, 4], BND = [[-2.7, 2.7], [-1.7, 1.7], [-1.7, 1.7]];
+  l.panels[0] = { title: 'Tinh thể Si pha P: donor nhả electron khi đủ nóng', area: 'a', anim: true, ctrls,
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, M = p.tab.M, g = mk3(p, ctx, W, H, dt, Math.min(W / 8.6, H / 6.2)), key = S.T + '|' + S.N; if (M.key !== key) { M.key = key; M.r = solveEF(S.T, S.N, 0); }
+      if (!M.sites) { M.sites = crystalSites(...DIM); const r = rng(11), idx = M.sites.map((_, i) => i).sort(() => r() - .5); M.order = idx; M.don = idx.slice(0, 16).map(i => ({ i, ion: false, th: r() * 6, e: null })); }
+      const K = Math.round(clamp((lg(S.N) - 13.5) / 4.5 * 14 + 2, 2, 16)), f = M.r.ionD, skip = new Set(M.don.slice(0, K).map(d => d.i)), amp = .05 + .2 * Math.sqrt(S.T / 700);
+      g.box(BND[0][0] - .4, BND[0][1] + .4, BND[1][0] - .4, BND[1][1] + .4, BND[2][0] - .4, BND[2][1] + .4, C.sub, 1.2, .4);
+      const pos = drawCrystal(g, M.sites, DIM, t, amp, skip, C.sub, .15); let ion = 0;
+      M.don.slice(0, K).forEach(d => {
+        const q = pos[d.i];
+        if (!d.ion && Math.random() < dt * 1.5 * f) { d.ion = true; d.e = newE(BND); d.e.p = q.slice(); }
+        else if (d.ion && Math.random() < dt * 1.5 * (1 - f)) { d.ion = false; d.e = null; }
+        if (d.ion) { ion++; g.sphere(q[0], q[1], q[2], .27, C.err, 1, '+'); wander(d.e, BND, dt, 1.6); g.sphere(d.e.p[0], d.e.p[1], d.e.p[2], .12, C.c2, 1); }
+        else { g.sphere(q[0], q[1], q[2], .27, C.c5, 1, 'P'); const a = t * 3 + d.th; g.sphere(q[0] + .38 * Math.cos(a), q[1] + .2 * Math.sin(a * 1.3), q[2] + .38 * Math.sin(a), .1, C.c2, 1); }
+      });
+      g.flush(); g.hint();
+      txt(ctx, 'đã nhả: ' + ion + '/' + K + ' donor  (≈ ' + Math.round(f * 100) + '%)', 10, 14, C.ink, 13, 'left', 700);
+      txt(ctx, 'T = ' + S.T + ' K', W - 10, 14, C.mut, 12.5, 'right', 700);
+      txt(ctx, 'P tím + electron quay quanh = còn kẹt · P đỏ (+) = đã nhả, electron xanh chạy tự do', 10, H - 10, C.sub, 10.5, 'left', 600);
+    } };
+}
+
+/* ============ TAB 4: BÙ TRỪ — TINH THỂ 3D ============ */
+{
+  const l = LABS.find(x => x.id === 'comp'), ctrls = l.panels[0].ctrls, DIM = [7, 4, 4], BND = [[-3.2, 3.2], [-1.7, 1.7], [-1.7, 1.7]];
+  l.panels[0] = { title: 'Electron donor lấp acceptor trước, phần dư mới dẫn điện', area: 'a', anim: true, ctrls,
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, M = p.tab.M, g = mk3(p, ctx, W, H, dt, Math.min(W / 9.4, H / 6.2));
+      if (!M.sites) { M.sites = crystalSites(...DIM); const r = rng(5); M.perm = M.sites.map((_, i) => i).sort(() => r() - .5); M.fe = []; M.fh = []; }
+      const nd = S.Nd, na = S.Na, don = M.perm.slice(0, nd), acc = M.perm.slice(M.perm.length - na), skip = new Set(don.concat(acc)), pair = Math.min(nd, na);
+      g.box(BND[0][0] - .4, BND[0][1] + .4, BND[1][0] - .4, BND[1][1] + .4, BND[2][0] - .4, BND[2][1] + .4, C.sub, 1.2, .4);
+      const pos = drawCrystal(g, M.sites, DIM, t, .06, skip, C.sub, .15);
+      while (M.fe.length < Math.max(0, nd - na)) M.fe.push(newE(BND)); M.fe.length = Math.max(0, nd - na);
+      while (M.fh.length < Math.max(0, na - nd)) M.fh.push(newE(BND)); M.fh.length = Math.max(0, na - nd);
+      don.forEach((i, n) => { const q = pos[M.sites.length ? i : 0]; g.sphere(q[0], q[1], q[2], .26, C.err, 1, '+'); });
+      acc.forEach((i, n) => { const q = pos[i]; g.sphere(q[0], q[1], q[2], .26, n < pair ? C.c5 : C.c5, n < pair ? 1 : .55, n < pair ? '−' : null, n >= pair); });
+      for (let n = 0; n < pair; n++) { const a = pos[don[n]], b = pos[acc[acc.length - 1 - n] !== undefined ? acc[n] : acc[n]]; const ph = (t * .5 + n * .17) % 1; g.line(a, b, C.c2, 1, .25, [3, 4]); g.sphere(a[0] + (b[0] - a[0]) * ph, a[1] + (b[1] - a[1]) * ph, a[2] + (b[2] - a[2]) * ph, .11, C.c2, 1); }
+      M.fe.forEach(e => { wander(e, BND, dt, 1.5); g.sphere(e.p[0], e.p[1], e.p[2], .13, C.c2, 1); });
+      M.fh.forEach(e => { wander(e, BND, dt, 1.2); g.sphere(e.p[0], e.p[1], e.p[2], .13, C.c4, 1); });
+      g.flush(); g.hint();
+      txt(ctx, nd === na ? 'Bù trừ hoàn toàn: không còn hạt tải dư' : nd > na ? 'Dư ' + (nd - na) + ' electron tự do (loại N)' : 'Dư ' + (na - nd) + ' lỗ trống (loại P)', 10, 14, C.ink, 13, 'left', 700);
+      txt(ctx, 'đỏ + = donor · tím − = acceptor đã nhận electron (vòng rỗng = còn trống) · xanh = electron · hồng = lỗ trống', 10, H - 10, C.sub, 10.5, 'left', 600);
+    } };
+}
+
+/* ============ TAB 5: PHA TẠP — mật độ tạp chất trong tinh thể 3D, giản đồ dải ở ô dưới ============ */
+{
+  const l = LABS.find(x => x.id === 'doping'), ctrls = l.panels[0].ctrls, oldBand = l.panels[0].draw, DIM = [8, 5, 5], BND = [[-3.6, 3.6], [-2.2, 2.2], [-2.2, 2.2]];
+  l.panels[0] = { title: 'Pha càng đậm, các nguyên tử tạp chất càng sát nhau', area: 'a', anim: true, ctrls,
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, M = p.tab.M, g = mk3(p, ctx, W, H, dt, Math.min(W / 10.4, H / 7));
+      if (!M.sites) { M.sites = crystalSites(...DIM); const r = rng(3); M.perm = M.sites.map((_, i) => i).sort(() => r() - .5); M.fe = []; }
+      const K = Math.round(clamp((lg(S.N) - 12) / 8.5 * 70 + 1, 1, 70)), dop = M.perm.slice(0, K), skip = new Set(dop), colD = S.type === 'n' ? C.err : C.c5;
+      g.box(BND[0][0] - .4, BND[0][1] + .4, BND[1][0] - .4, BND[1][1] + .4, BND[2][0] - .4, BND[2][1] + .4, C.sub, 1.2, .4);
+      const pos = drawCrystal(g, M.sites, DIM, t, .05, skip, C.sub, .12);
+      let links = 0; for (let a = 0; a < K; a++) for (let b = a + 1; b < K; b++) { const A = pos[dop[a]], B = pos[dop[b]]; if (Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]) < 1.6) { links++; g.line(A, B, C.main, 1.6, .75); } }
+      dop.forEach(i => { const q = pos[i]; g.sphere(q[0], q[1], q[2], .5, colD, .1); g.sphere(q[0], q[1], q[2], .24, colD, 1, S.type === 'n' ? '+' : '−'); });
+      const nf = Math.min(40, K); while (M.fe.length < nf) M.fe.push(newE(BND)); M.fe.length = nf;
+      M.fe.forEach(e => { wander(e, BND, dt, 1.5); g.sphere(e.p[0], e.p[1], e.p[2], .11, S.type === 'n' ? C.c2 : C.c4, .95); });
+      g.flush(); g.hint();
+      txt(ctx, K + ' nguyên tử ' + (S.type === 'n' ? 'donor' : 'acceptor') + (links > 6 ? '  ·  các quầng chồng nhau: dải tạp chất' : ''), 10, 14, C.ink, 13, 'left', 700);
+      txt(ctx, 'quầng mờ = vùng ảnh hưởng của mỗi tạp chất · đường vàng = hai quầng chạm nhau', 10, H - 10, C.sub, 10.5, 'left', 600);
+    } };
+  l.panels[1] = { title: 'Giản đồ dải: E_F chính xác (liền) và công thức Boltzmann (đứt)', area: 'c', draw: (p, ctx, W, H, t, dt) => { oldBand(p, ctx, W, H, t, dt); const d = p.tab.calc(); txt(ctx, (p.S.type === 'n' ? 'E_c − E_F' : 'E_F − E_v') + ' = ' + (d.dist / d.kT).toFixed(1) + ' kT', W - 8, 12, d.dist / d.kT >= 3 ? C.c2 : C.err, 12, 'right', 700); } };
+}
+
+/* ============ TAB 6: NHIỆT ĐỘ — tinh thể rung, hạt tải xuất hiện ============ */
+{
+  const l = LABS.find(x => x.id === 'temp'), ctrls = l.panels[0].ctrls, oldBand = l.panels[0].draw, DIM = [6, 4, 4], BND = [[-2.7, 2.7], [-1.7, 1.7], [-1.7, 1.7]];
+  l.panels[0] = { title: 'Nóng lên: tinh thể rung mạnh, hạt tải nhiệt đông dần', area: 'a', anim: true, ctrls,
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, M = p.tab.M, g = mk3(p, ctx, W, H, dt, Math.min(W / 8.6, H / 6.2)), key = S.T + '|' + S.N; if (M.key !== key) { M.key = key; M.r = solveEF(S.T, S.N, 0); }
+      if (!M.sites) { M.sites = crystalSites(...DIM); const r = rng(9); M.don = M.sites.map((_, i) => i).sort(() => r() - .5).slice(0, 10).map(i => ({ i, ion: false, th: r() * 6 })); M.fe = []; M.fh = []; }
+      const r = M.r, f = r.ionD, nE = Math.round(clamp((lg(r.n) - 8) / 10 * 38, 0, 38)), nH = Math.round(clamp((lg(r.p) - 8) / 10 * 38, 0, 38)), amp = .04 + .24 * Math.sqrt(S.T / 900), skip = new Set(M.don.map(d => d.i));
+      g.box(BND[0][0] - .4, BND[0][1] + .4, BND[1][0] - .4, BND[1][1] + .4, BND[2][0] - .4, BND[2][1] + .4, C.sub, 1.2, .4);
+      const pos = drawCrystal(g, M.sites, DIM, t, amp, skip, C.sub, .15);
+      M.don.forEach(d => { const q = pos[d.i]; if (!d.ion && Math.random() < dt * 1.5 * f) d.ion = true; else if (d.ion && Math.random() < dt * 1.5 * (1 - f)) d.ion = false;
+        if (d.ion) g.sphere(q[0], q[1], q[2], .26, C.err, 1, '+'); else { g.sphere(q[0], q[1], q[2], .26, C.c5, 1, 'P'); const a = t * 3 + d.th; g.sphere(q[0] + .36 * Math.cos(a), q[1] + .2 * Math.sin(a * 1.3), q[2] + .36 * Math.sin(a), .1, C.c2, 1); } });
+      while (M.fe.length < nE) M.fe.push(newE(BND)); M.fe.length = nE; while (M.fh.length < nH) M.fh.push(newE(BND)); M.fh.length = nH;
+      const sp = 1 + 1.2 * S.T / 900;
+      M.fe.forEach(e => { wander(e, BND, dt, 1.2 * sp); g.sphere(e.p[0], e.p[1], e.p[2], .11, C.c2, 1); }); M.fh.forEach(e => { wander(e, BND, dt, 1.0 * sp); g.sphere(e.p[0], e.p[1], e.p[2], .11, C.c4, 1); });
+      g.flush(); g.hint();
+      txt(ctx, 'T = ' + S.T + ' K', 10, 14, C.ink, 13.5, 'left', 700);
+      txt(ctx, 'n₀ = ' + sci(r.n, 1) + '   p₀ = ' + sci(r.p, 1), W - 10, 14, C.mut, 12.5, 'right', 700);
+      txt(ctx, 'rung tinh thể (biên độ ∝ √T) · P đỏ = donor đã nhả · xanh = electron · hồng = lỗ trống', 10, H - 10, C.sub, 10.5, 'left', 600);
+    } };
+}
+
+/* ============ TAB 7: TIẾP XÚC N–P — khối 3D, vùng nghèo, trường nội tại ============ */
+{
+  const l = LABS.find(x => x.id === 'contact'), ctrls = l.panels[0].ctrls, oldBand = l.panels[0].draw;
+  l.panels[0] = { title: 'Khối loại N ghép khối loại P: vùng nghèo hình thành', area: 'a', anim: true, ctrls,
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, M = p.tab.M, g = mk3(p, ctx, W, H, dt, Math.min(W / 8.2, H / 5.8)), kT = .0259, V = kT * Math.log(Math.pow(10, S.Nd + S.Na) / (1.5e10 * 1.5e10)), L = 2.6, hy = 1.1;
+      M.q = M.q == null ? 0 : M.q; M.q += ((S.on ? 1 : 0) - M.q) * Math.min(1, dt * 2.2);
+      if (!M.ions) { const r = rng(21); M.ions = Array.from({ length: 34 }, () => [r(), r(), r()]); M.e = Array.from({ length: 30 }, () => ({ p: [-Math.random() * L, (Math.random() * 2 - 1) * hy, (Math.random() * 2 - 1) * hy], v: [gauss(), gauss(), gauss()] })); M.h = Array.from({ length: 30 }, () => ({ p: [Math.random() * L, (Math.random() * 2 - 1) * hy, (Math.random() * 2 - 1) * hy], v: [gauss(), gauss(), gauss()] })); M.fl = []; }
+      const q = M.q, gap = (1 - q) * .9, w = q * (.55 + .5 * clamp(V / 1, 0, 1)), sh = gap / 2;
+      g.box(-L - sh, -sh, -hy, hy, -hy, hy, C.c2, 1.8, .9); g.box(sh, L + sh, -hy, hy, -hy, hy, C.c4, 1.8, .9);
+      txt(ctx, 'loại N', g.P(-L / 2 - sh, hy + .1, 0)[0], g.P(-L / 2, hy + .1, 0)[1] - 14, C.c2, 13, 'center', 700); txt(ctx, 'loại P', g.P(L / 2 + sh, hy + .1, 0)[0], g.P(L / 2, hy + .1, 0)[1] - 14, C.c4, 13, 'center', 700);
+      M.ions.forEach((o, i) => { const left = i < 17, x = left ? -(o[0] * L) - sh : o[0] * L + sh, y = (o[1] * 2 - 1) * hy * .9, z = (o[2] * 2 - 1) * hy * .9, dep = left ? -(x + sh) < w : (x - sh) < w;
+        g.sphere(x, y, z, dep && q > .3 ? .13 : .08, left ? C.err : C.c5, dep && q > .3 ? 1 : .5); });
+      const step = (e, side) => { for (let a = 0; a < 3; a++) { e.v[a] += gauss() * dt * 3; e.v[a] = clamp(e.v[a], -1.3, 1.3); e.p[a] += e.v[a] * dt; }
+        const lo = side < 0 ? -L - sh : sh + (q > .02 ? w : 0), hi = side < 0 ? -sh - (q > .02 ? w : 0) : L + sh;
+        if (e.p[0] < lo) { e.p[0] = lo; e.v[0] = Math.abs(e.v[0]); } if (e.p[0] > hi) { e.p[0] = hi; e.v[0] = -Math.abs(e.v[0]); if (q > .05 && q < .95 && Math.random() < .08) M.fl.push({ x: e.p[0], y: e.p[1], z: e.p[2], a: 1 }); }
+        ['y', 'z'].forEach((_, k) => { const i = k + 1; if (e.p[i] < -hy) { e.p[i] = -hy; e.v[i] = Math.abs(e.v[i]); } if (e.p[i] > hy) { e.p[i] = hy; e.v[i] = -Math.abs(e.v[i]); } }); };
+      M.e.forEach(e => { step(e, -1); g.sphere(e.p[0], e.p[1], e.p[2], .1, C.c2, 1); }); M.h.forEach(e => { step(e, 1); g.sphere(e.p[0], e.p[1], e.p[2], .1, C.c4, 1); });
+      M.fl = M.fl.filter(f => (f.a -= dt * 1.5) > 0); M.fl.forEach(f => g.sphere(f.x, f.y, f.z, .2 * (2 - f.a), C.main, f.a, null, true));
+      if (q > .85) { [-.6, 0, .6].forEach(y => g.arrow([-w * .8, y, 0], [w * .8, y, 0], C.err, 2.6)); }
+      g.flush(); g.hint();
+      txt(ctx, q > .95 ? 'Cân bằng: vùng nghèo (không còn hạt tải) rộng ' + (2 * w).toFixed(1) + ', trường nội tại E hướng từ N sang P' : q < .05 ? 'Chưa ghép: hai khối riêng, hạt tải phân bố đều' : 'Electron và lỗ trống đang khuếch tán qua mối nối...', 10, 14, C.ink, 12.5, 'left', 700);
+      txt(ctx, 'qV_bi = ' + V.toFixed(2) + ' eV', W - 10, 14, C.err, 13, 'right', 700);
+    } };
+  l.panels[1] = { title: 'Giản đồ dải năng lượng tương ứng', area: 'c', anim: true, draw: (p, ctx, W, H, t) => oldBand(p, ctx, W, H, t, 0) };
+}
+
+/* ==========================================================================
    NHẬT KÝ GIẢI THÍCH. Loại dòng: i = nguyên lý · w = cơ chế · v = số liệu
    ========================================================================== */
 const LD = {};
