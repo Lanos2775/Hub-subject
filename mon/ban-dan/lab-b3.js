@@ -1,13 +1,16 @@
 /* ==========================================================================
-   lab-b3.js — PHÒNG THÍ NGHIỆM VẬT LÝ LƯỢNG TỬ BUỔI 3 (Phiên bản Mô phỏng Thực tế)
-   - Tự chứa hoàn toàn: tự chèn CSS + HTML popup, giữ nguyên API LabB3.
-   - NGUYÊN TẮC: MÔ PHỎNG VẬT LÝ THỰC TẾ — TÍCH HỢP BỘ GIẢI TDSE 1D & ĐỒ HỌA 3D.
-   - 5 tab ứng với 5 hiện tượng vật lý lượng tử nền tảng của Buổi 3:
-       1. Hạt tự do: Buồng chân không + Ống phóng e⁻ + Trường pha sóng + Màn huỳnh quang
-       2. Giếng vô hạn: Hộp lượng tử bán dẫn GaAs/AlGaAs + Đám mây sóng dừng + Phát xạ Photon
-       3. Bậc thế năng: Bộ giải số 1D-TDSE (Visscher) mô phỏng bó sóng đâm xuyên vùng cấm thực
-       4. Xuyên hầm: Mặt cắt Transistor nano (Source–Oxide–Drain) + TDSE + Ampe kế dòng rò
-       5. Vỏ e⁻ & Pauli: Đám mây Orbital 3D tương tác (xoay & cắt lát) + Nguyên tử 3D & Bảng Pauli
+   lab-b3.js — PHÒNG THÍ NGHIỆM VẬT LÝ LƯỢNG TỬ BUỔI 3 (Bản Đầy Đủ & Tự Chứa)
+   - Tự chứa hoàn toàn: tự chèn CSS + HTML popup, đồng bộ bảng màu & font trang.
+   - Tích hợp bộ giải 1D-TDSE (Visscher ổn định tuyệt đối), 20 SVG orbital & 3D.
+   - 8 tab phủ trọn lý thuyết & 5 bài tập Buổi 3:
+       1. Hạt tự do: Buồng chân không + Ống phóng e⁻ + Sóng phẳng (Câu 1a, 1b)
+       2. Giếng vô hạn: Hộp lượng tử 1D + Sóng dừng + Phát/hấp thụ Photon (Câu 2)
+       3. Bậc thế năng: Bộ giải 1D-TDSE + Đâm xuyên hàm mũ e^(−2k₂x) (Câu 3)
+       4. Xuyên hầm: Rào thế nano + TDSE + Ampe kế dòng rò GaAs vs Si (Câu 4)
+       5. Giếng bất đối xứng: Vùng I (V₀) – II (0) – III (∞), tan(k₂a) = −k₂/k₁ (Câu 5)
+       6. Orbital & (n,l,m,s): 20 SVG #o100..#o433 + Soi mặt nút + Vector L, S & Zeeman
+       7. Stern–Gerlach (Spin): Lò Ag (l=0), nam châm N–S không đều, 2 vết lượng tử
+       8. Vỏ e⁻ & Pauli: Đám mây Orbital 3D xoay + Cấu hình nguyên tử Pauli (Z=1..18)
    - API: LabB3.open(tabId?, panelIndex?)  LabB3.close()  LabB3.mark(root)  LabB3.tabs()
    ========================================================================== */
 (function () {
@@ -18,20 +21,19 @@ const TAU = Math.PI * 2;
 const HBAR = 1.0545718e-34; // J·s
 const ME = 9.1093837e-31;   // kg
 const EV = 1.6021766e-19;   // J
-const C_LIGHT = 2.99792458e8; // m/s
-const H_PLANCK = 6.62607015e-34;
 
 const rnd = (a, b) => a + Math.random() * (b - a);
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
 const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
 const sup = n => (n < 0 ? '⁻' : '') + String(Math.abs(n)).split('').map(d => SUP[d]).join('');
-const sci = (x, d = 1) => {
+const sci = (x, d = 2) => {
   if (!x || !isFinite(x)) return '0';
   const e = Math.floor(Math.log10(Math.abs(x)));
   return (x / Math.pow(10, e)).toFixed(d) + '×10' + sup(e);
 };
 
-/* ---------- Đọc bảng màu & font chữ trực tiếp từ giao diện trang ---------- */
+/* ---------- Đọc bảng màu & font trực tiếp từ giao diện trang ---------- */
 const C = {};
 let FONT = '"Be Vietnam Pro", system-ui, -apple-system, sans-serif';
 let MONO = 'ui-monospace, SFMono-Regular, monospace';
@@ -52,7 +54,6 @@ function readColors() {
   if (fBody || fUi) MONO = fUi || fBody;
 }
 
-/* Chuyển đổi màu hex/rgb của theme sang rgba có độ trong suốt */
 function hexA(col, a) {
   if (!col) return `rgba(128,128,128,${a})`;
   const s = col.trim();
@@ -67,33 +68,9 @@ function hexA(col, a) {
   return s;
 }
 
-/* ---------- Chuyển bước sóng (nm) sang màu RGB quang phổ thật ---------- */
-function wavelengthToRGB(wl) {
-  let r = 0, g = 0, b = 0, label = '';
-  if (wl < 380) { r = 0.55; g = 0.25; b = 1.0; label = 'Tử ngoại (UV)'; }
-  else if (wl < 440) { r = -(wl - 440) / 60; g = 0; b = 1; label = 'Tím'; }
-  else if (wl < 490) { r = 0; g = (wl - 440) / 50; b = 1; label = 'Lam'; }
-  else if (wl < 510) { r = 0; g = 1; b = -(wl - 510) / 20; label = 'Lục lam'; }
-  else if (wl < 580) { r = (wl - 510) / 70; g = 1; b = 0; label = 'Lục / Vàng'; }
-  else if (wl < 645) { r = 1; g = -(wl - 645) / 65; b = 0; label = 'Cam'; }
-  else if (wl <= 780) { r = 1; g = 0.08; b = 0.08; label = 'Đỏ'; }
-  else { r = 0.95; g = 0.22; b = 0.22; label = 'Hồng ngoại (IR)'; }
-  return {
-    css: `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`,
-    rgba: a => `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a})`,
-    label
-  };
-}
-
-/* ---------- Chuyển góc pha lượng tử (-π..π) sang màu HSL hài hòa ---------- */
-function phaseColor(angle, alpha = 1, light = 56) {
-  const hue = (((angle / TAU) * 360) % 360 + 360) % 360;
-  return `hsla(${hue.toFixed(0)}, 68%, ${light}%, ${alpha})`;
-}
-
-/* ---------- Tiện ích vẽ Canvas ---------- */
+/* ---------- Tiện ích vẽ Canvas đồng bộ phong cách trang ---------- */
 function txt(ctx, s, x, y, col, size, al, wt, fam) {
-  ctx.font = (wt || 500) + ' ' + (size || 12) + 'px ' + (fam || FONT);
+  ctx.font = (wt || 600) + ' ' + (size || 12) + 'px ' + (fam || FONT);
   ctx.fillStyle = col || C.ink;
   ctx.textAlign = al || 'left';
   ctx.textBaseline = 'middle';
@@ -108,15 +85,15 @@ function dot(ctx, x, y, r, col) {
   ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fillStyle = col; ctx.fill();
 }
 function glowDot(ctx, x, y, r, colorCore, colorGlow) {
-  const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.6);
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r * 2.5);
   g.addColorStop(0, colorCore);
-  g.addColorStop(0.4, colorGlow);
+  g.addColorStop(0.42, colorGlow);
   g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, r * 2.5, 0, TAU); ctx.fill();
 }
 function rr(ctx, x, y, w, h, r) {
-  const rad = Math.min(r, w / 2, h / 2);
+  const rad = Math.min(r, Math.max(0, w / 2), Math.max(0, h / 2));
   ctx.beginPath();
   ctx.moveTo(x + rad, y);
   ctx.arcTo(x + w, y, x + w, y + h, rad);
@@ -125,8 +102,6 @@ function rr(ctx, x, y, w, h, r) {
   ctx.arcTo(x, y, x + w, y, rad);
   ctx.closePath();
 }
-
-/* Nền buồng thí nghiệm đồng bộ hoàn toàn với tông màu nền của trang */
 function drawLabChamberBg(ctx, x, y, w, h, r = 8) {
   rr(ctx, x, y, w, h, r);
   ctx.fillStyle = C.card;
@@ -135,11 +110,10 @@ function drawLabChamberBg(ctx, x, y, w, h, r = 8) {
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  // Lưới đo vi mô mảnh theo màu đường kẻ của trang
   ctx.save();
   rr(ctx, x, y, w, h, r);
   ctx.clip();
-  ctx.strokeStyle = hexA(C.g, 0.45);
+  ctx.strokeStyle = hexA(C.g, 0.34);
   ctx.lineWidth = 1;
   for (let gx = x + 36; gx < x + w; gx += 36) {
     ctx.beginPath(); ctx.moveTo(gx, y); ctx.lineTo(gx, y + h); ctx.stroke();
@@ -150,1475 +124,1650 @@ function drawLabChamberBg(ctx, x, y, w, h, r = 8) {
   ctx.restore();
 }
 
-/* Khung bảng thông số HUD tối giản theo phong cách trang */
-function drawHUD(ctx, x, y, w, h, title, val, sub, accent) {
-  rr(ctx, x, y, w, h, 6);
-  ctx.fillStyle = C.card;
-  ctx.fill();
-  ctx.strokeStyle = C.g;
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  // Vạch nhấn mảnh bên trái
-  rr(ctx, x + 3, y + 6, 2.5, h - 12, 1.5);
-  ctx.fillStyle = accent || C.main;
-  ctx.fill();
-  txt(ctx, title, x + 12, y + 12, C.mut, 9.5, 'left', 600);
-  txt(ctx, val, x + 12, y + 28, C.ink, 12.5, 'left', 700, MONO);
-  if (sub) txt(ctx, sub, x + 12, y + 42, accent || C.main, 9.5, 'left', 500);
-}
-
 /* ==========================================================================
-   BỘ GIẢI SỐ 1D-TDSE (VISSCHER STAGGERED-TIME LEAPFROG)
-   Giải phương trình Schrödinger phụ thuộc thời gian thực:
-     i ∂ψ/∂t = -(1 / 2m) ∂²ψ/∂x² + V(x) ψ
-   Ổn định tuyệt đối, có lớp hấp thụ biên (CAP) chống phản xạ giả.
+   BỘ GIẢI PHƯƠNG TRÌNH SCHRÖDINGER PHỤ THUỘC THỜI GIAN 1D (VISSCHER LEAPFROG)
+   Ổn định bảo toàn chuẩn ∫|ψ|²dx = 1, tự chọn bước thời gian theo điều kiện CFL.
    ========================================================================== */
-function createTDSE(N) {
+function createTDSE(N, x0, k0, sigma, Vfn, mSim = 1.0) {
+  const re = new Float64Array(N);
+  const im = new Float64Array(N);
+  const V = new Float64Array(N);
+  let maxV = 0;
+  for (let i = 0; i < N; i++) {
+    V[i] = Vfn(i);
+    if (V[i] > maxV) maxV = V[i];
+  }
+  // Bước thời gian đảm bảo điều kiện ổn định Visscher: dt * (2/mSim + maxV) < 2
+  const dt = Math.min(0.16, 0.82 / (2 / mSim + maxV));
+  const halfKin = 0.5 / mSim;
+
+  // Khởi tạo bó sóng Gauss ψ(x, 0) = exp(-(x-x0)² / 2σ²) · exp(i k0 x)
+  let norm = 0;
+  for (let i = 1; i < N - 1; i++) {
+    const dx = i - x0;
+    const env = Math.exp(-(dx * dx) / (2 * sigma * sigma));
+    re[i] = env * Math.cos(k0 * dx);
+    im[i] = env * Math.sin(k0 * dx);
+    norm += re[i] * re[i] + im[i] * im[i];
+  }
+  const invN = 1 / Math.sqrt(norm || 1);
+  for (let i = 0; i < N; i++) { re[i] *= invN; im[i] *= invN; }
+
+  // Lùi phần ảo nửa bước dt/2 để bắt đầu vòng lặp nhảy cóc (staggered leapfrog)
+  const imPrev = new Float64Array(N);
+  for (let i = 1; i < N - 1; i++) {
+    const Hre = -halfKin * (re[i + 1] - 2 * re[i] + re[i - 1]) + V[i] * re[i];
+    imPrev[i] = im[i] + 0.5 * dt * Hre;
+  }
+  im.set(imPrev);
+
   return {
-    N,
-    R: new Float64Array(N),
-    I: new Float64Array(N),
-    V: new Float64Array(N),
-    cap: new Float64Array(N),
-    m: 1.0,
-    dt: 0.12,
-    t: 0,
-    peakProb: 1
+    N, re, im, V, dt, halfKin, steps: 0,
+    step(nSub = 6) {
+      for (let s = 0; s < nSub; s++) {
+        for (let i = 1; i < N - 1; i++) {
+          const Him = -halfKin * (im[i + 1] - 2 * im[i] + im[i - 1]) + V[i] * im[i];
+          re[i] += dt * Him;
+        }
+        for (let i = 1; i < N - 1; i++) {
+          const Hre = -halfKin * (re[i + 1] - 2 * re[i] + re[i - 1]) + V[i] * re[i];
+          im[i] -= dt * Hre;
+        }
+        // Giảm chấn nhẹ ở hai mép buồng để sóng phản xạ không dội ngược gây nhiễu
+        for (let b = 1; b <= 10; b++) {
+          const damp = 1 - 0.035 * Math.pow((11 - b) / 10, 2);
+          re[b] *= damp; im[b] *= damp;
+          re[N - 1 - b] *= damp; im[N - 1 - b] *= damp;
+        }
+        this.steps++;
+      }
+    }
   };
 }
 
-function initTDSEWavepacket(sim, x0, sigma, k0, mEffSim, Vfunc) {
-  const N = sim.N;
-  sim.m = mEffSim;
-  let vMax = 0;
-  for (let i = 0; i < N; i++) {
-    const v = Vfunc(i, N);
-    sim.V[i] = v;
-    if (v > vMax) vMax = v;
-    // Lớp hấp thụ biên (Complex Absorbing Potential) ở 22 ô ngoài cùng
-    const edge = Math.min(i, N - 1 - i);
-    sim.cap[i] = edge < 22 ? 0.085 * Math.pow((22 - edge) / 22, 3) : 0;
+/* ==========================================================================
+   TIỆN ÍCH TÁI SỬ DỤNG 20 SVG ORBITAL (#o100..#o433) & HÀM SÓNG HYDRO CHÍNH XÁC
+   ========================================================================== */
+function assocLaguerre(k, alpha, x) {
+  if (k <= 0) return 1;
+  let L0 = 1, L1 = 1 + alpha - x;
+  if (k === 1) return L1;
+  for (let i = 2; i <= k; i++) {
+    const L2 = ((2 * i - 1 + alpha - x) * L1 - (i - 1 + alpha) * L0) / i;
+    L0 = L1; L1 = L2;
   }
-  // Đảm bảo điều kiện ổn định Visscher: dt * (2/m + Vmax) < 0.45
-  sim.dt = Math.min(0.14 * mEffSim, 0.42 / (2.0 / mEffSim + vMax + 0.01));
-  sim.t = 0;
-
-  let norm = 0;
-  const alpha = sim.dt / (2 * mEffSim);
-  for (let i = 0; i < N; i++) {
-    const dx = i - x0;
-    const env = Math.exp(-(dx * dx) / (2 * sigma * sigma));
-    sim.R[i] = env * Math.cos(k0 * dx);
-    // Khởi tạo I tại t = +dt/2 (lệch nửa bước thời gian)
-    const phHalf = k0 * dx - (k0 * k0 / (2 * mEffSim)) * (sim.dt * 0.5);
-    sim.I[i] = env * Math.sin(phHalf);
-    norm += env * env;
-  }
-  const inv = 1 / Math.sqrt(norm || 1);
-  let pMax = 0;
-  for (let i = 0; i < N; i++) {
-    sim.R[i] *= inv;
-    sim.I[i] *= inv;
-    const p = sim.R[i] * sim.R[i] + sim.I[i] * sim.I[i];
-    if (p > pMax) pMax = p;
-  }
-  sim.peakProb = pMax || 0.01;
-  void alpha;
+  return L1;
 }
 
-function stepTDSE(sim, substeps) {
-  const N = sim.N, R = sim.R, I = sim.I, V = sim.V, cap = sim.cap;
-  const dt = sim.dt;
-  const alpha = dt / (2 * sim.m);
-  for (let s = 0; s < substeps; s++) {
-    // Cập nhật phần thực R
-    for (let i = 1; i < N - 1; i++) {
-      const lapI = I[i + 1] - 2 * I[i] + I[i - 1];
-      R[i] += -alpha * lapI + dt * V[i] * I[i];
-    }
-    // Cập nhật phần ảo I
-    for (let i = 1; i < N - 1; i++) {
-      const lapR = R[i + 1] - 2 * R[i] + R[i - 1];
-      I[i] += alpha * lapR - dt * V[i] * R[i];
-    }
-    // Áp dụng lớp hấp thụ biên chống dội lại từ mép màn hình
-    for (let i = 0; i < N; i++) {
-      if (cap[i] > 0) {
-        const d = 1 - cap[i];
-        R[i] *= d;
-        I[i] *= d;
-      }
-    }
-    R[0] = R[N - 1] = I[0] = I[N - 1] = 0;
-    sim.t += dt;
+function assocLegendre(l, mAbs, u) {
+  let pmm = Math.pow(Math.max(0, 1 - u * u), mAbs * 0.5);
+  if (l === mAbs) return pmm;
+  let pmmp1 = u * (2 * mAbs + 1) * pmm;
+  if (l === mAbs + 1) return pmmp1;
+  let pll = pmmp1;
+  for (let k = mAbs + 2; k <= l; k++) {
+    pll = ((2 * k - 1) * u * pmmp1 - (k + mAbs - 1) * pmm) / (k - mAbs);
+    pmm = pmmp1; pmmp1 = pll;
   }
+  return pll;
+}
+
+function hydroProbXZ(n, l, m, x, z) {
+  const r = Math.hypot(x, z);
+  const cosT = r > 1e-6 ? z / r : 1;
+  const rho = (2 * r) / n;
+  const radial = Math.pow(rho, l) * Math.exp(-rho * 0.5) * assocLaguerre(n - l - 1, 2 * l + 1, rho);
+  const angular = assocLegendre(l, Math.abs(m), cosT);
+  const psi = radial * angular;
+  return psi * psi;
+}
+
+const ORB_RMAX_A0 = { 1: 6.2, 2: 12.2, 3: 25.8, 4: 44.2 };
+
+function getRadialNodesA0(n, l) {
+  const count = n - l - 1;
+  if (count <= 0) return [];
+  const roots = [];
+  const rLimit = (ORB_RMAX_A0[n] || 26) * 0.95;
+  const steps = 600;
+  let prevR = 0.02;
+  let prevV = assocLaguerre(count, 2 * l + 1, (2 * prevR) / n);
+  for (let i = 1; i <= steps; i++) {
+    const r = (i / steps) * rLimit;
+    const v = assocLaguerre(count, 2 * l + 1, (2 * r) / n);
+    if (prevV * v <= 0) {
+      let lo = prevR, hi = r, fLo = prevV;
+      for (let it = 0; it < 20; it++) {
+        const mid = (lo + hi) * 0.5;
+        const fm = assocLaguerre(count, 2 * l + 1, (2 * mid) / n);
+        if (fLo * fm <= 0) hi = mid; else { lo = mid; fLo = fm; }
+      }
+      roots.push((lo + hi) * 0.5);
+    }
+    prevR = r; prevV = v;
+  }
+  return roots;
+}
+
+function getAngularNodeAngles(l, mAbs) {
+  if (l === 0) return [];
+  const angs = [];
+  if (mAbs > 0) angs.push(0);
+  if ((l - mAbs) % 2 === 1) angs.push(Math.PI * 0.5);
+  if (l === 2 && mAbs === 0) angs.push(Math.acos(Math.sqrt(1 / 3)));
+  if (l === 3 && mAbs === 0) angs.push(Math.acos(Math.sqrt(3 / 5)));
+  if (l === 3 && mAbs === 1) angs.push(Math.acos(Math.sqrt(1 / 5)));
+  return angs;
+}
+
+const ORB_SVG_IMG = {};
+function getOrbitalSVGImage(n, l, m) {
+  const id = 'o' + n + l + Math.abs(m);
+  if (ORB_SVG_IMG[id]) return ORB_SVG_IMG[id];
+
+  let sym = document.getElementById(id);
+  if (!sym) {
+    const tpl = document.getElementById('tpl-buoi-3');
+    if (tpl && tpl.content) sym = tpl.content.getElementById(id);
+  }
+
+  if (sym) {
+    const svgStr = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="384" height="384">' + sym.innerHTML + '</svg>';
+    const img = new Image();
+    const rec = { img, ready: false, fromPageSVG: true };
+    img.onload = () => { rec.ready = true; curPanels.forEach(q => q.dirty = true); };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+    ORB_SVG_IMG[id] = rec;
+    return rec;
+  }
+
+  // Fallback dựng bitmap bảng màu inferno nếu không tìm thấy symbol trong DOM
+  const off = document.createElement('canvas');
+  off.width = off.height = 120;
+  const octx = off.getContext('2d');
+  const rMax = ORB_RMAX_A0[n] || 26;
+  const vals = new Float32Array(120 * 120);
+  let maxP = 1e-12;
+  for (let py = 0; py < 120; py++) {
+    const z = (0.5 - (py + 0.5) / 120) * 2 * rMax;
+    for (let px = 0; px < 120; px++) {
+      const x = ((px + 0.5) / 120 - 0.5) * 2 * rMax;
+      const pr = hydroProbXZ(n, l, m, x, z);
+      vals[py * 120 + px] = pr;
+      if (pr > maxP) maxP = pr;
+    }
+  }
+  const pal = [[6,3,12],[58,14,92],[122,35,128],[193,58,110],[238,106,53],[251,171,48],[255,241,184]];
+  const imgData = octx.createImageData(120, 120);
+  for (let i = 0; i < vals.length; i++) {
+    const lv = vals[i] > 0 ? clamp((Math.log10(vals[i] / maxP) + 4.2) / 4.2, 0, 1) : 0;
+    const bi = clamp(Math.floor(lv * (pal.length - 1)), 0, pal.length - 1);
+    imgData.data[i * 4] = pal[bi][0];
+    imgData.data[i * 4 + 1] = pal[bi][1];
+    imgData.data[i * 4 + 2] = pal[bi][2];
+    imgData.data[i * 4 + 3] = 255;
+  }
+  octx.putImageData(imgData, 0, 0);
+  const rec = { img: off, ready: true, fromPageSVG: false };
+  ORB_SVG_IMG[id] = rec;
+  return rec;
 }
 
 const LABS = [];
 
 /* ==========================================================================
-   TAB 1 — HẠT TỰ DO: BUỒNG CHÂN KHÔNG & ỐNG PHÓNG ELECTRON
-   Mô phỏng chùm electron bay trong ống chân không (V = 0):
-   - Chế độ Sóng phẳng đơn sắc (Δp = 0, Δx = ∞): trường pha lan truyền, phát hiện bất định
-   - Chế độ Bó sóng Gauss thực tế (Δx·Δp ≥ ħ/2): bó sóng lan truyền và dãn rộng tự nhiên
-   - Nút "Đo vị trí": mô phỏng sụp đổ hàm sóng (Wavefunction Collapse) trên màn dò!
+   TAB 1 — HẠT TỰ DO (V = 0): BUỒNG CHÂN KHÔNG & SÓNG PHẲNG CHẠY (Câu 1a, 1b)
    ========================================================================== */
 LABS.push({
-  id: 'free', name: 'Hạt tự do', sec: 1,
-  S: { k: 8, pres: 'a', waveType: 'plane', dens: 1 },
+  id: 'free', name: 'Hạt tự do', no: '1', sec: 1,
+  S: { k: 8.0, waveType: 'plane' },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
-    title: 'Buồng chân không Electron (V = 0) — Sóng vật chất de Broglie & Sụp đổ hàm sóng',
+    title: 'Buồng chân không (V = 0) — Sóng phẳng Ψ(x,t) = A·e^{j(kx−ωt)} & Hạt tự do',
     area: 'a', anim: true,
     ctrls: [
-      { k: 'waveType', seg: [['plane', 'Sóng phẳng (Δp=0)'], ['packet', 'Bó sóng thực (Gauss)']] },
-      { k: 'pres', seg: [['a', 'k > 0 (→)'], ['b', 'k < 0 (←)'], ['0', 'k = 0']],
-        set: { a: { k: 8 }, b: { k: -8 }, '0': { k: 0 } } },
-      { k: 'k', l: 'Số sóng k', min: -18, max: 18, step: 0.5, f: v => (v > 0 ? '+' : '') + v.toFixed(1) + '×10⁸ m⁻¹' },
-      { btn: 'Đo vị trí (Collapse)', fn(p) { p.st.triggerMeasure = true; } }
+      { k: 'k', l: 'Số sóng k', min: -20, max: 20, step: 0.5, f: v => (v > 0 ? '+' : '') + v.toFixed(1) + '×10⁸ m⁻¹' },
+      { k: 'waveType', seg: [['plane', 'Sóng phẳng'], ['packet', 'Bó sóng']] },
+      { btn: 'Câu 1a (+8×10⁸)', fn: p => { p.S.k = 8.0; p.syncCtrls(); queueReact(p.tab, 'k'); } },
+      { btn: 'Câu 1b (−15×10⁸)', fn: p => { p.S.k = -15.0; p.syncCtrls(); queueReact(p.tab, 'k'); } }
     ],
     draw(p, ctx, W, H, t, dt) {
-      const S = p.S, st = p.st, k = S.k;
-      const pad = 16;
-      const hudTop = 64;
-      const chX = pad, chY = hudTop, chW = W - pad * 2, chH = H - hudTop - 32;
-      const midY = chY + chH * 0.46;
-      const tubeH = clamp(chH * 0.58, 96, 210);
-      const tubeTop = midY - tubeH / 2, tubeBot = midY + tubeH / 2;
+      const S = p.S, st = p.st;
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawLabChamberBg(ctx, chX, chY, chW, chH, 10);
 
-      // Tính thông số vật lý thực
-      const kVal = k * 1e8; // m^-1
-      const E_eV = kVal !== 0 ? (HBAR * HBAR * kVal * kVal) / (2 * ME * EV) : 0;
-      const lam_A = k !== 0 ? (TAU / Math.abs(kVal)) * 1e10 : Infinity;
-      const vg_kms = k !== 0 ? (HBAR * Math.abs(kVal) / ME) / 1000 : 0; // vận tốc nhóm thực v_g = ħk/m
+      // Đại lượng vật lý thực khớp Câu 1a & 1b
+      const kSI = S.k * 1e8; // m^-1
+      const kAbs = Math.abs(kSI);
+      const lam_nm = kAbs > 1e-3 ? (TAU / kAbs) * 1e9 : Infinity;
+      const pSI = HBAR * kSI;
+      const E_eV = ((pSI * pSI) / (2 * ME)) / EV;
+      const vp_kms = 10.0 * (kSI >= 0 ? 1 : -1); // Câu 1a & 1b đều cho |ω/k| = 10⁴ m/s = 10 km/s
 
-      // Khung buồng chân không
-      drawLabChamberBg(ctx, chX, chY, chW, chH, 12);
+      const tubeX = chX + 26, tubeW = chW - 52;
+      const tubeY = chY + 42, tubeH = chH - 64;
+      const midY = tubeY + tubeH * 0.5;
+      const dir = S.k === 0 ? 0 : S.k > 0 ? 1 : -1;
+      const col = dir >= 0 ? C.c2 : C.c4;
 
-      // Ống gia tốc cực âm (Electron Gun) ở đầu phát
-      const gunLeft = k >= 0;
-      const gunX = gunLeft ? chX + 6 : chX + chW - 44;
-      rr(ctx, gunX, midY - 34, 38, 68, 6);
+      // Vỏ ống chân không
+      rr(ctx, tubeX, tubeY, tubeW, tubeH, 10);
       ctx.fillStyle = C.bg; ctx.fill();
-      ctx.strokeStyle = C.g; ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.strokeStyle = C.g; ctx.lineWidth = 1.4; ctx.stroke();
 
-      // Dây tóc Cathode nung đỏ phát electron
-      const filX = gunLeft ? gunX + 12 : gunX + 26;
-      glowDot(ctx, filX, midY, 7, C.main, hexA(C.c4, 0.7));
-      // Vòng Anode hội tụ
-      const anodeX = gunLeft ? gunX + 30 : gunX + 8;
-      ln(ctx, anodeX, midY - 24, anodeX, midY - 9, C.mut, 2.5);
-      ln(ctx, anodeX, midY + 9, anodeX, midY + 24, C.mut, 2.5);
-      txt(ctx, 'GUN', gunX + 19, midY - 43, C.mut, 9, 'center', 700, MONO);
+      // Hai đầu phát/thu ở trái & phải
+      rr(ctx, chX + 10, midY - 22, 16, 44, 4);
+      ctx.fillStyle = dir >= 0 ? hexA(C.c2, 0.35) : C.sub; ctx.fill();
+      rr(ctx, chX + chW - 26, midY - 22, 16, 44, 4);
+      ctx.fillStyle = dir < 0 ? hexA(C.c4, 0.35) : C.sub; ctx.fill();
 
-      // Vùng buồng bay chân không (Beam Chamber)
-      const beamX0 = chX + 48, beamX1 = chX + chW - 48, beamW = Math.max(40, beamX1 - beamX0);
-      rr(ctx, beamX0, tubeTop, beamW, tubeH, 6);
-      ctx.fillStyle = hexA(C.bg, 0.82); ctx.fill();
-      ctx.strokeStyle = C.g; ctx.lineWidth = 1.2; ctx.stroke();
-
-      // Khởi tạo trạng thái bó sóng / vết đo huỳnh quang
-      if (!st.hits) st.hits = [];
-      if (!st.bins || st.bins.length !== 48) st.bins = new Float32Array(48);
-      if (st.pktX == null) { st.pktX = 0.2; st.pktSpread = 0; }
-      if (st.lastType !== S.waveType || st.lastDir !== Math.sign(k)) {
-        st.lastType = S.waveType;
-        st.lastDir = Math.sign(k);
-        st.pktX = k >= 0 ? 0.15 : 0.85;
-        st.pktSpread = 0;
-        st.bins.fill(0);
-      }
-
-      // Cập nhật bó sóng Gauss (chuyển động theo vận tốc nhóm & tán sắc tự nhiên)
-      if (S.waveType === 'packet') {
-        const speedNorm = (k / 18) * 0.26;
-        st.pktX += speedNorm * dt;
-        st.pktSpread += dt * 0.012 * (1 + Math.abs(k) * 0.05);
-        if (st.pktX > 1.08) { st.pktX = -0.06; st.pktSpread = 0; }
-        if (st.pktX < -0.08) { st.pktX = 1.06; st.pktSpread = 0; }
-      }
-
-      // Xử lý sự kiện nhấn nút "Đo vị trí (Collapse)"
-      if (st.triggerMeasure) {
-        st.triggerMeasure = false;
-        let uMeas;
-        if (S.waveType === 'plane') {
-          uMeas = Math.random(); // Bất định hoàn toàn: đều khắp buồng
-        } else {
-          // Lấy mẫu Gauss quanh tâm bó sóng
-          const sig = 0.065 + st.pktSpread * 0.35;
-          let g0 = 0;
-          for (let i = 0; i < 6; i++) g0 += Math.random();
-          uMeas = clamp(st.pktX + (g0 - 3) * 0.55 * sig, 0.02, 0.98);
-        }
-        st.collapse = { x: beamX0 + uMeas * beamW, y: midY + rnd(-tubeH * 0.25, tubeH * 0.25), life: 1.0 };
-        const bi = clamp(Math.floor(uMeas * st.bins.length), 0, st.bins.length - 1);
-        st.bins[bi] = Math.min(st.bins[bi] + 1, 14);
-        st.hits.push({ x: st.collapse.x, y: st.collapse.y, life: 1.0, big: true });
-      }
-
-      // Vẽ trường sóng vật chất bên trong buồng chân không
       ctx.save();
-      rr(ctx, beamX0, tubeTop, beamW, tubeH, 8);
+      rr(ctx, tubeX + 1, tubeY + 1, tubeW - 2, tubeH - 2, 9);
       ctx.clip();
 
-      const kpx = k * 0.036;
-      const omega = Math.abs(k) * 3.6;
-      const dir = k >= 0 ? 1 : -1;
-      const sigNorm = 0.065 + st.pktSpread * 0.35;
+      // Mặt băng phẳng V = 0
+      ln(ctx, tubeX, midY, tubeX + tubeW, midY, hexA(C.g, 0.9), 1, [4, 4]);
 
-      // 1. Dải trường pha quang học (Quantum Phase Field)
-      const cols = 120;
-      const colW = beamW / cols + 0.8;
-      for (let i = 0; i < cols; i++) {
-        const u = (i + 0.5) / cols;
-        const x = beamX0 + u * beamW;
-        let env = 1.0;
-        if (S.waveType === 'packet') {
-          const du = u - st.pktX;
-          env = Math.exp(-(du * du) / (2 * sigNorm * sigNorm));
-        }
-        if (env < 0.02) continue;
-
-        const ph = kpx * (x - beamX0) - dir * omega * t;
-        const intensity = env * env * (0.20 + 0.16 * (Math.cos(ph) * 0.5 + 0.5));
-        const gVert = ctx.createLinearGradient(x, tubeTop, x, tubeBot);
-        const col = Math.abs(k) > 0.05 ? phaseColor(ph, intensity, 54) : hexA(C.mut, intensity * 0.45);
-        gVert.addColorStop(0, 'rgba(0,0,0,0)');
-        gVert.addColorStop(0.5, col);
-        gVert.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = gVert;
-        ctx.fillRect(x - colW / 2, tubeTop, colW, tubeH);
-      }
-
-      // 2. Đường sóng thực Re(ψ) và đường sóng ảo Im(ψ) nổi khối 3D
       const amp = tubeH * 0.34;
-      if (Math.abs(k) > 0.05 || S.waveType === 'packet') {
-        // Im(ψ) mờ phía sau (tạo cảm giác sóng xoắn ốc phức e^{i(kx-ωt)})
-        ctx.beginPath();
-        for (let i = 0; i <= 180; i++) {
-          const u = i / 180, x = beamX0 + u * beamW;
-          const env = S.waveType === 'packet' ? Math.exp(-Math.pow((u - st.pktX) / sigNorm, 2) * 0.5) : 1;
-          const ph = kpx * (x - beamX0) - dir * omega * t;
-          const y = midY - Math.sin(ph) * amp * env * 0.65;
-          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = hexA(C.c5, 0.5);
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+      const kPx = S.k * 0.011; // tỉ lệ trực quan số đỉnh sóng theo k
+      const omegaSim = Math.abs(S.k) * 0.45 + 1.5;
 
-        // Re(ψ) phát sáng phía trước
-        ctx.beginPath();
-        for (let i = 0; i <= 180; i++) {
-          const u = i / 180, x = beamX0 + u * beamW;
-          const env = S.waveType === 'packet' ? Math.exp(-Math.pow((u - st.pktX) / sigNorm, 2) * 0.5) : 1;
-          const ph = kpx * (x - beamX0) - dir * omega * t;
-          const y = midY - Math.cos(ph) * amp * env;
-          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = k >= 0 ? C.c2 : C.c4;
-        ctx.lineWidth = 2.4;
-        ctx.stroke();
+      if (!st.xPkt) st.xPkt = 0.5;
+      st.xPkt += dir * (0.14 + Math.abs(S.k) * 0.015) * dt;
+      if (st.xPkt > 1.15) st.xPkt = -0.15;
+      if (st.xPkt < -0.15) st.xPkt = 1.15;
 
-        // Đường bao mật độ xác suất |ψ|² (nét đứt sáng)
-        if (S.waveType === 'packet') {
-          ctx.beginPath();
-          for (let i = 0; i <= 180; i++) {
-            const u = i / 180, x = beamX0 + u * beamW;
-            const env = Math.exp(-Math.pow((u - st.pktX) / sigNorm, 2) * 0.5);
-            const y = midY - env * amp;
-            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-          }
-          ctx.strokeStyle = hexA(C.main, 0.8);
-          ctx.lineWidth = 1.4;
-          ctx.setLineDash([4, 3]); ctx.stroke(); ctx.setLineDash([]);
+      // Vẽ trường pha màu (sọc sáng tối biểu diễn Re(Ψ))
+      const M = 160;
+      const dxPx = tubeW / (M - 1);
+      for (let i = 0; i < M; i++) {
+        const u = i / (M - 1);
+        const sx = tubeX + u * tubeW;
+        const env = S.waveType === 'packet' ? Math.exp(-Math.pow((u - st.xPkt) / 0.14, 2)) : 1;
+        const ph = kPx * (sx - tubeX) - omegaSim * t;
+        const val = Math.cos(ph) * env;
+        if (Math.abs(val) > 0.04) {
+          ctx.fillStyle = hexA(val > 0 ? col : C.c5, Math.abs(val) * 0.16 * env);
+          ctx.fillRect(sx - dxPx * 0.5, tubeY, dxPx + 0.6, tubeH);
         }
-      } else {
-        ln(ctx, beamX0, midY, beamX1, midY, hexA(C.mut, 0.55), 2, [6, 5]);
-        txt(ctx, 'k = 0 : Sóng dừng lặng — Động lượng p = 0, Vị trí bất định tuyệt đối', beamX0 + beamW / 2, midY - 18, C.mut, 11.5, 'center', 600);
       }
 
-      // 3. Hiệu ứng Sụp đổ hàm sóng (Wavefunction Collapse) khi bấm nút Đo
-      if (st.collapse && st.collapse.life > 0) {
-        st.collapse.life -= dt * 1.1;
-        const lf = clamp(st.collapse.life, 0, 1);
-        const rad = 6 + (1 - lf) * 44;
-        ctx.beginPath();
-        ctx.arc(st.collapse.x, st.collapse.y, rad, 0, TAU);
-        ctx.strokeStyle = hexA(C.main, lf * 0.9);
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        glowDot(ctx, st.collapse.x, st.collapse.y, 7 * lf + 2.5, C.ink, hexA(C.main, 0.8));
-        txt(ctx, 'PHÁT HIỆN e⁻', st.collapse.x, st.collapse.y - 18, hexA(C.main, lf), 10, 'center', 700, MONO);
+      // Phần ảo Im(Ψ) nét đứt mờ & Phần thực Re(Ψ) nét đậm
+      ctx.beginPath();
+      for (let i = 0; i < M; i++) {
+        const u = i / (M - 1), sx = tubeX + u * tubeW;
+        const env = S.waveType === 'packet' ? Math.exp(-Math.pow((u - st.xPkt) / 0.14, 2)) : 1;
+        const sy = midY - Math.sin(kPx * (sx - tubeX) - omegaSim * t) * amp * env;
+        i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
       }
+      ctx.strokeStyle = hexA(C.c5, 0.45); ctx.lineWidth = 1.3; ctx.setLineDash([4, 3]); ctx.stroke(); ctx.setLineDash([]);
 
-      // 4. Các chớp huỳnh quang phát hiện electron liên tục theo |ψ|²
-      if (Math.random() < 11 * dt) {
-        let uHit = Math.random();
-        if (S.waveType === 'packet') {
-          let g0 = 0; for (let i = 0; i < 6; i++) g0 += Math.random();
-          uHit = clamp(st.pktX + (g0 - 3) * 0.55 * sigNorm, 0.01, 0.99);
+      ctx.beginPath();
+      for (let i = 0; i < M; i++) {
+        const u = i / (M - 1), sx = tubeX + u * tubeW;
+        const env = S.waveType === 'packet' ? Math.exp(-Math.pow((u - st.xPkt) / 0.14, 2)) : 1;
+        const sy = midY - Math.cos(kPx * (sx - tubeX) - omegaSim * t) * amp * env;
+        i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+      }
+      ctx.strokeStyle = col; ctx.lineWidth = 2.6; ctx.stroke();
+
+      // Hạt electron chạy đều trong chùm (minh họa p = ħk)
+      if (!st.parts) {
+        st.parts = Array.from({ length: 14 }, (_, i) => ({ u: i / 14, y: rnd(-0.32, 0.32) }));
+      }
+      st.parts.forEach(pt => {
+        pt.u += dir * (0.12 + Math.abs(S.k) * 0.014) * dt;
+        if (pt.u > 1) pt.u -= 1;
+        if (pt.u < 0) pt.u += 1;
+        const px = tubeX + pt.u * tubeW;
+        const py = midY + pt.y * tubeH;
+        const show = S.waveType === 'plane' || Math.abs(pt.u - st.xPkt) < 0.18;
+        if (show) {
+          glowDot(ctx, px, py, 3.6, C.ink, hexA(C.main, 0.85));
+          dot(ctx, px, py, 3, C.main);
         }
-        st.hits.push({
-          x: beamX0 + uHit * beamW,
-          y: midY + rnd(-tubeH * 0.36, tubeH * 0.36),
-          life: 1.0, big: false
-        });
-        const bi = clamp(Math.floor(uHit * st.bins.length), 0, st.bins.length - 1);
-        st.bins[bi] = Math.min(st.bins[bi] + 0.35, 14);
-      }
-      // Làm mờ dần histogram để phản ánh thời gian thực
-      for (let i = 0; i < st.bins.length; i++) st.bins[i] = Math.max(0, st.bins[i] - dt * 0.45);
-
-      st.hits.forEach(h => {
-        h.life -= dt * (h.big ? 0.9 : 1.9);
-        if (h.life <= 0) return;
-        glowDot(ctx, h.x, h.y, (h.big ? 4.5 : 2.6) * h.life + 0.8,
-          hexA(C.ink, h.life), hexA(C.c1, h.life * 0.75));
       });
-      st.hits = st.hits.filter(h => h.life > 0);
+
+      // Mũi tên chỉ chiều truyền sóng (+x hoặc −x)
+      if (dir !== 0) {
+        const ax0 = tubeX + tubeW * 0.5 - dir * 48;
+        const ax1 = tubeX + tubeW * 0.5 + dir * 48;
+        ln(ctx, ax0, tubeY + 22, ax1, tubeY + 22, C.main, 2.2);
+        ln(ctx, ax1, tubeY + 22, ax1 - dir * 8, tubeY + 17, C.main, 2.2);
+        ln(ctx, ax1, tubeY + 22, ax1 - dir * 8, tubeY + 27, C.main, 2.2);
+        txt(ctx, dir > 0 ? 'Chạy về +x (v_p > 0)' : 'Chạy về −x (v_p < 0)',
+          tubeX + tubeW * 0.5, tubeY + 37, C.main, 10, 'center', 700, MONO);
+      }
       ctx.restore();
 
-      // 5. Dải Màn Huỳnh Quang (Phosphor Scintillation Detector Strip) ngay dưới ống
-      const detY = tubeBot + 10, detH = clamp(chY + chH - detY - 10, 26, 54);
-      rr(ctx, beamX0, detY, beamW, detH, 6);
-      ctx.fillStyle = C.bg; ctx.fill();
-      ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
-
-      const bw = beamW / st.bins.length;
-      for (let i = 0; i < st.bins.length; i++) {
-        const frac = clamp(st.bins[i] / 10, 0, 1);
-        if (frac <= 0.01) continue;
-        const bh = frac * (detH - 6);
-        ctx.fillStyle = hexA(C.c1, 0.28 + frac * 0.65);
-        ctx.fillRect(beamX0 + i * bw + 1, detY + detH - 3 - bh, bw - 2, bh);
-      }
-      txt(ctx, 'MÀN DÒ HUỲNH QUANG (Tích lũy |ψ(x)|²)', beamX0 + 8, detY + 10, C.c1, 9.5, 'left', 600, MONO);
-
-      // 6. Bảng HUD thông số đo thực tế phía trên
-      const hudW = (W - pad * 2 - 20) / 3;
-      drawHUD(ctx, pad, 8, hudW, 50, 'ĐỘNG NĂNG ELECTRON (E)',
-        E_eV.toFixed(3) + ' eV', 'p = ħk = ' + (k !== 0 ? sci(HBAR * kVal, 1) : '0') + ' kg·m/s', C.main);
-      drawHUD(ctx, pad + hudW + 10, 8, hudW, 50, 'BƯỚC SÓNG DE BROGLIE (λ)',
-        isFinite(lam_A) ? lam_A.toFixed(2) + ' Å' : '∞',
-        S.waveType === 'plane' ? 'Δp = 0 → Δx = ∞ (Bất định)' : 'Bó sóng định xứ (Δx·Δp ≥ ħ/2)', C.c5);
-      drawHUD(ctx, pad + (hudW + 10) * 2, 8, hudW, 50, 'VẬN TỐC NHÓM (v_g)',
-        vg_kms.toFixed(0) + ' km/s', k > 0 ? 'Hướng truyền: +x (→)' : k < 0 ? 'Hướng truyền: −x (←)' : 'Trạng thái tĩnh', C.c1);
-
-      // Chú thích chân
-      txt(ctx, 'Màu sắc dải sáng biểu diễn pha lượng tử phức e^{i(kx−ωt)} · Nhấn "Đo vị trí" để quan sát hàm sóng sụp đổ thành hạt',
-        W / 2, H - 14, C.mut, 10.5, 'center', 500);
+      // Thông số rõ nét ở mép trên & dưới
+      txt(ctx, 'λ = ' + (isFinite(lam_nm) ? lam_nm.toFixed(2) + ' nm' : '∞') + '  |  p = ' + (pSI >= 0 ? '+' : '−') + sci(Math.abs(pSI), 2) + ' kg·m/s',
+        chX + 14, chY + 18, C.ink, 10.8, 'left', 700, MONO);
+      txt(ctx, 'E = ħ²k²/2m = ' + (E_eV * 1000).toFixed(1) + ' meV (' + E_eV.toFixed(4) + ' eV)  |  v_p = ' + (dir === 0 ? '0' : vp_kms.toFixed(0)) + ' km/s',
+        chX + chW - 14, chY + 18, C.main, 10.8, 'right', 700, MONO);
     }
   }]
 });
 
 /* ==========================================================================
-   TAB 2 — GIẾNG THẾ VÔ HẠN: HỘP LƯỢNG TỬ BÁN DẪN (GaAs/AlGaAs) & PHÁT XẠ PHOTON
-   Mô phỏng cấu trúc dị thể nano thực tế:
-   - Hai vách mạng tinh thể AlGaAs (rào thế cao) kẹp chặt lớp GaAs mỏng nanomet
-   - Đám mây xác suất lượng tử 2D/3D phát sáng theo |ψ_n(x)|² + sóng pha dao động
-   - Khi chuyển mức n cao → n thấp: PHÁT XẠ PHOTON THẬT với bước sóng & màu quang phổ chính xác!
+   TAB 2 — GIẾNG THẾ VÔ HẠN 1 CHIỀU (V = ∞ TẠI x = 0, a) — MINH HỌA CÂU 2
    ========================================================================== */
 LABS.push({
-  id: 'well', name: 'Giếng vô hạn', sec: 2,
-  S: { n: 1, a: 20 },
+  id: 'well', name: 'Giếng vô hạn', no: '2', sec: 2,
+  S: { n: 1, a: 75 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
-    title: 'Hộp lượng tử bán dẫn (GaAs/AlGaAs) — Đám mây sóng dừng & Phát xạ Photon',
+    title: 'Hộp lượng tử 1D (V = ∞) — Sóng dừng ψ_n(x), Xác suất |ψ_n|² & Phát xạ Photon',
     area: 'a', anim: true,
     ctrls: [
-      { k: 'n', l: 'Mức lượng tử n', min: 1, max: 5, step: 1,
-        f: v => 'n = ' + v + '  (' + v + ' bụng, ' + (v - 1) + ' nút)' },
-      { k: 'a', l: 'Bề rộng giếng a', min: 8, max: 80, step: 2,
-        f: v => v + ' Å  (' + (v / 10).toFixed(1) + ' nm)' }
+      { k: 'n', l: 'Mức n', min: 1, max: 5, step: 1, f: v => 'n = ' + v },
+      { k: 'a', l: 'Rộng giếng a', min: 5, max: 100, step: 5, f: v => v + ' Å' },
+      { btn: 'Câu 2 (75 Å)', fn: p => { p.S.a = 75; p.syncCtrls(); queueReact(p.tab, 'a'); } },
+      { btn: 'Siêu hẹp (5 Å)', fn: p => { p.S.a = 5; p.syncCtrls(); queueReact(p.tab, 'a'); } }
     ],
     draw(p, ctx, W, H, t, dt) {
-      const S = p.S, st = p.st, n = Math.round(S.n), a_A = S.a;
-      const pad = 16, hudTop = 64;
-      const chX = pad, chY = hudTop, chW = W - pad * 2, chH = H - hudTop - 32;
+      const S = p.S, st = p.st;
+      const n = Math.round(S.n);
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawLabChamberBg(ctx, chX, chY, chW, chH, 10);
 
-      // Vật lý chính xác: E_n = n² π² ħ² / (2 m_e a²)
-      const a_m = a_A * 1e-10;
+      const a_m = S.a * 1e-10;
       const E1_eV = (Math.PI * Math.PI * HBAR * HBAR / (2 * ME * a_m * a_m)) / EV;
       const En_eV = n * n * E1_eV;
 
-      // Phát hiện chuyển mức năng lượng để bắn PHOTON quang phổ thật!
-      if (!st.photons) st.photons = [];
+      // Khi chuyển mức n → tạo bó photon phát xạ hoặc hấp thụ
+      if (!st.photons) { st.photons = []; st.hits = []; }
       if (st.prevN != null && st.prevN !== n) {
-        const dE = Math.abs((st.prevN * st.prevN - n * n) * E1_eV);
-        const wl_nm = (H_PLANCK * C_LIGHT / (dE * EV)) * 1e9;
-        const rgb = wavelengthToRGB(wl_nm);
-        const isEmit = n < st.prevN; // Phát xạ khi nhảy xuống, hấp thụ khi nhảy lên
-        st.photons.push({
-          t: 0,
-          emit: isEmit,
-          rgb,
-          wl_nm,
-          dE,
-          fromN: st.prevN,
-          toN: n,
-          angle: rnd(-0.35, 0.35)
-        });
-        st.flash = { life: 1.0, rgb };
+        const dE = Math.abs(st.prevN * st.prevN - n * n) * E1_eV;
+        st.photons.push({ emit: n < st.prevN, from: st.prevN, to: n, dE, prog: 0 });
       }
       st.prevN = n;
 
-      // Vẽ buồng thí nghiệm
-      drawLabChamberBg(ctx, chX, chY, chW, chH, 12);
+      // Hình học giếng thế vô hạn co giãn trực quan theo bề rộng a
+      const topY = chY + 42, botY = chY + chH - 28;
+      const wellH = botY - topY;
+      const wellW = clamp((S.a / 100) * (chW * 0.56) + chW * 0.18, chW * 0.22, chW * 0.72);
+      const x0 = chX + (chW - wellW) * 0.44;
+      const x1 = x0 + wellW;
 
-      // Hình học giếng lượng tử co giãn thực tế theo a
-      const minW = chW * 0.24, maxW = chW * 0.72;
-      const boxW = minW + ((a_A - 8) / 72) * (maxW - minW);
-      const boxX = chX + (chW - boxW) / 2;
-      const boxH = clamp(chH * 0.68, 120, 250);
-      const midY = chY + chH * 0.50;
-      const topY = midY - boxH / 2, botY = midY + boxH / 2;
+      // Hai vách tường vô hạn V = ∞ (kẻ chéo rắn chắn tuyệt đối)
+      ctx.fillStyle = hexA(C.err, 0.16);
+      ctx.fillRect(chX + 12, topY, x0 - (chX + 12), wellH);
+      ctx.fillRect(x1, topY, (chX + chW - 12) - x1, wellH);
+      ln(ctx, x0, topY, x0, botY, C.err, 3);
+      ln(ctx, x1, topY, x1, botY, C.err, 3);
+      ln(ctx, x0, botY, x1, botY, C.ink, 2);
 
-      // 1. Vẽ 2 khối tinh thể rào thế (AlGaAs Barrier Walls) hai bên với mạng nguyên tử
-      const drawCrystalWall = (wx, ww, side) => {
-        ctx.save();
-        rr(ctx, wx, topY - 12, ww, boxH + 24, 6);
-        const wg = ctx.createLinearGradient(wx, topY, wx + ww, topY);
-        if (side === 'left') {
-          wg.addColorStop(0, C.bg); wg.addColorStop(1, hexA(C.c4, 0.16));
-        } else {
-          wg.addColorStop(0, hexA(C.c4, 0.16)); wg.addColorStop(1, C.bg);
-        }
-        ctx.fillStyle = wg; ctx.fill();
-        ctx.strokeStyle = hexA(C.c4, 0.6); ctx.lineWidth = 1.5; ctx.stroke();
-        ctx.clip();
-
-        // Các nguyên tử mạng tinh thể rào cản
-        const step = 18;
-        for (let gx = wx + 9; gx < wx + ww; gx += step) {
-          for (let gy = topY; gy < botY + 10; gy += step) {
-            dot(ctx, gx, gy, 2, hexA(C.c4, 0.26));
-          }
-        }
-        ctx.restore();
-        txt(ctx, 'V = ∞', wx + ww / 2, topY - 22, C.c4, 10, 'center', 700, MONO);
-      };
-
-      const leftWallW = Math.max(24, boxX - chX - 12);
-      const rightWallW = Math.max(24, chX + chW - (boxX + boxW) - 12);
-      drawCrystalWall(chX + 8, leftWallW, 'left');
-      drawCrystalWall(boxX + boxW + 4, rightWallW, 'right');
-
-      // 2. Lòng giếng lượng tử (GaAs Quantum Well)
-      rr(ctx, boxX, topY, boxW, boxH, 4);
-      ctx.fillStyle = C.bg; ctx.fill();
-      ctx.strokeStyle = C.g; ctx.lineWidth = 1.2; ctx.stroke();
-
-      // Vẽ đám mây mật độ xác suất |ψ_n(x)|² phát sáng (Quantum Cloud)
-      const freq = Math.min(18, (n * n * 1.6) * (25 / Math.max(a_A, 10)));
-      const phT = freq * t;
-      const cosT = Math.cos(phT), sinT = Math.sin(phT);
-
-      ctx.save();
-      rr(ctx, boxX, topY, boxW, boxH, 4);
-      ctx.clip();
-
-      // Lớp mạng tinh thể mờ bên trong giếng GaAs
-      for (let gx = boxX + 12; gx < boxX + boxW; gx += 20) {
-        for (let gy = topY + 14; gy < botY; gy += 20) {
-          dot(ctx, gx, gy, 1.3, hexA(C.mut, 0.2));
-        }
+      // Các vạch mức năng lượng E₁..E₅ (tỉ lệ n²)
+      const yOfN = k => botY - (0.08 + 0.84 * (k * k) / 25) * wellH;
+      for (let k = 1; k <= 5; k++) {
+        const yk = yOfN(k);
+        const sel = k === n;
+        ln(ctx, x0, yk, x1, yk, sel ? C.main : hexA(C.g, 0.9), sel ? 2 : 1, [4, 4]);
+        const ek = k * k * E1_eV;
+        const eLbl = ek < 0.1 ? (ek * 1000).toFixed(2) + ' meV' : ek.toFixed(3) + ' eV';
+        txt(ctx, 'E' + k + ' (' + k * k + 'E₁) = ' + eLbl, x1 + 8, yk, sel ? C.main : C.ink, sel ? 10.2 : 9.2, 'left', sel ? 700 : 500, MONO);
       }
 
-      // Đám mây xác suất thể tích (Volumetric Probability Density Glow)
-      const slices = 110;
-      const sw = boxW / slices + 0.8;
-      for (let i = 0; i < slices; i++) {
-        const u = (i + 0.5) / slices;
-        const psi = Math.sin(n * Math.PI * u);
-        const prob = psi * psi; // |ψ|²
-        if (prob < 0.01) continue;
-        const sx = boxX + u * boxW;
-        // Màu thay đổi theo dấu pha của từng bụng sóng (nút đổi dấu)
-        const sign = psi * cosT >= 0 ? 1 : -1;
-        const col = sign > 0 ? hexA(C.c2, prob * 0.34) : hexA(C.c5, prob * 0.34);
-        const gCloud = ctx.createLinearGradient(sx, topY, sx, botY);
-        gCloud.addColorStop(0, 'rgba(0,0,0,0)');
-        gCloud.addColorStop(0.5, col);
-        gCloud.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = gCloud;
-        ctx.fillRect(sx - sw / 2, topY, sw, boxH);
+      // Đám mây xác suất |ψ_n(x)|² & Sóng dừng ψ_n(x) tại mức đang chọn
+      const curY = yOfN(n);
+      const amp = Math.min(34, wellH * 0.14);
+      const osc = Math.cos(t * (3.2 + n * 1.4));
+      const Npts = 120;
+
+      for (let i = 0; i < Npts; i++) {
+        const u = i / Npts;
+        const pr = Math.pow(Math.sin(n * Math.PI * u), 2);
+        if (pr < 0.01) continue;
+        ctx.fillStyle = hexA(C.c2, pr * 0.36);
+        ctx.fillRect(x0 + u * wellW, curY - pr * amp * 1.1, wellW / Npts + 1, pr * amp * 1.1);
       }
 
-      // Hiệu ứng chớp sáng khi vừa chuyển mức phát xạ photon
-      if (st.flash && st.flash.life > 0) {
-        st.flash.life -= dt * 2.4;
-        ctx.fillStyle = st.flash.rgb.rgba(Math.max(0, st.flash.life * 0.22));
-        ctx.fillRect(boxX, topY, boxW, boxH);
-      }
-
-      // Sóng dừng phức 3D (Re + Im quay trong mặt phẳng phức)
-      const amp = boxH * 0.36;
-      // Phần ảo Im(ψ)
       ctx.beginPath();
-      for (let i = 0; i <= 160; i++) {
-        const u = i / 160;
-        const y = midY - Math.sin(n * Math.PI * u) * sinT * amp * 0.55;
-        i === 0 ? ctx.moveTo(boxX + u * boxW, y) : ctx.lineTo(boxX + u * boxW, y);
-      }
-      ctx.strokeStyle = hexA(C.c5, 0.55); ctx.lineWidth = 1.6; ctx.stroke();
-
-      // Phần thực Re(ψ)
-      ctx.beginPath();
-      for (let i = 0; i <= 160; i++) {
-        const u = i / 160;
-        const y = midY - Math.sin(n * Math.PI * u) * cosT * amp;
-        i === 0 ? ctx.moveTo(boxX + u * boxW, y) : ctx.lineTo(boxX + u * boxW, y);
+      for (let i = 0; i <= Npts; i++) {
+        const u = i / Npts;
+        const sy = curY - Math.sin(n * Math.PI * u) * osc * amp;
+        i === 0 ? ctx.moveTo(x0 + u * wellW, sy) : ctx.lineTo(x0 + u * wellW, sy);
       }
       ctx.strokeStyle = C.c2; ctx.lineWidth = 2.6; ctx.stroke();
 
-      // Đánh dấu các mặt phẳng NÚT (Nodal planes: |ψ|² = 0 tuyệt đối)
-      for (let kNode = 1; kNode < n; kNode++) {
-        const nx = boxX + (kNode / n) * boxW;
-        ln(ctx, nx, topY + 6, nx, botY - 6, hexA(C.err, 0.55), 1.2, [4, 4]);
-        dot(ctx, nx, midY, 4, C.err);
-        txt(ctx, 'Nút', nx, botY - 12, C.err, 9.5, 'center', 700);
+      // Đánh dấu hai nút biên & n-1 nút bên trong giếng
+      for (let nd = 0; nd <= n; nd++) {
+        dot(ctx, x0 + (nd / n) * wellW, curY, nd === 0 || nd === n ? 4 : 3.2, nd === 0 || nd === n ? C.err : C.c5);
       }
 
-      // Các chớp phát hiện hạt electron theo đúng phân bố sin²(nπx/a)
-      if (!st.hits) st.hits = [];
-      for (let tr = 0; tr < 4; tr++) {
-        const u = Math.random();
-        if (Math.random() < Math.pow(Math.sin(n * Math.PI * u), 2)) {
-          st.hits.push({
-            x: boxX + u * boxW,
-            y: midY + rnd(-amp * 0.72, amp * 0.72),
-            life: 1.0
-          });
-          break;
+      // Chớp đo vị trí electron xuất hiện đúng theo sin²(nπx/a)
+      if (Math.random() < dt * 16) {
+        let uPick = 0.5;
+        for (let tr = 0; tr < 16; tr++) {
+          const cand = Math.random();
+          if (Math.random() < Math.pow(Math.sin(n * Math.PI * cand), 2)) { uPick = cand; break; }
         }
+        st.hits.push({ x: x0 + uPick * wellW, y: curY + rnd(-amp * 0.35, amp * 0.35), life: 1.0 });
       }
-      ctx.globalCompositeOperation = 'lighter';
       st.hits.forEach(h => {
-        h.life -= dt * 1.8;
-        if (h.life <= 0) return;
-        glowDot(ctx, h.x, h.y, 2.6 * h.life + 0.8, hexA(C.ink, h.life), hexA(C.main, h.life * 0.75));
+        h.life -= dt * 1.9;
+        if (h.life > 0) glowDot(ctx, h.x, h.y, 2.8, C.ink, hexA(C.c1, h.life * 0.9));
       });
       st.hits = st.hits.filter(h => h.life > 0);
-      ctx.restore();
 
-      // 3. Vẽ PHOTON bay ra (hoặc bay vào) khi chuyển mức năng lượng!
-      st.photons.forEach(ph => {
-        ph.t += dt * 0.85;
-        const dist = ph.emit ? ph.t * (chW * 0.52) : (1 - ph.t) * (chW * 0.52);
-        const px = boxX + boxW / 2 + Math.cos(ph.angle) * dist;
-        const py = midY + Math.sin(ph.angle) * dist;
-        const alpha = clamp(1 - Math.abs(ph.t - 0.5) * 2, 0, 1);
-        if (alpha <= 0) return;
-
-        ctx.save();
-        ctx.translate(px, py);
-        ctx.rotate(ph.angle);
-        // Sóng điện từ của bó photon
+      // Vẽ photon phát/hấp thụ khi chuyển mức
+      for (let i = st.photons.length - 1; i >= 0; i--) {
+        const ph = st.photons[i];
+        ph.prog += dt * 1.1;
+        const yMid = (yOfN(ph.from) + yOfN(ph.to)) * 0.5;
+        const dist = ph.emit ? ph.prog * 140 : (1 - ph.prog) * 140;
+        const px = (x0 + x1) * 0.5 + dist;
+        const al = clamp(1 - Math.abs(ph.prog - 0.5) * 1.9, 0, 1);
         ctx.beginPath();
-        for (let s = -28; s <= 28; s += 2) {
-          const env = Math.exp(-(s * s) / 260);
-          const wy = Math.sin(s * 0.55 - t * 22) * 9 * env;
-          s === -28 ? ctx.moveTo(s, wy) : ctx.lineTo(s, wy);
+        for (let s = -18; s <= 18; s += 2) {
+          const wy = Math.sin(s * 0.7 - t * 24) * 6 * Math.exp(-(s * s) / 140);
+          s === -18 ? ctx.moveTo(px + s, yMid + wy) : ctx.lineTo(px + s, yMid + wy);
         }
-        ctx.strokeStyle = ph.rgb.rgba(alpha);
-        ctx.lineWidth = 2.6;
-        ctx.stroke();
-        glowDot(ctx, 0, 0, 6, '#ffffff', ph.rgb.rgba(alpha * 0.9));
-        ctx.restore();
+        ctx.strokeStyle = hexA(C.main, al); ctx.lineWidth = 2.2; ctx.stroke();
+        if (ph.prog >= 1.05) st.photons.splice(i, 1);
+      }
 
-        txt(ctx, (ph.emit ? 'PHÁT XẠ γ: ' : 'HẤP THỤ γ: ') + ph.wl_nm.toFixed(0) + ' nm (' + ph.rgb.label + ')',
-          px, py - 18, ph.rgb.rgba(alpha), 10.5, 'center', 700, MONO);
-      });
-      st.photons = st.photons.filter(ph => ph.t < 1.15);
+      // Nhãn tọa độ chân giếng & thông số mép trên
+      txt(ctx, 'x = 0', x0, botY + 14, C.ink, 9.5, 'center', 700, MONO);
+      txt(ctx, 'x = a (' + S.a + ' Å)', x1, botY + 14, C.ink, 9.5, 'center', 700, MONO);
+      txt(ctx, 'V = ∞', (chX + 12 + x0) * 0.5, topY + 16, C.err, 10, 'center', 700, MONO);
 
-      // Thước đo bề rộng nano ngay đáy giếng
-      ln(ctx, boxX, botY + 14, boxX + boxW, botY + 14, C.mut, 1.4);
-      ln(ctx, boxX, botY + 9, boxX, botY + 19, C.mut, 1.4);
-      ln(ctx, boxX + boxW, botY + 9, boxX + boxW, botY + 19, C.mut, 1.4);
-      txt(ctx, 'a = ' + a_A + ' Å (' + (a_A / 10).toFixed(1) + ' nm)', boxX + boxW / 2, botY + 26, C.ink, 11, 'center', 700, MONO);
-
-      // Bảng HUD phía trên
-      const hudW = (W - pad * 2 - 20) / 3;
-      drawHUD(ctx, pad, 8, hudW, 50, 'NĂNG LƯỢNG MỨC E_' + n,
-        En_eV.toFixed(3) + ' eV', 'E_' + n + ' = ' + (n * n) + ' × E₁ (E₁ = ' + E1_eV.toFixed(3) + ' eV)', C.main);
-      drawHUD(ctx, pad + hudW + 10, 8, hudW, 50, 'BƯỚC SÓNG ĐỨNG (λ_n)',
-        (2 * a_A / n).toFixed(1) + ' Å', 'a = ' + n + ' × (λ/2) · Không triệt tiêu năng lượng', C.c5);
-      const dE_next = ((n + 1) * (n + 1) - n * n) * E1_eV;
-      const wl_next = (H_PLANCK * C_LIGHT / (dE_next * EV)) * 1e9;
-      drawHUD(ctx, pad + (hudW + 10) * 2, 8, hudW, 50, 'CHUYỂN MỨC KẾ TIẾP',
-        'ΔE = ' + dE_next.toFixed(2) + ' eV', 'λ ≈ ' + (wl_next < 9999 ? wl_next.toFixed(0) + ' nm' : '>10 µm') + ' (Kéo n để phát photon)', C.c1);
-
-      txt(ctx, 'Thay đổi mức n để xem electron nhảy mức và phát/hấp thụ photon mang đúng màu quang phổ thực tế',
-        W / 2, H - 14, C.mut, 10.5, 'center', 500);
+      const eCurStr = En_eV < 0.1 ? (En_eV * 1000).toFixed(2) + ' meV' : En_eV.toFixed(3) + ' eV';
+      txt(ctx, 'Mức n = ' + n + ' (' + n + ' bụng sóng, ' + (n - 1) + ' nút trong)  |  a = ' + S.a + ' Å',
+        chX + 14, chY + 18, C.ink, 10.8, 'left', 700, MONO);
+      txt(ctx, 'E_' + n + ' = ' + eCurStr + '  |  λ_' + n + ' = 2a/' + n + ' = ' + (2 * S.a / n).toFixed(1) + ' Å',
+        chX + chW - 14, chY + 18, C.main, 10.8, 'right', 700, MONO);
     }
   }]
 });
 
 /* ==========================================================================
-   TAB 3 — BẬC THẾ NĂNG: MÔ PHỎNG BỘ GIẢI SỐ 1D-TDSE THỜI GIAN THỰC
-   Giải trực tiếp phương trình Schrödinger phụ thuộc thời gian!
-   - Bó sóng electron bay từ vùng chân không đập vào mặt phân cách bậc thế V₀.
-   - E < V₀: Giao thoa mạnh ở mặt ngoài, đâm xuyên hàm mũ vào lòng tường rồi dội ngược!
-   - E ≥ V₀: Tách thành sóng phản xạ một phần và sóng truyền qua chậm hơn, bước sóng dài hơn!
+   TAB 3 — BẬC THẾ NĂNG (STEP POTENTIAL, E < V₀) — BỘ GIẢI TDSE 1D & CÂU 3
    ========================================================================== */
 LABS.push({
-  id: 'step', name: 'Bậc thế năng', sec: 3,
-  S: { E: 0.65, V0: 1.0 },
+  id: 'step', name: 'Bậc thế năng', no: '3', sec: 3,
+  S: { E: 2.8, V0: 3.5, xProbe: 5 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
-    title: 'Mô phỏng 1D-TDSE thực tế — Bó sóng Electron va chạm bậc thế năng V₀',
+    title: 'Bậc thế năng (TDSE 1D) — Đâm xuyên hàm mũ e^(−2k₂x) vào vùng cấm cổ điển (Câu 3)',
     area: 'a', anim: true,
     ctrls: [
-      { k: 'E', l: 'Năng lượng E', min: 0.15, max: 2.5, step: 0.05, f: v => v.toFixed(2) + ' eV' },
-      { k: 'V0', l: 'Độ cao bậc V₀', min: 0.4, max: 2.5, step: 0.1, f: v => v.toFixed(1) + ' eV' },
-      { btn: 'Bắn bó sóng mới', fn(p) { p.st.resetSim = true; } }
-    ],
-    draw(p, ctx, W, H, t, dt) {
-      const S = p.S, st = p.st, E = S.E, V0 = S.V0;
-      const pad = 16, hudTop = 64;
-      const chX = pad, chY = hudTop, chW = W - pad * 2, chH = H - hudTop - 32;
-      const underBarrier = E < V0;
-
-      // Vật lý lý thuyết chính xác
-      const kappa = underBarrier ? Math.sqrt(2 * ME * (V0 - E) * EV) / HBAR : 0;
-      const delta_nm = underBarrier ? (1 / kappa) * 1e9 : Infinity;
-      const k1_phys = Math.sqrt(2 * ME * E * EV) / HBAR;
-      const k2_phys = !underBarrier ? Math.sqrt(2 * ME * (E - V0) * EV) / HBAR : 0;
-      const R_theo = underBarrier ? 1 : Math.pow((k1_phys - k2_phys) / (k1_phys + k2_phys), 2);
-      const T_theo = 1 - R_theo;
-
-      // Khởi tạo / cập nhật bộ giải số 1D-TDSE
-      const N = 260;
-      const stepIdx = Math.floor(N * 0.48);
-      const key = `${E.toFixed(2)}_${V0.toFixed(1)}`;
-      if (!st.sim || st.key !== key || st.resetSim) {
-        st.key = key;
-        st.resetSim = false;
-        st.sim = createTDSE(N);
-        const Vref = Math.max(E, V0, 1.0);
-        const E_sim = (E / Vref) * 0.16;
-        const V_sim = (V0 / Vref) * 0.16;
-        const k0 = Math.sqrt(2 * 1.0 * E_sim);
-        initTDSEWavepacket(st.sim, N * 0.22, 13, k0, 1.0, i => (i >= stepIdx ? V_sim : 0));
-        st.penHits = [];
-      }
-
-      // Chạy 10 bước thời gian TDSE mỗi khung hình
-      stepTDSE(st.sim, 10);
-
-      // Tính xác suất đang nằm trong vùng I và vùng II (đo trực tiếp từ hàm sóng TDSE!)
-      let pLeft = 0, pRight = 0, pTotal = 0;
-      const sim = st.sim;
-      for (let i = 0; i < N; i++) {
-        const pr = sim.R[i] * sim.R[i] + sim.I[i] * sim.I[i];
-        if (i < stepIdx) pLeft += pr; else pRight += pr;
-      }
-      pTotal = pLeft + pRight;
-      // Tự động bắn lại bó sóng mới khi bó sóng cũ đã rời khỏi buồng đo
-      if (pTotal < 0.06) st.resetSim = true;
-
-      // Vẽ buồng thí nghiệm
-      drawLabChamberBg(ctx, chX, chY, chW, chH, 12);
-
-      const simX = chX + 12, simW = chW - 24;
-      const simY = chY + 26, simH = chH - 44;
-      const stepX = simX + (stepIdx / (N - 1)) * simW;
-      const baseLine = simY + simH * 0.78;
-
-      // Vẽ khối vật liệu Vùng II (Bậc thế V0) có chiều cao tỉ lệ với V0
-      const maxE = Math.max(E, V0, 2.5);
-      const vHeightPx = (V0 / maxE) * (simH * 0.65);
-      const eHeightPx = (E / maxE) * (simH * 0.65);
-      const wallTopY = baseLine - vHeightPx;
-
-      ctx.save();
-      rr(ctx, simX, simY, simW, simH, 8);
-      ctx.clip();
-
-      // Khối thế năng Vùng II
-      const wallGrad = ctx.createLinearGradient(stepX, wallTopY, stepX + 160, wallTopY);
-      wallGrad.addColorStop(0, underBarrier ? hexA(C.c4, 0.24) : hexA(C.c2, 0.18));
-      wallGrad.addColorStop(1, underBarrier ? hexA(C.c4, 0.07) : hexA(C.c2, 0.05));
-      ctx.fillStyle = wallGrad;
-      ctx.fillRect(stepX, wallTopY, simX + simW - stepX, baseLine - wallTopY + 40);
-
-      // Lưới tinh thể bên trong bậc thế năng
-      for (let gx = stepX + 14; gx < simX + simW; gx += 22) {
-        for (let gy = wallTopY + 12; gy < baseLine + 12; gy += 22) {
-          dot(ctx, gx, gy, 1.5, underBarrier ? hexA(C.c4, 0.25) : hexA(C.c2, 0.2));
-        }
-      }
-
-      // Viền bậc thế V(x)
-      ctx.beginPath();
-      ctx.moveTo(simX, baseLine);
-      ctx.lineTo(stepX, baseLine);
-      ctx.lineTo(stepX, wallTopY);
-      ctx.lineTo(simX + simW, wallTopY);
-      ctx.strokeStyle = underBarrier ? C.c4 : C.c2;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Mức năng lượng E của chùm hạt (đường nét đứt ngang)
-      const eY = baseLine - eHeightPx;
-      ln(ctx, simX, eY, simX + simW, eY, hexA(C.main, 0.55), 1.2, [5, 4]);
-      txt(ctx, 'E = ' + E.toFixed(2) + ' eV', simX + 8, eY - 10, C.main, 10, 'left', 700, MONO);
-      txt(ctx, 'V₀ = ' + V0.toFixed(1) + ' eV', stepX + 10, wallTopY - 10, underBarrier ? C.c4 : C.c2, 10, 'left', 700, MONO);
-
-      // Vẽ hàm sóng TDSE thực tế: Dải sáng |ψ(x,t)|² tô màu theo pha phức arg(ψ)
-      const waveScale = (simH * 0.58) / (sim.peakProb || 0.01);
-      for (let i = 1; i < N - 1; i++) {
-        const pr = sim.R[i] * sim.R[i] + sim.I[i] * sim.I[i];
-        const hBar = Math.min(simH * 0.72, pr * waveScale);
-        if (hBar < 0.8) continue;
-        const x = simX + (i / (N - 1)) * simW;
-        const ph = Math.atan2(sim.I[i], sim.R[i]);
-        const inWall = i >= stepIdx && underBarrier;
-        const col = inWall
-          ? hexA(C.c4, clamp(0.32 + hBar / 90, 0.32, 0.88))
-          : phaseColor(ph, clamp(0.24 + hBar / 110, 0.24, 0.78), 55);
-        ctx.fillStyle = col;
-        ctx.fillRect(x - 1.5, baseLine - hBar, simW / N + 1.5, hBar);
-      }
-
-      // Đường biên mật độ xác suất |ψ(x,t)|² sắc nét
-      ctx.beginPath();
-      for (let i = 0; i < N; i++) {
-        const pr = sim.R[i] * sim.R[i] + sim.I[i] * sim.I[i];
-        const x = simX + (i / (N - 1)) * simW;
-        const y = baseLine - Math.min(simH * 0.72, pr * waveScale);
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = C.ink;
-      ctx.lineWidth = 1.9;
-      ctx.stroke();
-
-      // Hiển thị chớp đâm xuyên thực khi hàm sóng đang thấm vào lòng bức tường cấm
-      if (underBarrier && pRight > 0.015) {
-        const depthGlow = clamp(pRight * 4.5, 0, 1);
-        txt(ctx, 'ĐANG ĐÂM XUYÊN VÀO VÙNG CẤM: ' + (pRight * 100).toFixed(1) + '%',
-          stepX + 12, simY + 26, hexA(C.main, depthGlow), 10.5, 'left', 700, MONO);
-      }
-      ctx.restore();
-
-      // Nhãn 2 vùng
-      txt(ctx, 'VÙNG I : CHÂN KHÔNG (V = 0)', simX + (stepX - simX) / 2, chY + 14, C.mut, 10, 'center', 700, MONO);
-      txt(ctx, 'VÙNG II : BẬC THẾ V₀', stepX + (simX + simW - stepX) / 2, chY + 14, underBarrier ? C.c4 : C.c2, 10, 'center', 700, MONO);
-
-      // Bảng HUD phía trên
-      const hudW = (W - pad * 2 - 20) / 3;
-      drawHUD(ctx, pad, 8, hudW, 50, 'CHẾ ĐỘ TƯƠNG TÁC',
-        underBarrier ? 'ĐÂM XUYÊN VÙNG CẤM' : 'VƯỢT RÀO MỘT PHẦN',
-        underBarrier ? 'E < V₀ (Cổ điển: bật lại 100% tại x=0)' : 'E ≥ V₀ (Tách sóng phản xạ & truyền qua)',
-        underBarrier ? C.c4 : C.c1);
-      drawHUD(ctx, pad + hudW + 10, 8, hudW, 50, 'ĐỘ SÂU ĐÂM XUYÊN (δ = 1/κ)',
-        isFinite(delta_nm) ? delta_nm.toFixed(2) + ' nm' : '∞ (Truyền tự do)',
-        underBarrier ? 'κ = ' + (kappa * 1e-9).toFixed(2) + '×10⁹ m⁻¹' : 'Tỷ lệ truyền lý thuyết T = ' + (T_theo * 100).toFixed(1) + '%', C.main);
-      drawHUD(ctx, pad + (hudW + 10) * 2, 8, hudW, 50, 'ĐO TRỰC TIẾP TỪ TDSE',
-        'Vùng II: ' + (pRight * 100).toFixed(1) + '%',
-        'Vùng I: ' + (pLeft * 100).toFixed(1) + '%  |  R_lt = ' + (R_theo * 100).toFixed(1) + '%', C.c2);
-
-      txt(ctx, 'Bộ giải số 1D-TDSE thời gian thực: Quan sát gợn giao thoa tại vách và đuôi sóng thấm sâu vào lòng tường trước khi dội ra',
-        W / 2, H - 14, C.mut, 10.5, 'center', 500);
-    }
-  }]
-});
-
-/* ==========================================================================
-   TAB 4 — XUYÊN HẦM LƯỢNG TỬ: MẶT CẮT TRANSISTOR NANO (SOURCE–OXIDE–DRAIN)
-   Mô phỏng thực tế dòng rò xuyên hầm qua lớp cách điện mỏng nanomet:
-   - Kết hợp bộ giải 1D-TDSE cho thấy sóng tắt dần trong lớp Oxide và tái sinh ở cực Máng
-   - Các lớp nguyên tử SiO₂ hiển thị thật theo độ dày d (nm)
-   - Đồng hồ Ampe kế cơ + điện tử nhảy kim thật theo dòng rò (pA → nA → µA → mA)
-   ========================================================================== */
-LABS.push({
-  id: 'tunnel', name: 'Xuyên hầm', sec: 4,
-  S: { mat: 'si', d: 1.0, E: 0.65, V0: 1.2 },
-  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
-  panels: [{
-    title: 'Mặt cắt Transistor Nano — Xuyên hầm lượng tử TDSE qua lớp Oxide mỏng',
-    area: 'a', anim: true,
-    ctrls: [
-      { k: 'mat', seg: [['si', 'Silicon (m*=0.98m₀)'], ['gaas', 'GaAs (m*=0.067m₀)']] },
-      { k: 'd', l: 'Độ dày rào d', min: 0.4, max: 3.0, step: 0.1, f: v => v.toFixed(1) + ' nm' },
-      { k: 'E', l: 'Năng lượng E', min: 0.2, max: 2.0, step: 0.05, f: v => v.toFixed(2) + ' eV' },
-      { k: 'V0', l: 'Rào V₀', min: 0.8, max: 2.5, step: 0.1, f: v => v.toFixed(1) + ' eV' },
-      { btn: 'Bắn xung sóng', fn(p) { p.st.resetSim = true; } }
+      { k: 'E', l: 'Năng lượng E', min: 1.0, max: 5.5, step: 0.1, f: v => v.toFixed(1) + ' eV' },
+      { k: 'V0', l: 'Bậc thế V₀', min: 1.5, max: 6.0, step: 0.1, f: v => v.toFixed(1) + ' eV' },
+      { k: 'xProbe', l: 'Đầu dò x', min: 1, max: 40, step: 1, f: v => v + ' Å' },
+      { btn: 'Câu 3 (5 / 15 / 40 Å)', fn: p => {
+        p.S.E = 2.8; p.S.V0 = 3.5;
+        p.S.xProbe = p.S.xProbe === 5 ? 15 : p.S.xProbe === 15 ? 40 : 5;
+        p.syncCtrls(); queueReact(p.tab, 'xProbe');
+      } },
+      { btn: 'Bắn lại bó sóng', fn: p => { p.st.tdse = null; } }
     ],
     draw(p, ctx, W, H, t, dt) {
       const S = p.S, st = p.st;
-      const mEff = S.mat === 'gaas' ? 0.067 * ME : 0.98 * ME;
-      const E = S.E, V0 = S.V0, d_nm = S.d;
-      const underBarrier = E < V0;
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawLabChamberBg(ctx, chX, chY, chW, chH, 10);
 
-      // Xác suất xuyên hầm chính xác (Công thức giải tích cho rào chữ nhật 1D)
-      let T_prob = 1;
-      let kappa = 0;
-      if (underBarrier) {
-        kappa = Math.sqrt(2 * mEff * (V0 - E) * EV) / HBAR;
-        const kd = kappa * (d_nm * 1e-9);
-        const sinhKd = kd > 40 ? Math.exp(kd) * 0.5 : Math.sinh(kd);
-        const pref = (V0 * V0) / (4 * E * (V0 - E));
-        T_prob = 1 / (1 + pref * sinhKd * sinhKd);
-      } else if (E > V0) {
-        const k2 = Math.sqrt(2 * mEff * (E - V0) * EV) / HBAR;
-        const sinKd = Math.sin(k2 * d_nm * 1e-9);
-        const pref = (V0 * V0) / (4 * E * (E - V0));
-        T_prob = 1 / (1 + pref * sinKd * sinKd);
+      const under = S.E < S.V0;
+      const k2 = under ? Math.sqrt(2 * ME * (S.V0 - S.E) * EV) / HBAR : 0; // m^-1
+      const pRel = under ? Math.exp(-2 * k2 * (S.xProbe * 1e-10)) : 1;
+
+      const regX0 = chX + 16, regX1 = chX + chW - 16, regW = regX1 - regX0;
+      const topY = chY + 42, botY = chY + chH - 28, regH = botY - topY;
+      const xStep = regX0 + regW * 0.50;
+
+      // Khởi tạo bộ giải số TDSE 1D (N = 220 điểm, mép bậc thế tại idx = 110)
+      const simKey = S.E.toFixed(1) + '_' + S.V0.toFixed(1);
+      const N = 220, stepIdx = 110;
+      if (!st.tdse || st.key !== simKey) {
+        st.key = simKey;
+        const kSim = 0.46 + (S.E / 6.0) * 0.62;
+        const Esim = 0.5 * kSim * kSim;
+        const Vsim = Esim * (S.V0 / Math.max(S.E, 0.2));
+        st.tdse = createTDSE(N, 52, kSim, 11, i => (i >= stepIdx ? Vsim : 0), 1.0);
+        st.timer = 0;
       }
-      const R_prob = 1 - T_prob;
-      const current_uA = T_prob * 1200; // quy đổi dòng rò đỉnh 1.2 mA
+      st.tdse.step(5);
+      st.timer += dt;
+      if (st.timer > 6.8) { st.tdse = null; }
 
-      // Khởi tạo / cập nhật bộ giải TDSE cho mặt cắt xuyên hầm
-      const N = 260;
-      const barCenterIdx = Math.floor(N * 0.47);
-      const barCells = clamp(Math.round(d_nm * 8.5), 4, 34);
-      const barLIdx = barCenterIdx - Math.floor(barCells / 2);
-      const barRIdx = barLIdx + barCells;
-      const key = `${S.mat}_${d_nm.toFixed(1)}_${E.toFixed(2)}_${V0.toFixed(1)}`;
-      if (!st.sim || st.key !== key || st.resetSim) {
-        st.key = key;
-        st.resetSim = false;
-        st.sim = createTDSE(N);
-        const Vref = Math.max(E, V0, 1.0);
-        const mSim = S.mat === 'gaas' ? 0.28 : 1.0; // GaAs nhẹ hơn → suy giảm chậm hơn hẳn trong rào
-        const E_sim = (E / Vref) * 0.15;
-        const V_sim = (V0 / Vref) * 0.15;
-        const k0 = Math.sqrt(2 * mSim * E_sim);
-        initTDSEWavepacket(st.sim, N * 0.20, 12, k0, mSim, i => (i >= barLIdx && i <= barRIdx ? V_sim : 0));
-      }
-      stepTDSE(st.sim, 10);
+      const eMax = Math.max(S.V0, S.E, 4.5) * 1.15;
+      const yOfE = eVal => botY - (eVal / eMax) * regH;
+      const yV0 = yOfE(S.V0);
+      const yE = yOfE(S.E);
 
-      // Kiểm tra nếu bó sóng đã đi hết thì tự bắn tiếp
-      let pTotal = 0;
-      const sim = st.sim;
-      for (let i = 0; i < N; i++) pTotal += sim.R[i] * sim.R[i] + sim.I[i] * sim.I[i];
-      if (pTotal < 0.05) st.resetSim = true;
+      // 1. Vùng II (x ≥ 0): Khối bậc thế V₀
+      const gBar = ctx.createLinearGradient(xStep, yV0, regX1, yV0);
+      gBar.addColorStop(0, hexA(C.c4, 0.28));
+      gBar.addColorStop(1, hexA(C.c4, 0.08));
+      ctx.fillStyle = gBar;
+      ctx.fillRect(xStep, yV0, regX1 - xStep, botY - yV0);
 
-      // Vẽ buồng linh kiện Transistor Nano
-      const pad = 16, hudTop = 64;
-      const chX = pad, chY = hudTop, chW = W - pad * 2, chH = H - hudTop - 32;
-      drawLabChamberBg(ctx, chX, chY, chW, chH, 12);
-
-      const devX = chX + 14, devW = chW - 28;
-      const devY = chY + 26, devH = chH - 42;
-      const barL = devX + (barLIdx / (N - 1)) * devW;
-      const barR = devX + (barRIdx / (N - 1)) * devW;
-      const barW = Math.max(8, barR - barL);
-      const midY = devY + devH * 0.56;
-      const baseLine = devY + devH * 0.86;
-
-      // 1. Khối Cực Nguồn (Source - n+ Semiconductor) & Cực Máng (Drain)
-      rr(ctx, devX, devY, barL - devX - 2, devH, 6);
-      ctx.fillStyle = hexA(C.bg, 0.72); ctx.fill();
-      ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
-
-      rr(ctx, barR + 2, devY, devX + devW - barR - 2, devH, 6);
-      ctx.fillStyle = hexA(C.bg, 0.72); ctx.fill();
-      ctx.strokeStyle = current_uA > 0.05 ? hexA(C.c1, 0.45) : C.g; ctx.lineWidth = 1; ctx.stroke();
-
-      // 2. Lớp Rào Cách Điện Oxide (Gate Oxide / Tunnel Barrier) với các lớp nguyên tử thật
-      rr(ctx, barL, devY - 6, barW, devH + 12, 4);
-      const oxGrad = ctx.createLinearGradient(barL, devY, barR, devY);
-      oxGrad.addColorStop(0, underBarrier ? hexA(C.c4, 0.26) : hexA(C.c2, 0.2));
-      oxGrad.addColorStop(0.5, underBarrier ? hexA(C.main, 0.14) : hexA(C.c2, 0.1));
-      oxGrad.addColorStop(1, underBarrier ? hexA(C.c4, 0.26) : hexA(C.c2, 0.2));
-      ctx.fillStyle = oxGrad; ctx.fill();
-      ctx.strokeStyle = underBarrier ? C.c4 : C.c2; ctx.lineWidth = 1.8; ctx.stroke();
-
-      // Vẽ các hàng nguyên tử SiO₂ bên trong rào (1 lớp nguyên tử ≈ 0.25 nm)
-      const atomCols = Math.max(1, Math.round(d_nm / 0.28));
-      for (let ac = 0; ac < atomCols; ac++) {
-        const ax = barL + ((ac + 0.5) / atomCols) * barW;
-        for (let ay = devY + 14; ay < devY + devH - 8; ay += 20) {
-          dot(ctx, ax, ay, 2, underBarrier ? hexA(C.c4, 0.45) : hexA(C.c2, 0.4));
-        }
-      }
-      txt(ctx, 'OXIDE d=' + d_nm.toFixed(1) + 'nm (~' + atomCols + ' lớp nt)', (barL + barR) / 2, devY - 15,
-        underBarrier ? C.c4 : C.c2, 9.5, 'center', 700, MONO);
-
-      // 3. Vẽ sóng TDSE xuyên qua lớp Oxide (tắt dần hàm mũ bên trong và tái sinh phía Drain!)
-      const waveScale = (devH * 0.62) / (sim.peakProb || 0.01);
-      ctx.save();
-      rr(ctx, devX, devY, devW, devH, 6);
-      ctx.clip();
-      for (let i = 1; i < N - 1; i++) {
-        const pr = sim.R[i] * sim.R[i] + sim.I[i] * sim.I[i];
-        // Khuếch đại thị giác nhẹ ở phần xuyên hầm nếu quá nhỏ nhưng > 0 để thấy sóng mờ
-        const boost = i > barRIdx ? Math.min(3.5, 1 + 0.5 / Math.max(T_prob, 0.05)) : 1;
-        const hBar = Math.min(devH * 0.72, pr * waveScale * boost);
-        if (hBar < 0.6) continue;
-        const x = devX + (i / (N - 1)) * devW;
-        const ph = Math.atan2(sim.I[i], sim.R[i]);
-        let col;
-        if (i >= barLIdx && i <= barRIdx) col = hexA(C.main, clamp(0.32 + hBar / 80, 0.32, 0.9));
-        else if (i > barRIdx) col = hexA(C.c1, clamp(0.32 + hBar / 70, 0.32, 0.9));
-        else col = phaseColor(ph, clamp(0.24 + hBar / 100, 0.24, 0.76), 55);
-        ctx.fillStyle = col;
-        ctx.fillRect(x - 1.4, baseLine - hBar, devW / N + 1.4, hBar);
-      }
-
-      // Đường sóng |ψ|² rõ nét
       ctx.beginPath();
-      for (let i = 0; i < N; i++) {
-        const pr = sim.R[i] * sim.R[i] + sim.I[i] * sim.I[i];
-        const x = devX + (i / (N - 1)) * devW;
-        const y = baseLine - Math.min(devH * 0.72, pr * waveScale);
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = C.ink; ctx.lineWidth = 1.7; ctx.stroke();
+      ctx.moveTo(regX0, botY); ctx.lineTo(xStep, botY); ctx.lineTo(xStep, yV0); ctx.lineTo(regX1, yV0);
+      ctx.strokeStyle = C.c4; ctx.lineWidth = 2.4; ctx.stroke();
 
-      // 4. Dòng hạt electron thực tế (mờ dần như sóng ma KHI ĐI QUA LÒNG RÀO, không teleport!)
-      if (!st.particles) st.particles = [];
-      st.gen = (st.gen || 0) + dt;
-      if (st.gen > 0.055) {
-        st.gen = 0;
-        const willTunnel = Math.random() < clamp(T_prob, 0, 1);
-        st.particles.push({
-          x: devX + 10,
-          y: devY + rnd(26, devH * 0.55),
-          vx: rnd(130, 175),
-          willTunnel,
-          state: 'in',
-          alpha: 1
-        });
-      }
+      // Mức năng lượng tới E
+      ln(ctx, regX0, yE, regX1, yE, hexA(C.main, 0.7), 1.4, [5, 4]);
+      txt(ctx, 'E=' + S.E.toFixed(1) + 'eV', regX0 + 6, yE - 10, C.main, 9.8, 'left', 700, MONO);
+      txt(ctx, 'V₀=' + S.V0.toFixed(1) + 'eV', xStep + 8, yV0 - 10, C.c4, 9.8, 'left', 700, MONO);
 
-      ctx.globalCompositeOperation = 'lighter';
-      st.particles.forEach(pt => {
-        if (pt.state === 'in') {
-          pt.x += pt.vx * dt;
-          if (pt.x >= barL) {
-            if (pt.willTunnel) {
-              pt.state = 'inside';
-            } else {
-              pt.state = 'ref';
-              pt.vx = -Math.abs(pt.vx);
-            }
-          }
-        } else if (pt.state === 'inside') {
-          // Chui chậm qua lớp Oxide với hiệu ứng bán trong suốt (evanescent ghost)
-          pt.x += pt.vx * 0.55 * dt;
-          if (pt.x >= barR) {
-            pt.state = 'out';
-            st.drainSpark = 1.0;
-          }
-        } else if (pt.state === 'ref') {
-          pt.x += pt.vx * dt;
-          if (pt.x < devX + 12) pt.alpha -= dt * 3;
-        } else if (pt.state === 'out') {
-          pt.x += pt.vx * dt;
-          if (pt.x > devX + devW - 14) pt.alpha -= dt * 3;
+      // 2. Đường bao đâm xuyên tĩnh chuẩn xác e^(−2k₂x) và Đầu dò tại xProbe (Å)
+      if (under) {
+        const pxPerA = (regX1 - xStep) / 45;
+        const ampEnv = regH * 0.28;
+        ctx.beginPath();
+        for (let a = 0; a <= 45; a += 0.5) {
+          const sx = xStep + a * pxPerA;
+          const sy = botY - Math.exp(-2 * k2 * a * 1e-10) * ampEnv;
+          a === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
         }
+        ctx.strokeStyle = hexA(C.main, 0.65); ctx.lineWidth = 1.6; ctx.setLineDash([4, 3]); ctx.stroke(); ctx.setLineDash([]);
 
-        const a = clamp(pt.alpha, 0, 1) * (pt.state === 'inside' ? 0.45 : 0.95);
-        const baseCol = pt.state === 'out' ? C.c1 : pt.state === 'ref' ? C.c4 : pt.state === 'inside' ? C.main : C.c2;
-        glowDot(ctx, pt.x, pt.y, pt.state === 'out' ? 3.2 : 2.5, hexA(C.ink, a), hexA(baseCol, a * 0.8));
-        ctx.globalAlpha = a * 0.55;
-        ln(ctx, pt.x, pt.y, pt.x - Math.sign(pt.vx) * 11, pt.y, baseCol, 1.4);
-        ctx.globalAlpha = 1;
-      });
-      st.particles = st.particles.filter(pt => pt.alpha > 0 && pt.x >= devX && pt.x <= devX + devW);
-      ctx.restore();
+        // Đầu dò đo tại xProbe (Å)
+        const prX = xStep + S.xProbe * pxPerA;
+        ln(ctx, prX, yV0, prX, botY, C.c1, 1.5, [3, 3]);
+        const prY = botY - pRel * ampEnv;
+        glowDot(ctx, prX, prY, 4.5, C.ink, hexA(C.c1, 0.9));
+        txt(ctx, 'x=' + S.xProbe + 'Å', prX, botY + 14, C.c1, 9.5, 'center', 700, MONO);
+      }
 
-      // 5. Đồng hồ AMPE KẾ (Analog Needle + Digital Readout) đặt ở góc phải Cực Máng
-      const mW = 148, mH = 82;
-      const mX = devX + devW - mW - 8, mY = devY + 10;
-      rr(ctx, mX, mY, mW, mH, 6);
-      ctx.fillStyle = C.card; ctx.fill();
-      ctx.strokeStyle = current_uA > 1 ? hexA(C.c1, 0.7) : C.g;
-      ctx.lineWidth = 1.2; ctx.stroke();
+      // 3. Vẽ mật độ xác suất |ψ(x,t)|² & phần thực Re(ψ) từ bộ giải số TDSE 1D
+      if (st.tdse) {
+        const td = st.tdse;
+        const ampP = regH * 1.45;
+        ctx.beginPath();
+        ctx.moveTo(regX0, botY);
+        for (let i = 0; i < N; i++) {
+          const sx = regX0 + (i / (N - 1)) * regW;
+          const pr = td.re[i] * td.re[i] + td.im[i] * td.im[i];
+          ctx.lineTo(sx, botY - Math.min(pr * ampP, regH * 0.88));
+        }
+        ctx.lineTo(regX1, botY);
+        ctx.closePath();
+        ctx.fillStyle = hexA(C.c2, 0.32); ctx.fill();
 
-      // Cung chia độ đồng hồ cơ
-      const cxM = mX + mW / 2, cyM = mY + 52, rM = 34;
-      ctx.beginPath(); ctx.arc(cxM, cyM, rM, Math.PI * 1.12, Math.PI * 1.88);
-      ctx.strokeStyle = C.g; ctx.lineWidth = 3; ctx.stroke();
-      // Vùng cảnh báo rò điện mạnh
-      ctx.beginPath(); ctx.arc(cxM, cyM, rM, Math.PI * 1.68, Math.PI * 1.88);
-      ctx.strokeStyle = hexA(C.err, 0.85); ctx.lineWidth = 3; ctx.stroke();
+        ctx.beginPath();
+        for (let i = 0; i < N; i++) {
+          const sx = regX0 + (i / (N - 1)) * regW;
+          const pr = td.re[i] * td.re[i] + td.im[i] * td.im[i];
+          const sy = botY - Math.min(pr * ampP, regH * 0.88);
+          i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+        }
+        ctx.strokeStyle = C.c2; ctx.lineWidth = 2.2; ctx.stroke();
+      }
 
-      // Góc kim (log scale cho dải rộng từ pA đến mA)
-      const logI = current_uA > 1e-6 ? clamp((Math.log10(current_uA) + 6) / 9, 0, 1) : 0;
-      st.needle = (st.needle || 0) + (logI - (st.needle || 0)) * Math.min(1, dt * 8);
-      const ang = Math.PI * (1.12 + st.needle * 0.76) + (current_uA > 0.01 ? Math.sin(t * 28) * 0.012 : 0);
-      ln(ctx, cxM, cyM, cxM + Math.cos(ang) * (rM - 4), cyM + Math.sin(ang) * (rM - 4), C.main, 2);
-      dot(ctx, cxM, cyM, 3.5, C.ink);
+      txt(ctx, 'x = 0', xStep, botY + 14, C.ink, 9.5, 'center', 700, MONO);
 
-      const curStr = current_uA >= 1000 ? (current_uA / 1000).toFixed(2) + ' mA'
-        : current_uA >= 0.01 ? current_uA.toFixed(2) + ' µA'
-        : current_uA >= 1e-5 ? (current_uA * 1000).toFixed(1) + ' nA'
-        : current_uA >= 1e-8 ? (current_uA * 1e6).toFixed(1) + ' pA' : '0.00 pA';
-      txt(ctx, 'AMPE KẾ DÒNG RÒ', cxM, mY + 11, C.mut, 8.5, 'center', 700, MONO);
-      txt(ctx, curStr, cxM, mY + 69, current_uA > 0.05 ? C.c1 : C.mut, 13, 'center', 800, MONO);
-
-      // Nhãn 2 cực
-      txt(ctx, 'CỰC NGUỒN (SOURCE)', devX + 10, devY + 14, C.mut, 10, 'left', 700, MONO);
-      txt(ctx, 'CỰC MÁNG (DRAIN)', barR + 10, devY + 14, C.c1, 10, 'left', 700, MONO);
-
-      // Bảng HUD phía trên
-      const hudW = (W - pad * 2 - 20) / 3;
-      drawHUD(ctx, pad, 8, hudW, 50, 'VẬT LIỆU BÁN DẪN',
-        S.mat === 'gaas' ? 'GaAs (m* = 0.067 m₀)' : 'Silicon (m* = 0.98 m₀)',
-        S.mat === 'gaas' ? 'Electron siêu nhẹ → Xuyên hầm cực mạnh' : 'Electron nặng hơn → Cản rò tốt hơn',
-        S.mat === 'gaas' ? C.c5 : C.c2);
-      drawHUD(ctx, pad + hudW + 10, 8, hudW, 50, 'XÁC SUẤT XUYÊN HẦM (T)',
-        T_prob * 100 >= 0.01 ? (T_prob * 100).toFixed(2) + ' %' : sci(T_prob * 100, 1) + ' %',
-        'Phản xạ R = ' + (R_prob * 100).toFixed(2) + ' %', current_uA > 0.05 ? C.c1 : C.mut);
-      drawHUD(ctx, pad + (hudW + 10) * 2, 8, hudW, 50, 'HỆ SỐ SUY GIẢM TRONG RÀO',
-        underBarrier ? 'κ = ' + (kappa * 1e-9).toFixed(2) + '×10⁹ m⁻¹' : 'Vượt rào (E ≥ V₀)',
-        '2κd = ' + (2 * kappa * d_nm * 1e-9).toFixed(2) + ' · Rào mỏng 1nm → rò mạnh', C.main);
-
-      txt(ctx, 'Sóng điện tử suy giảm hàm mũ bên trong lớp Oxide và tái sinh ở cực Máng — Tạo dòng rò lượng tử làm nhảy kim Ampe kế',
-        W / 2, H - 14, C.mut, 10.5, 'center', 500);
+      // Thông số rõ nét ở mép trên
+      txt(ctx, under ? 'k₂ = ' + sci(k2, 2) + ' m⁻¹  |  x = ' + S.xProbe + ' Å' : 'E ≥ V₀: Sóng truyền qua tự do (Phản xạ một phần)',
+        chX + 14, chY + 18, C.ink, 10.8, 'left', 700, MONO);
+      const pTxt = under
+        ? '|ψ(x)|²/|ψ(0)|² = ' + (pRel >= 0.001 ? (pRel * 100).toFixed(2) + '%' : sci(pRel, 2))
+        : 'T > 0 (Không tắt hàm mũ)';
+      txt(ctx, pTxt, chX + chW - 14, chY + 18, under ? C.c1 : C.main, 10.8, 'right', 700, MONO);
     }
   }]
 });
 
 /* ==========================================================================
-   TAB 5 — VỎ NGUYÊN TỬ 3D & NGUYÊN LÝ PAULI
-   Hai chế độ mô phỏng 3D thực tế:
-   1. Đám mây Orbital 3D (1s, 2s, 2p, 3s, 3d): 2.600 điểm Monte Carlo 3D thật,
-      tô màu theo pha âm/dương của hàm sóng, KÉO CHUỘT ĐỂ XOAY 3D, có nút Cắt lát 3D
-      để nhìn xuyên vào bên trong các mặt nút cầu của 2s và 3s!
-   2. Nguyên tử 3D & Bảng điền Pauli/Hund (H → Si): Hạt nhân 3D đa nucleon, vỏ 3D
-      và các thùy orbital p, electron mang vector spin ↑/↓, kèm bảng mức năng lượng
-      Aufbau/Pauli/Hund sáng lên theo thời gian thực.
+   TAB 4 — XUYÊN HẦM LƯỢNG TỬ (QUANTUM TUNNELING) — GAAS VS SILICON (CÂU 4)
    ========================================================================== */
-const ORB_CACHE = {};
-function sampleOrbital3D(orb) {
-  if (ORB_CACHE[orb]) return ORB_CACHE[orb];
-  const pts = [];
-  const rmax = orb === '1s' ? 5.5 : orb.startsWith('2') ? 13 : 22;
-  const count = 2500;
-  let maxVal = 0;
+LABS.push({
+  id: 'tunnel', name: 'Xuyên hầm', no: '4', sec: 3,
+  S: { mat: 'gaas', a: 15, E: 0.20, V0: 0.80 },
+  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  panels: [{
+    title: 'Mặt cắt Rào thế Nano (TDSE 1D) — Xuyên hầm trong GaAs vs Silicon & Ampe kế (Câu 4)',
+    area: 'a', anim: true,
+    ctrls: [
+      { k: 'mat', seg: [['gaas', 'GaAs (m*=0.067m₀)'], ['si', 'Silicon (m*=1.08m₀)']] },
+      { k: 'a', l: 'Dày rào a', min: 5, max: 30, step: 1, f: v => v + ' Å' },
+      { k: 'E', l: 'Năng lượng E', min: 0.10, max: 0.75, step: 0.05, f: v => v.toFixed(2) + ' eV' },
+      { k: 'V0', l: 'Cao rào V₀', min: 0.40, max: 1.50, step: 0.05, f: v => v.toFixed(2) + ' eV' },
+      { btn: 'Câu 4 (15 Å)', fn: p => { Object.assign(p.S, { a: 15, E: 0.20, V0: 0.80 }); p.syncCtrls(); queueReact(p.tab, 'mat'); } }
+    ],
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, st = p.st;
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawLabChamberBg(ctx, chX, chY, chW, chH, 10);
 
-  // Hàm sóng hydro 3D thực tế ψ(x, y, z)
-  function psi3D(x, y, z) {
-    const r = Math.sqrt(x * x + y * y + z * z) + 1e-9;
-    if (orb === '1s') return Math.exp(-r);
-    if (orb === '2s') return (2 - r) * Math.exp(-r / 2);
-    if (orb === '2p') return z * Math.exp(-r / 2);
-    if (orb === '3s') return (27 - 18 * r + 2 * r * r) * Math.exp(-r / 3);
-    if (orb === '3d') return (3 * z * z - r * r) * Math.exp(-r / 3);
-    return Math.exp(-r);
-  }
+      const mStarRatio = S.mat === 'gaas' ? 0.067 : 1.08;
+      const mStar = mStarRatio * ME;
+      const E_eff = Math.min(S.E, S.V0 - 0.02);
+      const a_m = S.a * 1e-10;
+      const k2 = Math.sqrt(2 * mStar * (S.V0 - E_eff) * EV) / HBAR;
+      const ratioE = E_eff / S.V0;
+      // Công thức xấp xỉ bài học & công thức chính xác sinh²(k₂a)
+      const T_wkb = clamp(16 * ratioE * (1 - ratioE) * Math.exp(-2 * k2 * a_m), 0, 1);
+      const sh = Math.sinh(Math.min(k2 * a_m, 40));
+      const T_exact = 1 / (1 + (sh * sh) / (4 * ratioE * (1 - ratioE)));
 
-  // Ước lượng cực đại |ψ|²
-  for (let i = 0; i < 4000; i++) {
-    const x = rnd(-rmax, rmax), y = rnd(-rmax, rmax), z = rnd(-rmax, rmax);
-    const p = psi3D(x, y, z);
-    if (p * p > maxVal) maxVal = p * p;
-  }
+      const regX0 = chX + 16, regX1 = chX + chW - 118, regW = regX1 - regX0;
+      const topY = chY + 42, botY = chY + chH - 28, regH = botY - topY;
+      const barWpx = clamp((S.a / 30) * (regW * 0.24), 14, regW * 0.24);
+      const barX0 = regX0 + regW * 0.44;
+      const barX1 = barX0 + barWpx;
 
-  // Lấy mẫu Rejection Sampling 3D đúng theo |ψ(x,y,z)|²
-  let guard = 0;
-  while (pts.length < count && guard < 350000) {
-    guard++;
-    const x = rnd(-rmax, rmax), y = rnd(-rmax, rmax), z = rnd(-rmax, rmax);
-    const r = Math.sqrt(x * x + y * y + z * z);
-    if (r > rmax) continue;
-    const v = psi3D(x, y, z);
-    if (Math.random() * maxVal < v * v) {
-      pts.push({ x: x / rmax, y: y / rmax, z: z / rmax, sign: v >= 0 ? 1 : -1, ph: rnd(0, TAU) });
+      // Bộ giải số TDSE 1D (điều chỉnh độ cao rào hiệu dụng để biểu diễn trực quan sự chênh lệch m*)
+      const N = 220;
+      const i0 = Math.round(((barX0 - regX0) / regW) * N);
+      const i1 = Math.max(i0 + 3, Math.round(((barX1 - regX0) / regW) * N));
+      const simKey = `${S.mat}_${S.a}_${S.E.toFixed(2)}_${S.V0.toFixed(2)}`;
+      if (!st.tdse || st.key !== simKey) {
+        st.key = simKey;
+        const kSim = 0.68;
+        const Esim = 0.5 * kSim * kSim;
+        // Giữ mSim ổn định mà vẫn phản ánh đúng suy giảm mạnh hơn ở Silicon
+        const boost = S.mat === 'gaas' ? 1.18 : 2.35;
+        const Vsim = Esim * (1 + (S.V0 - E_eff) / Math.max(E_eff, 0.1) * 0.22 * boost);
+        st.tdse = createTDSE(N, 42, kSim, 10, i => (i >= i0 && i <= i1 ? Vsim : 0), 1.0);
+        st.timer = 0;
+      }
+      st.tdse.step(5);
+      st.timer += dt;
+      if (st.timer > 6.6) st.tdse = null;
+
+      // 1. Vẽ rào thế Oxide ở giữa (Vùng I: Nguồn | Vùng II: Rào thế | Vùng III: Máng)
+      const eMax = Math.max(S.V0 * 1.2, 1.2);
+      const yV0 = botY - (S.V0 / eMax) * regH;
+      const yE = botY - (E_eff / eMax) * regH;
+
+      rr(ctx, barX0, yV0, barWpx, botY - yV0, 2);
+      ctx.fillStyle = hexA(S.mat === 'gaas' ? C.c2 : C.c4, 0.26); ctx.fill();
+      ctx.strokeStyle = S.mat === 'gaas' ? C.c2 : C.c4; ctx.lineWidth = 2; ctx.stroke();
+
+      ln(ctx, regX0, botY, regX1, botY, C.g, 1.5);
+      ln(ctx, regX0, yE, regX1, yE, hexA(C.main, 0.65), 1.2, [4, 4]);
+      txt(ctx, 'Rào a=' + S.a + 'Å', (barX0 + barX1) * 0.5, yV0 - 11, S.mat === 'gaas' ? C.c2 : C.c4, 9.5, 'center', 700, MONO);
+      txt(ctx, 'Nguồn (I)', (regX0 + barX0) * 0.5, botY + 14, C.ink, 9.5, 'center', 600, MONO);
+      txt(ctx, 'Máng (III)', (barX1 + regX1) * 0.5, botY + 14, C.c1, 9.5, 'center', 600, MONO);
+
+      // 2. Vẽ sóng TDSE xuyên hầm qua rào thế
+      if (st.tdse) {
+        const td = st.tdse;
+        const ampP = regH * 1.55;
+        ctx.beginPath();
+        ctx.moveTo(regX0, botY);
+        for (let i = 0; i < N; i++) {
+          const sx = regX0 + (i / (N - 1)) * regW;
+          const pr = td.re[i] * td.re[i] + td.im[i] * td.im[i];
+          ctx.lineTo(sx, botY - Math.min(pr * ampP, regH * 0.88));
+        }
+        ctx.lineTo(regX1, botY);
+        ctx.closePath();
+        ctx.fillStyle = hexA(C.c1, 0.28); ctx.fill();
+
+        ctx.beginPath();
+        for (let i = 0; i < N; i++) {
+          const sx = regX0 + (i / (N - 1)) * regW;
+          const pr = td.re[i] * td.re[i] + td.im[i] * td.im[i];
+          const sy = botY - Math.min(pr * ampP, regH * 0.88);
+          i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+        }
+        ctx.strokeStyle = C.c1; ctx.lineWidth = 2.2; ctx.stroke();
+      }
+
+      // 3. Ampe kế kim cơ đo dòng rò xuyên hầm bên phải
+      const mX = regX1 + 12, mW = chX + chW - mX - 12, mH = 112;
+      const mY = topY + (regH - mH) * 0.5;
+      rr(ctx, mX, mY, mW, mH, 8);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = T_exact > 0.01 ? C.c1 : C.g; ctx.lineWidth = 1.4; ctx.stroke();
+
+      const mcx = mX + mW * 0.5, mcy = mY + 56, mr = Math.min(mW * 0.38, 32);
+      ctx.beginPath(); ctx.arc(mcx, mcy, mr, Math.PI * 1.12, Math.PI * 1.88);
+      ctx.strokeStyle = C.g; ctx.lineWidth = 2.5; ctx.stroke();
+      // Thang log cho kim Ampe kế để thấy rõ từ 10⁻⁸ đến 100%
+      const needleTarget = clamp((Math.log10(Math.max(T_exact, 1e-8)) + 8) / 8, 0, 1);
+      st.needle = (st.needle || 0) + (needleTarget - (st.needle || 0)) * Math.min(1, dt * 8);
+      const nAng = Math.PI * (1.12 + st.needle * 0.76);
+      ln(ctx, mcx, mcy, mcx + Math.cos(nAng) * (mr - 3), mcy + Math.sin(nAng) * (mr - 3), S.mat === 'gaas' ? C.c1 : C.c4, 2.2);
+      dot(ctx, mcx, mcy, 3, C.ink);
+
+      txt(ctx, 'DÒNG RÒ T', mcx, mY + 14, C.ink, 9.5, 'center', 700, MONO);
+      const tStr = T_exact >= 0.001 ? (T_exact * 100).toFixed(1) + '%' : sci(T_exact, 1);
+      txt(ctx, tStr, mcx, mY + 80, S.mat === 'gaas' ? C.c1 : C.c4, 11.5, 'center', 800, MONO);
+      txt(ctx, 'WKB: ' + (T_wkb >= 0.001 ? (T_wkb * 100).toFixed(1) + '%' : sci(T_wkb, 1)), mcx, mY + 98, C.mut, 8.8, 'center', 600, MONO);
+
+      // Thông số rõ nét ở mép trên
+      txt(ctx, (S.mat === 'gaas' ? 'GaAs (m* = 0.067 m₀)' : 'Silicon (m* = 1.08 m₀)') + '  |  k₂ = ' + sci(k2, 2) + ' m⁻¹',
+        chX + 14, chY + 18, C.ink, 10.8, 'left', 700, MONO);
+      txt(ctx, '2k₂a = ' + (2 * k2 * a_m).toFixed(2) + '  |  T_exact = ' + tStr,
+        chX + chW - 14, chY + 18, S.mat === 'gaas' ? C.c1 : C.c4, 10.8, 'right', 700, MONO);
     }
+  }]
+});
+
+/* ==========================================================================
+   TAB 5 — GIẾNG THẾ BẤT ĐỐI XỨNG (CÂU 5 · FIGURE P2.40)
+   Vùng I (x < 0): V = V₀  |  Vùng II (0 < x < a): V = 0  |  Vùng III (x > a): V = ∞
+   ========================================================================== */
+function solveAsymWell(V0_eV, a_A) {
+  const a_m = a_A * 1e-10;
+  const R = (Math.sqrt(2 * ME * V0_eV * EV) * a_m) / HBAR;
+  const states = [];
+  for (let n = 1; n <= 8; n++) {
+    const loStart = (n - 0.5) * Math.PI + 1e-5;
+    if (R <= loStart) break;
+    let lo = loStart;
+    let hi = Math.min(n * Math.PI - 1e-5, R - 1e-6);
+    const f = u => u * Math.cos(u) + Math.sqrt(Math.max(0, R * R - u * u)) * Math.sin(u);
+    let fLo = f(lo);
+    if (fLo * f(hi) > 0) continue;
+    for (let it = 0; it < 42; it++) {
+      const mid = (lo + hi) * 0.5;
+      const fm = f(mid);
+      if (fLo * fm <= 0) hi = mid; else { lo = mid; fLo = fm; }
+    }
+    const u = (lo + hi) * 0.5;
+    const k1a = Math.sqrt(Math.max(0, R * R - u * u));
+    const E_eV = V0_eV * (u / R) * (u / R);
+    const normI = (Math.sin(u) * Math.sin(u)) / (2 * Math.max(k1a, 1e-6));
+    const normII = 0.5 - Math.sin(2 * u) / (4 * u);
+    const pLeak = normI / (normI + normII);
+    states.push({ n, u, k1a, E_eV, pLeak });
   }
-  ORB_CACHE[orb] = pts;
-  return pts;
+  return { R, states };
 }
 
 LABS.push({
-  id: 'atom', name: 'Vỏ e⁻ & Pauli', sec: 5,
-  S: { mode: 'orb', orb: '2s', slice: 'off', Z: 14 },
+  id: 'asym', name: 'Giếng bất đối xứng', no: '5', sec: 3,
+  S: { V0: 1.8, a: 14, n: 1 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
-    title: 'Kính hiển vi Lượng tử 3D — Đám mây Orbital (xoay 3D) & Cơ chế điền vỏ Pauli',
+    title: 'Giếng thế bất đối xứng (Câu 5) — Vách trái V₀ hữu hạn (rò sóng) & Vách phải V = ∞',
     area: 'a', anim: true,
     ctrls: [
-      { k: 'mode', seg: [['orb', 'Đám mây 3D'], ['pauli', 'Điền vỏ Pauli (H→Si)']] },
-      { k: 'orb', seg: [['1s', '1s'], ['2s', '2s (1 nút)'], ['2p', '2p (Tạ)'], ['3s', '3s (2 nút)'], ['3d', '3d (Vòng)']] },
-      { k: 'slice', seg: [['off', 'Nguyên khối'], ['on', 'Cắt lát 3D']] },
-      { k: 'Z', l: 'Nguyên tố Z', min: 1, max: 14, step: 1,
-        f: v => 'Z=' + v + ' (' + ['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si'][v - 1] + ')' }
+      { k: 'V0', l: 'Rào trái V₀', min: 0.2, max: 5.0, step: 0.1, f: v => v.toFixed(1) + ' eV' },
+      { k: 'a', l: 'Rộng giếng a', min: 4, max: 30, step: 1, f: v => v + ' Å' },
+      { k: 'n', l: 'Mức liên kết n', min: 1, max: 6, step: 1,
+        dynRange: S => [1, Math.max(1, solveAsymWell(S.V0, S.a).states.length)],
+        f: v => 'n = ' + v },
+      { btn: 'Ngưỡng mất mức', fn: p => { p.S.V0 = 0.4; p.S.a = 4; curPanels.forEach(q => q.syncCtrls && q.syncCtrls()); queueReact(p.tab, 'V0'); } }
     ],
     draw(p, ctx, W, H, t, dt) {
       const S = p.S, st = p.st;
-      const pad = 16, hudTop = 64;
-      const chX = pad, chY = hudTop, chW = W - pad * 2, chH = H - hudTop - 32;
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawLabChamberBg(ctx, chX, chY, chW, chH, 10);
 
-      // Gắn tương tác kéo chuột xoay 3D một lần duy nhất cho canvas
-      if (!st.dragBound && p.cv) {
-        st.dragBound = true;
-        st.rotY = 0.4; st.rotX = 0.38; st.dragging = false;
-        p.cv.style.cursor = 'grab';
-        p.cv.addEventListener('pointerdown', e => {
-          st.dragging = true; st.lx = e.clientX; st.ly = e.clientY;
-          p.cv.style.cursor = 'grabbing';
-        });
-        window.addEventListener('pointermove', e => {
-          if (!st.dragging) return;
-          st.rotY += (e.clientX - st.lx) * 0.008;
-          st.rotX = clamp(st.rotX + (e.clientY - st.ly) * 0.008, -1.45, 1.45);
-          st.lx = e.clientX; st.ly = e.clientY;
-        });
-        window.addEventListener('pointerup', () => {
-          st.dragging = false; if (p.cv) p.cv.style.cursor = 'grab';
-        });
-      }
-      if (!st.dragging) st.rotY += dt * 0.35;
+      const { R, states } = solveAsymWell(S.V0, S.a);
+      const count = states.length;
+      const curState = count > 0 ? states[clamp(Math.round(S.n) - 1, 0, count - 1)] : null;
+      const a_m = S.a * 1e-10;
+      const E1_inf = (Math.PI * Math.PI * HBAR * HBAR / (2 * ME * a_m * a_m)) / EV;
 
-      drawLabChamberBg(ctx, chX, chY, chW, chH, 12);
+      const regX0 = chX + 16, regX1 = chX + chW - 16;
+      const topY = chY + 42, botY = chY + chH - 36;
+      const regH = botY - topY;
+      const xZero = chX + chW * 0.36;
+      const wellW = clamp((S.a / 30) * (chW * 0.42), chW * 0.14, chW * 0.44);
+      const xA = xZero + wellW;
 
-      const cosY = Math.cos(st.rotY), sinY = Math.sin(st.rotY);
-      const cosX = Math.cos(st.rotX), sinX = Math.sin(st.rotX);
+      const eScaleMax = Math.max(S.V0 * 1.18, 1.5);
+      const yOfE = eVal => botY - clamp(eVal / eScaleMax, 0, 1.02) * regH;
+      const yV0 = yOfE(S.V0);
 
-      // Hàm chiếu 3D có phối cảnh
-      const proj = (x, y, z, cx, cy, sc) => {
-        const x1 = x * cosY - z * sinY;
-        const z1 = x * sinY + z * cosY;
-        const y2 = y * cosX - z1 * sinX;
-        const z2 = y * sinX + z1 * cosX;
-        const persp = 2.6 / (2.6 - z2 * 0.65);
-        return { sx: cx + x1 * sc * persp, sy: cy - y2 * sc * persp, z: z2, s: persp };
-      };
+      // 1. Vùng I: Rào thế hữu hạn bên trái (V = V₀)
+      const gLeft = ctx.createLinearGradient(regX0, yV0, xZero, yV0);
+      gLeft.addColorStop(0, hexA(C.c4, 0.07));
+      gLeft.addColorStop(1, hexA(C.c4, 0.24));
+      ctx.fillStyle = gLeft;
+      ctx.fillRect(regX0, yV0, xZero - regX0, botY - yV0);
 
-      if (S.mode === 'orb') {
-        /* ================= CHẾ ĐỘ 1: ĐÁM MÂY ORBITAL 3D THỰC TẾ ================= */
-        const orb = S.orb;
-        const pts = sampleOrbital3D(orb);
-        const cx = chX + chW * 0.5, cy = chY + chH * 0.52;
-        const sc = Math.min(chW, chH) * 0.44;
-        const sliced = S.slice === 'on';
-
-        // Vẽ hệ trục tọa độ 3D x, y, z mảnh
-        const o0 = proj(0, 0, 0, cx, cy, sc);
-        [['x', 0.95, 0, 0], ['y', 0, 0.95, 0], ['z', 0, 0, 0.95]].forEach(([lb, ax, ay, az]) => {
-          const p1 = proj(ax, ay, az, cx, cy, sc);
-          ln(ctx, o0.sx, o0.sy, p1.sx, p1.sy, hexA(C.mut, 0.35), 1, [3, 3]);
-          txt(ctx, lb, p1.sx + 6, p1.sy, C.mut, 10, 'left', 700, MONO);
-        });
-
-        // Vẽ 2.500 hạt mây xác suất 3D (phân biệt màu pha ψ > 0 và ψ < 0 theo màu theme)
-        ctx.save();
-        for (let i = 0; i < pts.length; i++) {
-          const pt = pts[i];
-          // Nếu bật Cắt lát 3D: cắt bỏ góc phần tư phía trước (x > 0 && z > 0) để lộ lõi nút cầu!
-          if (sliced && pt.x > 0 && pt.z > 0) continue;
-          const q = proj(pt.x, pt.z, pt.y, cx, cy, sc); // trục z hướng lên trên
-          const depthA = clamp(0.18 + (q.z + 1) * 0.34, 0.12, 0.85);
-          const twinkle = 0.80 + 0.20 * Math.sin(t * 3.5 + pt.ph);
-          const rad = (1.5 + q.s * 0.85) * twinkle;
-          ctx.fillStyle = pt.sign > 0
-            ? hexA(C.c2, depthA * twinkle)
-            : hexA(C.c4, depthA * twinkle);
-          ctx.beginPath();
-          ctx.arc(q.sx, q.sy, rad, 0, TAU);
-          ctx.fill();
+      for (let gx = regX0 + 12; gx < xZero - 4; gx += 18) {
+        for (let gy = yV0 + 12; gy < botY - 4; gy += 18) {
+          dot(ctx, gx, gy, 1.6, hexA(C.c4, 0.28));
         }
-        ctx.restore();
+      }
 
-        // Hạt nhân Proton ở tâm
-        glowDot(ctx, o0.sx, o0.sy, 6, C.ink, hexA(C.main, 0.9));
-        txt(ctx, '+1', o0.sx, o0.sy + 0.5, C.bg, 8.5, 'center', 800, MONO);
+      // 2. Vùng III: Tường thế vô hạn bên phải (V = ∞)
+      const gRight = ctx.createLinearGradient(xA, topY, regX1, topY);
+      gRight.addColorStop(0, hexA(C.err, 0.28));
+      gRight.addColorStop(1, hexA(C.bg, 0.9));
+      ctx.fillStyle = gRight;
+      ctx.fillRect(xA, topY, regX1 - xA, regH);
+      for (let gy = topY + 8; gy < botY; gy += 14) {
+        ln(ctx, xA + 2, gy, Math.min(regX1, xA + 28), gy - 10, hexA(C.err, 0.32), 1.2);
+      }
 
-        // Chú thích góc buồng
-        txt(ctx, 'Kéo chuột để xoay 3D · Màu xanh: ψ > 0  |  Màu đỏ hồng: ψ < 0',
-          chX + chW / 2, chY + chH - 14, C.mut, 10, 'center', 600);
+      ctx.beginPath();
+      ctx.moveTo(regX0, yV0); ctx.lineTo(xZero, yV0); ctx.lineTo(xZero, botY); ctx.lineTo(xA, botY); ctx.lineTo(xA, topY);
+      ctx.strokeStyle = C.c4; ctx.lineWidth = 2.4; ctx.stroke();
 
-        const meta = {
-          '1s': ['n=1, l=0, m=0', '0 mặt nút', 'Đối xứng cầu đặc — Dày nhất tại bán kính Bohr a₀ = 0.53 Å'],
-          '2s': ['n=2, l=0, m=0', '1 nút cầu (r=2a₀)', 'Bật "Cắt lát 3D" để thấy lõi dương nằm trong vỏ âm'],
-          '2p': ['n=2, l=1, m=0', '1 mặt phẳng nút', 'Hình quả tạ 2 thùy ngược pha đối xứng qua tâm'],
-          '3s': ['n=3, l=0, m=0', '2 nút cầu đồng tâm', 'Bật "Cắt lát 3D" để nhìn 3 lớp pha đan xen nhau'],
-          '3d': ['n=3, l=2, m=0', '2 mặt nón nút', 'Orbital 3d_z²: Hai thùy cực và vòng xuyến xích đạo ngược pha']
-        }[orb];
+      states.forEach(s => {
+        const ey = yOfE(s.E_eV);
+        const isSel = curState && s.n === curState.n;
+        ln(ctx, regX0, ey, xA, ey, isSel ? C.main : hexA(C.mut, 0.48), isSel ? 1.8 : 1, isSel ? [5, 3] : [3, 4]);
+        txt(ctx, 'E' + s.n + '=' + s.E_eV.toFixed(2) + 'eV', xA + 8, ey, isSel ? C.main : C.mut, isSel ? 10.5 : 9.5, 'left', isSel ? 700 : 500, MONO);
+      });
 
-        const hudW = (W - pad * 2 - 20) / 3;
-        drawHUD(ctx, pad, 8, hudW, 50, 'ORBITAL LƯỢNG TỬ 3D', 'Orbital ' + orb, meta[0], C.main);
-        drawHUD(ctx, pad + hudW + 10, 8, hudW, 50, 'MẶT NÚT (|ψ|² = 0)', meta[1], 'Electron không bao giờ có mặt trên nút', C.c4);
-        drawHUD(ctx, pad + (hudW + 10) * 2, 8, hudW, 50, 'ĐẶC ĐIỂM HÌNH HỌC',
-          sliced ? 'Đang cắt lát 3D' : 'Nguyên khối 3D', meta[2].slice(0, 38), C.c1);
+      if (curState) {
+        const ey = yOfE(curState.E_eV);
+        const amp = Math.min(46, regH * 0.22);
+        const osc = Math.cos(t * (3.5 + curState.n * 1.4));
+        const sinU = Math.sin(curState.u);
 
-      } else {
-        /* ================= CHẾ ĐỘ 2: NGUYÊN TỬ 3D & BẢNG ĐIỀN PAULI/HUND ================= */
-        const Z = Math.round(S.Z);
-        const elemNames = ['Hydro (H)','Heli (He)','Liti (Li)','Beri (Be)','Bo (B)','Cacbon (C)','Nitơ (N)','Oxi (O)','Flo (F)','Neon (Ne)','Natri (Na)','Magie (Mg)','Nhôm (Al)','SILICON (Si)'];
-        const configs = [
-          '1s¹','1s²','[He] 2s¹','[He] 2s²','[He] 2s² 2p¹','[He] 2s² 2p²',
-          '[He] 2s² 2p³','[He] 2s² 2p⁴','[He] 2s² 2p⁵','[He] 2s² 2p⁶',
-          '[Ne] 3s¹','[Ne] 3s²','[Ne] 3s² 3p¹','[Ne] 3s² 3p²'
-        ];
+        // Vùng I: Đuôi hàm mũ ψ₁(x) = sin(u)·exp(k₁x)
+        const nLeft = 90;
+        for (let i = 0; i < nLeft; i++) {
+          const sx = regX0 + (i / nLeft) * (xZero - regX0);
+          const xNorm = (sx - xZero) / wellW;
+          const psi = sinU * Math.exp(curState.k1a * xNorm);
+          const pr = psi * psi;
+          if (pr < 0.004) continue;
+          ctx.fillStyle = hexA(C.c4, clamp(pr * 0.45, 0.03, 0.45));
+          ctx.fillRect(sx, ey - pr * amp * 1.15, (xZero - regX0) / nLeft + 1, pr * amp * 1.15);
+        }
 
-        // Bố cục: Trái 62% là Nguyên tử 3D, Phải 38% là Bảng mức năng lượng Pauli/Hund
-        const atomCX = chX + chW * 0.33, atomCY = chY + chH * 0.52;
-        const maxR = Math.min(chW * 0.29, chH * 0.43);
-        const maxShell = Z <= 2 ? 1 : Z <= 10 ? 2 : 3;
+        // Vùng II: Sóng dừng ψ₂(x) = sin(u·(1 − x/a))
+        const nMid = 110;
+        for (let i = 0; i < nMid; i++) {
+          const uFrac = i / nMid;
+          const sx = xZero + uFrac * wellW;
+          const psi = Math.sin(curState.u * (1 - uFrac));
+          const pr = psi * psi;
+          if (pr < 0.004) continue;
+          ctx.fillStyle = hexA(C.c2, clamp(pr * 0.38, 0.03, 0.38));
+          ctx.fillRect(sx, ey - pr * amp * 1.15, wellW / nMid + 1, pr * amp * 1.15);
+        }
 
-        // Các electron điền đúng thứ tự Aufbau + Pauli + Hund
-        const TABLE = [
-          { n: 1, sub: '1s', box: 0, ms: +1, inc: 0.25, az: 0.0, sp: 2.3 },
-          { n: 1, sub: '1s', box: 0, ms: -1, inc: 0.25, az: Math.PI, sp: -2.2 },
-          { n: 2, sub: '2s', box: 1, ms: +1, inc: -0.45, az: 0.7, sp: 1.55 },
-          { n: 2, sub: '2s', box: 1, ms: -1, inc: -0.45, az: Math.PI + 0.7, sp: -1.5 },
-          { n: 2, sub: '2p', box: 2, ms: +1, inc: 0.9, az: 0.2, sp: 1.65 },
-          { n: 2, sub: '2p', box: 3, ms: +1, inc: -0.9, az: 2.3, sp: 1.6 },
-          { n: 2, sub: '2p', box: 4, ms: +1, inc: 0.1, az: 4.4, sp: 1.58 },
-          { n: 2, sub: '2p', box: 2, ms: -1, inc: 0.9, az: 3.3, sp: -1.65 },
-          { n: 2, sub: '2p', box: 3, ms: -1, inc: -0.9, az: 5.4, sp: -1.6 },
-          { n: 2, sub: '2p', box: 4, ms: -1, inc: 0.1, az: 1.3, sp: -1.58 },
-          { n: 3, sub: '3s', box: 5, ms: +1, inc: 0.4, az: 0.4, sp: 1.05 },
-          { n: 3, sub: '3s', box: 5, ms: -1, inc: 0.4, az: Math.PI + 0.4, sp: -1.0 },
-          { n: 3, sub: '3p', box: 6, ms: +1, inc: -0.8, az: 1.2, sp: 1.12 },
-          { n: 3, sub: '3p', box: 7, ms: +1, inc: 0.85, az: 3.7, sp: 1.08 }
-        ];
+        ctx.beginPath();
+        for (let i = 0; i <= 90; i++) {
+          const sx = regX0 + (i / 90) * (xZero - regX0);
+          const xNorm = (sx - xZero) / wellW;
+          const sy = ey - sinU * Math.exp(curState.k1a * xNorm) * osc * amp;
+          i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+        }
+        for (let i = 1; i <= 110; i++) {
+          const uFrac = i / 110;
+          const sx = xZero + uFrac * wellW;
+          const sy = ey - Math.sin(curState.u * (1 - uFrac)) * osc * amp;
+          ctx.lineTo(sx, sy);
+        }
+        ctx.strokeStyle = C.c2; ctx.lineWidth = 2.4; ctx.stroke();
 
-        // Vẽ các lớp vỏ xác suất 3D trong mờ (n=1, 2, 3)
-        for (let sh = 1; sh <= maxShell; sh++) {
-          const r = maxR * (sh === 1 ? 0.38 : sh === 2 ? 0.68 : 0.98);
-          const gSh = ctx.createRadialGradient(atomCX, atomCY, r * 0.72, atomCX, atomCY, r);
-          gSh.addColorStop(0, 'rgba(0,0,0,0)');
-          gSh.addColorStop(0.85, sh === maxShell ? hexA(C.main, 0.14) : hexA(C.mut, 0.08));
-          gSh.addColorStop(1, 'rgba(0,0,0,0)');
-          ctx.fillStyle = gSh;
-          ctx.beginPath(); ctx.arc(atomCX, atomCY, r, 0, TAU); ctx.fill();
+        dot(ctx, xZero, ey - sinU * osc * amp, 4.2, C.main);
+        dot(ctx, xA, ey, 4.5, C.err);
 
-          // Đường quỹ đạo nghiêng 3D mảnh
-          ctx.beginPath();
-          for (let a = 0; a <= 64; a++) {
-            const th = (a / 64) * TAU;
-            const rNorm = r / maxR;
-            const q = proj(rNorm * Math.cos(th), rNorm * Math.sin(th) * 0.35, rNorm * Math.sin(th), atomCX, atomCY, maxR);
-            a === 0 ? ctx.moveTo(q.sx, q.sy) : ctx.lineTo(q.sx, q.sy);
+        if (!st.hits) st.hits = [];
+        if (Math.random() < dt * 16) {
+          const inLeft = Math.random() < curState.pLeak;
+          let hx;
+          if (inLeft) {
+            const dxNorm = Math.log(Math.max(1e-4, Math.random())) / (2 * Math.max(curState.k1a, 0.1));
+            hx = clamp(xZero + dxNorm * wellW, regX0 + 4, xZero - 2);
+          } else {
+            let uPick = 0.5;
+            for (let tr = 0; tr < 16; tr++) {
+              const cand = Math.random();
+              if (Math.random() < Math.pow(Math.sin(curState.u * (1 - cand)), 2)) { uPick = cand; break; }
+            }
+            hx = xZero + uPick * wellW;
           }
-          ctx.strokeStyle = sh === maxShell ? hexA(C.main, 0.4) : hexA(C.g, 0.8);
-          ctx.lineWidth = 1; ctx.stroke();
+          st.hits.push({ x: hx, y: ey + rnd(-amp * 0.42, amp * 0.42), left: inLeft, life: 1.0 });
         }
-
-        // Hạt nhân đa nucleon 3D (Proton + Neutron kết tụ)
-        const nucCount = Math.min(Z, 12);
-        for (let i = 0; i < nucCount; i++) {
-          const phi = i * 2.39996;
-          const rrN = 0.055 * Math.sqrt(i / Math.max(1, nucCount));
-          const q = proj(rrN * Math.cos(phi), rrN * Math.sin(phi * 1.7), rrN * Math.sin(phi), atomCX, atomCY, maxR);
-          dot(ctx, q.sx, q.sy, 4.2, i % 2 === 0 ? C.c4 : C.mut);
-        }
-        glowDot(ctx, atomCX, atomCY, 9, C.ink, hexA(C.c4, 0.75));
-        txt(ctx, '+' + Z, atomCX, atomCY + 0.5, C.bg, 10, 'center', 800, MONO);
-
-        // Vẽ các electron 3D có độ sâu z & vector spin ↑/↓
-        const activeElecs = TABLE.slice(0, Z).map(e => {
-          const rNorm = e.n === 1 ? 0.38 : e.n === 2 ? 0.68 : 0.98;
-          const th = e.az + t * e.sp;
-          const x = rNorm * Math.cos(th);
-          const y = rNorm * Math.sin(th) * Math.sin(e.inc);
-          const z = rNorm * Math.sin(th) * Math.cos(e.inc);
-          const q = proj(x, y, z, atomCX, atomCY, maxR);
-          return { e, q };
-        }).sort((a, b) => a.q.z - b.q.z);
-
-        activeElecs.forEach(({ e, q }) => {
-          const isVal = e.n === maxShell;
-          const up = e.ms > 0;
-          const col = up ? C.c2 : C.c5;
-          glowDot(ctx, q.sx, q.sy, (isVal ? 4.8 : 3.8) * q.s, C.ink, hexA(col, 0.8));
-          dot(ctx, q.sx, q.sy, (isVal ? 5.2 : 4) * q.s, col);
-          txt(ctx, up ? '↑' : '↓', q.sx, q.sy + 0.5, C.bg, 9.5 * q.s, 'center', 800);
+        st.hits.forEach(h => {
+          h.life -= dt * 1.8;
+          if (h.life > 0) glowDot(ctx, h.x, h.y, 2.8, C.ink, hexA(h.left ? C.c4 : C.c1, h.life * 0.9));
         });
-
-        /* ---- BẢNG MỨC NĂNG LƯỢNG & Ô LƯỢNG TỬ PAULI / HUND BÊN PHẢI ---- */
-        const rkX = chX + chW * 0.64, rkW = chW * 0.33;
-        const rkY = chY + 14, rkH = chH - 28;
-        rr(ctx, rkX, rkY, rkW, rkH, 6);
-        ctx.fillStyle = C.bg; ctx.fill();
-        ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
-        txt(ctx, 'GIẢN ĐỒ ĐIỀN PAULI & HUND', rkX + rkW / 2, rkY + 16, C.mut, 10, 'center', 700, MONO);
-
-        const rows = [
-          { lbl: '3p', boxes: [6, 7, 8], y: rkY + rkH * 0.22 },
-          { lbl: '3s', boxes: [5], y: rkY + rkH * 0.37 },
-          { lbl: '2p', boxes: [2, 3, 4], y: rkY + rkH * 0.54 },
-          { lbl: '2s', boxes: [1], y: rkY + rkH * 0.69 },
-          { lbl: '1s', boxes: [0], y: rkY + rkH * 0.84 }
-        ];
-        const filled = TABLE.slice(0, Z);
-        const bw = clamp((rkW - 56) / 3, 24, 38), bh = 26;
-
-        rows.forEach(row => {
-          txt(ctx, row.lbl, rkX + 16, row.y, C.ink, 11.5, 'left', 700, MONO);
-          row.boxes.forEach((bIdx, j) => {
-            const bx = rkX + 44 + j * (bw + 6), by = row.y - bh / 2;
-            const inBox = filled.filter(e => e.box === bIdx);
-            rr(ctx, bx, by, bw, bh, 4);
-            ctx.fillStyle = inBox.length === 2 ? hexA(C.c1, 0.14) : inBox.length === 1 ? hexA(C.c2, 0.14) : C.card;
-            ctx.fill();
-            ctx.strokeStyle = inBox.length === 2 ? C.c1 : inBox.length === 1 ? C.c2 : C.g;
-            ctx.lineWidth = 1.2; ctx.stroke();
-
-            inBox.forEach(e => {
-              const sx = bx + (e.ms > 0 ? bw * 0.32 : bw * 0.68);
-              txt(ctx, e.ms > 0 ? '↑' : '↓', sx, row.y, e.ms > 0 ? C.c2 : C.c5, 14, 'center', 800);
-            });
-          });
-        });
-
-        // HUD phía trên
-        const hudW = (W - pad * 2 - 20) / 3;
-        drawHUD(ctx, pad, 8, hudW, 50, 'NGUYÊN TỐ HIỆN TẠI',
-          elemNames[Z - 1], 'Cấu hình: ' + configs[Z - 1], Z === 14 ? C.c1 : C.main);
-        const valCount = Z <= 2 ? Z : Z <= 10 ? Z - 2 : Z - 10;
-        drawHUD(ctx, pad + hudW + 10, 8, hudW, 50, 'ELECTRON HÓA TRỊ',
-          valCount + ' e⁻ (Vỏ n = ' + maxShell + ')',
-          Z === 14 ? 'Bán dẫn Si: 4 liên kết cộng hóa trị' : (Z === 2 || Z === 10 ? 'Vỏ kín bão hòa (Khí hiếm trơ)' : 'Quyết định tính chất hóa học & dẫn điện'),
-          Z === 14 ? C.c1 : C.main);
-        drawHUD(ctx, pad + (hudW + 10) * 2, 8, hudW, 50, 'NGUYÊN LÝ PAULI & HUND',
-          'Tối đa 2 e⁻ / ô (↑↓)', 'Mỗi trạng thái (n,l,m,s) là duy nhất', C.c5);
+        st.hits = st.hits.filter(h => h.life > 0);
+      } else {
+        txt(ctx, 'R = ' + R.toFixed(2) + ' ≤ π/2 (1.57) : KHÔNG CÓ TRẠNG THÁI LIÊN KẾT!',
+          chX + chW * 0.46, topY + regH * 0.45, C.err, 12, 'center', 700, MONO);
       }
 
-      txt(ctx, 'Chuyển chế độ "Đám mây 3D" để xoay & cắt lát orbital · Chuyển "Điền vỏ Pauli" để theo dõi H → Silicon (Z=14)',
-        W / 2, H - 14, C.mut, 10.5, 'center', 500);
+      txt(ctx, 'I: V = ' + S.V0.toFixed(1) + ' eV', (regX0 + xZero) * 0.5, yV0 - 12, C.c4, 10, 'center', 700, MONO);
+      txt(ctx, 'II: V = 0', (xZero + xA) * 0.5, botY + 18, C.c2, 10.5, 'center', 700, MONO);
+      txt(ctx, 'III: V = ∞', (xA + regX1) * 0.5, topY + 14, C.err, 10, 'center', 700, MONO);
+      txt(ctx, 'x = 0', xZero, botY + 18, C.ink, 9.5, 'center', 700, MONO);
+      txt(ctx, 'x = a (' + S.a + ' Å)', xA, botY + 18, C.ink, 9.5, 'center', 700, MONO);
+
+      const leftInfo = curState
+        ? 'Số mức liên kết: ' + count + '  |  E_' + curState.n + ' = ' + curState.E_eV.toFixed(3) + ' eV  (Vô hạn: ' + (curState.n * curState.n * E1_inf).toFixed(3) + ' eV)'
+        : 'Số mức liên kết: 0  |  R = ' + R.toFixed(2) + ' ≤ π/2';
+      txt(ctx, leftInfo, chX + 14, chY + 18, C.ink, 10.8, 'left', 700, MONO);
+      txt(ctx, curState ? 'Rò vào Vùng I: ' + (curState.pLeak * 100).toFixed(1) + '%  |  tan(k₂a) = −k₂/k₁' : 'Tăng V₀ hoặc a để giữ được electron',
+        chX + chW - 14, chY + 18, curState ? C.main : C.err, 10.8, 'right', 700, MONO);
     }
   }]
 });
 
 /* ==========================================================================
-   NHẬT KÝ THÍ NGHIỆM (Log intro + react chi tiết cho từng tab)
-   Loại dòng: i = nguyên lý · w = cơ chế thực tế · v = số liệu đo đạc
+   TAB 6 — ORBITAL HYDRO (20 SVG #o100..#o433) & 4 SỐ LƯỢNG TỬ (n,l,m,s) + ZEEMAN
+   ========================================================================== */
+LABS.push({
+  id: 'orbitals', name: 'Orbital & (n,l,m,s)', no: '6', sec: 4,
+  S: { n: 3, l: 1, m: 0, s: '+1/2', B: 0.0, nodes: true },
+  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  panels: [{
+    title: 'Kính hiển vi Orbital Hydro (n, l, m, s) — SVG mật độ |ψ|², Mặt nút & Hiệu ứng Zeeman',
+    area: 'a', anim: true,
+    ctrls: [
+      { k: 'n', l: 'n', min: 1, max: 4, step: 1, f: v => v + ' (' + ['K','L','M','N'][v - 1] + ')' },
+      { k: 'l', l: 'l (≤n−1)', min: 0, max: 3, step: 1, dynRange: S => [0, S.n - 1], f: v => v + ' (' + ['s','p','d','f'][v] + ')' },
+      { k: 'm', l: 'm (|m|≤l)', min: -3, max: 3, step: 1, dynRange: S => [-S.l, S.l], f: v => (v > 0 ? '+' : '') + v },
+      { k: 's', seg: [['+1/2', 's = +½ (↑)'], ['-1/2', 's = −½ (↓)']] },
+      { k: 'B', l: 'Từ trường B', min: 0, max: 5, step: 0.5, f: v => v.toFixed(1) + ' T' },
+      { btn: 'Soi mặt nút', fn: p => { p.S.nodes = !p.S.nodes; queueReact(p.tab, 'nodes'); } },
+      { btn: 'Bắn đo 40 e⁻', fn: p => { p.st.burst = 40; queueReact(p.tab, 'burst'); } }
+    ],
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, st = p.st;
+      const n = clamp(Math.round(S.n), 1, 4);
+      const l = clamp(Math.round(S.l), 0, n - 1);
+      const m = clamp(Math.round(S.m), -l, l);
+      const mAbs = Math.abs(m);
+      const sUp = S.s === '+1/2';
+      const B = S.B;
+
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawLabChamberBg(ctx, chX, chY, chW, chH, 10);
+
+      const subName = n + ['s', 'p', 'd', 'f'][l];
+      const En = -13.6 / (n * n);
+      const Lmag = Math.sqrt(l * (l + 1));
+      const nRad = n - l - 1;
+      const rMax = ORB_RMAX_A0[n] || 26;
+
+      const topInfo = chY + 34;
+      const availH = chH - 46;
+      const sqSz = Math.min(availH, chW * 0.52);
+      const ox = chX + 18;
+      const oy = topInfo + (availH - sqSz) * 0.5;
+      const ocx = ox + sqSz * 0.5, ocy = oy + sqSz * 0.5;
+      const halfSq = sqSz * 0.5;
+
+      // 1. Vẽ trực tiếp SVG orbital #o{n}{l}{|m|} từ buổi 3.html
+      const rec = getOrbitalSVGImage(n, l, m);
+      rr(ctx, ox, oy, sqSz, sqSz, 8);
+      ctx.fillStyle = '#06030c'; ctx.fill();
+      ctx.save();
+      rr(ctx, ox, oy, sqSz, sqSz, 8);
+      ctx.clip();
+      if (rec.ready) ctx.drawImage(rec.img, ox, oy, sqSz, sqSz);
+
+      ln(ctx, ocx, oy + 6, ocx, oy + sqSz - 6, 'rgba(255,255,255,0.18)', 1, [3, 4]);
+      txt(ctx, 'z', ocx + 7, oy + 14, 'rgba(255,255,255,0.72)', 10, 'left', 700, MONO);
+
+      // Chiều quay dòng xác suất khi m ≠ 0
+      if (m !== 0) {
+        const dir = m > 0 ? 1 : -1;
+        const rotR = sqSz * 0.44;
+        const a0 = t * dir * (1.2 + mAbs * 0.45);
+        for (let kArc = 0; kArc < 2; kArc++) {
+          const sa = a0 + kArc * Math.PI;
+          ctx.beginPath(); ctx.arc(ocx, ocy, rotR, sa, sa + 0.55);
+          ctx.strokeStyle = dir > 0 ? hexA(C.c1, 0.72) : hexA(C.c4, 0.72);
+          ctx.lineWidth = 2; ctx.stroke();
+        }
+      }
+
+      // 2. Lớp phủ "Soi mặt nút"
+      if (S.nodes) {
+        getRadialNodesA0(n, l).forEach(rA0 => {
+          const rPx = (rA0 / rMax) * halfSq;
+          ctx.beginPath(); ctx.arc(ocx, ocy, rPx, 0, TAU);
+          ctx.strokeStyle = 'rgba(155, 231, 255, 0.82)';
+          ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
+        });
+
+        getAngularNodeAngles(l, mAbs).forEach(th => {
+          const dx = Math.sin(th) * halfSq * 1.25;
+          const dy = Math.cos(th) * halfSq * 1.25;
+          ln(ctx, ocx - dx, ocy - dy, ocx + dx, ocy + dy, 'rgba(155, 231, 255, 0.78)', 1.4, [5, 4]);
+          if (th > 0.05 && th < Math.PI * 0.48) {
+            ln(ctx, ocx - dx, ocy + dy, ocx + dx, ocy - dy, 'rgba(155, 231, 255, 0.78)', 1.4, [5, 4]);
+          }
+        });
+      }
+
+      // 3. Bắn đo vị trí electron theo đúng |ψ_{nlm}(x, 0, z)|²
+      const stateKey = `${n}_${l}_${m}`;
+      if (!st.dots || st.key !== stateKey) {
+        st.key = stateKey;
+        st.dots = [];
+        let mx = 1e-12;
+        for (let i = 0; i < 1600; i++) {
+          const v = hydroProbXZ(n, l, m, rnd(-rMax, rMax), rnd(-rMax, rMax));
+          if (v > mx) mx = v;
+        }
+        st.maxP = mx;
+      }
+      const addSample = () => {
+        for (let tr = 0; tr < 48; tr++) {
+          const rx = rnd(-rMax, rMax), rz = rnd(-rMax, rMax);
+          if (Math.random() * st.maxP < hydroProbXZ(n, l, m, rx, rz)) {
+            st.dots.push({ x: ocx + (rx / rMax) * halfSq, y: ocy - (rz / rMax) * halfSq, life: 1.0 });
+            break;
+          }
+        }
+      };
+      if (st.burst > 0) {
+        const take = Math.min(st.burst, 8);
+        for (let i = 0; i < take; i++) addSample();
+        st.burst -= take;
+      }
+      if (st.dots.length > 260) st.dots.splice(0, st.dots.length - 260);
+      st.dots.forEach(d => {
+        d.life = Math.max(0.28, d.life - dt * 0.25);
+        glowDot(ctx, d.x, d.y, 2.5, '#ffffff', hexA('#9be7ff', d.life));
+      });
+
+      txt(ctx, subName + '  (' + n + ',' + l + ',' + (m > 0 ? '+' : '') + m + ')', ox + 10, oy + 15, '#fff1b8', 11.5, 'left', 700, MONO);
+      txt(ctx, 'Nút: ' + nRad + ' cầu · ' + l + ' góc', ox + sqSz - 10, oy + sqSz - 12, '#9be7ff', 9.5, 'right', 700, MONO);
+      ctx.restore();
+
+      rr(ctx, ox, oy, sqSz, sqSz, 8);
+      ctx.strokeStyle = C.g; ctx.lineWidth = 1.4; ctx.stroke();
+
+      // 4. KHU PHẢI: Vector tiến động L & Spin S + Hiệu ứng Zeeman
+      const rx0 = ox + sqSz + 18;
+      const rw = Math.max(120, chX + chW - rx0 - 12);
+      const vecH = availH * 0.56;
+      const vecY = topInfo;
+
+      rr(ctx, rx0, vecY, rw, vecH, 8);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
+
+      const lcx = rx0 + rw * 0.34, lcy = vecY + vecH * 0.54;
+      const lRad = Math.min(rw * 0.24, vecH * 0.38);
+
+      ln(ctx, lcx, lcy + lRad + 12, lcx, lcy - lRad - 14, B > 0 ? C.c2 : C.mut, B > 0 ? 2 : 1.3);
+      txt(ctx, B > 0 ? 'B (' + B.toFixed(1) + 'T)' : 'z', lcx + 6, lcy - lRad - 10, B > 0 ? C.c2 : C.mut, 9.5, 'left', 700, MONO);
+
+      if (l > 0) {
+        ctx.beginPath(); ctx.arc(lcx, lcy, lRad, 0, TAU);
+        ctx.strokeStyle = hexA(C.g, 0.9); ctx.lineWidth = 1.2; ctx.setLineDash([4, 3]); ctx.stroke(); ctx.setLineDash([]);
+
+        for (let mk = -l; mk <= l; mk++) {
+          const yM = lcy - (mk / Lmag) * lRad;
+          const xM = Math.sqrt(Math.max(0, lRad * lRad - (yM - lcy) * (yM - lcy)));
+          const active = mk === m;
+          ln(ctx, lcx, yM, lcx + xM, yM, active ? hexA(C.main, 0.6) : hexA(C.g, 0.7), 1, [3, 3]);
+          if (active) {
+            const phiP = t * (1.4 + B * 1.6);
+            const pxTip = lcx + Math.cos(phiP) * xM;
+            const pyTip = yM + Math.sin(phiP) * xM * 0.22;
+            ctx.beginPath();
+            ctx.ellipse(lcx, yM, Math.max(1, xM), Math.max(1, xM * 0.22), 0, 0, TAU);
+            ctx.strokeStyle = hexA(C.main, 0.48); ctx.lineWidth = 1.3; ctx.stroke();
+            ln(ctx, lcx, lcy, pxTip, pyTip, C.main, 2.6);
+            glowDot(ctx, pxTip, pyTip, 4, C.ink, hexA(C.main, 0.9));
+          }
+        }
+      } else {
+        dot(ctx, lcx, lcy, 5, C.main);
+      }
+      txt(ctx, '|L|=' + Lmag.toFixed(2) + 'ħ', lcx, vecY + 13, C.main, 10, 'center', 700, MONO);
+      txt(ctx, 'L_z=' + (m > 0 ? '+' : '') + m + 'ħ', lcx, vecY + vecH - 12, C.ink, 10, 'center', 700, MONO);
+
+      // Vector Spin S
+      const scx = rx0 + rw * 0.76, scy = lcy;
+      const sRad = lRad * 0.68;
+      ln(ctx, scx, scy + sRad + 10, scx, scy - sRad - 12, C.mut, 1.2);
+      ctx.beginPath(); ctx.arc(scx, scy, sRad, 0, TAU);
+      ctx.strokeStyle = hexA(C.g, 0.85); ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
+      const sSign = sUp ? 1 : -1;
+      const sY = scy - sSign * (0.5 / (Math.sqrt(3) * 0.5)) * sRad;
+      const sX = Math.sqrt(Math.max(0, sRad * sRad - (sY - scy) * (sY - scy)));
+      const sPhi = t * (2.6 + B * 2.4) * sSign;
+      const sCol = sUp ? C.c1 : C.c4;
+      ctx.beginPath(); ctx.ellipse(scx, sY, sX, sX * 0.24, 0, 0, TAU);
+      ctx.strokeStyle = hexA(sCol, 0.45); ctx.lineWidth = 1.2; ctx.stroke();
+      ln(ctx, scx, scy, scx + Math.cos(sPhi) * sX, sY + Math.sin(sPhi) * sX * 0.24, sCol, 2.5);
+      glowDot(ctx, scx + Math.cos(sPhi) * sX, sY + Math.sin(sPhi) * sX * 0.24, 3.8, C.ink, hexA(sCol, 0.9));
+      txt(ctx, 'Spin ' + (sUp ? '+½ ↑' : '−½ ↓'), scx, vecY + 13, sCol, 10, 'center', 700, MONO);
+      txt(ctx, 'S_z=' + (sUp ? '+' : '−') + '½ħ', scx, vecY + vecH - 12, C.ink, 10, 'center', 700, MONO);
+
+      // Hộp Hiệu ứng Zeeman
+      const zY = vecY + vecH + 10;
+      const zH = Math.max(66, availH - vecH - 10);
+      rr(ctx, rx0, zY, rw, zH, 8);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = B > 0 ? hexA(C.c2, 0.6) : C.g; ctx.lineWidth = 1.2; ctx.stroke();
+
+      txt(ctx, B > 0 ? 'HIỆU ỨNG ZEEMAN (Tách ' + (2 * l + 1) + ' mức)' : 'KHÔNG TỪ TRƯỜNG (Suy biến ' + (2 * l + 1) + ' bậc)',
+        rx0 + rw * 0.5, zY + 13, B > 0 ? C.c2 : C.ink, 9.8, 'center', 700, MONO);
+
+      const zMidY = zY + zH * 0.56;
+      const xBase0 = rx0 + 14, xBase1 = rx0 + rw * 0.34;
+      const xSplit0 = rx0 + rw * 0.50, xSplit1 = rx0 + rw - 44;
+      ln(ctx, xBase0, zMidY, xBase1, zMidY, C.ink, 2.2);
+      txt(ctx, subName, (xBase0 + xBase1) * 0.5, zMidY - 12, C.ink, 10, 'center', 700, MONO);
+
+      const maxSpan = (zH * 0.34) * (B / 5);
+      for (let mk = -l; mk <= l; mk++) {
+        const frac = l === 0 ? 0 : mk / l;
+        const yLv = zMidY - frac * maxSpan;
+        const isSel = mk === m;
+        ln(ctx, xBase1, zMidY, xSplit0, yLv, isSel ? hexA(C.main, 0.7) : hexA(C.g, 0.7), 1, [3, 3]);
+        ln(ctx, xSplit0, yLv, xSplit1, yLv, isSel ? C.main : hexA(C.c2, 0.6), isSel ? 2.8 : 1.5);
+        if (isSel || B >= 1.5 || l <= 1) {
+          txt(ctx, 'm=' + (mk > 0 ? '+' : '') + mk, xSplit1 + 6, yLv, isSel ? C.main : C.mut, 9.2, 'left', isSel ? 700 : 500, MONO);
+        }
+      }
+      const dE_ueV = m * 57.88 * B;
+      txt(ctx, 'ΔE = m·μ_B·B = ' + (dE_ueV >= 0 ? '+' : '') + dE_ueV.toFixed(0) + ' µeV',
+        rx0 + rw * 0.5, zY + zH - 10, B > 0 && m !== 0 ? C.main : C.mut, 9.5, 'center', 700, MONO);
+
+      txt(ctx, 'Trạng thái (' + n + ', ' + l + ', ' + (m > 0 ? '+' : '') + m + ', ' + S.s + ')  |  E_' + n + ' = ' + En.toFixed(2) + ' eV',
+        chX + 14, chY + 17, C.ink, 11, 'left', 700, MONO);
+      txt(ctx, 'Lớp n=' + n + ': ' + (n * n) + ' orbital (' + (2 * n * n) + ' e⁻)  |  Tổng nút = ' + (n - 1),
+        chX + chW - 14, chY + 17, C.main, 10.8, 'right', 700, MONO);
+    }
+  }]
+});
+
+/* ==========================================================================
+   TAB 7 — THÍ NGHIỆM STERN–GERLACH (1922) — CHỨNG MINH SPIN LƯỢNG TỬ (Mục 4.5)
+   ========================================================================== */
+LABS.push({
+  id: 'stern', name: 'Stern–Gerlach (Spin)', no: '7', sec: 4,
+  S: { mode: 'quantum', gradB: 75, flip: false },
+  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  panels: [{
+    title: 'Buồng chân không Stern–Gerlach (1922) — Tách chùm nguyên tử Ag (l = 0) thành 2 hướng Spin',
+    area: 'a', anim: true,
+    ctrls: [
+      { k: 'mode', seg: [['quantum', 'Lượng tử (Spin ±½)'], ['classic', 'Dự đoán Cổ điển']] },
+      { k: 'gradB', l: 'Gradient ∂B/∂z', min: 0, max: 100, step: 5, f: v => v + '%' },
+      { btn: 'Đảo cực N ↔ S', fn: p => { p.S.flip = !p.S.flip; if (p.st.bins) { p.st.bins.fill(0); p.st.marks = []; } queueReact(p.tab, 'flip'); } },
+      { btn: 'Xóa màn dò', fn: p => { if (p.st.bins) { p.st.bins.fill(0); p.st.marks = []; p.st.nUp = 0; p.st.nDn = 0; } } }
+    ],
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, st = p.st;
+      const isQ = S.mode === 'quantum';
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawLabChamberBg(ctx, chX, chY, chW, chH, 10);
+
+      const midY = chY + chH * 0.54;
+      const ovenX = chX + 26;
+      const magX0 = chX + chW * 0.25, magX1 = chX + chW * 0.56;
+      const scrX = chX + chW * 0.80;
+      const scrSpan = Math.min(chH * 0.72, 240);
+      const scrTop = midY - scrSpan * 0.5, scrBot = midY + scrSpan * 0.5;
+      const pol = S.flip ? -1 : 1;
+
+      const key = S.mode + '_' + S.gradB + '_' + S.flip;
+      if (!st.atoms || st.key !== key) {
+        st.key = key;
+        st.atoms = [];
+        st.marks = [];
+        st.bins = new Float32Array(72);
+        st.acc = 0;
+        st.nUp = 0;
+        st.nDn = 0;
+      }
+
+      // 1. Lò nung Bạc & Khe chuẩn trực
+      rr(ctx, ovenX - 16, midY - 26, 36, 52, 6);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = C.c4; ctx.lineWidth = 1.8; ctx.stroke();
+      glowDot(ctx, ovenX + 2, midY, 8, C.main, hexA(C.c4, 0.75));
+      txt(ctx, 'Lò Ag', ovenX + 2, midY - 36, C.c4, 10, 'center', 700, MONO);
+
+      const slitX = ovenX + 44;
+      ctx.fillStyle = C.sub;
+      ctx.fillRect(slitX - 3, midY - 38, 6, 31);
+      ctx.fillRect(slitX - 3, midY + 7, 6, 31);
+
+      // 2. Nam châm không đều N–S
+      const magW = magX1 - magX0;
+      const topCol = S.flip ? C.c1 : C.c4;
+      const botCol = S.flip ? C.c4 : C.c1;
+      const topLbl = S.flip ? 'S' : 'N';
+      const botLbl = S.flip ? 'N' : 'S';
+
+      ctx.beginPath();
+      ctx.moveTo(magX0, midY - 76); ctx.lineTo(magX1, midY - 76); ctx.lineTo(magX1, midY - 36);
+      ctx.lineTo(magX0 + magW * 0.5, midY - 18); ctx.lineTo(magX0, midY - 36); ctx.closePath();
+      ctx.fillStyle = hexA(topCol, 0.25); ctx.fill();
+      ctx.strokeStyle = topCol; ctx.lineWidth = 1.8; ctx.stroke();
+      txt(ctx, topLbl, magX0 + magW * 0.5, midY - 54, topCol, 14, 'center', 800, MONO);
+
+      ctx.beginPath();
+      ctx.moveTo(magX0, midY + 76); ctx.lineTo(magX1, midY + 76); ctx.lineTo(magX1, midY + 34);
+      ctx.lineTo(magX0, midY + 34); ctx.closePath();
+      ctx.fillStyle = hexA(botCol, 0.25); ctx.fill();
+      ctx.strokeStyle = botCol; ctx.lineWidth = 1.8; ctx.stroke();
+      txt(ctx, botLbl, magX0 + magW * 0.5, midY + 56, botCol, 14, 'center', 800, MONO);
+
+      if (S.gradB > 0) {
+        const al = 0.16 + (S.gradB / 100) * 0.35;
+        for (let i = -2; i <= 2; i++) {
+          ln(ctx, magX0 + magW * 0.5 + i * 10, midY - 22, magX0 + magW * 0.5 + i * 24, midY + 34, hexA(C.c2, al), 1.1, [3, 3]);
+        }
+      }
+
+      // 3. Phóng nguyên tử Ag mang vector spin
+      const gFrac = S.gradB / 100;
+      st.acc += dt * 36;
+      while (st.acc >= 1) {
+        st.acc -= 1;
+        if (st.atoms.length < 75) {
+          const sz = isQ ? (Math.random() < 0.5 ? 1 : -1) : rnd(-1, 1);
+          st.atoms.push({
+            x: ovenX + 18, y: midY + rnd(-2.2, 2.2), vx: 230, vy: 0, sz,
+            ang: isQ ? (sz > 0 ? -Math.PI * 0.5 : Math.PI * 0.5) : Math.acos(sz) - Math.PI * 0.5
+          });
+        }
+      }
+
+      const forceScale = 310 * gFrac * pol;
+      for (let i = st.atoms.length - 1; i >= 0; i--) {
+        const a = st.atoms[i];
+        if (a.x >= magX0 && a.x <= magX1) a.vy -= a.sz * forceScale * dt;
+        a.x += a.vx * dt; a.y += a.vy * dt;
+
+        const col = isQ ? (a.sz > 0 ? C.c1 : C.c4) : C.c3;
+        glowDot(ctx, a.x, a.y, 3.2, C.ink, hexA(col, 0.85));
+        dot(ctx, a.x, a.y, 2.8, col);
+        const vx = Math.cos(a.ang) * 7, vy = Math.sin(a.ang) * 7;
+        ln(ctx, a.x - vx * 0.4, a.y - vy * 0.4, a.x + vx, a.y + vy, col, 1.5);
+
+        if (a.x >= scrX) {
+          const u = clamp((a.y - scrTop) / scrSpan, 0.01, 0.99);
+          const bi = clamp(Math.floor(u * st.bins.length), 0, st.bins.length - 1);
+          st.bins[bi]++;
+          st.marks.push({ x: scrX + rnd(-9, 9), y: clamp(a.y, scrTop + 4, scrBot - 4), col });
+          if (st.marks.length > 500) st.marks.shift();
+          if (a.sz >= 0) st.nUp++; else st.nDn++;
+          st.atoms.splice(i, 1);
+        } else if (a.y < chY + 24 || a.y > chY + chH - 12) {
+          st.atoms.splice(i, 1);
+        }
+      }
+
+      // 4. Màn dò tích lũy
+      rr(ctx, scrX - 12, scrTop, 24, scrSpan, 4);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = C.g; ctx.lineWidth = 1.4; ctx.stroke();
+
+      st.marks.forEach(mk => { dot(ctx, mk.x, mk.y, 1.9, hexA(mk.col, 0.82)); });
+
+      const barX = scrX + 18, barMaxW = Math.max(24, chX + chW - barX - 14);
+      let maxB = 1;
+      for (let i = 0; i < st.bins.length; i++) if (st.bins[i] > maxB) maxB = st.bins[i];
+      const bh = scrSpan / st.bins.length;
+      for (let i = 0; i < st.bins.length; i++) {
+        const wB = (st.bins[i] / maxB) * barMaxW;
+        if (wB < 0.5) continue;
+        const yB = scrTop + i * bh;
+        const colB = isQ ? ((yB < midY) === !S.flip ? C.c1 : C.c4) : C.c3;
+        ctx.fillStyle = hexA(colB, 0.78);
+        ctx.fillRect(barX, yB, wB, Math.max(1.5, bh - 0.3));
+      }
+
+      if (isQ && S.gradB >= 20) {
+        const yOff = clamp(gFrac * scrSpan * 0.30, 16, scrSpan * 0.36);
+        txt(ctx, 's = +½ (↑)', scrX - 18, midY - pol * yOff, C.c1, 10, 'right', 700, MONO);
+        txt(ctx, 's = −½ (↓)', scrX - 18, midY + pol * yOff, C.c4, 10, 'right', 700, MONO);
+      }
+
+      txt(ctx, 'Nguyên tử Ag (5s¹, l = 0)  |  Lực tách F_z = μ_z·(∂B/∂z)',
+        chX + 14, chY + 18, C.ink, 10.8, 'left', 700, MONO);
+      txt(ctx, isQ ? 'LƯỢNG TỬ: CHỈ 2 VẾT RỜI RẠC (↑ ' + st.nUp + ' · ↓ ' + st.nDn + ')' : 'CỔ ĐIỂN: 1 DẢI VỆT LIÊN TỤC (Bị thực nghiệm bác bỏ)',
+        chX + chW - 14, chY + 18, isQ ? C.c1 : C.c3, 10.8, 'right', 700, MONO);
+    }
+  }]
+});
+
+/* ==========================================================================
+   TAB 8 — ĐÁM MÂY ORBITAL 3D XOAY & CẤU HÌNH ELECTRON PAULI (Z = 1..18)
+   ========================================================================== */
+const ELEMS = [
+  null,
+  ['H', 'Hydro'], ['He', 'Heli'], ['Li', 'Liti'], ['Be', 'Beri'], ['B', 'Bo'],
+  ['C', 'Cacbon'], ['N', 'Nitơ'], ['O', 'Oxy'], ['F', 'Flo'], ['Ne', 'Neon'],
+  ['Na', 'Natri'], ['Mg', 'Magie'], ['Al', 'Nhôm'], ['Si', 'Silicon'],
+  ['P', 'Photpho'], ['S', 'Lưu huỳnh'], ['Cl', 'Clo'], ['Ar', 'Argon']
+];
+
+const PAULI_BOXES = [
+  { sub: '1s', n: 1, boxes: 1 },
+  { sub: '2s', n: 2, boxes: 1 },
+  { sub: '2p', n: 2, boxes: 3 },
+  { sub: '3s', n: 3, boxes: 1 },
+  { sub: '3p', n: 3, boxes: 3 }
+];
+
+function fillPauli(Z) {
+  let rem = Z;
+  const out = [];
+  PAULI_BOXES.forEach(s => {
+    const arr = Array.from({ length: s.boxes }, () => ({ up: false, dn: false }));
+    // Quy tắc Hund: điền spin lên (↑) khắp các ô trước rồi mới ghép cặp spin xuống (↓)
+    for (let i = 0; i < s.boxes && rem > 0; i++) { arr[i].up = true; rem--; }
+    for (let i = 0; i < s.boxes && rem > 0; i++) { arr[i].dn = true; rem--; }
+    out.push({ ...s, slots: arr });
+  });
+  return out;
+}
+
+LABS.push({
+  id: 'atom', name: 'Vỏ e⁻ & Pauli', no: '8', sec: 4,
+  S: { mode: 'pauli', orb: '2s', slice: 'off', Z: 14 },
+  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  panels: [{
+    title: 'Nguyên lý loại trừ Pauli (Z = 1..18) & Đám mây Orbital 3D tương tác',
+    area: 'a', anim: true,
+    ctrls: [
+      { k: 'mode', seg: [['pauli', 'Bảng Pauli (Z=1..18)'], ['orb', 'Mây Orbital 3D']] },
+      { k: 'Z', l: 'Số hiệu Z', min: 1, max: 18, step: 1, f: v => v + ' (' + ELEMS[v][0] + ')' },
+      { k: 'orb', seg: [['1s', '1s'], ['2s', '2s'], ['2p', '2p_z'], ['3d', '3d_z²']] },
+      { k: 'slice', seg: [['off', 'Toàn khối'], ['on', 'Cắt lát']] },
+      { btn: 'Silicon (Z=14)', fn: p => { p.S.mode = 'pauli'; p.S.Z = 14; p.syncCtrls(); queueReact(p.tab, 'Z'); } }
+    ],
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, st = p.st;
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawLabChamberBg(ctx, chX, chY, chW, chH, 10);
+
+      // Gắn tương tác kéo xoay 3D cho chế độ Mây Orbital 3D
+      if (!st.dragBound && p.cv) {
+        st.dragBound = true;
+        st.rotY = 0.5; st.rotX = 0.35; st.dragging = false;
+        p.cv.addEventListener('pointerdown', e => { st.dragging = true; st.lx = e.clientX; st.ly = e.clientY; });
+        window.addEventListener('pointermove', e => {
+          if (!st.dragging) return;
+          st.rotY += (e.clientX - st.lx) * 0.009;
+          st.rotX = clamp(st.rotX + (e.clientY - st.ly) * 0.009, -1.4, 1.4);
+          st.lx = e.clientX; st.ly = e.clientY;
+        });
+        window.addEventListener('pointerup', () => { st.dragging = false; });
+      }
+
+      if (S.mode === 'pauli') {
+        const Z = clamp(Math.round(S.Z), 1, 18);
+        const filled = fillPauli(Z);
+        const shellCounts = [0, 0, 0];
+        filled.forEach(s => s.slots.forEach(sl => {
+          if (sl.up) shellCounts[s.n - 1]++;
+          if (sl.dn) shellCounts[s.n - 1]++;
+        }));
+        const outerN = shellCounts[2] > 0 ? 3 : shellCounts[1] > 0 ? 2 : 1;
+        const valence = shellCounts[outerN - 1];
+
+        // Trái: Nguyên tử với các lớp vỏ K, L, M quay quanh hạt nhân +Z
+        const cx = chX + chW * 0.28, cy = chY + chH * 0.54;
+        const maxR = Math.min(chW * 0.22, chH * 0.36);
+        const radii = [maxR * 0.36, maxR * 0.68, maxR * 1.0];
+
+        radii.forEach((rad, si) => {
+          const cnt = shellCounts[si];
+          if (cnt === 0 && si > 0) return;
+          const isVal = si + 1 === outerN;
+          ctx.beginPath(); ctx.arc(cx, cy, rad, 0, TAU);
+          ctx.strokeStyle = isVal ? hexA(C.c4, 0.7) : hexA(C.g, 0.9);
+          ctx.lineWidth = isVal ? 1.8 : 1.1; ctx.stroke();
+
+          for (let i = 0; i < cnt; i++) {
+            const ang = (i / cnt) * TAU + t * (1.5 / (si + 1)) * (si % 2 === 0 ? 1 : -1);
+            const ex = cx + Math.cos(ang) * rad, ey = cy + Math.sin(ang) * rad;
+            const col = isVal ? C.c4 : C.c2;
+            glowDot(ctx, ex, ey, 4.2, C.ink, hexA(col, 0.85));
+            dot(ctx, ex, ey, 3.5, col);
+          }
+        });
+        glowDot(ctx, cx, cy, 13, C.ink, hexA(C.main, 0.8));
+        dot(ctx, cx, cy, 13, C.main);
+        txt(ctx, ELEMS[Z][0], cx, cy + 0.5, C.bg, 11, 'center', 800, MONO);
+
+        // Phải: Sơ đồ ô lượng tử Pauli & Quy tắc Hund (1s, 2s, 2p, 3s, 3p)
+        const bx0 = chX + chW * 0.52;
+        const rowH = (chH - 72) / 3;
+        const boxW = Math.min(38, (chW * 0.42) / 5.2);
+        const boxH = Math.min(34, rowH * 0.58);
+
+        [3, 2, 1].forEach((nLv, ri) => {
+          const ry = chY + 58 + ri * rowH;
+          const isOuter = nLv === outerN;
+          txt(ctx, 'n=' + nLv, bx0 - 12, ry + boxH * 0.5, isOuter ? C.c4 : C.ink, 11, 'right', 700, MONO);
+
+          let curX = bx0;
+          filled.filter(s => s.n === nLv).forEach(sub => {
+            txt(ctx, sub.sub, curX + (sub.boxes * (boxW + 4) - 4) * 0.5, ry - 11, C.mut, 10, 'center', 700, MONO);
+            sub.slots.forEach(sl => {
+              rr(ctx, curX, ry, boxW, boxH, 5);
+              ctx.fillStyle = C.bg; ctx.fill();
+              ctx.strokeStyle = (sl.up || sl.dn) ? (isOuter ? C.c4 : C.c2) : C.g;
+              ctx.lineWidth = (sl.up || sl.dn) ? 1.8 : 1.1; ctx.stroke();
+              const sym = (sl.up ? '↑' : '') + (sl.dn ? '↓' : '');
+              if (sym) txt(ctx, sym, curX + boxW * 0.5, ry + boxH * 0.5 + 1, isOuter ? C.c4 : C.c2, 14, 'center', 700, MONO);
+              curX += boxW + 4;
+            });
+            curX += 14;
+          });
+        });
+
+        const cfgStr = filled.map(s => {
+          const cnt = s.slots.reduce((a, b) => a + (b.up ? 1 : 0) + (b.dn ? 1 : 0), 0);
+          return cnt > 0 ? s.sub + sup(cnt) : '';
+        }).filter(Boolean).join(' ');
+
+        txt(ctx, ELEMS[Z][1] + ' (' + ELEMS[Z][0] + ', Z = ' + Z + ')  |  ' + cfgStr,
+          chX + 14, chY + 18, C.ink, 10.8, 'left', 700, MONO);
+        txt(ctx, 'Lớp ngoài n=' + outerN + ': ' + valence + ' e⁻ hóa trị',
+          chX + chW - 14, chY + 18, C.c4, 10.8, 'right', 700, MONO);
+      } else {
+        // Chế độ Mây Orbital 3D tương tác (xoay bằng chuột & cắt lát)
+        if (!st.dragging) st.rotY += dt * 0.45;
+        const orbKey = S.orb;
+        if (!st.cloud || st.cKey !== orbKey) {
+          st.cKey = orbKey;
+          const pts = [];
+          const mapNLM = { '1s': [1,0,0,5.5], '2s': [2,0,0,12], '2p': [2,1,0,12], '3d': [3,2,0,22] }[orbKey];
+          const [nn, ll, mm, rm] = mapNLM;
+          let mx = 1e-12;
+          for (let i = 0; i < 1500; i++) {
+            const v = hydroProbXZ(nn, ll, mm, rnd(-rm, rm), rnd(-rm, rm));
+            if (v > mx) mx = v;
+          }
+          let tries = 0;
+          while (pts.length < 900 && tries < 60000) {
+            tries++;
+            const x = rnd(-rm, rm), y = rnd(-rm, rm), z = rnd(-rm, rm);
+            const r = Math.hypot(x, y, z);
+            if (r > rm) continue;
+            const rhoXY = Math.hypot(x, y);
+            const pr = hydroProbXZ(nn, ll, mm, rhoXY, z);
+            if (Math.random() * mx < pr) {
+              pts.push({ x: x / rm, y: z / rm, z: y / rm, rNorm: r / rm });
+            }
+          }
+          st.cloud = pts;
+        }
+
+        const cx = chX + chW * 0.5, cy = chY + chH * 0.53;
+        const sc = Math.min(chW, chH) * 0.42;
+        const cY = Math.cos(st.rotY), sY = Math.sin(st.rotY);
+        const cX = Math.cos(st.rotX), sX = Math.sin(st.rotX);
+
+        // Hạt nhân ở tâm
+        glowDot(ctx, cx, cy, 5, C.ink, hexA(C.c4, 0.9));
+
+        st.cloud.forEach(pt => {
+          if (S.slice === 'on' && pt.z > 0.08) return;
+          const x1 = pt.x * cY - pt.z * sY;
+          const z1 = pt.x * sY + pt.z * cY;
+          const y2 = pt.y * cX - z1 * sX;
+          const z2 = pt.y * sX + z1 * cX;
+          const persp = 2.8 / (2.8 - z2 * 0.7);
+          const sx = cx + x1 * sc * persp;
+          const sy = cy - y2 * sc * persp;
+          const col = pt.rNorm < 0.28 ? C.main : pt.y >= 0 ? C.c2 : C.c5;
+          dot(ctx, sx, sy, 1.55 * persp, hexA(col, clamp(0.42 + z2 * 0.25, 0.15, 0.85)));
+        });
+
+        const peakInfo = {
+          '1s': 'Đỉnh xuyên tâm tại r = a₀ = 0.529 Å (0 nút)',
+          '2s': 'Đỉnh chính tại r ≈ 5.2 a₀ (1 mặt cầu nút tại r = 2 a₀)',
+          '2p': '2 thùy dọc trục z (1 mặt phẳng nút z = 0)',
+          '3d': '2 thùy dọc trục z + vành xích đạo (2 mặt nón nút)'
+        }[orbKey];
+        txt(ctx, 'Đám mây 3D Orbital ' + orbKey + (S.slice === 'on' ? ' (Đã cắt lát)' : ''), chX + 14, chY + 18, C.ink, 11, 'left', 700, MONO);
+        txt(ctx, peakInfo, chX + chW - 14, chY + 18, C.main, 10.5, 'right', 700, MONO);
+      }
+    }
+  }]
+});
+
+/* ==========================================================================
+   NHẬT KÝ THÍ NGHIỆM (Log intro + react chi tiết cho cả 8 tab Buổi 3)
    ========================================================================== */
 const LD = {};
 
 LD.free = {
   intro: [
-    ['i', 'Buồng chân không (V = 0): Electron rời súng phóng tạo thành trường sóng vật chất de Broglie lan truyền tự do.'],
-    ['w', 'Màu sắc dải sáng biểu diễn góc pha phức e^{i(kx−ωt)} đang tiến về phía trước (k > 0) hoặc lùi lại (k < 0).'],
-    ['w', 'Màn huỳnh quang bên dưới tích lũy các điểm chớp sáng rời rạc: với sóng phẳng đơn sắc, xác suất |ψ|² phẳng đều khắp nơi.'],
-    ['i', 'Chuyển sang "Bó sóng thực (Gauss)" để thấy electron định xứ thành bó sóng bay đi và tự dãn rộng do tán sắc lượng tử.'],
-    ['v', 'Nhấn "Đo vị trí (Collapse)" để quan sát phép đo làm sụp đổ hàm sóng thành một hạt điểm xác định.']
+    ['i', 'Electron tự do (V = 0): Không chịu lực tác dụng, nghiệm phương trình Schrödinger là sóng phẳng Ψ(x,t) = A·e^{j(kx−ωt)}.'],
+    ['w', 'Dấu của số sóng k quyết định chiều truyền: k > 0 sóng chạy về +x, k < 0 sóng chạy ngược về −x; năng lượng E = ħ²k²/2m nhận mọi giá trị liên tục.'],
+    ['v', 'Bấm nhanh "Câu 1a (+8×10⁸)" và "Câu 1b (−15×10⁸)" để đối chiếu trực tiếp kết quả λ, p và động năng E của Bài tập 1!']
   ],
   react(S, k, P, say) {
-    const kVal = Math.abs(S.k) * 1e8;
-    const E = kVal !== 0 ? (HBAR * HBAR * kVal * kVal / (2 * ME * EV)) : 0;
-    const lam = S.k !== 0 ? (TAU / kVal * 1e10).toFixed(2) : '∞';
-    if (k === 'waveType') {
-      say('i', S.waveType === 'packet'
-        ? 'Chế độ Bó sóng Gauss: Tổng hợp nhiều sóng phẳng giúp định xứ electron (Δx hữu hạn), nhưng bó sóng sẽ dãn rộng dần theo thời gian.'
-        : 'Chế độ Sóng phẳng đơn sắc: Động lượng p = ħk chính xác tuyệt đối (Δp = 0) → Vị trí bất định hoàn toàn trên toàn bộ buồng!');
-    } else if (k === 'k' || k === 'pres') {
-      say('v', `k = ${S.k > 0 ? '+' : ''}${S.k.toFixed(1)}×10⁸ m⁻¹ → λ = ${lam} Å, Động năng E = ${E.toFixed(3)} eV.`);
-      if (S.k === 0) say('w', 'k = 0: Sóng lặng hoàn toàn, p = 0, E = 0.');
-    }
+    const kSI = S.k * 1e8;
+    const pSI = HBAR * kSI;
+    const E_eV = ((pSI * pSI) / (2 * ME)) / EV;
+    const lam = Math.abs(kSI) > 1 ? (TAU / Math.abs(kSI)) * 1e9 : Infinity;
+    say('v', `k = ${S.k.toFixed(1)}×10⁸ m⁻¹ → λ = ${isFinite(lam) ? lam.toFixed(2) + ' nm' : '∞'}, p = ${sci(pSI, 2)} kg·m/s, E = ${(E_eV * 1000).toFixed(1)} meV.`);
+    if (S.k < 0) say('w', 'k < 0: Sóng phẳng và vector động lượng p hướng ngược theo chiều âm trục x (−x), nhưng bước sóng λ và động năng E vẫn dương.');
   }
 };
 
 LD.well = {
   intro: [
-    ['i', 'Hộp lượng tử bán dẫn (GaAs kẹp giữa hai khối AlGaAs): Electron bị giam giữ giữa hai vách thế năng cực cao.'],
-    ['w', 'Đám mây sáng thể hiện mật độ xác suất |ψ_n(x)|². Tại các mặt nút (chấm đỏ), xác suất tìm thấy electron bằng 0 tuyệt đối.'],
-    ['w', 'Đường sóng xanh/tím dao động quay trong mặt phẳng phức tạo thành sóng dừng lượng tử với tần số tỉ lệ theo n².'],
-    ['i', 'Hiệu ứng phát xạ lượng tử: Khi bạn kéo n từ mức cao xuống mức thấp, electron lập tức phóng ra một PHOTON mang đúng màu quang phổ của ΔE!'],
-    ['v', 'Thử thu hẹp giếng a xuống 8–12 Å rồi kéo n từ 3 xuống 2 để thấy photon chuyển sang màu xanh/tím (năng lượng cao)!']
+    ['i', 'Giếng thế vô hạn 1 chiều (V = ∞ tại x = 0 và x = a): Sóng vật chất bị phản xạ qua lại tạo sóng dừng ψ_n(x) = √(2/a)·sin(nπx/a).'],
+    ['w', 'Điều kiện biên ψ(0) = ψ(a) = 0 ép năng lượng bị lượng tử hóa: E_n = n²π²ħ²/(2ma²) — tăng rất nhanh theo n² và tỉ lệ nghịch với a².'],
+    ['v', 'Giếng mặc định để a = 75 Å khớp Câu 2 (E₁ = 6.69 meV, E₂ = 26.8 meV, E₃ = 60.2 meV). Thử đổi n để xem phát/hấp thụ photon!']
   ],
   react(S, k, P, say) {
-    const n = Math.round(S.n), a_A = S.a;
-    const a_m = a_A * 1e-10;
+    const n = Math.round(S.n);
+    const a_m = S.a * 1e-10;
     const E1 = (Math.PI * Math.PI * HBAR * HBAR / (2 * ME * a_m * a_m)) / EV;
     const En = n * n * E1;
-    if (k === 'n') {
-      say('v', `Mức n = ${n}: E_${n} = ${En.toFixed(3)} eV = ${n * n}×E₁ (${n} bụng sóng, ${n - 1} mặt nút).`);
-      if (P.n && P.n !== n) {
-        const dE = Math.abs((P.n * P.n - n * n) * E1);
-        const wl = (H_PLANCK * C_LIGHT / (dE * EV)) * 1e9;
-        say('w', n < P.n
-          ? `Nhảy xuống (${P.n} → ${n}): Phát xạ photon năng lượng ΔE = ${dE.toFixed(2)} eV, bước sóng λ ≈ ${wl.toFixed(0)} nm!`
-          : `Nhảy lên (${P.n} → ${n}): Hấp thụ photon năng lượng ΔE = ${dE.toFixed(2)} eV để lên mức kích thích.`);
-      }
-    } else if (k === 'a') {
-      say('v', `Bề rộng giếng a = ${a_A} Å (${(a_A / 10).toFixed(1)} nm) → E₁ = ${E1.toFixed(3)} eV (tỉ lệ nghịch với a²).`);
-      say('w', a_A <= 16 ? 'Giam giữ lượng tử mạnh (Quantum Confinement): Khoảng cách mức năng lượng dãn rất rộng, photon phát ra dịch về phía xanh/UV.'
-                         : 'Giếng rộng hơn: Các mức năng lượng xít gần nhau dần về giới hạn cổ điển.');
-    }
+    say('v', `a = ${S.a} Å, n = ${n} → E_${n} = ${En < 0.1 ? (En * 1000).toFixed(2) + ' meV' : En.toFixed(3) + ' eV'} (E₁ = ${E1 < 0.1 ? (E1 * 1000).toFixed(2) + ' meV' : E1.toFixed(3) + ' eV'}).`);
+    if (k === 'a' && S.a <= 10) say('w', 'Giếng siêu hẹp (a nhỏ): Khoảng cách giữa các mức năng lượng vọt lên hàng eV do E ∝ 1/a²!');
   }
 };
 
 LD.step = {
   intro: [
-    ['i', 'Bộ giải số 1D-TDSE thực tế: Giải trực tiếp phương trình Schrödinger phụ thuộc thời gian tại mặt phân cách bậc thế V₀.'],
-    ['w', 'Khi E < V₀: Bó sóng đập vào vách tạo các gợn giao thoa dữ dội và THẤM SÂU vào lòng vùng cấm (màu cam) trước khi bật ngược lại!'],
-    ['w', 'Khi E ≥ V₀: Bó sóng tự tách thành 2 phần — một phần vẫn bị phản xạ ngược lại (đặc trưng sóng lượng tử) và phần còn lại truyền qua chậm hơn.'],
-    ['v', 'Tăng E tiến sát V₀ (nhưng vẫn nhỏ hơn V₀) để thấy độ sâu đâm xuyên δ = 1/κ tăng vọt và sóng lún sâu vào bức tường!']
+    ['i', 'Bậc thế năng khi E < V₀: Cơ học cổ điển cấm tuyệt đối hạt đi vào vùng x > 0, nhưng sóng lượng tử vẫn đâm xuyên một đoạn ngắn theo hàm mũ e^(−k₂x).'],
+    ['w', 'Mật độ xác suất tương đối tại độ sâu x so với mép biên là |ψ₂(x)|²/|ψ₂(0)|² = e^(−2k₂x), với k₂ = √(2m(V₀−E))/ħ.'],
+    ['v', 'Bấm nút "Câu 3 (5 / 15 / 40 Å)" để dịch đầu dò đúng 3 mốc của Bài tập 3 (E = 2.8 eV, V₀ = 3.5 eV) và kiểm tra kết quả 1.38%, 2.6×10⁻⁶, 1.3×10⁻¹⁵!']
   ],
   react(S, k, P, say) {
-    const E = S.E, V0 = S.V0;
-    if (E < V0) {
-      const kappa = Math.sqrt(2 * ME * (V0 - E) * EV) / HBAR;
-      const delta_nm = (1 / kappa * 1e9).toFixed(2);
-      say('v', `E = ${E.toFixed(2)} eV < V₀ = ${V0.toFixed(1)} eV → Độ sâu đâm xuyên δ = ${delta_nm} nm (κ = ${(kappa * 1e-9).toFixed(2)}×10⁹ m⁻¹).`);
-      say('w', 'Quan sát phần sóng màu cam thấm vào Vùng II rồi rút ra: đó là sóng tắt dần (evanescent wave) có thật trong tự nhiên!');
-    } else {
-      say('v', `E = ${E.toFixed(2)} eV ≥ V₀ = ${V0.toFixed(1)} eV: Hạt vượt bậc thế.`);
-      say('w', 'Ngay cả khi E > V₀, một phần bó sóng vẫn bị phản xạ tại ranh giới x = 0 — điều cơ học cổ điển không thể giải thích.');
+    if (S.E >= S.V0) {
+      say('w', `E = ${S.E.toFixed(1)} eV ≥ V₀ = ${S.V0.toFixed(1)} eV: Hạt vượt lên trên đỉnh bậc thế nên sóng truyền tiếp sang vùng II (chỉ phản xạ một phần).`);
+      return;
     }
+    const k2 = Math.sqrt(2 * ME * (S.V0 - S.E) * EV) / HBAR;
+    const pRel = Math.exp(-2 * k2 * (S.xProbe * 1e-10));
+    say('v', `E = ${S.E.toFixed(1)} eV, V₀ = ${S.V0.toFixed(1)} eV → k₂ = ${sci(k2, 2)} m⁻¹. Tại x = ${S.xProbe} Å: |ψ|²/|ψ(0)|² = ${pRel >= 0.001 ? (pRel * 100).toFixed(2) + '%' : sci(pRel, 2)}.`);
   }
 };
 
 LD.tunnel = {
   intro: [
-    ['i', 'Mặt cắt Transistor Nano (Source – Oxide – Drain): Mô phỏng dòng rò xuyên hầm lượng tử bằng bộ giải 1D-TDSE kết hợp Ampe kế thực.'],
-    ['w', 'Lớp cách điện Oxide hiển thị đúng số lớp nguyên tử (~0.28 nm/lớp). Khi d ≈ 1 nm, rào chỉ dày khoảng 3–4 lớp nguyên tử!'],
-    ['w', 'Sóng electron suy giảm theo hàm mũ bên trong lớp Oxide nhưng chưa kịp về 0 đã chạm tới cực Máng → Tái sinh thành sóng xanh lá và tạo dòng rò!'],
-    ['i', 'Thử đổi vật liệu sang GaAs (m* = 0.067 m₀): Hạt nhẹ hơn Silicon 14 lần khiến xác suất xuyên hầm và kim Ampe kế vọt lên dữ dội!'],
-    ['v', 'Kéo mỏng độ dày rào d xuống dưới 0.8 nm để thấy hiện tượng rò điện cổng — giới hạn vật lý của định luật Moore.']
+    ['i', 'Xuyên hầm lượng tử (Tunneling): Khi rào thế hữu hạn đủ mỏng (bề rộng a cỡ vài nm), đuôi hàm mũ chưa tắt hẳn đã chạm mép phải và tái sinh thành sóng chạy!'],
+    ['w', 'Hệ số xuyên hầm T ≈ 16(E/V₀)(1−E/V₀)·e^(−2k₂a) phụ thuộc cực nhạy theo hàm mũ vào độ dày a và khối lượng hiệu dụng m*.'],
+    ['v', 'Chuyển đổi giữa GaAs (m* = 0.067 m₀) và Silicon (m* = 1.08 m₀) ở Câu 4 (a = 15 Å, E = 0.2 eV, V₀ = 0.8 eV) để thấy kim dòng rò chênh nhau hơn 10.000 lần!']
   ],
   react(S, k, P, say) {
-    const mEff = S.mat === 'gaas' ? 0.067 * ME : 0.98 * ME;
-    const diffEV = Math.max(0, S.V0 - S.E);
-    const kappa = Math.sqrt(2 * mEff * diffEV * EV) / HBAR;
-    const kd = kappa * S.d * 1e-9;
-    const T = S.E < S.V0 ? 1 / (1 + ((S.V0 * S.V0) / (4 * S.E * (S.V0 - S.E))) * Math.pow(kd > 40 ? Math.exp(kd) * 0.5 : Math.sinh(kd), 2)) : 1;
-    say('v', `d = ${S.d.toFixed(1)} nm, E = ${S.E.toFixed(2)} eV, V₀ = ${S.V0.toFixed(1)} eV → Xác suất xuyên hầm T ≈ ${T * 100 >= 0.01 ? (T * 100).toFixed(2) + '%' : sci(T * 100, 1) + '%'}.`);
-    if (k === 'mat') {
-      say('w', S.mat === 'gaas'
-        ? 'GaAs (m* = 0.067 m₀): Khối lượng hiệu dụng cực nhỏ làm giảm hệ số suy giảm κ → Xuyên hầm mạnh gấp nhiều bậc độ lớn so với Silicon!'
-        : 'Silicon (m* = 0.98 m₀): Electron nặng hơn, suy giảm nhanh trong lớp Oxide nên giữ cách điện tốt hơn.');
-    } else if (k === 'd') {
-      say('w', S.d <= 0.9
-        ? 'Cảnh báo rò cổng (d ≤ 0.9 nm): Chỉ còn 2–3 lớp nguyên tử cách điện, transistor bị rò dòng mạnh và nóng lên dù đã ngắt!'
-        : 'Rào dày hơn làm xác suất T giảm theo hàm mũ e^{−2κd}, kim Ampe kế sụt nhanh về 0.');
+    const mRatio = S.mat === 'gaas' ? 0.067 : 1.08;
+    const E_eff = Math.min(S.E, S.V0 - 0.02);
+    const k2 = Math.sqrt(2 * mRatio * ME * (S.V0 - E_eff) * EV) / HBAR;
+    const r = E_eff / S.V0;
+    const T_wkb = 16 * r * (1 - r) * Math.exp(-2 * k2 * S.a * 1e-10);
+    say('v', `${S.mat === 'gaas' ? 'GaAs' : 'Silicon'} (a = ${S.a} Å): k₂ = ${sci(k2, 2)} m⁻¹, 2k₂a = ${(2 * k2 * S.a * 1e-10).toFixed(2)} → T_WKB ≈ ${T_wkb >= 0.001 ? (T_wkb * 100).toFixed(1) + '%' : sci(T_wkb, 2)}.`);
+    if (k === 'mat') say('w', S.mat === 'gaas' ? 'Electron trong GaAs nhẹ hơn trong Si 16 lần nên xuyên hầm cực mạnh!' : 'Electron trong Si có khối lượng hiệu dụng lớn nên xác suất xuyên hầm tụt giảm dữ dội.');
+  }
+};
+
+LD.asym = {
+  intro: [
+    ['i', 'Giếng thế bất đối xứng (Câu 5): Vùng I có rào hữu hạn V₀, Vùng II (0 < x < a) có V = 0, còn Vùng III là vách vô hạn V = ∞.'],
+    ['w', 'Tại x = 0 (vách hữu hạn), hàm sóng ψ và đạo hàm ψ′ liên tục nên có đuôi hàm mũ e^{+k₁x} rò sâu sang trái; tại x = a (vách vô hạn), ψ(a) = 0 tuyệt đối!'],
+    ['w', 'Khử các hệ số biên độ thu được phương trình siêu việt tan(k₂a) = −k₂/k₁ — chỉ nhận các mức năng lượng rời rạc thấp hơn mức của giếng vô hạn cùng bề rộng a.'],
+    ['v', 'Thử bấm "Ngưỡng mất mức" (V₀ = 0.4 eV, a = 4 Å) để thấy khi R ≤ π/2, giếng bất đối xứng không giữ nổi bất kỳ trạng thái liên kết nào!']
+  ],
+  react(S, k, P, say) {
+    const { R, states } = solveAsymWell(S.V0, S.a);
+    if (!states.length) {
+      say('w', `V₀ = ${S.V0.toFixed(1)} eV, a = ${S.a} Å → R = ${R.toFixed(2)} ≤ π/2 (1.57): Không có trạng thái liên kết nào tồn tại!`);
+      return;
+    }
+    const cur = states[clamp(Math.round(S.n) - 1, 0, states.length - 1)];
+    say('v', `Có ${states.length} mức liên kết. Mức n = ${cur.n}: E_${cur.n} = ${cur.E_eV.toFixed(3)} eV, xác suất rò sang Vùng I là ${(cur.pLeak * 100).toFixed(1)}%.`);
+    if (k === 'V0' && S.V0 >= 4.0) say('i', 'Khi V₀ càng lớn, đuôi sóng rò sang trái càng ngắn và E_n tiến sát giá trị của giếng thế vô hạn!');
+  }
+};
+
+LD.orbitals = {
+  intro: [
+    ['i', '4 số lượng tử (n, l, m, s) xác định duy nhất một trạng thái electron trong nguyên tử Hydro với chuỗi ràng buộc: 0 ≤ l ≤ n−1 và −l ≤ m ≤ l.'],
+    ['w', 'Khung trái dùng trực tiếp mặt cắt xz của mật độ |ψ_{nlm}|²: đếm vòng tối đồng tâm = số nút xuyên tâm (n−l−1), đếm vạch tối qua tâm = số nút góc (l).'],
+    ['w', 'Khung phải mô phỏng vector moment động lượng quỹ đạo L (dài √(l(l+1))ħ) tiến động quanh trục từ trường B với hình chiếu L_z = mħ và vector spin S (±½ħ).'],
+    ['v', 'Tăng từ trường B > 0 T để quan sát Hiệu ứng Zeeman tách phân lớp thành 2l+1 mức năng lượng, hoặc bấm "Bắn đo 40 e⁻" xem hạt rơi đúng vào các thùy sáng!']
+  ],
+  react(S, k, P, say) {
+    const n = Math.round(S.n), l = Math.min(Math.round(S.l), n - 1), m = clamp(Math.round(S.m), -l, l);
+    const sub = n + ['s', 'p', 'd', 'f'][l];
+    if (k === 'burst') {
+      say('v', `Đã bắn đo 40 electron trên orbital ${sub} (${n},${l},${m}): Các chấm sáng tập trung vào vùng sáng và tránh tuyệt đối các mặt nút!`);
+      return;
+    }
+    if (k === 'nodes') {
+      say('i', S.nodes ? `Đang soi mặt nút: ${n - l - 1} nút cầu xuyên tâm + ${l} nút góc = ${n - 1} nút.` : 'Đã ẩn lưới soi mặt nút.');
+      return;
+    }
+    if (k === 'B') {
+      const dE = m * 57.88 * S.B;
+      say('w', S.B > 0
+        ? `Hiệu ứng Zeeman ở B = ${S.B.toFixed(1)} T: Phân lớp ${sub} tách thành ${2 * l + 1} mức cách đều μ_B·B = ${(57.88 * S.B).toFixed(0)} µeV (m = ${m} dịch ${dE >= 0 ? '+' : ''}${dE.toFixed(0)} µeV).`
+        : 'Đã tắt từ trường (B = 0 T): Các trạng thái m khác nhau quay về cùng mức năng lượng suy biến.');
+      return;
+    }
+    say('v', `Orbital ${sub} (${n}, ${l}, ${m > 0 ? '+' : ''}${m}, ${S.s}): E_${n} = ${(-13.6 / (n * n)).toFixed(2)} eV, |L| = ${Math.sqrt(l * (l + 1)).toFixed(2)}ħ, L_z = ${m}ħ.`);
+  }
+};
+
+LD.stern = {
+  intro: [
+    ['i', 'Thí nghiệm Stern–Gerlach (1922): Chùm nguyên tử Bạc (Ag, electron hóa trị 5s¹ có l = 0) bay qua từ trường không đều N–S.'],
+    ['w', 'Vì l = 0, moment động lượng quỹ đạo bằng 0; thế nhưng chùm tia vẫn tách đúng làm 2 nhánh đối xứng → chứng minh electron có Spin nội tại s = ±½!'],
+    ['v', 'Chuyển sang "Dự đoán Cổ điển" để so sánh 1 vệt dài liên tục với 2 vết rời rạc của cơ học lượng tử, hoặc thử bấm "Đảo cực N ↔ S"!']
+  ],
+  react(S, k, P, say) {
+    if (k === 'mode') {
+      say('w', S.mode === 'quantum'
+        ? 'Chế độ Lượng tử: Hình chiếu spin chỉ nhận 2 giá trị rời rạc S_z = ±ħ/2 → tích lũy đúng 2 vết sắc nét trên màn.'
+        : 'Dự đoán Cổ điển: Nếu nam châm nguyên tử quay theo mọi góc ngẫu nhiên, chùm tia sẽ dàn đều thành 1 dải liên tục.');
+    } else if (k === 'flip') {
+      say('v', 'Đã đảo cực nam châm N ↔ S: Gradient từ trường đổi chiều khiến 2 nhánh spin ↑ và ↓ đổi vị trí trên màn dò.');
+    } else if (k === 'gradB') {
+      say('v', S.gradB === 0 ? 'Tắt từ trường (∂B/∂z = 0): Lực F_z = 0, toàn bộ chùm Ag đi thẳng vào 1 điểm chính giữa.' : `Gradient từ trường ∂B/∂z = ${S.gradB}%: Lực tách F_z tăng tỉ lệ thuận làm 2 vết rời xa nhau hơn.`);
     }
   }
 };
 
 LD.atom = {
   intro: [
-    ['i', 'Kính hiển vi Lượng tử 3D: Mô phỏng 2.500 điểm mật độ xác suất |ψ(r,θ,φ)|² trong không gian 3 chiều thực tế.'],
-    ['w', 'Dùng chuột kéo trực tiếp trên khung thí nghiệm để xoay orbital 3D theo mọi góc nhìn.'],
-    ['w', 'Hai màu tương phản biểu thị dấu pha hàm sóng (ψ > 0 và ψ < 0). Ranh giới giữa hai màu chính là mặt nút nơi |ψ|² = 0.'],
-    ['i', 'Chọn orbital 2s hoặc 3s rồi nhấn "Cắt lát 3D" để bổ đôi đám mây và nhìn thấy các lớp vỏ nút cầu đồng tâm bên trong.'],
-    ['v', 'Chuyển sang chế độ "Điền vỏ Pauli (H→Si)" để xem nguyên tử 3D cùng bảng điền spin ↑/↓ từ Hydro tới bán dẫn Silicon (Z=14).']
+    ['i', 'Nguyên lý loại trừ Pauli: Không có hai electron nào trong cùng nguyên tử có cùng bộ 4 số lượng tử (n, l, m, s) → mỗi ô orbital chứa tối đa 2 electron ngược spin (↑↓).'],
+    ['w', 'Ở chế độ "Bảng Pauli", kéo Z từ 1 đến 18 để xem thứ tự điền lớp vỏ K, L, M và Quy tắc Hund trên các phân lớp p.'],
+    ['v', 'Chuyển sang "Mây Orbital 3D" để kéo chuột xoay đám mây xác suất 3 chiều và bật "Cắt lát" để soi lõi bên trong orbital 2s!']
   ],
   react(S, k, P, say) {
     if (S.mode === 'orb') {
-      if (k === 'slice') {
-        say('w', S.slice === 'on'
-          ? 'Đã bật Cắt lát 3D: Quan sát rõ lõi trung tâm và các lớp vỏ ngược pha ngăn cách bởi mặt nút cầu tối!'
-          : 'Đã khôi phục đám mây 3D nguyên khối.');
-      } else {
-        const desc = {
-          '1s': 'Orbital 1s: Không có nút, đối xứng cầu hoàn toàn quanh hạt nhân.',
-          '2s': 'Orbital 2s: Có 1 mặt nút cầu tại r = 2a₀ ngăn cách lõi dương (xanh) và vỏ âm (hồng).',
-          '2p': 'Orbital 2p: Hai thùy hình quả tạ ngược pha, mặt phẳng nút đi ngang qua hạt nhân.',
-          '3s': 'Orbital 3s: Có 2 mặt nút cầu đồng tâm (3 lớp pha Xanh–Hồng–Xanh).',
-          '3d': 'Orbital 3d_z²: Hai thùy cực dọc trục z kèm vòng xuyến xích đạo ngược pha đặc trưng.'
-        };
-        say('v', desc[S.orb] || '');
-      }
-    } else {
-      const Z = Math.round(S.Z);
-      const names = ['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si'];
-      say('v', `Nguyên tố Z = ${Z} (${names[Z - 1]}): Đã cập nhật mô hình 3D và bảng ô lượng tử.`);
-      if (Z === 3) say('i', 'Liti (Z=3): Ô 1s đã kín 2 spin ngược nhau (↑↓) → Nguyên lý Pauli đẩy electron thứ 3 lên lớp 2s!');
-      else if (Z === 7) say('w', 'Nitơ (Z=7): Quy tắc Hund — 3 electron phân lớp 2p đứng riêng vào 3 ô với spin song song (↑ ↑ ↑).');
-      else if (Z === 14) say('i', 'SILICON (Z=14): Có đúng 4 electron hóa trị ở lớp n=3 (3s² 3p²), nền tảng của toàn bộ công nghiệp vi mạch bán dẫn!');
+      say('v', `Đám mây 3D orbital ${S.orb} (${S.slice === 'on' ? 'đang cắt lát xích đạo' : 'toàn khối 3D'}): Kéo chuột để xoay góc nhìn.`);
+      return;
     }
+    const Z = Math.round(S.Z);
+    if (Z === 3) say('i', 'Liti (Z=3): Ô 1s đã kín 2 spin ngược nhau (↑↓) → Nguyên lý Pauli đẩy electron thứ 3 lên lớp 2s!');
+    else if (Z === 7) say('w', 'Nitơ (Z=7): Quy tắc Hund — 3 electron phân lớp 2p đứng riêng vào 3 ô với spin song song (↑ ↑ ↑).');
+    else if (Z === 14) say('i', 'SILICON (Z=14): Có đúng 4 electron hóa trị ở lớp n=3 (3s² 3p²), nền tảng của toàn bộ công nghiệp vi mạch bán dẫn!');
+    else say('v', `${ELEMS[Z][1]} (${ELEMS[Z][0]}, Z = ${Z}): Đã cập nhật lớp vỏ nguyên tử và sơ đồ ô lượng tử Pauli.`);
   }
 };
 
@@ -1651,8 +1800,8 @@ const CSS = `
 .lb3-cv canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .lb3-c{display:flex;flex-wrap:wrap;gap:6px 12px;padding:5px 10px 8px;flex:none;align-items:center}
 .lb3-k{display:flex;align-items:center;gap:6px;font:500 11.5px/1 var(--font-ui);color:var(--mut)}
-.lb3-k input[type=range]{width:clamp(68px,7.5vw,112px);margin:0;accent-color:var(--main)}
-.lb3-k output{color:var(--ink);font-weight:700;min-width:3.2em}
+.lb3-k input[type=range]{width:clamp(64px,7vw,108px);margin:0;accent-color:var(--main)}
+.lb3-k output{color:var(--ink);font-weight:700;min-width:2.6em}
 .lb3-seg{display:inline-flex;background:var(--tint);border-radius:6px;padding:2px;gap:2px}
 .lb3-seg button,.lb3-btn{appearance:none;border:0;border-radius:5px;background:transparent;color:var(--mut);font:600 11.5px/1 var(--font-ui);padding:6px 9px;cursor:pointer;transition:color .15s,background .15s}
 .lb3-btn{background:var(--tint);color:var(--ink)}
@@ -1668,7 +1817,7 @@ const CSS = `
 .lab3-m{appearance:none;border:0;background:transparent;color:var(--sub);cursor:pointer;padding:2px 3px;margin-left:6px;border-radius:5px;vertical-align:middle;opacity:.65;line-height:0;transition:color .15s,opacity .15s,transform .15s}
 .lab3-m svg{width:.8em;height:.8em;min-width:14px;min-height:14px;display:inline-block;margin:0;background:none;border:0;border-radius:0;max-height:none}
 .lab3-m:hover,.lab3-m:focus-visible{color:var(--main);opacity:1;transform:rotate(-12deg) scale(1.15)}
-@media(max-width:900px){.lb3-win{width:100vw;height:100dvh;border-radius:0}.lb3-b{overflow:auto;display:flex;flex-direction:column}.lb3-p{min-height:300px;flex:none}}
+@media(max-width:900px){.lb3-win{width:100vw;height:100dvh;border-radius:0}.lb3-b{overflow:auto;display:flex;flex-direction:column}.lb3-p{min-height:280px;flex:none}}
 `;
 const FLASK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h4M6.8 2v4.2L3 12.6A1.2 1.2 0 0 0 4 14.4h8a1.2 1.2 0 0 0 1-1.8L9.2 6.2V2"/><path d="M4.6 10h6.8"/></svg>';
 
@@ -1685,7 +1834,7 @@ function ensureDom() {
   bodyEl = root.querySelector('.lb3-b'); tabsEl = root.querySelector('.lb3-tabs');
   LABS.forEach(l => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'lb3-tab'; b.dataset.id = l.id;
-    b.textContent = l.sec + ' · ' + l.name; b.onclick = () => show(l.id); tabsEl.appendChild(b);
+    b.textContent = (l.no || l.sec) + ' · ' + l.name; b.onclick = () => show(l.id); tabsEl.appendChild(b);
   });
   root.querySelector('.lb3-x').onclick = close;
   root.addEventListener('mousedown', e => { if (e.target === root) close(); });
@@ -1748,8 +1897,22 @@ function mkCtrl(tab, c, p) {
   const lab = document.createElement('span'); lab.textContent = c.l;
   const inp = document.createElement('input'); inp.type = 'range'; inp.min = c.min; inp.max = c.max; inp.step = c.step;
   const out = document.createElement('output'); w.append(lab, inp, out);
-  const sync = () => { inp.value = c.log ? Math.log10(S[c.k]) : S[c.k]; out.textContent = c.f(S[c.k]); };
-  inp.oninput = () => { S[c.k] = c.log ? Math.pow(10, +inp.value) : +inp.value; out.textContent = c.f(S[c.k]); touch(); };
+  const sync = () => {
+    if (c.dynRange) {
+      const [mn, mx] = c.dynRange(S);
+      inp.min = mn; inp.max = mx;
+      if (S[c.k] < mn) S[c.k] = mn;
+      if (S[c.k] > mx) S[c.k] = mx;
+    }
+    inp.value = c.log ? Math.log10(S[c.k]) : S[c.k];
+    out.textContent = c.f(S[c.k]);
+  };
+  inp.oninput = () => {
+    S[c.k] = c.log ? Math.pow(10, +inp.value) : +inp.value;
+    curPanels.forEach(q => q.syncCtrls && q.syncCtrls());
+    out.textContent = c.f(S[c.k]);
+    touch();
+  };
   inp.setAttribute('aria-label', c.l); p.syncs.push(sync); sync();
   return w;
 }
@@ -1766,7 +1929,7 @@ function show(id, panelIdx) {
     bodyEl.style.display = ''; bodyEl.style.gridTemplate = '';
   }
   tab.prev = Object.assign({}, tab.S);
-  tab.panels.concat([{ title: 'Nhật ký thí nghiệm', area: 'l', log: true }]).forEach((spec) => {
+  tab.panels.concat([{ title: 'Nhật ký thí nghiệm', area: 'l', log: true }]).forEach(spec => {
     const el = document.createElement('div'); el.className = 'lb3-p'; if (!mob) el.style.gridArea = spec.area;
     el.innerHTML = '<div class="lb3-t"></div><div class="lb3-cv"><canvas></canvas></div>';
     el.firstChild.textContent = spec.title;
@@ -1835,7 +1998,10 @@ const H3MAP = [
   [/^2\.1/, 'well', 0], [/^2\.2/, 'well', 0],
   [/^3\.1/, 'step', 0], [/^3\.2/, 'step', 0],
   [/^3\.3/, 'tunnel', 0], [/^3\.4/, 'tunnel', 0],
-  [/^4\.[1234567]/, 'atom', 0]
+  [/^4\.[1234]/, 'orbitals', 0],
+  [/^4\.5/, 'stern', 0],
+  [/^4\.[67]/, 'atom', 0],
+  [/^Câu 5/, 'asym', 0]
 ];
 function addMark(h, id, pi, title) {
   if (h.querySelector('.lab3-m')) return;
@@ -1846,7 +2012,7 @@ function addMark(h, id, pi, title) {
 function markLesson(rootEl) {
   if (!rootEl) return;
   rootEl.querySelectorAll('h2').forEach(h => {
-    const m = /^\s*(\d)\./.exec(h.textContent); if (!m) return;
+    const m = /^\s*(\d+)\./.exec(h.textContent); if (!m) return;
     const l = LABS.find(x => x.sec === +m[1]); if (l) addMark(h, l.id, null, l.name);
   });
   rootEl.querySelectorAll('h3').forEach(h => {

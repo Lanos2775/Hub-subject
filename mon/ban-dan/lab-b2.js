@@ -2,12 +2,15 @@
    lab-b2.js — PHÒNG THÍ NGHIỆM CƠ HỌC LƯỢNG TỬ BUỔI 2 (Mô phỏng Thực tế)
    - Tự chứa hoàn toàn: tự chèn CSS + HTML popup, đồng bộ 100% bảng màu & font trang.
    - Không biểu đồ, không ô HUD thừa, canvas sạch sẽ không có chữ mờ phụ trợ.
-   - 5 tab thí nghiệm nền tảng của Buổi 2:
-       1. Hiệu ứng quang điện: Ống chân không, đèn đơn sắc, điện áp hãm & Ampe kế
-       2. Khe đôi de Broglie: Bắn từng electron qua 2 khe hẹp & tích lũy vân giao thoa
-       3. Bất định Heisenberg: Khép mở khe hẹp Δy → chùm electron loe rộng Δp_y
-       4. Nguyên tử Bohr (H): Sóng dừng tròn 2πr = nλ, nhảy mức phát/hấp thụ photon
-       5. Tán xạ Compton: Va chạm photon tia X – electron, giãn bước sóng Δλ & giật lùi
+   - 8 tab thí nghiệm bao trọn lý thuyết nền tảng của Buổi 2:
+       1. Bức xạ vật đen (Planck): Lò hốc nung nóng, lăng kính tách phổ & khủng hoảng UV
+       2. Hiệu ứng quang điện: Ống chân không, đèn đơn sắc, điện áp hãm & Ampe kế
+       3. Tán xạ Compton: Va chạm photon tia X – electron, giãn bước sóng Δλ & giật lùi
+       4. Khe đôi de Broglie: Bắn từng electron qua 2 khe hẹp & tích lũy vân giao thoa
+       5. Nhiễu xạ Davisson–Germer: Tinh thể Ni (D = 2.15 Å), đầu dò xoay φ & điện kế
+       6. Bó sóng & Diễn giải Born: Chồng chập sóng, vận tốc nhóm v_g vs pha v_p & đo |ψ|²
+       7. Bất định Heisenberg: Khép mở khe hẹp Δy → chùm electron loe rộng Δp_y
+       8. Nguyên tử Bohr (H): Sóng dừng tròn 2πr = nλ, nhảy mức phát/hấp thụ photon
    - API: LabB2.open(tabId?, panelIndex?)  LabB2.close()  LabB2.mark(root)  LabB2.tabs()
    ========================================================================== */
 (function () {
@@ -78,6 +81,23 @@ function wlRGB(wl) {
   };
 }
 
+/* Chuyển nhiệt độ tuyệt đối T (K) sang màu phát sáng vật đen thực tế */
+function tempToRGB(T) {
+  const k = clamp(T, 1000, 12000) / 100;
+  let r, g, b;
+  if (k <= 66) {
+    r = 255;
+    g = clamp(99.47 * Math.log(Math.max(k, 1)) - 161.12, 0, 255);
+    b = k <= 19 ? 0 : clamp(138.52 * Math.log(k - 10) - 305.04, 0, 255);
+  } else {
+    r = clamp(329.70 * Math.pow(k - 60, -0.1332), 0, 255);
+    g = clamp(288.12 * Math.pow(k - 60, -0.0755), 0, 255);
+    b = 255;
+  }
+  const R = Math.round(r), G = Math.round(g), B = Math.round(b);
+  return { css: `rgb(${R},${G},${B})`, rgba: a => `rgba(${R},${G},${B},${a})` };
+}
+
 /* ---------- Tiện ích vẽ Canvas ---------- */
 function txt(ctx, s, x, y, col, size, al, wt, fam) {
   ctx.font = (wt || 600) + ' ' + (size || 12) + 'px ' + (fam || FONT);
@@ -137,7 +157,214 @@ function drawChamber(ctx, x, y, w, h, r = 8) {
 const LABS = [];
 
 /* ==========================================================================
-   TAB 1 — HIỆU ỨNG QUANG ĐIỆN (PHOTOELECTRIC EFFECT)
+   TAB 1 — BỨC XẠ VẬT ĐEN & LƯỢNG TỬ HÓA PLANCK (E = n·hν)
+   Lò hốc vật đen nung nóng ở nhiệt độ T (1500 K → 9000 K):
+   - Bên trong hốc lò chứa các photon bức xạ nhiệt theo đúng phổ Planck
+   - Chùm bức xạ thoát qua khe hẹp đi qua lăng kính tán sắc thành dải quang phổ thực
+   - Chuyển sang "Cổ điển (Rayleigh-Jeans)" để thấy khủng hoảng tử ngoại (tràn ngập UV)!
+   ========================================================================== */
+LABS.push({
+  id: 'blackbody', name: 'Vật đen (Planck)', no: '1', secs: [1],
+  S: { T: 4500, mode: 'planck' },
+  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  panels: [{
+    title: 'Lò hốc vật đen & Lăng kính tách phổ — Lượng tử Planck vs Khủng hoảng tử ngoại',
+    area: 'a', anim: true,
+    ctrls: [
+      { k: 'T', l: 'Nhiệt độ lò T', min: 1500, max: 9000, step: 100, f: v => v + ' K' },
+      { k: 'mode', seg: [['planck', 'Lượng tử Planck'], ['classic', 'Cổ điển (Khủng hoảng UV)']] },
+      { btn: '3000 K (Đèn)', fn: p => { p.S.T = 3000; p.syncCtrls(); queueReact(p.tab, 'T'); } },
+      { btn: '5778 K (Mặt Trời)', fn: p => { p.S.T = 5800; p.syncCtrls(); queueReact(p.tab, 'T'); } },
+      { btn: '8500 K (Sao xanh)', fn: p => { p.S.T = 8500; p.syncCtrls(); queueReact(p.tab, 'T'); } }
+    ],
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, st = p.st, T = S.T;
+      const isClassic = S.mode === 'classic';
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawChamber(ctx, chX, chY, chW, chH, 10);
+
+      // Định luật dịch chuyển Wien: λ_max (nm) = 2.8978×10⁶ / T(K)
+      const lamPeak = 2897772 / T;
+      const E_peak = 1239.84 / lamPeak;
+      const hc_k = 1.43878e7; // nm·K
+      const planckVal = wl => {
+        const x = clamp(hc_k / (wl * T), 0.01, 80);
+        return Math.pow(500 / wl, 5) / (Math.exp(x) - 1);
+      };
+      const refLam = clamp(lamPeak, 240, 1050);
+      const maxP = planckVal(refLam) || 1;
+      const tCol = isClassic ? { css: 'rgb(155,95,255)', rgba: a => `rgba(155,95,255,${a})` } : tempToRGB(T);
+
+      // Bố cục: Trái = Lò hốc vật đen, Giữa = Lăng kính tán sắc, Phải = Màn quang phổ
+      const midY = chY + chH * 0.53;
+      const cavR = Math.min(chW * 0.145, chH * 0.28);
+      const cavX = chX + cavR + 28;
+      const holeX = cavX + cavR + 12;
+      const prismX = chX + chW * 0.54;
+      const prismSz = Math.min(chW * 0.12, chH * 0.22);
+      const scrX = chX + chW - 34;
+      const scrTop = chY + 42, scrBot = chY + chH - 22, scrH = scrBot - scrTop;
+
+      // Hàm đổi bước sóng [240..900 nm] sang tung độ trên màn quang phổ (tím/UV bị bẻ nhiều xuống dưới hoặc lên trên)
+      const wlToScrY = wl => {
+        const u = clamp((wl - 240) / (900 - 240), 0, 1); // 0 = UV (gãy mạnh nhất), 1 = IR (gãy ít nhất)
+        return scrTop + (1 - u) * scrH;
+      };
+
+      // Khởi tạo photon trong lò + chùm thoát ra
+      if (!st.cavPh) {
+        st.cavPh = Array.from({ length: 28 }, () => ({
+          x: rnd(-0.6, 0.6), y: rnd(-0.6, 0.6),
+          vx: rnd(-1, 1), vy: rnd(-1, 1), wl: 550
+        }));
+        st.beamPh = [];
+        st.bins = new Float32Array(64);
+        st.acc = 0;
+      }
+      const key = T + '_' + S.mode;
+      if (st.key !== key) { st.key = key; st.bins.fill(0); }
+
+      const sampleWL = () => {
+        if (isClassic) {
+          // Phân bố Rayleigh-Jeans ~ 1/λ⁴: dồn dữ dội về bước sóng cực ngắn UV!
+          const u = Math.random();
+          return 240 + Math.pow(u, 2.6) * 480;
+        }
+        for (let tr = 0; tr < 28; tr++) {
+          const wl = rnd(240, 900);
+          if (Math.random() < planckVal(wl) / maxP) return wl;
+        }
+        return clamp(lamPeak, 240, 900);
+      };
+
+      // 1. Vẽ vỏ lò hốc vật đen cách nhiệt với lỗ thoát khe hẹp bên phải
+      const outerR = cavR + 14;
+      ctx.beginPath();
+      ctx.arc(cavX, midY, outerR, 0.14, TAU - 0.14);
+      ctx.strokeStyle = C.sub;
+      ctx.lineWidth = 14;
+      ctx.stroke();
+
+      // Ruột hốc phát sáng rực theo nhiệt độ T
+      const gCav = ctx.createRadialGradient(cavX, midY, cavR * 0.1, cavX, midY, cavR);
+      gCav.addColorStop(0, tCol.rgba(0.45));
+      gCav.addColorStop(0.75, tCol.rgba(0.22));
+      gCav.addColorStop(1, tCol.rgba(0.55));
+      ctx.fillStyle = gCav;
+      ctx.beginPath(); ctx.arc(cavX, midY, cavR, 0, TAU); ctx.fill();
+
+      // Các photon phản xạ hỗn loạn bên trong hốc lò
+      st.cavPh.forEach(ph => {
+        const sp = 1.1 + (T / 9000) * 1.4;
+        ph.x += ph.vx * sp * dt;
+        ph.y += ph.vy * sp * dt;
+        const r = Math.hypot(ph.x, ph.y);
+        if (r > 0.85) {
+          const nx = ph.x / r, ny = ph.y / r;
+          const d = ph.vx * nx + ph.vy * ny;
+          ph.vx -= 2 * d * nx; ph.vy -= 2 * d * ny;
+          ph.x = nx * 0.84; ph.y = ny * 0.84;
+          ph.wl = sampleWL();
+        }
+        const rgb = wlRGB(ph.wl);
+        glowDot(ctx, cavX + ph.x * cavR, midY + ph.y * cavR, 2.6, '#ffffff', rgb.rgba(0.85));
+      });
+
+      // 2. Chùm bức xạ tổng hợp thoát từ lỗ lò tới lăng kính
+      const beamG = ctx.createLinearGradient(holeX, midY, prismX - prismSz * 0.5, midY);
+      beamG.addColorStop(0, tCol.rgba(0.65));
+      beamG.addColorStop(1, tCol.rgba(0.22));
+      ctx.fillStyle = beamG;
+      ctx.fillRect(holeX - 4, midY - 6, prismX - prismSz * 0.45 - holeX + 4, 12);
+
+      // 3. Sinh photon thoát ra khỏi lỗ, đi qua lăng kính và tách về đúng vị trí bước sóng trên màn
+      st.acc += dt * (isClassic ? 52 : 28 + (T / 9000) * 20);
+      while (st.acc >= 1) {
+        st.acc -= 1;
+        const wl = sampleWL();
+        if (st.beamPh.length < 75) {
+          st.beamPh.push({ wl, p: 0, ty: wlToScrY(wl) + rnd(-2.5, 2.5) });
+        }
+      }
+
+      // Quạt ánh sáng tán sắc từ lăng kính tới màn
+      const fanBands = 32;
+      for (let i = 0; i < fanBands; i++) {
+        const wl = 250 + (i / (fanBands - 1)) * 640;
+        const inten = isClassic ? Math.pow(250 / wl, 3.2) : planckVal(wl) / maxP;
+        if (inten < 0.03) continue;
+        const y1 = wlToScrY(wl);
+        const rgb = wlRGB(wl);
+        ln(ctx, prismX + prismSz * 0.35, midY, scrX - 10, y1, rgb.rgba(clamp(inten * 0.28, 0.02, 0.28)), 4.5);
+      }
+
+      // Vẽ từng lượng tử photon bay từ lò → lăng kính → màn
+      for (let i = st.beamPh.length - 1; i >= 0; i--) {
+        const ph = st.beamPh[i];
+        ph.p += dt * 1.65;
+        let x, y;
+        if (ph.p < 0.45) {
+          const u = ph.p / 0.45;
+          x = holeX + (prismX - holeX) * u;
+          y = midY;
+        } else {
+          const u = (ph.p - 0.45) / 0.55;
+          x = prismX + (scrX - 10 - prismX) * u;
+          y = midY + (ph.ty - midY) * u;
+        }
+        const rgb = wlRGB(ph.wl);
+        glowDot(ctx, x, y, 2.8, '#ffffff', rgb.rgba(0.9));
+        if (ph.p >= 1) {
+          const bi = clamp(Math.floor(((ph.ty - scrTop) / scrH) * st.bins.length), 0, st.bins.length - 1);
+          st.bins[bi] = Math.min(st.bins[bi] + 1.4, 18);
+          st.beamPh.splice(i, 1);
+        }
+      }
+      for (let i = 0; i < st.bins.length; i++) st.bins[i] = Math.max(0, st.bins[i] - dt * 1.2);
+
+      // 4. Lăng kính thủy tinh tam giác cân ở giữa
+      ctx.beginPath();
+      ctx.moveTo(prismX, midY - prismSz * 0.85);
+      ctx.lineTo(prismX + prismSz * 0.78, midY + prismSz * 0.65);
+      ctx.lineTo(prismX - prismSz * 0.78, midY + prismSz * 0.65);
+      ctx.closePath();
+      ctx.fillStyle = hexA(C.c2, 0.16); ctx.fill();
+      ctx.strokeStyle = hexA(C.ink, 0.65); ctx.lineWidth = 1.6; ctx.stroke();
+
+      // 5. Màn quang phổ tích lũy màu thật bên phải (IR trên → Khả kiến giữa → UV dưới)
+      rr(ctx, scrX - 10, scrTop, 20, scrH, 4);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = C.g; ctx.lineWidth = 1.2; ctx.stroke();
+      const bh = scrH / st.bins.length;
+      for (let i = 0; i < st.bins.length; i++) {
+        const wl = 900 - ((i + 0.5) / st.bins.length) * (900 - 240);
+        const frac = clamp(st.bins[i] / 10, 0, 1);
+        if (frac < 0.02) continue;
+        const rgb = wlRGB(wl);
+        ctx.fillStyle = rgb.rgba(0.25 + frac * 0.75);
+        ctx.fillRect(scrX - 8, scrTop + i * bh, 16, Math.max(1.5, bh));
+      }
+      txt(ctx, 'IR', scrX, scrTop - 9, C.c4, 9, 'center', 700, MONO);
+      txt(ctx, 'UV', scrX, scrBot + 10, C.c5, 9, 'center', 700, MONO);
+
+      // Mốc đỉnh Wien λ_max trên màn
+      if (!isClassic && lamPeak >= 240 && lamPeak <= 900) {
+        const py = wlToScrY(lamPeak);
+        ln(ctx, scrX - 24, py, scrX - 11, py, C.main, 2);
+        txt(ctx, 'λ_max', scrX - 28, py, C.main, 9.5, 'right', 700, MONO);
+      }
+
+      // Thông số rõ nét ở mép trên
+      txt(ctx, 'T = ' + T + ' K  |  λ_max (Wien) = ' + lamPeak.toFixed(0) + ' nm',
+        chX + 14, chY + 18, C.ink, 11, 'left', 700, MONO);
+      txt(ctx, isClassic ? 'CỔ ĐIỂN: BỨC XẠ UV BÙNG NỔ VÔ HẠN (I → ∞)' : 'E_đỉnh = hν = ' + E_peak.toFixed(2) + ' eV  |  Lượng tử E = nhν',
+        chX + chW - 14, chY + 18, isClassic ? C.err : C.main, 10.8, 'right', 700, MONO);
+    }
+  }]
+});
+
+/* ==========================================================================
+   TAB 2 — HIỆU ỨNG QUANG ĐIỆN (PHOTOELECTRIC EFFECT)
    Ống chân không với nguồn đèn đơn sắc chiếu bó photon (màu quang phổ thật)
    vào bản Cathode kim loại (Cs, Na, Al, Cu), bật electron quang điện bay sang
    Anode dưới tác dụng điện áp hãm / tăng tốc V + Ampe kế kim cơ.
@@ -150,7 +377,7 @@ const METALS = {
 };
 
 LABS.push({
-  id: 'photo', name: 'Quang điện', no: '1', secs: [1],
+  id: 'photo', name: 'Quang điện', no: '2', secs: [1],
   S: { metal: 'na', wl: 360, inten: 65, V: 0.0 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -339,14 +566,14 @@ LABS.push({
 });
 
 /* ==========================================================================
-   TAB 2 — THÍ NGHIỆM KHE ĐÔI & SÓNG DE BROGLIE (λ = h / p)
+   TAB 4 — THÍ NGHIỆM KHE ĐÔI & SÓNG DE BROGLIE (λ = h / p)
    Bắn từng electron rời rạc qua 2 khe hẹp trong buồng chân không:
    - Trường sóng de Broglie giao thoa từ 2 khe lan truyền tới màn huỳnh quang
    - Mỗi electron đập vào màn như một hạt điểm rời rạc nhưng tích lũy dần thành
      hệ vân sáng – tối giao thoa! Tăng điện áp gia tốc U → λ ngắn lại → vân xít lại.
    ========================================================================== */
 LABS.push({
-  id: 'duality', name: 'Khe đôi de Broglie', no: '2', secs: [2],
+  id: 'duality', name: 'Khe đôi de Broglie', no: '4', secs: [2],
   S: { U: 50, slits: 'two', rate: 60 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -503,13 +730,386 @@ LABS.push({
 });
 
 /* ==========================================================================
-   TAB 3 — NGUYÊN LÝ BẤT ĐỊNH HEISENBERG (Δy · Δp_y ≥ ħ/2)
+   TAB 5 — THÍ NGHIỆM NHIỄU XẠ ELECTRON DAVISSON–GERMER (1927)
+   Bằng chứng thực nghiệm đầu tiên chứng minh electron có tính sóng:
+   - Súng phóng chùm electron vuông góc vào mặt tinh thể Niken (D = 2.15 Å)
+   - Xoay đầu dò Faraday theo góc φ (15° → 85°): khi thỏa mãn D·sinφ = n·λ,
+     sóng phản xạ từ các nguyên tử Ni tăng cường cùng pha làm kim điện kế vọt đỉnh!
+   - Đỉnh lịch sử nổi tiếng: U = 54 V (λ = 1.67 Å) tại góc φ = 50°!
+   ========================================================================== */
+LABS.push({
+  id: 'davisson', name: 'Davisson–Germer', no: '5', secs: [2],
+  S: { U: 54, phi: 50 },
+  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  panels: [{
+    title: 'Buồng nhiễu xạ Davisson–Germer — Tinh thể Niken (D = 2.15 Å) & Đầu dò xoay φ',
+    area: 'a', anim: true,
+    ctrls: [
+      { k: 'U', l: 'Áp gia tốc U', min: 20, max: 160, step: 2, f: v => v + ' V' },
+      { k: 'phi', l: 'Góc đầu dò φ', min: 15, max: 85, step: 1, f: v => v + '°' },
+      { btn: 'Đỉnh lịch sử (54V · 50°)', fn: p => { p.S.U = 54; p.S.phi = 50; p.syncCtrls(); queueReact(p.tab, 'U'); } }
+    ],
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, st = p.st;
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawChamber(ctx, chX, chY, chW, chH, 10);
+
+      const D_Ni = 2.15; // Å (khoảng cách hàng nguyên tử bề mặt Niken)
+      const lam = 12.264 / Math.sqrt(S.U); // Å
+      const phiRad = (S.phi * Math.PI) / 180;
+      const ratio = (D_Ni * Math.sin(phiRad)) / lam;
+
+      // Cường độ nhiễu xạ mạng tinh thể 1D (N = 6 hàng nguyên tử đồng pha)
+      const diffIntensity = angRad => {
+        const r = (D_Ni * Math.sin(angRad)) / lam;
+        const x = Math.PI * r;
+        const s = Math.sin(x);
+        const f = Math.abs(s) < 1e-4 ? 1 : Math.sin(6 * x) / (6 * s);
+        return clamp(f * f, 0, 1);
+      };
+      const detI = diffIntensity(phiRad);
+      const isPeak = detI > 0.65 && ratio > 0.6;
+
+      // Hình học buồng chân không: tinh thể Ni đặt ngang ở đáy giữa, súng bắn thẳng từ đỉnh xuống
+      const cx = chX + chW * 0.44;
+      const crysY = chY + chH - 44;
+      const railR = Math.min(chW * 0.44, chH - 96);
+      const gunY = crysY - railR;
+
+      // 1. Sóng tới de Broglie đi thẳng từ súng electron xuống tinh thể Ni
+      const wlPx = clamp(lam * 9, 8, 26);
+      const shift = (t * 48) % wlPx;
+      for (let y = gunY + 14 + shift; y < crysY - 6; y += wlPx) {
+        ln(ctx, cx - 18, y, cx + 18, y, hexA(C.c2, 0.55), 1.8);
+      }
+
+      // 2. Đường ray cung tròn của đầu dò Faraday & quầng sáng nhiễu xạ dọc theo ray
+      ctx.beginPath();
+      ctx.arc(cx, crysY, railR, -Math.PI * 0.5 + 0.22, -0.06);
+      ctx.strokeStyle = C.g; ctx.lineWidth = 2; ctx.stroke();
+
+      // Hiển thị các búp sóng phản xạ cực đại tỏa ra từ tinh thể vào cung ray
+      for (let deg = 15; deg <= 85; deg += 1.5) {
+        const a = (deg * Math.PI) / 180;
+        const inten = diffIntensity(a);
+        if (inten < 0.08) continue;
+        const dirA = -Math.PI * 0.5 + a;
+        const lx = cx + Math.cos(dirA) * (railR - 4);
+        const ly = crysY + Math.sin(dirA) * (railR - 4);
+        ln(ctx, cx, crysY - 4, lx, ly, hexA(C.c1, inten * 0.22), 3.2);
+        glowDot(ctx, lx, ly, 2.2 + inten * 3, hexA(C.ink, inten * 0.8), hexA(C.c1, inten * 0.8));
+      }
+
+      // 3. Khối tinh thể Niken (Ni) với 2 lớp nguyên tử đều đặn
+      const crysW = 128;
+      rr(ctx, cx - crysW / 2, crysY, crysW, 28, 4);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = C.c1; ctx.lineWidth = 1.4; ctx.stroke();
+      for (let row = 0; row < 2; row++) {
+        for (let i = -3; i <= 3; i++) {
+          dot(ctx, cx + i * 17, crysY + 8 + row * 12, 3.6, row === 0 ? C.c1 : hexA(C.c1, 0.55));
+        }
+      }
+      txt(ctx, 'Ni', cx - crysW / 2 - 14, crysY + 14, C.c1, 10.5, 'right', 700, MONO);
+
+      // 4. Súng phóng electron phía trên
+      rr(ctx, cx - 18, gunY - 14, 36, 24, 5);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = C.main; ctx.lineWidth = 1.4; ctx.stroke();
+      glowDot(ctx, cx, gunY + 10, 4, C.ink, hexA(C.main, 0.85));
+
+      // 5. Đầu dò Faraday di động xoay đúng góc φ trên cung tròn
+      const detAng = -Math.PI * 0.5 + phiRad;
+      const dx = cx + Math.cos(detAng) * railR;
+      const dy = crysY + Math.sin(detAng) * railR;
+      // Cung đánh dấu góc φ
+      ctx.beginPath(); ctx.arc(cx, crysY, 44, -Math.PI * 0.5, detAng);
+      ctx.strokeStyle = C.main; ctx.lineWidth = 1.6; ctx.stroke();
+      txt(ctx, 'φ=' + S.phi + '°', cx + 52 * Math.sin(phiRad * 0.5), crysY - 52 * Math.cos(phiRad * 0.5), C.main, 10, 'center', 700, MONO);
+
+      // Chùm hạt electron bắn xuống và phản xạ vào đầu dò theo cường độ thực
+      if (!st.el) { st.el = []; st.acc = 0; st.needle = 0; }
+      st.acc += dt * 28;
+      while (st.acc >= 1) {
+        st.acc -= 1;
+        if (st.el.length < 55) {
+          // Chọn góc phản xạ ưu tiên vào các cực đại Bragg
+          let scatDeg = rnd(15, 85);
+          for (let tr = 0; tr < 12; tr++) {
+            const cand = rnd(15, 85);
+            if (Math.random() < diffIntensity((cand * Math.PI) / 180) + 0.04) { scatDeg = cand; break; }
+          }
+          st.el.push({ p: 0, ang: -Math.PI * 0.5 + (scatDeg * Math.PI) / 180 });
+        }
+      }
+      for (let i = st.el.length - 1; i >= 0; i--) {
+        const e = st.el[i];
+        e.p += dt * 1.45;
+        let x, y;
+        if (e.p < 0.45) {
+          const u = e.p / 0.45;
+          x = cx; y = gunY + 10 + (crysY - gunY - 10) * u;
+        } else {
+          const u = (e.p - 0.45) / 0.55;
+          x = cx + Math.cos(e.ang) * (railR * u);
+          y = crysY + Math.sin(e.ang) * (railR * u);
+        }
+        dot(ctx, x, y, 2.3, e.p < 0.45 ? C.c2 : C.c1);
+        if (e.p >= 1) st.el.splice(i, 1);
+      }
+
+      // Thân đầu dò Faraday hướng về tâm tinh thể
+      ctx.save();
+      ctx.translate(dx, dy);
+      ctx.rotate(detAng + Math.PI * 0.5);
+      rr(ctx, -11, -12, 22, 24, 4);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = isPeak ? C.c1 : C.main; ctx.lineWidth = 2; ctx.stroke();
+      if (detI > 0.2) glowDot(ctx, 0, 10, 4.5, C.ink, hexA(C.c1, detI));
+      ctx.restore();
+
+      // 6. Điện kế đo dòng electron thu được ở góc trái buồng
+      const mW = 104, mH = 74, mX = chX + 18, mY = chY + chH * 0.44;
+      rr(ctx, mX, mY, mW, mH, 6);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = isPeak ? C.c1 : C.g; ctx.lineWidth = 1.4; ctx.stroke();
+      const mcx = mX + mW / 2, mcy = mY + 46, mr = 28;
+      ctx.beginPath(); ctx.arc(mcx, mcy, mr, Math.PI * 1.12, Math.PI * 1.88);
+      ctx.strokeStyle = C.g; ctx.lineWidth = 2.6; ctx.stroke();
+      st.needle += (detI - st.needle) * Math.min(1, dt * 9);
+      const nAng = Math.PI * (1.12 + st.needle * 0.76);
+      ln(ctx, mcx, mcy, mcx + Math.cos(nAng) * (mr - 3), mcy + Math.sin(nAng) * (mr - 3), isPeak ? C.c1 : C.main, 2.2);
+      dot(ctx, mcx, mcy, 3, C.ink);
+      txt(ctx, 'ĐIỆN KẾ', mcx, mY + 12, C.ink, 9, 'center', 700, MONO);
+      txt(ctx, Math.round(st.needle * 100) + ' %', mcx, mY + 62, isPeak ? C.c1 : C.ink, 11, 'center', 700, MONO);
+
+      // Thông số rõ nét ở mép trên
+      txt(ctx, 'U = ' + S.U + ' V  |  λ_dB = ' + lam.toFixed(2) + ' Å  |  D(Ni) = 2.15 Å',
+        chX + 14, chY + 18, C.ink, 11, 'left', 700, MONO);
+      const peakMsg = isPeak
+        ? 'CỰC ĐẠI GIAO THOA (n=' + Math.max(1, Math.round(ratio)) + ')  |  D·sinφ/λ = ' + ratio.toFixed(2)
+        : 'D·sinφ / λ = ' + ratio.toFixed(2);
+      txt(ctx, peakMsg, chX + chW - 14, chY + 18, isPeak ? C.c1 : C.main, 10.8, 'right', 700, MONO);
+    }
+  }]
+});
+
+/* ==========================================================================
+   TAB 6 — BÓ SÓNG DE BROGLIE, VẬN TỐC PHA / NHÓM (v_p, v_g) & DIỄN GIẢI BORN
+   - Chồng chập 1 / 5 / 15 sóng phẳng tạo thành bó sóng định xứ cho hạt lượng tử
+   - Theo dõi trực tiếp đỉnh sóng pha (v_p) trượt bên trong đường bao bó sóng (v_g = 2v_p)
+   - Nút "Đo hạt (Sụp đổ |ψ|²)" kiểm chứng quy tắc xác suất Born & chuẩn hóa ∫|ψ|²dx = 1
+   ========================================================================== */
+LABS.push({
+  id: 'packet', name: 'Bó sóng & Born', no: '6', secs: [3],
+  S: { Ncomp: '15', k0: 2.6, disp: 'free' },
+  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  panels: [{
+    title: 'Chồng chập sóng vật chất — Vận tốc nhóm v_g vs Vận tốc pha v_p & Sụp đổ |ψ|²',
+    area: 'a', anim: true,
+    ctrls: [
+      { k: 'Ncomp', seg: [['1', '1 sóng (Đơn sắc)'], ['5', '5 sóng'], ['15', '15 sóng (Bó định xứ)']] },
+      { k: 'k0', l: 'Số sóng k₀', min: 1.4, max: 4.0, step: 0.2, f: v => v.toFixed(1) },
+      { k: 'disp', seg: [['free', 'Hạt tự do (v_g = 2v_p)'], ['nodisp', 'Không tán sắc (v_g = v_p)']] },
+      { btn: 'Đo hạt (Sụp đổ |ψ|²)', fn: p => { p.st.measure = true; } }
+    ],
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, st = p.st;
+      const N = parseInt(S.Ncomp, 10);
+      const isFree = S.disp === 'free';
+      const pad = 12, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawChamber(ctx, chX, chY, chW, chH, 10);
+
+      // Thiết lập dải ống dẫn sóng lượng tử và màn tích lũy phép đo Born bên dưới
+      const tubeX = chX + 18, tubeW = chW - 36;
+      const tubeTop = chY + 42, tubeH = chH * 0.62;
+      const midY = tubeTop + tubeH * 0.5;
+      const stripY = tubeTop + tubeH + 14, stripH = Math.max(28, chY + chH - stripY - 12);
+
+      // Tạo bộ sóng thành phần (k_j, ω_j, trọng số Gauss)
+      const key = N + '_' + S.k0.toFixed(1) + '_' + S.disp;
+      if (!st.comp || st.key !== key) {
+        st.key = key;
+        st.simT = 0;
+        st.hits = [];
+        st.bins = new Float32Array(64);
+        const dkSpan = 0.55;
+        const comps = [];
+        const alpha = 0.14;
+        let wSum = 0;
+        for (let j = 0; j < N; j++) {
+          const frac = N === 1 ? 0 : (j / (N - 1) - 0.5) * 2;
+          const kj = S.k0 + frac * dkSpan;
+          const wj = isFree ? alpha * kj * kj : alpha * S.k0 * kj; // v_g = 2αk₀ vs αk₀
+          const amp = N === 1 ? 1 : Math.exp(-(frac * frac) * 1.8);
+          comps.push({ k: kj, w: wj, a: amp });
+          wSum += amp;
+        }
+        comps.forEach(c => { c.a /= wSum; });
+        st.comp = comps;
+        st.vp = (isFree ? alpha * S.k0 : alpha * S.k0);
+        st.vg = (isFree ? 2 * alpha * S.k0 : alpha * S.k0);
+      }
+
+      // Chạy thời gian bó sóng từ x0 = 0.14 đến 0.88 rồi lặp mượt
+      const xSpan = 42; // chiều dài ống trong đơn vị không gian mô phỏng
+      const x0 = 7.0;
+      st.simT += dt * 3.8;
+      const xg = x0 + st.vg * st.simT;
+      if (xg > xSpan - 5) st.simT = 0;
+
+      // Đánh giá ψ(x) = Re + i·Im tại 180 điểm lưới
+      const M = 180;
+      const reArr = new Float32Array(M), imArr = new Float32Array(M), prArr = new Float32Array(M);
+      let maxPr = 1e-6;
+      for (let i = 0; i < M; i++) {
+        const x = (i / (M - 1)) * xSpan;
+        let re = 0, im = 0;
+        for (let j = 0; j < st.comp.length; j++) {
+          const c = st.comp[j];
+          const ph = c.k * (x - x0) - c.w * st.simT;
+          re += c.a * Math.cos(ph);
+          im += c.a * Math.sin(ph);
+        }
+        reArr[i] = re; imArr[i] = im;
+        const pr = re * re + im * im;
+        prArr[i] = pr;
+        if (pr > maxPr) maxPr = pr;
+      }
+
+      // 1. Khung ống sóng
+      rr(ctx, tubeX, tubeTop, tubeW, tubeH, 6);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = C.g; ctx.lineWidth = 1.2; ctx.stroke();
+
+      ctx.save();
+      rr(ctx, tubeX + 1, tubeTop + 1, tubeW - 2, tubeH - 2, 5);
+      ctx.clip();
+
+      const ampPx = tubeH * 0.40;
+      // Vầng mật độ xác suất |ψ(x,t)|² phát sáng nền
+      const slW = tubeW / M + 0.8;
+      for (let i = 0; i < M; i++) {
+        const u = prArr[i] / maxPr;
+        if (u < 0.02) continue;
+        const sx = tubeX + (i / (M - 1)) * tubeW;
+        const g = ctx.createLinearGradient(sx, tubeTop, sx, tubeTop + tubeH);
+        g.addColorStop(0, 'rgba(0,0,0,0)');
+        g.addColorStop(0.5, hexA(C.c2, u * 0.34));
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(sx - slW / 2, tubeTop, slW, tubeH);
+      }
+
+      // Nếu chọn 5 sóng: vẽ mờ từng sóng đơn sắc thành phần để thấy sự triệt tiêu ngoài tâm!
+      if (N === 5) {
+        st.comp.forEach((c, ci) => {
+          ctx.beginPath();
+          for (let i = 0; i < M; i++) {
+            const x = (i / (M - 1)) * xSpan;
+            const y = midY - Math.cos(c.k * (x - x0) - c.w * st.simT) * (ampPx * 0.45);
+            const sx = tubeX + (i / (M - 1)) * tubeW;
+            i === 0 ? ctx.moveTo(sx, y) : ctx.lineTo(sx, y);
+          }
+          ctx.strokeStyle = hexA(ci % 2 === 0 ? C.c5 : C.mut, 0.28);
+          ctx.lineWidth = 1; ctx.stroke();
+        });
+      }
+
+      // Đường sóng thực Re(ψ)
+      ctx.beginPath();
+      for (let i = 0; i < M; i++) {
+        const sx = tubeX + (i / (M - 1)) * tubeW;
+        const sy = midY - reArr[i] * ampPx;
+        i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+      }
+      ctx.strokeStyle = C.c2; ctx.lineWidth = 2.1; ctx.stroke();
+
+      // Đường bao biên độ |ψ(x,t)| (chính là đường bao bó sóng mang hạt đi với vận tốc v_g!)
+      if (N > 1) {
+        ctx.beginPath();
+        for (let i = 0; i < M; i++) {
+          const sx = tubeX + (i / (M - 1)) * tubeW;
+          const sy = midY - Math.sqrt(prArr[i]) * ampPx;
+          i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+        }
+        ctx.strokeStyle = C.main; ctx.lineWidth = 1.6; ctx.setLineDash([4, 3]); ctx.stroke(); ctx.setLineDash([]);
+      }
+
+      // Chấm đánh dấu VẬN TỐC NHÓM v_g (vàng, đỉnh bao) và VẬN TỐC PHA v_p (tím, bám đỉnh sóng con)
+      const xgCur = x0 + st.vg * st.simT;
+      const xpRaw = x0 + st.vp * st.simT;
+      const lam0 = TAU / S.k0;
+      // Giữ chấm pha nằm trong vùng bó sóng để thấy rõ nó trượt ngược khi v_g = 2 v_p
+      const xpCur = N === 1 ? (xpRaw % xSpan) : xgCur - (((xgCur - xpRaw) % lam0 + lam0) % lam0);
+
+      if (N > 1) {
+        const gxPx = tubeX + (xgCur / xSpan) * tubeW;
+        const gIdx = clamp(Math.round((xgCur / xSpan) * (M - 1)), 0, M - 1);
+        const gyPx = midY - Math.sqrt(prArr[gIdx]) * ampPx;
+        glowDot(ctx, gxPx, gyPx, 5.5, C.ink, hexA(C.main, 0.95));
+        dot(ctx, gxPx, gyPx, 4.5, C.main);
+        txt(ctx, 'v_g', gxPx, gyPx - 14, C.main, 10, 'center', 800, MONO);
+      }
+      const pxPx = tubeX + (xpCur / xSpan) * tubeW;
+      const pIdx = clamp(Math.round((xpCur / xSpan) * (M - 1)), 0, M - 1);
+      const pyPx = midY - reArr[pIdx] * ampPx;
+      glowDot(ctx, pxPx, pyPx, 4.8, C.ink, hexA(C.c5, 0.95));
+      dot(ctx, pxPx, pyPx, 4, C.c5);
+      txt(ctx, 'v_p', pxPx, pyPx + 14, C.c5, 10, 'center', 800, MONO);
+
+      // 2. Xử lý phép đo sụp đổ hàm sóng Born theo đúng phân bố |ψ(x,t)|²
+      if (st.measure) {
+        st.measure = false;
+        let sum = 0;
+        for (let i = 0; i < M; i++) sum += prArr[i];
+        let r = Math.random() * sum, chosen = 0;
+        for (let i = 0; i < M; i++) { r -= prArr[i]; if (r <= 0) { chosen = i; break; } }
+        const u = chosen / (M - 1);
+        st.collapse = { x: tubeX + u * tubeW, y: midY + rnd(-ampPx * 0.4, ampPx * 0.4), life: 1.0 };
+        const bi = clamp(Math.floor(u * st.bins.length), 0, st.bins.length - 1);
+        st.bins[bi] = Math.min(st.bins[bi] + 1, 14);
+        queueReact(p.tab, 'measure');
+      }
+      if (st.collapse && st.collapse.life > 0) {
+        st.collapse.life -= dt * 1.1;
+        const lf = clamp(st.collapse.life, 0, 1);
+        ctx.beginPath(); ctx.arc(st.collapse.x, st.collapse.y, 5 + (1 - lf) * 38, 0, TAU);
+        ctx.strokeStyle = hexA(C.c1, lf); ctx.lineWidth = 2; ctx.stroke();
+        glowDot(ctx, st.collapse.x, st.collapse.y, 5.5, C.ink, hexA(C.c1, lf));
+      }
+      ctx.restore();
+
+      // 3. Màn tích lũy xác suất Born |ψ|² bên dưới
+      rr(ctx, tubeX, stripY, tubeW, stripH, 5);
+      ctx.fillStyle = C.bg; ctx.fill();
+      ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
+      const bw = tubeW / st.bins.length;
+      for (let i = 0; i < st.bins.length; i++) {
+        if (st.bins[i] <= 0) continue;
+        const h = clamp(st.bins[i] / 8, 0, 1) * (stripH - 6);
+        ctx.fillStyle = hexA(C.c1, 0.78);
+        ctx.fillRect(tubeX + i * bw + 1, stripY + stripH - 3 - h, Math.max(1.5, bw - 2), h);
+      }
+      txt(ctx, 'MÀN ĐO XÁC SUẤT BORN |ψ(x)|²', tubeX + 8, stripY + 10, C.c1, 9.5, 'left', 700, MONO);
+
+      // Thông số rõ nét ở mép trên
+      txt(ctx, 'Chồng chập N = ' + N + ' sóng  |  ∫|ψ(x,t)|²dx = 1',
+        chX + 14, chY + 18, C.ink, 11, 'left', 700, MONO);
+      txt(ctx, isFree ? 'Hạt tự do (ω = ħk²/2m): v_g = 2·v_p (Có tán sắc)' : 'Không tán sắc (ω ∝ k): v_g = v_p',
+        chX + chW - 14, chY + 18, C.main, 10.8, 'right', 700, MONO);
+    }
+  }]
+});
+
+/* ==========================================================================
+   TAB 7 — NGUYÊN LÝ BẤT ĐỊNH HEISENBERG (Δy · Δp_y ≥ ħ/2)
    Thí nghiệm khe đơn hẹp (Single-Slit Electron Diffraction):
    - Kéo thanh trượt thu hẹp hai lá chắn kim loại (giảm Δy)
    - Chùm electron đi qua khe lập tức bị bùng loe ra góc rộng (Δp_y tăng nghịch đảo!)
    ========================================================================== */
 LABS.push({
-  id: 'heis', name: 'Bất định Heisenberg', no: '3', secs: [3],
+  id: 'heis', name: 'Bất định Heisenberg', no: '7', secs: [3],
   S: { dy: 2.0 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -643,13 +1243,13 @@ LABS.push({
 });
 
 /* ==========================================================================
-   TAB 4 — MÔ HÌNH NGUYÊN TỬ BOHR & QUANG PHỔ VẠCH HYDRO
+   TAB 8 — MÔ HÌNH NGUYÊN TỬ BOHR & QUANG PHỔ VẠCH HYDRO
    - Hiển thị 5 quỹ đạo lượng tử n = 1..5 với sóng dừng de Broglie tròn khép kín (2πr_n = nλ)
    - Bấm đổi mức n: phóng ra hoặc hấp thụ photon mang đúng màu quang phổ thật
    - Thanh quang phổ vạch Hydrogen ngay bên phải sáng lên vạch tương ứng!
    ========================================================================== */
 LABS.push({
-  id: 'bohr', name: 'Nguyên tử Bohr (H)', no: '4', secs: [4],
+  id: 'bohr', name: 'Nguyên tử Bohr (H)', no: '8', secs: [4],
   S: { n: 3, showWave: true },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -782,14 +1382,14 @@ LABS.push({
 });
 
 /* ==========================================================================
-   TAB 5 — TÁN XẠ COMPTON (PHOTON TIA X VA CHẠM ELECTRON TỰ DO)
+   TAB 3 — TÁN XẠ COMPTON (PHOTON TIA X VA CHẠM ELECTRON TỰ DO)
    Chứng minh photon mang động lượng p = h/λ giống hệt hạt vật chất:
    - Photon tia X (bước sóng λ₀) lao vào electron đứng yên ở tâm buồng
    - Photon tán xạ lệch góc θ có bước sóng giãn dài λ' = λ₀ + λ_C(1 − cosθ)
    - Electron bị hất giật lùi theo đúng góc bảo toàn động lượng φ!
    ========================================================================== */
 LABS.push({
-  id: 'compton', name: 'Tán xạ Compton', no: '5', secs: [5],
+  id: 'compton', name: 'Tán xạ Compton', no: '3', secs: [1],
   S: { lam0: 0.10, theta: 90 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -902,9 +1502,26 @@ LABS.push({
 });
 
 /* ==========================================================================
-   NHẬT KÝ THÍ NGHIỆM (Log intro + react chi tiết cho 5 tab Buổi 2)
+   NHẬT KÝ THÍ NGHIỆM (Log intro + react chi tiết cho 8 tab Buổi 2)
    ========================================================================== */
 const LD = {};
+
+LD.blackbody = {
+  intro: [
+    ['i', 'Giả thuyết lượng tử Planck (1900): Năng lượng trao đổi của các dao động tử trong vật đen bị lượng tử hóa theo từng gói rời rạc E = n·hν.'],
+    ['w', 'Khi tăng nhiệt độ T, màu sắc hốc lò chuyển từ đỏ → cam → vàng → trắng → xanh lam và đỉnh phổ dịch về bước sóng ngắn theo định luật Wien (λ_max·T = const).'],
+    ['w', 'Lý thuyết cổ điển (Rayleigh–Jeans) chia đều kT cho mọi tần số nên dự đoán năng lượng bùng nổ vô hạn ở vùng tử ngoại ("Khủng hoảng tử ngoại").'],
+    ['v', 'Chuyển sang chế độ "Cổ điển (Khủng hoảng UV)" hoặc bấm mốc 5778 K (Mặt Trời) để quan sát dải quang phổ tách qua lăng kính!']
+  ],
+  react(S, k, P, say) {
+    const lamPeak = 2897772 / S.T;
+    if (S.mode === 'classic') {
+      say('w', 'Chế độ Cổ điển (Rayleigh–Jeans): Không có lượng tử hóa E = hν, các mode tử ngoại tần số cao hút năng lượng vô hạn gây khủng hoảng tử ngoại!');
+    } else {
+      say('v', `Lượng tử Planck ở T = ${S.T} K → Đỉnh phổ Wien λ_max = ${lamPeak.toFixed(0)} nm (hν = ${(1239.84 / lamPeak).toFixed(2)} eV).`);
+    }
+  }
+};
 
 LD.photo = {
   intro: [
@@ -940,6 +1557,45 @@ LD.duality = {
       say('w', S.slits === 'two' ? 'Hai khe mở: Xuất hiện hệ vân sáng–tối giao thoa đặc trưng của sóng vật chất.' : 'Chỉ mở một khe: Biến mất giao thoa, chỉ còn một cực đại trung tâm.');
     } else if (k === 'U') {
       say('v', `U = ${S.U} V → Bước sóng de Broglie λ = ${lam.toFixed(2)} Å. U càng lớn, λ càng ngắn và khoảng vân càng hẹp.`);
+    }
+  }
+};
+
+LD.davisson = {
+  intro: [
+    ['i', 'Thí nghiệm Davisson–Germer (1927): Bắn chùm electron vào mặt đơn tinh thể Niken (khoảng cách nút D = 2.15 Å) để kiểm chứng sóng vật chất de Broglie.'],
+    ['w', 'Các nguyên tử Ni đóng vai trò cách tử nhiễu xạ: khi D·sinφ = n·λ, các sóng electron phản xạ cùng pha làm kim điện kế vọt lên cực đại!'],
+    ['v', 'Mốc lịch sử giải Nobel: Ở U = 54 V (λ = 1.67 Å), xoay đầu dò tới đúng góc φ = 50° sẽ bắt trúng cực đại nhiễu xạ bậc 1 (D·sin50° ≈ 1.65 Å ≈ λ)!']
+  ],
+  react(S, k, P, say) {
+    const lam = 12.264 / Math.sqrt(S.U);
+    const ratio = (2.15 * Math.sin((S.phi * Math.PI) / 180)) / lam;
+    const nearInt = Math.abs(ratio - Math.round(ratio)) < 0.08 && ratio > 0.6;
+    say('v', `U = ${S.U} V (λ = ${lam.toFixed(2)} Å), góc φ = ${S.phi}° → D·sinφ / λ = ${ratio.toFixed(2)}.`);
+    if (nearInt) say('w', `Bắt trúng cực đại giao thoa Bragg bậc n = ${Math.round(ratio)}! Chùm electron tán xạ mạnh vào đầu dò Faraday.`);
+  }
+};
+
+LD.packet = {
+  intro: [
+    ['i', 'Một sóng phẳng đơn sắc trải dài vô hạn (không định vị được hạt); để mô tả hạt định xứ ta phải chồng chập nhiều sóng tạo thành Bó sóng (Wave Packet).'],
+    ['w', 'Với hạt tự do (ω = ħk²/2m): Vận tốc nhóm v_g = dω/dk = 2·v_p chính bằng vận tốc cơ học của hạt, còn các đỉnh sóng pha v_p trượt chậm hơn ở bên trong và bó sóng bị dãn rộng dần (tán sắc).'],
+    ['w', 'Diễn giải xác suất Born: |ψ(x,t)|² là mật độ xác suất tìm thấy hạt tại vị trí x, luôn thỏa mãn điều kiện chuẩn hóa ∫|ψ|²dx = 1.'],
+    ['v', 'Bấm "Đo hạt (Sụp đổ |ψ|²)" nhiều lần để thấy các điểm đo tích lũy trên màn bên dưới khớp đúng hình dạng đường bao bó sóng!']
+  ],
+  react(S, k, P, say) {
+    if (k === 'measure') {
+      say('v', 'Phép đo đã làm sụp đổ hàm sóng thành một vị trí hạt xác định theo đúng phân bố xác suất Born |ψ(x,t)|²!');
+    } else if (k === 'Ncomp') {
+      say('w', S.Ncomp === '1'
+        ? '1 sóng đơn sắc: Biên độ đều khắp không gian, không thể xác định vị trí hạt.'
+        : S.Ncomp === '5'
+        ? 'Chồng chập 5 sóng: Các sóng thành phần giao thoa tăng cường tại một số vùng và triệt tiêu ở giữa tạo nhịp phách.'
+        : 'Chồng chập 15 sóng: Tạo bó sóng định xứ sắc nét chuyển động với vận tốc nhóm v_g.');
+    } else if (k === 'disp') {
+      say('i', S.disp === 'free'
+        ? 'Hạt có khối lượng (ω ∝ k²): v_g = 2·v_p — quan sát chấm vàng v_g vượt lên trên chấm tím v_p và bó sóng dãn rộng dần.'
+        : 'Môi trường không tán sắc (ω ∝ k): v_g = v_p, bó sóng giữ nguyên hình dạng không bị dãn rộng.');
     }
   }
 };
@@ -994,7 +1650,7 @@ LD.compton = {
     if (S.theta === 180) say('w', 'Tán xạ ngược 180°: Độ dịch bước sóng đạt cực đại 2λ_C = 0.0485 Å và electron giật lùi thẳng về phía trước (φ = 0°).');
   }
 };
-
+LABS.sort((a, b) => Number(a.no) - Number(b.no));
 LABS.forEach(l => { l.log = LD[l.id]; });
 
 /* ==========================================================================
@@ -1047,7 +1703,7 @@ const FLASK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke
 
 const sty = document.createElement('style'); sty.textContent = CSS; document.head.appendChild(sty);
 let timers = [], logEl = null;
-let root, bodyEl, tabsEl, cur = null, curPanels = [], raf = 0, last = 0, tAcc = 0, opener = null, lastTab = 'photo';
+let root, bodyEl, tabsEl, cur = null, curPanels = [], raf = 0, last = 0, tAcc = 0, opener = null, lastTab = 'blackbody';
 
 function ensureDom() {
   if (root) return;
@@ -1204,11 +1860,10 @@ function close() {
 
 /* ---------- Dấu hiệu bình thí nghiệm trong bài học Buổi 2 ---------- */
 const H3MAP = [
-  [/^1\.1/, 'photo', 0], [/^1\.2/, 'photo', 0],
-  [/^2\.1/, 'duality', 0], [/^2\.2/, 'duality', 0],
-  [/^3\.1/, 'heis', 0], [/^3\.2/, 'heis', 0],
-  [/^4\.1/, 'bohr', 0], [/^4\.2/, 'bohr', 0],
-  [/^5\.1/, 'compton', 0], [/^5\.2/, 'compton', 0]
+  [/^1\.1/, 'blackbody', 0], [/^1\.2/, 'photo', 0], [/^1\.3/, 'compton', 0],
+  [/^2\.1/, 'duality', 0], [/^2\.2/, 'davisson', 0],
+  [/^3\.1/, 'packet', 0], [/^3\.2/, 'heis', 0],
+  [/^4\.1/, 'bohr', 0], [/^4\.2/, 'bohr', 0]
 ];
 function addMark(h, id, pi, title) {
   if (h.querySelector('.lab2-m')) return;

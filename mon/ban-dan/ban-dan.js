@@ -2181,6 +2181,7 @@ function loadLesson(lessonId) {
     selectEKTab('q4');
     renderBandgapSim('gaas');
     renderFermiDirac();
+    if (window.LabB4) LabB4.mark(mainEl);
   } else if (lessonId === '5') {
     const tpl = $('tpl-buoi-5');
     mainEl.innerHTML = tpl.innerHTML;
@@ -2506,10 +2507,11 @@ function renderLS(curId) {
     $('tb-title').textContent = l.title.replace(/^Buổi\s*\d+\s*:\s*/, '');
     $('tb-prev').disabled = i <= 0;
     $('tb-next').disabled = i >= BAN_DAN_LESSONS.length - 1;
-    $('tb-lab').hidden = !['1', '2', '3', '5', '6', '7', '8'].includes(String(id));
+    $('tb-lab').hidden = !['1', '2', '3', '4', '5', '6', '7', '8'].includes(String(id));
     if (String(id) !== '1' && window.LabB1) LabB1.close();
     if (String(id) !== '2' && window.LabB2) LabB2.close();
     if (String(id) !== '3' && window.LabB3) LabB3.close();
+    if (String(id) !== '4' && window.LabB4) LabB4.close();
     if (String(id) !== '5' && window.LabB5) LabB5.close();
     if (String(id) !== '6' && window.LabB6) LabB6.close();
     if (String(id) !== '7' && window.LabB7) LabB7.close();
@@ -2529,6 +2531,7 @@ function renderLS(curId) {
     const L = bd === 'Buổi 1' ? window.LabB1
             : bd === 'Buổi 2' ? window.LabB2
             : bd === 'Buổi 3' ? window.LabB3
+            : bd === 'Buổi 4' ? window.LabB4
             : bd === 'Buổi 8' ? window.LabB8
             : bd === 'Buổi 5' ? window.LabB5
             : bd === 'Buổi 6' ? window.LabB6
@@ -2538,6 +2541,7 @@ function renderLS(curId) {
       L === window.LabB1 ? 'lab1'
       : L === window.LabB2 ? 'lab2'
       : L === window.LabB3 ? 'lab3'
+      : L === window.LabB4 ? 'lab4'
       : L === window.LabB8 ? 'lab8'
       : L === window.LabB5 ? 'lab5'
       : L === window.LabB6 ? 'lab6'
