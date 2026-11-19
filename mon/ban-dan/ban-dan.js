@@ -2160,6 +2160,7 @@ function loadLesson(lessonId) {
     renderUncertainty();
     renderWellBoundary('finite');
     selectProbTab('q5');
+    if (window.LabB2) LabB2.mark(mainEl);
   } else if (lessonId === '3') {
     const tpl = $('tpl-buoi-3');
     mainEl.innerHTML = tpl.innerHTML;
@@ -2505,8 +2506,9 @@ function renderLS(curId) {
     $('tb-title').textContent = l.title.replace(/^Buổi\s*\d+\s*:\s*/, '');
     $('tb-prev').disabled = i <= 0;
     $('tb-next').disabled = i >= BAN_DAN_LESSONS.length - 1;
-    $('tb-lab').hidden = !['1', '3', '5', '6', '7', '8'].includes(String(id));
+    $('tb-lab').hidden = !['1', '2', '3', '5', '6', '7', '8'].includes(String(id));
     if (String(id) !== '1' && window.LabB1) LabB1.close();
+    if (String(id) !== '2' && window.LabB2) LabB2.close();
     if (String(id) !== '3' && window.LabB3) LabB3.close();
     if (String(id) !== '5' && window.LabB5) LabB5.close();
     if (String(id) !== '6' && window.LabB6) LabB6.close();
@@ -2524,9 +2526,23 @@ function renderLS(curId) {
   $('tb-next').onclick = () => go(1);
   $('tb-lab').onclick = () => {
     const bd = $('tb-badge').textContent;
-    const L = bd === 'Buổi 1' ? window.LabB1 : bd === 'Buổi 3' ? window.LabB3 : bd === 'Buổi 8' ? window.LabB8 : bd === 'Buổi 5' ? window.LabB5 : bd === 'Buổi 6' ? window.LabB6 : window.LabB7;
+    const L = bd === 'Buổi 1' ? window.LabB1
+            : bd === 'Buổi 2' ? window.LabB2
+            : bd === 'Buổi 3' ? window.LabB3
+            : bd === 'Buổi 8' ? window.LabB8
+            : bd === 'Buổi 5' ? window.LabB5
+            : bd === 'Buổi 6' ? window.LabB6
+            : window.LabB7;
     if (!L) return;
-    const r = document.getElementById(L === window.LabB1 ? 'lab1' : L === window.LabB3 ? 'lab3' : L === window.LabB8 ? 'lab8' : L === window.LabB5 ? 'lab5' : L === window.LabB6 ? 'lab6' : 'lab');
+    const r = document.getElementById(
+      L === window.LabB1 ? 'lab1'
+      : L === window.LabB2 ? 'lab2'
+      : L === window.LabB3 ? 'lab3'
+      : L === window.LabB8 ? 'lab8'
+      : L === window.LabB5 ? 'lab5'
+      : L === window.LabB6 ? 'lab6'
+      : 'lab'
+    );
     r && !r.hidden ? L.close() : L.open();
   };
   $('tb-top').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
