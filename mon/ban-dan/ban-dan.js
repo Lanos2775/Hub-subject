@@ -2169,6 +2169,8 @@ function loadLesson(lessonId) {
     renderTunnelSim();
     renderAtomSim('1s');
     renderQNSim();
+    // Kích hoạt Phòng thí nghiệm Buổi 3
+    if (window.LabB3) LabB3.mark(mainEl);
   } else if (lessonId === '4') {
     const tpl = $('tpl-buoi-4');
     mainEl.innerHTML = tpl.innerHTML;
@@ -2184,6 +2186,7 @@ function loadLesson(lessonId) {
     renderCarrierDistSim();
     renderIntrinsicSim();
     renderDopingBandSim('donor');
+    if (window.LabB5) LabB5.mark(mainEl);
   } else if (lessonId === '6') {
     const tpl = $('tpl-buoi-6');
     mainEl.innerHTML = tpl.innerHTML;
@@ -2501,7 +2504,8 @@ function renderLS(curId) {
     $('tb-title').textContent = l.title.replace(/^Buổi\s*\d+\s*:\s*/, '');
     $('tb-prev').disabled = i <= 0;
     $('tb-next').disabled = i >= BAN_DAN_LESSONS.length - 1;
-    $('tb-lab').hidden = !['6', '7', '8'].includes(String(id));
+    $('tb-lab').hidden = !['5', '6', '7', '8'].includes(String(id));
+    if (String(id) !== '5' && window.LabB5) LabB5.close();
     if (String(id) !== '6' && window.LabB6) LabB6.close();
     if (String(id) !== '7' && window.LabB7) LabB7.close();
     if (String(id) !== '8' && window.LabB8) LabB8.close();
@@ -2515,7 +2519,7 @@ function renderLS(curId) {
   };
   $('tb-prev').onclick = () => go(-1);
   $('tb-next').onclick = () => go(1);
-  $('tb-lab').onclick = () => { const bd = $('tb-badge').textContent, L = bd === 'Buổi 8' ? window.LabB8 : bd === 'Buổi 6' ? window.LabB6 : window.LabB7; if (!L) return; const r = document.getElementById(L === window.LabB8 ? 'lab8' : L === window.LabB6 ? 'lab6' : 'lab'); r && !r.hidden ? L.close() : L.open(); };
+  $('tb-lab').onclick = () => { const bd = $('tb-badge').textContent, L = bd === 'Buổi 8' ? window.LabB8 : bd === 'Buổi 5' ? window.LabB5 : bd === 'Buổi 6' ? window.LabB6 : window.LabB7; if (!L) return; const r = document.getElementById(L === window.LabB8 ? 'lab8' : L === window.LabB5 ? 'lab5' : L === window.LabB6 ? 'lab6' : 'lab'); r && !r.hidden ? L.close() : L.open(); };
   $('tb-top').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   const fp = $('fp'), bf = $('tb-fp');
   bf.onclick = () => {
