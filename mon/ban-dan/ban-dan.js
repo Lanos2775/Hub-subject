@@ -2192,6 +2192,7 @@ function loadLesson(lessonId) {
     renderB6CompSim();
     renderB6TempRegimesSim();
     renderB6ContactSim('before');
+    if (window.LabB6) LabB6.mark(mainEl);
   } else if (lessonId === '7') {
     const tpl = $('tpl-buoi-7');
     mainEl.innerHTML = tpl.innerHTML;
@@ -2500,7 +2501,8 @@ function renderLS(curId) {
     $('tb-title').textContent = l.title.replace(/^Buổi\s*\d+\s*:\s*/, '');
     $('tb-prev').disabled = i <= 0;
     $('tb-next').disabled = i >= BAN_DAN_LESSONS.length - 1;
-    $('tb-lab').hidden = !['7', '8'].includes(String(id));
+    $('tb-lab').hidden = !['6', '7', '8'].includes(String(id));
+    if (String(id) !== '6' && window.LabB6) LabB6.close();
     if (String(id) !== '7' && window.LabB7) LabB7.close();
     if (String(id) !== '8' && window.LabB8) LabB8.close();
   };
@@ -2513,7 +2515,7 @@ function renderLS(curId) {
   };
   $('tb-prev').onclick = () => go(-1);
   $('tb-next').onclick = () => go(1);
-  $('tb-lab').onclick = () => { const L = ($('tb-badge').textContent === 'Buổi 8') ? window.LabB8 : window.LabB7; if (!L) return; const r = document.getElementById(L === window.LabB8 ? 'lab8' : 'lab'); r && !r.hidden ? L.close() : L.open(); };
+  $('tb-lab').onclick = () => { const bd = $('tb-badge').textContent, L = bd === 'Buổi 8' ? window.LabB8 : bd === 'Buổi 6' ? window.LabB6 : window.LabB7; if (!L) return; const r = document.getElementById(L === window.LabB8 ? 'lab8' : L === window.LabB6 ? 'lab6' : 'lab'); r && !r.hidden ? L.close() : L.open(); };
   $('tb-top').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   const fp = $('fp'), bf = $('tb-fp');
   bf.onclick = () => {
