@@ -1922,26 +1922,10 @@ function loadLesson(lessonId) {
     mainEl.innerHTML = $('tpl-buoi-1').innerHTML;
     if (window.LabB1) LabB1.mark(mainEl);
   } else if (lessonId === '2') {
-    const tpl = $('tpl-buoi-2');
-    mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ các mô hình tương tác của Buổi 2
-    renderPhotoelectric();
-    selectDualityTab('debroglie');
-    renderUncertainty();
-    renderWellBoundary('finite');
-    selectProbTab('q5');
+    mainEl.innerHTML = $('tpl-buoi-2').innerHTML;
     if (window.LabB2) LabB2.mark(mainEl);
   } else if (lessonId === '3') {
-    const tpl = $('tpl-buoi-3');
-    mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ 5 mô hình tương tác của Buổi 3
-    renderFreeWave();
-    renderInfiniteWell();
-    renderStepPotential();
-    renderTunnelSim();
-    renderAtomSim('1s');
-    renderQNSim();
-    // Kích hoạt Phòng thí nghiệm Buổi 3
+    mainEl.innerHTML = $('tpl-buoi-3').innerHTML;
     if (window.LabB3) LabB3.mark(mainEl);
   } else if (lessonId === '4') {
     mainEl.innerHTML = $('tpl-buoi-4').innerHTML;
@@ -1951,13 +1935,7 @@ function loadLesson(lessonId) {
     mainEl.innerHTML = tpl.innerHTML;
     if (window.LabB5) LabB5.mark(mainEl);
   } else if (lessonId === '6') {
-    const tpl = $('tpl-buoi-6');
-    mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ 4 mô hình tương tác của Buổi 6
-    renderB6FermiIntegralSim();
-    renderB6CompSim();
-    renderB6TempRegimesSim();
-    renderB6ContactSim('before');
+    mainEl.innerHTML = $('tpl-buoi-6').innerHTML;
     if (window.LabB6) LabB6.mark(mainEl);
   } else if (lessonId === '7') {
     const tpl = $('tpl-buoi-7');

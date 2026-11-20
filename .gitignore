@@ -5,3 +5,9 @@ data/
 data
 theme/
 
+# Internal rules (do not push to git)
+mon/ban-dan/Rule.md
+mon/ban-dan/Rule-lab.md
+Rule.md
+Rule-lab.md
+
