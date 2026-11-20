@@ -1174,227 +1174,6 @@ function renderQNSim() {
 window.renderQNSim = renderQNSim;
 
 /* =========================================================
-   CÁC MÔ HÌNH TƯƠNG TÁC CỦA BUỔI 4 (LÝ THUYẾT LƯỢNG TỬ CHẤT RẮN)
-   ========================================================= */
-function setKPPreset(pVal, btn) {
-  if (btn) {
-    document.querySelectorAll('#kp-tabs .sim-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-  $('sl-kp-p').value = pVal;
-  renderKronigPenney();
-}
-window.setKPPreset = setKPPreset;
-
-function renderKronigPenney() {
-  const svgEl = $('kp-svg'), descEl = $('kp-desc');
-  if (!svgEl || !descEl) return;
-  const P = +$('sl-kp-p').value;
-  $('val-kp-p').textContent = P;
-
-  const ox = 55, oy = 175, gw = 585, maxU = 4 * Math.PI;
-  const scaleY = 38; // 1 đơn vị = 38px
-
-  let svg = '';
-  const yPlus1 = oy - scaleY, yMinus1 = oy + scaleY;
-  svg += `<rect x="${ox}" y="${yPlus1}" width="${gw}" height="${2*scaleY}" fill="rgba(18,184,134,0.08)"/>`;
-  svg += `<line x1="${ox}" y1="${yPlus1}" x2="${ox+gw}" y2="${yPlus1}" stroke="var(--c2)" stroke-width="1.8" stroke-dasharray="5,4"/>`;
-  svg += `<line x1="${ox}" y1="${yMinus1}" x2="${ox+gw}" y2="${yMinus1}" stroke="var(--c2)" stroke-width="1.8" stroke-dasharray="5,4"/>`;
-  svg += `<line x1="${ox}" y1="20" x2="${ox}" y2="275" stroke="var(--ink)" stroke-width="2"/>`;
-  svg += `<line x1="${ox}" y1="${oy}" x2="${ox+gw}" y2="${oy}" stroke="var(--ink)" stroke-width="2"/>`;
-  svg += `<text x="${ox-8}" y="${yPlus1+4}" text-anchor="end" style="font-weight:800;fill:var(--c2)">+1</text>`;
-  svg += `<text x="${ox-8}" y="${yMinus1+4}" text-anchor="end" style="font-weight:800;fill:var(--c2)">-1</text>`;
-
-  let path = '';
-  for (let i = 1; i <= 360; i++) {
-    const u = (i / 360) * maxU;
-    const fVal = P * (Math.sin(u) / u) + Math.cos(u);
-    const px = ox + (u / maxU) * gw;
-    const py = Math.max(18, Math.min(275, oy - fVal * scaleY));
-    path += (i === 1 ? 'M' : 'L') + `${px.toFixed(1)} ${py.toFixed(1)} `;
-    if (Math.abs(fVal) <= 1.0) {
-      svg += `<line x1="${px.toFixed(1)}" y1="${yPlus1}" x2="${px.toFixed(1)}" y2="${yMinus1}" stroke="rgba(47,111,237,0.22)" stroke-width="2.5"/>`;
-    }
-  }
-  svg += `<path d="${path}" fill="none" stroke="var(--c1)" stroke-width="3"/>`;
-
-  [1, 2, 3, 4].forEach(m => {
-    const px = ox + (m / 4) * gw;
-    svg += `<line x1="${px}" y1="${oy-5}" x2="${px}" y2="${oy+5}" stroke="var(--ink)" stroke-width="2"/>`;
-    svg += `<text x="${px}" y="${oy+22}" text-anchor="middle" style="font-weight:800">${m}π</text>`;
-  });
-
-  descEl.innerHTML = `<b>Đồ thị hàm Kronig-Penney $f(\\alpha a) = ${P}\\frac{\\sin(\\alpha a)}{\\alpha a} + \\cos(\\alpha a)$:</b><br>• Các dải cột tô màu xanh dương là vùng thỏa mãn $\\mathbf{-1 \\le f(\\alpha a) \\le +1}$ $\\implies$ Tạo thành <b>Dải năng lượng cho phép (Allowed Bands)</b>.<br>• Khi $P' = 12$ (đúng đề bài <b>Câu 1 & Câu 2</b>): Dải 1 từ $2.628 \\to \\pi$; Dải 2 từ $5.307 \\to 2\\pi$; Dải 3 từ $8.067 \\to 3\\pi$; Dải 4 từ $10.909 \\to 4\\pi$.`;
-
-  svgEl.innerHTML = svg;
-  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
-}
-window.renderKronigPenney = renderKronigPenney;
-
-let currentEKTab = 'q4';
-function selectEKTab(tab, btn) {
-  currentEKTab = tab;
-  if (btn) {
-    document.querySelectorAll('#ek-tabs .sim-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-  if ($('ek-ctrl-q4')) $('ek-ctrl-q4').style.display = tab === 'q4' ? 'grid' : 'none';
-  renderEKSim();
-}
-window.selectEKTab = selectEKTab;
-
-function renderEKSim() {
-  const svgEl = $('ek-svg'), descEl = $('ek-desc');
-  if (!svgEl || !descEl) return;
-  let svg = '';
-  const cx = 340, yBot = 215, yTop = 35;
-  svg += `<line x1="${cx}" y1="${yTop}" x2="${cx}" y2="235" stroke="var(--ink)" stroke-width="2"/>`;
-  svg += `<line x1="70" y1="${yBot}" x2="610" y2="${yBot}" stroke="var(--ink)" stroke-width="2"/>`;
-
-  if (currentEKTab === 'q4') {
-    const pt = $('sel-ek-pt') ? $('sel-ek-pt').value : 'A';
-    let d = '';
-    for (let x = 100; x <= 580; x += 4) {
-      const u = ((x - cx) / 240) * Math.PI;
-      const y = 130 + 68 * Math.cos(u);
-      d += (x === 100 ? 'M' : 'L') + `${x} ${y.toFixed(1)} `;
-    }
-    svg += `<path d="${d}" fill="none" stroke="var(--c1)" stroke-width="3.5"/>`;
-
-    const pts = {
-      A: [-0.82 * Math.PI, 'Âm (m* < 0 — Bát úp)', 'Chiều âm -x (v < 0 — Dốc xuống)'],
-      B: [-0.22 * Math.PI, 'Dương (m* > 0 — Bát ngửa)', 'Chiều âm -x (v < 0 — Dốc xuống)'],
-      C: [0.22 * Math.PI, 'Dương (m* > 0 — Bát ngửa)', 'Chiều dương +x (v > 0 — Dốc lên)'],
-      D: [0.82 * Math.PI, 'Âm (m* < 0 — Bát úp)', 'Chiều dương +x (v > 0 — Dốc lên)']
-    };
-    Object.entries(pts).forEach(([kName, [uVal]]) => {
-      const px = cx + (uVal / Math.PI) * 240;
-      const py = 130 + 68 * Math.cos(uVal);
-      const isSel = kName === pt;
-      svg += `<circle cx="${px}" cy="${py}" r="${isSel ? 8.5 : 5.5}" fill="${isSel ? 'var(--c4)' : 'var(--c1)'}" stroke="#fff" stroke-width="2"/>`;
-      svg += `<text x="${px}" y="${py-12}" text-anchor="middle" style="font-weight:800;fill:${isSel ? 'var(--c4)' : 'var(--ink)'}">${kName}</text>`;
-    });
-    const info = pts[pt];
-    descEl.innerHTML = `<b>Phân tích Điểm ${pt} trên Giản đồ $E$-$k$ (Figure P3.15 — Câu 4):</b><br>• Chiều vận tốc hạt dẫn ($v = \\frac{1}{\\hbar}\\frac{dE}{dk}$): <b>${info[2]}</b>.<br>• Dấu khối lượng hiệu dụng ($\\frac{1}{m^*} = \\frac{1}{\\hbar^2}\\frac{d^2E}{dk^2}$): <b>${info[1]}</b>.`;
-  } else {
-    let dA = '', dB = '';
-    for (let dk = -180; dk <= 180; dk += 4) {
-      const yA = yBot - (dk * dk) * 0.011;
-      const yB = yBot - (dk * dk) * 0.0045;
-      if (yA >= yTop) dA += (dA === '' ? 'M' : 'L') + `${cx + dk} ${yA.toFixed(1)} `;
-      if (yB >= yTop) dB += (dB === '' ? 'M' : 'L') + `${cx + dk} ${yB.toFixed(1)} `;
-    }
-    svg += `<path d="${dA}" fill="none" stroke="var(--c1)" stroke-width="3.5"/>`;
-    svg += `<path d="${dB}" fill="none" stroke="var(--c4)" stroke-width="3.5" stroke-dasharray="6,4"/>`;
-    svg += `<text x="${cx+115}" y="65" style="font-weight:800;fill:var(--c1)">Dải A (Cong gắt → m_A* nhỏ)</text>`;
-    svg += `<text x="${cx+175}" y="95" style="font-weight:800;fill:var(--c4)">Dải B (Mở rộng → m_B* LỚN HƠN)</text>`;
-    descEl.innerHTML = `<b>Minh họa Câu 3 (Figure P3.13):</b> Vì $m^* = \\hbar^2 / \\left(\\frac{d^2E}{dk^2}\\right)$ tỉ lệ nghịch với độ cong của Parabol, nên <b>Dải B (nét đứt, mở rộng thoải hơn) có khối lượng hiệu dụng LỚN HƠN Dải A ($m_B^* > m_A^*$)</b>.`;
-  }
-
-  svgEl.innerHTML = svg;
-  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
-}
-window.renderEKSim = renderEKSim;
-
-function renderBandgapSim(mode, btn) {
-  if (btn) {
-    document.querySelectorAll('#bg-tabs .sim-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-  const svgEl = $('bg-svg'), descEl = $('bg-desc');
-  if (!svgEl || !descEl) return;
-  let svg = '';
-
-  if (mode === 'gaas' || mode === 'si') {
-    const isDirect = mode === 'gaas';
-    const cx = 240, kShift = isDirect ? 0 : 120;
-    svg += `<line x1="${cx}" y1="25" x2="${cx}" y2="235" stroke="var(--ink)" stroke-width="2"/>`;
-    svg += `<line x1="80" y1="215" x2="580" y2="215" stroke="var(--ink)" stroke-width="2"/>`;
-
-    let dVal = '', dCond = '';
-    for (let dk = -110; dk <= 110; dk += 4) {
-      dVal += (dk === -110 ? 'M' : 'L') + `${cx + dk} ${(165 + dk*dk*0.0045).toFixed(1)} `;
-      dCond += (dk === -110 ? 'M' : 'L') + `${cx + kShift + dk} ${(95 - dk*dk*0.005).toFixed(1)} `;
-    }
-    svg += `<path d="${dVal}" fill="none" stroke="var(--c2)" stroke-width="3.5"/>`;
-    svg += `<path d="${dCond}" fill="none" stroke="var(--c1)" stroke-width="3.5"/>`;
-    svg += `<line x1="${cx}" y1="165" x2="${cx+kShift}" y2="95" stroke="var(--c4)" stroke-width="3" stroke-dasharray="5,3"/>`;
-    svg += `<text x="${cx+kShift+15}" y="132" style="font-weight:800;fill:var(--c4)">${isDirect ? 'Chỉ cần Photon (hν ≥ 1.42 eV)' : 'Cần Photon (ΔE) + Phonon (Δk)'}</text>`;
-
-    descEl.innerHTML = isDirect
-      ? `<b>1. Gallium Arsenide ($\\text{GaAs}$ — Vùng cấm thẳng $E_g = 1.42\\text{ eV}$, Câu 5):</b> Đáy dải dẫn và đỉnh dải hóa trị nằm cùng tại $k=0$. Tần số tối thiểu $\\mathbf{\\nu_{\\min} \\approx 3.43 \\times 10^{14}\\text{ Hz}}$, bước sóng tối đa $\\mathbf{\\lambda_{\\max} \\approx 0.875\\text{ }\\mu\\text{m}}$.`
-      : `<b>2. Silicon ($\\text{Si}$ — Vùng cấm xiên $E_g = 1.12\\text{ eV}$, Câu 5):</b> Đáy dải dẫn lệch vị trí $k$ so với đỉnh dải hóa trị. Tần số tối thiểu $\\mathbf{\\nu_{\\min} \\approx 2.705 \\times 10^{14}\\text{ Hz}}$, bước sóng tối đa $\\mathbf{\\lambda_{\\max} \\approx 1.11\\text{ }\\mu\\text{m}}$.`;
-  } else {
-    // So sánh Kim loại - Bán dẫn - Cách điện
-    const items = [
-      [90, 'Kim loại (Dải chồng lấn / Đầy 1 nửa)', 115, 130],
-      [290, 'Bán dẫn (Eg ≈ 1.0 eV hẹp)', 95, 150],
-      [490, 'Chất cách điện (Eg ≈ 5.0 eV rất lớn)', 65, 180]
-    ];
-    items.forEach(([x, label, yC, yV]) => {
-      svg += `<rect x="${x}" y="35" width="120" height="${yC-35}" fill="rgba(47,111,237,0.18)" stroke="var(--c1)" stroke-width="2"/>`;
-      svg += `<rect x="${x}" y="${yV}" width="120" height="${215-yV}" fill="rgba(18,184,134,0.32)" stroke="var(--c2)" stroke-width="2"/>`;
-      svg += `<text x="${x+60}" y="236" text-anchor="middle" style="font-size:11.5px;font-weight:800">${label}</text>`;
-    });
-    descEl.innerHTML = `<b>So sánh Cấu trúc Dải năng lượng:</b> Kim loại không có vùng cấm; Bán dẫn có vùng cấm hẹp ($E_g \\approx 1\\text{ eV}$) nên dẫn điện tốt khi được kích thích nhiệt/quang; Chất cách điện có vùng cấm quá lớn ($3.5 - 6\\text{ eV}$).`;
-  }
-
-  svgEl.innerHTML = svg;
-  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
-}
-window.renderBandgapSim = renderBandgapSim;
-
-function renderFermiDirac() {
-  const svgEl = $('fd-svg'), descEl = $('fd-desc');
-  if (!svgEl || !descEl) return;
-  const T = +$('sl-fd-t').value;
-  const mode = $('sel-fd-mode') ? $('sel-fd-mode').value : 'both';
-  const kT_meV = 25.9 * (T / 300);
-  $('val-fd-t').textContent = T;
-  $('val-fd-kt').textContent = kT_meV.toFixed(1);
-
-  const ox = 75, oy = 205, gw = 540, gh = 160;
-  const xEF = ox + gw / 2;
-  let svg = '';
-  svg += `<line x1="${ox}" y1="30" x2="${ox}" y2="${oy}" stroke="var(--ink)" stroke-width="2"/>`;
-  svg += `<line x1="${ox}" y1="${oy}" x2="${ox+gw}" y2="${oy}" stroke="var(--ink)" stroke-width="2"/>`;
-  svg += `<line x1="${xEF}" y1="30" x2="${xEF}" y2="${oy}" stroke="var(--g)" stroke-width="1.8" stroke-dasharray="4,4"/>`;
-  svg += `<text x="${xEF}" y="${oy+22}" text-anchor="middle" style="font-weight:800;fill:var(--c5)">E = E_F (f_F = 0.5)</text>`;
-
-  let dF = '', dHole = '', dBoltz = '';
-  for (let i = 0; i <= 240; i++) {
-    const dE = ((i / 240) - 0.5) * 0.40; // từ -0.20 eV đến +0.20 eV quanh EF
-    const kT = Math.max(0.002, kT_meV / 1000);
-    const fVal = T === 0 ? (dE < 0 ? 1 : (dE > 0 ? 0 : 0.5)) : 1 / (1 + Math.exp(dE / kT));
-    const px = ox + (i / 240) * gw;
-    const pyF = oy - fVal * gh;
-    const pyH = oy - (1 - fVal) * gh;
-    dF += (i === 0 ? 'M' : 'L') + `${px.toFixed(1)} ${pyF.toFixed(1)} `;
-    dHole += (i === 0 ? 'M' : 'L') + `${px.toFixed(1)} ${pyH.toFixed(1)} `;
-
-    if (dE >= 0 && T > 0) {
-      const bVal = Math.min(1.1, Math.exp(-dE / kT));
-      const pyB = oy - bVal * gh;
-      dBoltz += (dBoltz === '' ? 'M' : 'L') + `${px.toFixed(1)} ${pyB.toFixed(1)} `;
-    }
-  }
-  if (mode === 'both' || mode === 'sym') {
-    svg += `<path d="${dHole}" fill="none" stroke="var(--c2)" stroke-width="2.5" stroke-dasharray="5,4"/>`;
-  }
-  if ((mode === 'both' || mode === 'boltz') && T > 0) {
-    svg += `<path d="${dBoltz}" fill="none" stroke="var(--c4)" stroke-width="2.8" stroke-dasharray="4,3"/>`;
-  }
-  svg += `<path d="${dF}" fill="none" stroke="var(--c1)" stroke-width="3.5"/>`;
-  svg += `<circle cx="${xEF}" cy="${oy - 0.5*gh}" r="6" fill="var(--c5)" stroke="#fff" stroke-width="2"/>`;
-
-  descEl.innerHTML = `<b>Hàm phân bố Fermi-Dirac $f_F(E)$ tại $T = ${T}\\text{ K}$ ($kT \\approx ${kT_meV.toFixed(1)}\\text{ meV}$):</b><br>• Đường liền nét xanh dương là xác suất có electron $f_F(E)$; đường đứt nét xanh lá là xác suất trống $1 - f_F(E)$ (đối xứng gương qua $E_F$).<br>• Đường đứt nét màu hồng là <b>Xấp xỉ hàm mũ Boltzmann</b> $\\exp\\left(-\\frac{E-E_F}{kT}\\right)$, khớp sát với $f_F(E)$ khi $E - E_F \\ge 3kT$.`;
-
-  svgEl.innerHTML = svg;
-  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([descEl]);
-}
-window.renderFermiDirac = renderFermiDirac;
-
-/* =========================================================
    CÁC MÔ HÌNH TƯƠNG TÁC CỦA BUỔI 5 (BÁN DẪN Ở CÂN BẰNG)
    ========================================================= */
 function renderCarrierDistSim() {
@@ -2140,60 +1919,23 @@ function arrangeSims(root){}
 function loadLesson(lessonId) {
   const mainEl = $('app-content');
   if (lessonId === '1') {
-    const tpl = $('tpl-buoi-1');
-    mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ 7 mô hình tương tác của Buổi 1
-    renderSolidModel('amorphous');
-    renderLattice2D();
-    selectCrystal('sc');
-    renderMiller('100');
-    renderBonding('pure');
-    renderDefects();
-    renderCzochralski();
+    mainEl.innerHTML = $('tpl-buoi-1').innerHTML;
+    if (window.LabB1) LabB1.mark(mainEl);
   } else if (lessonId === '2') {
-    const tpl = $('tpl-buoi-2');
-    mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ các mô hình tương tác của Buổi 2
-    renderPhotoelectric();
-    selectDualityTab('debroglie');
-    renderUncertainty();
-    renderWellBoundary('finite');
-    selectProbTab('q5');
+    mainEl.innerHTML = $('tpl-buoi-2').innerHTML;
+    if (window.LabB2) LabB2.mark(mainEl);
   } else if (lessonId === '3') {
-    const tpl = $('tpl-buoi-3');
-    mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ 5 mô hình tương tác của Buổi 3
-    renderFreeWave();
-    renderInfiniteWell();
-    renderStepPotential();
-    renderTunnelSim();
-    renderAtomSim('1s');
-    renderQNSim();
+    mainEl.innerHTML = $('tpl-buoi-3').innerHTML;
+    if (window.LabB3) LabB3.mark(mainEl);
   } else if (lessonId === '4') {
-    const tpl = $('tpl-buoi-4');
-    mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ các mô hình tương tác của Buổi 4
-    renderKronigPenney();
-    selectEKTab('q4');
-    renderBandgapSim('gaas');
-    renderFermiDirac();
+    mainEl.innerHTML = $('tpl-buoi-4').innerHTML;
     if (window.LabB4) LabB4.mark(mainEl);
   } else if (lessonId === '5') {
     const tpl = $('tpl-buoi-5');
     mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ các mô hình tương tác của Buổi 5
-    renderCarrierDistSim();
-    renderIntrinsicSim();
-    renderDopingBandSim('donor');
     if (window.LabB5) LabB5.mark(mainEl);
   } else if (lessonId === '6') {
-    const tpl = $('tpl-buoi-6');
-    mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ 4 mô hình tương tác của Buổi 6
-    renderB6FermiIntegralSim();
-    renderB6CompSim();
-    renderB6TempRegimesSim();
-    renderB6ContactSim('before');
+    mainEl.innerHTML = $('tpl-buoi-6').innerHTML;
     if (window.LabB6) LabB6.mark(mainEl);
   } else if (lessonId === '7') {
     const tpl = $('tpl-buoi-7');
@@ -2503,9 +2245,12 @@ function renderLS(curId) {
     $('tb-title').textContent = l.title.replace(/^Buổi\s*\d+\s*:\s*/, '');
     $('tb-prev').disabled = i <= 0;
     $('tb-next').disabled = i >= BAN_DAN_LESSONS.length - 1;
-    $('tb-lab').hidden = !['4', '5', '6', '7', '8'].includes(String(id));
-    if (String(id) !== '5' && window.LabB5) LabB5.close();
+    $('tb-lab').hidden = !['1', '2', '3', '4', '5', '6', '7', '8'].includes(String(id));
+    if (String(id) !== '1' && window.LabB1) LabB1.close();
+    if (String(id) !== '2' && window.LabB2) LabB2.close();
+    if (String(id) !== '3' && window.LabB3) LabB3.close();
     if (String(id) !== '4' && window.LabB4) LabB4.close();
+    if (String(id) !== '5' && window.LabB5) LabB5.close();
     if (String(id) !== '6' && window.LabB6) LabB6.close();
     if (String(id) !== '7' && window.LabB7) LabB7.close();
     if (String(id) !== '8' && window.LabB8) LabB8.close();
@@ -2519,7 +2264,29 @@ function renderLS(curId) {
   };
   $('tb-prev').onclick = () => go(-1);
   $('tb-next').onclick = () => go(1);
-  $('tb-lab').onclick = () => { const bd = $('tb-badge').textContent, L = bd === 'Buổi 8' ? window.LabB8 : bd === 'Buổi 4' ? window.LabB4 : bd === 'Buổi 5' ? window.LabB5 : bd === 'Buổi 6' ? window.LabB6 : window.LabB7; if (!L) return; const r = document.getElementById(L === window.LabB8 ? 'lab8' : L === window.LabB4 ? 'lab4' : L === window.LabB5 ? 'lab5' : L === window.LabB6 ? 'lab6' : 'lab'); r && !r.hidden ? L.close() : L.open(); };
+  $('tb-lab').onclick = () => {
+    const bd = $('tb-badge').textContent;
+    const L = bd === 'Buổi 1' ? window.LabB1
+            : bd === 'Buổi 2' ? window.LabB2
+            : bd === 'Buổi 3' ? window.LabB3
+            : bd === 'Buổi 4' ? window.LabB4
+            : bd === 'Buổi 8' ? window.LabB8
+            : bd === 'Buổi 5' ? window.LabB5
+            : bd === 'Buổi 6' ? window.LabB6
+            : window.LabB7;
+    if (!L) return;
+    const r = document.getElementById(
+      L === window.LabB1 ? 'lab1'
+      : L === window.LabB2 ? 'lab2'
+      : L === window.LabB3 ? 'lab3'
+      : L === window.LabB4 ? 'lab4'
+      : L === window.LabB8 ? 'lab8'
+      : L === window.LabB5 ? 'lab5'
+      : L === window.LabB6 ? 'lab6'
+      : 'lab'
+    );
+    r && !r.hidden ? L.close() : L.open();
+  };
   $('tb-top').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
   const fp = $('fp'), bf = $('tb-fp');
   bf.onclick = () => {
