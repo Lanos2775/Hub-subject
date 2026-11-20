@@ -2185,10 +2185,6 @@ function loadLesson(lessonId) {
   } else if (lessonId === '5') {
     const tpl = $('tpl-buoi-5');
     mainEl.innerHTML = tpl.innerHTML;
-    // Khởi tạo toàn bộ các mô hình tương tác của Buổi 5
-    renderCarrierDistSim();
-    renderIntrinsicSim();
-    renderDopingBandSim('donor');
     if (window.LabB5) LabB5.mark(mainEl);
   } else if (lessonId === '6') {
     const tpl = $('tpl-buoi-6');
