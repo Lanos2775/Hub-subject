@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tuần 3: Ngữ pháp đồ họa và Điều kiện hóa (Đầy đủ 2 file)</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#2c2d31;--fg:#dcdde2;--ac:#e5b91a}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden;user-select:none}
+#st{position:fixed;inset:0;display:grid;place-items:center}
+canvas{display:block}
+/* Cố định phụ đề ở sát mép đáy màn hình, không đổi vị trí khi thanh điều khiển ẩn/hiện */
+#sub{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);
+  max-width:min(980px,94vw);
+  padding:10px 20px;
+  border-radius:10px;
+  background:rgba(36,37,41,.94);
+  border:1px solid #4c4f58;
+  color:#dcdde2;
+  font-size:clamp(14px,1.45vw,19px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:center;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:5;
+}
+#sub.e{opacity:0}
+#ui{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:20px 0 0;
+  background:linear-gradient(transparent,rgba(32,33,37,.92));
+  transition:opacity .3s;
+  z-index:10;
+}
+#ui.h{opacity:0;pointer-events:none}
+#pg{display:flex;gap:2px;height:14px;align-items:flex-end;cursor:pointer;touch-action:none}
+.sg{flex:1;height:4px;background:#ffffff24;border-radius:0;overflow:hidden;transition:height .15s}
+#pg:hover .sg{height:8px}
+.sg i{display:block;height:100%;background:var(--ac)}
+#rw{display:flex;align-items:center;gap:6px;padding:0 18px 8px}
+button{background:none;border:0;color:var(--fg);width:42px;height:42px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font:600 14px inherit;font-family:inherit}
+button:hover{background:#ffffff1a}
+button.on{color:var(--ac)}
+svg{width:24px;height:24px;fill:currentColor}
+#tm{font-size:14px;font-weight:600;margin-left:8px;flex:1;color:#989ba5}
+#mn{position:fixed;top:0;right:0;bottom:0;width:min(360px,88vw);background:#242529f5;border-left:1px solid #4c4f58;padding:18px 8px;overflow:auto;transform:translateX(100%);transition:transform .25s;z-index:20}
+#mn.o{transform:none}
+#mn div{padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13.5px;color:#dcdde2}
+#mn div:hover{background:#ffffff12}
+#mn div.c{color:var(--ac);background:#e5b91a18}
+</style>
+</head>
+<body>
+<div id="st"><canvas id="c"></canvas></div>
+<div id="mn"></div>
+<div id="ui">
+  <div id="rw">
+    <button id="bp" title="Phát/Tạm dừng (Space)"></button>
+    <button id="bt" title="Cảnh trước (←)"></button>
+    <button id="bn" title="Cảnh sau (→)"></button>
+    <span id="tm"></span>
+    <button id="bc" class="on" title="Bật/tắt phụ đề (C)">CC</button>
+    <button id="bs" title="Tốc độ">1×</button>
+    <button id="bm" title="Mục lục (M)"></button>
+  </div>
+  <div id="pg"></div>
+</div>
+<div id="sub"></div>
+
+<script>
+// Thiết lập canvas logic 1280x720 và các hàm vẽ, tiện ích toán học dùng chung
+const W=1280,H=720,C=document.getElementById('c'),X=C.getContext('2d');
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const sm=v=>{v=cl(v);return v*v*(3-2*v)};
+const sg=(t,a,b)=>sm((t-a)/(b-a));
+const mx=(a,b,k)=>a+(b-a)*k;
+const mp=(a,b,p,q)=>v=>p+(q-p)*(v-a)/(b-a);
+const f=(v,d=1)=>v.toFixed(d).replace('.',',');
+const col={fg:'#dcdde2',dim:'#989ba5',b:'#78a9d6',o:'#df9368',g:'#7cc99c',y:'#e5b91a',r:'#d97373',p:'#a996cf',card:'#35373d',card2:'#26272b',bd:'#4c4f58',axis:'#545760'};
+
+let FA=1;
+const al=a=>{X.globalAlpha=cl(a===undefined?1:a)*FA};
+function T(s,x,y,z,c,a,o){al(o);X.fillStyle=c||col.fg;X.font=`${z>=34?800:600} ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;X.textAlign=a||'left';X.textBaseline='middle';X.fillText(s,x,y)}
+function L(a,b,c,d,k,w,o,ds){al(o);X.strokeStyle=k;X.lineWidth=w||2;X.setLineDash(ds||[]);X.beginPath();X.moveTo(a,b);X.lineTo(c,d);X.stroke();X.setLineDash([])}
+function R(x,y,w,h,c,o){al(o);X.fillStyle=c;X.fillRect(x,y,w,h)}
+function RR(x,y,w,h,r,c,o,st){
+  al(o);X.beginPath();X.roundRect(x,y,w,h,r);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+function D(x,y,r,c,o,st){
+  al(o);X.beginPath();X.arc(x,y,r,0,Math.PI*2);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+function FR(num,den,x,y,z,c,o){
+  X.font=`600 ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;
+  const w=Math.max(X.measureText(num).width,X.measureText(den).width)+14;
+  T(num,x,y-z*.66,z,c,'center',o);
+  L(x-w/2,y,x+w/2,y,c||col.fg,1.8,o);
+  T(den,x,y+z*.72,z,c,'center',o);
+  return w;
+}
+const hd=s=>T(s,80,58,35,col.y);
+
+// Bộ sinh số giả ngẫu nhiên cố định seed
+function mkRng(seed){let s=seed>>>0;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+
+// 1. Dữ liệu mô phỏng TFT (File 1)
+const tftPts=(()=>{
+  const rnd=mkRng(202503),pts=[];
+  const stratCol=[col.o,col.b,col.g]; // Reroll cấp 6, Tempo cấp 7, Fast 8
+  for(let i=0;i<90;i++){
+    const st=i%3;
+    const hp=cl(20+rnd()*75,15,96);
+    const gold=cl((st===0?18:st===1?31:48)+(rnd()-.5)*28,5,74);
+    const val=25+rnd()*35;
+    const pl=Math.max(1,Math.min(8,Math.round(6.8-hp*.045+(rnd()-.5)*3.4)));
+    pts.push({hp,gold,val,pl,st,c:stratCol[st],rank:i%4});
+  }
+  return pts;
+})();
+
+const histPl=[3,4,3,4,3,6,6,4,4,7,5,6,3,5,4,2,5,3,6,4,2,3,5,2,4,1,3,4,2,3];
+const histRoll=w=>histPl.map((_,i)=>{
+  const s=Math.max(0,i-w+1);let sum=0;
+  for(let j=s;j<=i;j++)sum+=histPl[j];
+  return sum/(i-s+1);
+});
+
+const dmgHist=(()=>{
+  const rnd=mkRng(3041),raw=new Array(18).fill(0),lg=new Array(18).fill(0);
+  for(let i=0;i<960;i++){
+    const u=Math.max(1e-6,rnd()),v=rnd();
+    const z=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+    const ln=10.35+z*.62,val=Math.exp(ln);
+    const b1=Math.min(17,Math.floor(val/160000*18));
+    raw[b1]++;
+    const l10=Math.log10(val),b2=Math.max(0,Math.min(17,Math.floor((l10-3.6)/(5.3-3.6)*18)));
+    lg[b2]++;
+  }
+  const m1=Math.max(...raw),m2=Math.max(...lg);
+  return {raw:raw.map(x=>x/m1),lg:lg.map(x=>x/m2)};
+})();
+
+// 2. Dữ liệu mô phỏng bám sát bộ penguins (File 2): Adelie, Chinstrap, Gentoo
+const pengPts=(()=>{
+  const rnd=mkRng(3012),pts=[];
+  // [lenMean, depMean, slope, count, color, spIdx]
+  const specs=[[38.8,18.3,.22,38,col.b,0],[48.8,18.4,.20,24,col.o,1],[47.5,15.0,.18,34,col.g,2]];
+  specs.forEach(([lm,dm,sl,n,c,sp])=>{
+    for(let i=0;i<n;i++){
+      const dl=(rnd()+rnd()-1)*5.5;
+      const len=cl(lm+dl,32,59);
+      const dep=cl(dm+sl*dl+(rnd()+rnd()-1)*1.4,13,21.5);
+      pts.push({len,dep,c,sp});
+    }
+  });
+  return pts;
+})();
+
+// Histogram & đường mật độ (KDE) chiều dài mỏ penguins (342 cá thể)
+const billHist=(()=>{
+  const bins=[.08,.24,.48,.68,.84,.72,.65,.78,.95,1.0,.86,.72,.52,.30,.12,.05];
+  return bins;
+})();
+
+// 3. Dữ liệu Arbuthnot: Số ca rửa tội ở London 1629–1710 (lấy mẫu đều 42 mốc giữ đúng hình dáng lịch sử)
+const arbData=[
+  [1629,9901],[1631,8524],[1633,9997],[1635,10034],[1637,9160],[1639,10150],[1641,10670],
+  [1642,10370],[1644,8104],[1646,7163],[1648,6544],[1650,5612],[1652,6128],[1654,6620],
+  [1656,7050],[1658,6170],[1660,6971],[1662,10019],[1664,11722],[1665,9967],[1666,8997],
+  [1668,11633],[1670,11997],[1672,12563],[1674,11851],[1676,12399],[1678,12601],[1680,12747],
+  [1682,13653],[1684,14702],[1686,14694],[1688,14588],[1690,15211],[1692,14918],[1694,13632],
+  [1696,14861],[1698,16052],[1700,14639],[1702,15687],[1704,11895],[1707,16066],[1710,14928]
+];
+
+// 4. Dữ liệu msleep (83 loài động vật có vú: bodywt kg, log_bodywt ln(g), sleep_total giờ)
+const msleepPts=(()=>{
+  const rnd=mkRng(3042),pts=[];
+  // Hai điểm nổi bật thật từ bảng dữ liệu
+  pts.push({nm:'Little brown bat',kg:.01,lg:2.30,sl:19.9,hi:1});
+  pts.push({nm:'African elephant',kg:6654,lg:15.71,sl:3.3,hi:2});
+  pts.push({nm:'Asian elephant',kg:2547,lg:14.75,sl:3.9,hi:0});
+  pts.push({nm:'Giraffe',kg:900,lg:13.71,sl:1.9,hi:0});
+  pts.push({nm:'Cow',kg:600,lg:13.30,sl:4.0,hi:0});
+  pts.push({nm:'Horse',kg:521,lg:13.16,sl:2.9,hi:0});
+  pts.push({nm:'Bottle-nosed dolphin',kg:173,lg:12.06,sl:5.2,hi:0});
+  pts.push({nm:'Pilot whale',kg:800,lg:13.59,sl:2.7,hi:0});
+  pts.push({nm:'Donkey',kg:187,lg:12.14,sl:3.1,hi:0});
+  pts.push({nm:'Brazilian tapir',kg:207,lg:12.24,sl:4.4,hi:0});
+  for(let i=0;i<58;i++){
+    const lg=cl(1.8+rnd()*10.1,1.6,11.9);
+    const kg=Math.exp(lg)/1000;
+    const sl=cl(16.2-.65*lg+(rnd()+rnd()-1)*5.2,2.5,19.4);
+    pts.push({nm:'',kg,lg,sl,hi:0});
+  }
+  return pts;
+})();
+
+// Danh sách 22 cảnh tương tác đầy đủ cả 2 file Tuần 03
+const sc=[
+{
+  t:'1. Dữ liệu TFT & Đơn vị quan sát',d:22,
+  s:[
+    [0,'Chào mừng bạn đến với Tuần 03: Ngữ pháp đồ họa và Điều kiện hóa — tổng hợp đầy đủ cả 2 file (TFT và dữ liệu kinh điển).'],
+    [5,'Trước khi vẽ hay tính toán, luôn đọc đơn vị quan sát: bảng tran_tft gồm 120 lobby × 8 người = 960 hàng (1 hàng = 1 người chơi–trận).'],
+    [11,'Biến placement từ 1 (tốt nhất) đến 8 (kém nhất); vì mỗi lobby có đúng 4 người vào top 4, tỉ lệ top 4 toàn bảng luôn bằng đúng 50%.'],
+    [16.5,'Tương tự ở file 2: penguins có 1 hàng = 1 con chim cánh cụt (344 hàng); arbuthnot có 1 hàng = 1 năm (82 năm); msleep có 1 hàng = 1 loài (83 loài).']
+  ],
+  f:t=>{
+    hd('1. Đọc cấu trúc dữ liệu & Đơn vị quan sát trước khi vẽ');
+    T('UET.MAT1052 — Tuần 03: Bao quát 4 bộ dữ liệu thực hành (tran_tft, penguins, arbuthnot, msleep)',80,104,19,col.dim);
+
+    const stats=[
+      ['tran_tft (960 hàng)','120 lobby × 8 người','1 hàng = 1 người chơi–trận',col.b,1],
+      ['penguins (344 hàng)','3 loài chim cánh cụt','342 hàng đủ 2 số đo mỏ',col.y,4],
+      ['arbuthnot (82 hàng)','London 1629 – 1710','1 hàng = 1 năm (thời gian)',col.g,7],
+      ['msleep (83 hàng)','83 loài động vật có vú','1 hàng = 1 loài (bodywt, ngủ)',col.o,10]
+    ];
+    stats.forEach(([v,l1,l2,c,st],i)=>{
+      const x=80+(i%2)*570,y=148+Math.floor(i/2)*142,o=sg(t,st,st+1.3);
+      RR(x,y,545,120,12,col.card,o);RR(x,y,545,120,12,col.bd,o,1.5);R(x,y+12,3.5,96,c,o);
+      T(v,x+28,y+32,23,c,'left',o);
+      T(l1,x+28,y+68,18,col.fg,'left',o);
+      T(l2,x+28,y+98,16,col.dim,'left',o);
+    });
+
+    const oN=sg(t,14,15.5);
+    RR(80,455,1115,78,12,col.card2,oN);RR(80,455,1115,78,12,col.bd,oN,1.4);R(80,466,3.5,56,col.y,oN);
+    T('Quy tắc vàng: Câu hỏi ở cấp nào thì dữ liệu phải nhóm về đúng cấp đơn vị quan sát đó!',108,482,19,col.y,'left',oN);
+    T('VD: Hỏi theo lobby ⇒ 1 hàng/lobby; hỏi phong độ người chơi ⇒ groupby("player_id"); thiếu telemetry ⇒ báo cáo rõ.',108,512,16,col.fg,'left',oN);
+  }
+},
+{
+  t:'2. Bốn thành phần Ngữ pháp đồ họa',d:24,
+  s:[
+    [0,'Mọi biểu đồ tưởng như rất khác nhau (cột, histogram, boxplot, đường) thực ra đều có chung một cấu trúc: Ngữ pháp đồ họa (Grammar of Graphics).'],
+    [5.5,'Phiên bản gọn gồm 4 thành phần: 1. Data (bảng dữ liệu và đơn vị quan sát); 2. Aesthetic mappings (biến nào điều khiển x, y, màu, kích thước).'],
+    [11.5,'3. Geometry (dấu hiệu vẽ: cột, điểm, đường, hộp, violin); 4. Grouping / Faceting (tách nhóm màu hoặc chia nhiều ô facet_wrap).'],
+    [17,'Không có thành phần nào là "trang trí thuần túy" — mỗi quyết định chọn ánh xạ hay hình học sẽ quyết định điều gì được giữ lại hoặc bị che đi!']
+  ],
+  f:t=>{
+    hd('2. Ngữ pháp đồ họa: Bốn thành phần cấu tạo mọi biểu đồ');
+
+    const parts=[
+      ['1. Data (Dữ liệu)','Bảng nào? Đủ biến cần thiết chưa?',col.b,1.2],
+      ['2. Mappings (Ánh xạ)','aes(x=..., y=..., color=..., size=...)',col.y,4.5],
+      ['3. Geometry (Hình học)','geom_col · geom_point · geom_line · geom_boxplot',col.g,8],
+      ['4. Grouping / Faceting','Nhóm màu hoặc chia nhiều ô facet_wrap',col.o,11.5]
+    ];
+    parts.forEach(([tt,ds,c,st],i)=>{
+      const yy=145+i*98,o=sg(t,st,st+1.3);
+      RR(80,yy,545,82,10,col.card,o);RR(80,yy,545,82,10,col.bd,o,1.4);R(80,yy+10,3.5,62,c,o);
+      T(tt,106,yy+27,20,c,'left',o);
+      T(ds,106,yy+57,16,col.fg,'left',o);
+    });
+
+    const oM=sg(t,5,6.5);
+    RR(665,145,255,178,10,col.card2,oM);RR(665,145,255,178,10,col.bd,oM,1.2);
+    T('geom_col: Đếm nhóm',792,168,15,col.y,'center',oM);
+    [[299,col.o],[387,col.b],[274,col.g]].forEach(([v,c],i)=>{
+      const h=v/420*105*oM;R(715+i*60,298-h,36,h,c,.88*oM);
+    });
+    RR(945,145,255,178,10,col.card2,oM);RR(945,145,255,178,10,col.bd,oM,1.2);
+    T('geom_rect: Histogram',1072,168,15,col.p,'center',oM);
+    [25,52,78,94,82,64,40,18].forEach((h,i)=>R(968+i*26,298-h*oM,22,h*oM,col.p,.8*oM));
+    RR(665,345,255,178,10,col.card2,sg(t,9,10.5));RR(665,345,255,178,10,col.bd,sg(t,9,10.5),1.2);
+    T('geom_boxplot: Theo nhóm',792,368,15,col.g,'center',sg(t,9,10.5));
+    [[462,col.o],[438,col.b],[405,col.g]].forEach(([yy,c],i)=>{
+      const cx=725+i*66,oB=sg(t,9.5,11);
+      L(cx,yy-26,cx,yy+28,c,1.6,oB);R(cx-16,yy-12,32,26,c,.75*oB);L(cx-16,yy,cx+16,yy,col.fg,2,oB);
+    });
+    RR(945,345,255,178,10,col.card2,sg(t,12,13.5));RR(945,345,255,178,10,col.bd,sg(t,12,13.5),1.2);
+    T('geom_line: Chuỗi thời gian',1072,368,15,col.b,'center',sg(t,12,13.5));
+    al(sg(t,12.5,14));X.strokeStyle=col.b;X.lineWidth=2.2;X.beginPath();
+    [455,445,465,480,472,440,425,410,418,395].forEach((yy,i)=>i===0?X.moveTo(968,yy):X.lineTo(968+i*23,yy));
+    X.stroke();
+  }
+},
+{
+  t:'3. Phân tích cú pháp biểu đồ đa ánh xạ',d:22,
+  s:[
+    [0,'Thực hành phân tích cú pháp trên tran_tft: ta ánh xạ đồng thời 4 biến vào cùng một biểu đồ phân tán.'],
+    [5,'Trục x là máu ở stage 4-1, trục y là placement — đảo ngược trục (scale_y_reverse) để hạng 1 nằm ở trên cùng!'],
+    [10.5,'Màu sắc mã hóa chiến thuật (cam: Reroll 6, xanh dương: Tempo 7, xanh lá: Fast 8), kích thước mã hóa giá trị đội hình.'],
+    [16.5,'Nhớ 2 lưu ý: điểm to hơn chỉ là giá trị đội hình cao hơn (≠ "quan trọng hơn"); và nhồi quá nhiều ánh xạ sẽ gây rối mắt!']
+  ],
+  f:t=>{
+    hd('3. Phân tích cú pháp biểu đồ đa ánh xạ (tran_tft)');
+
+    const mxF=mp(10,100,115,675),myF=mp(1,8,175,485);
+    L(105,495,685,495,col.axis,2);L(115,155,115,495,col.axis,1.5);
+    T('Máu ở stage 4-1',395,522,17,col.dim,'center');
+    T('Hạng',68,325,17,col.dim,'center');
+    [1,2,4,6,8].forEach(v=>T(String(v),100,myF(v),15,v===1?col.y:col.dim,'right'));
+    T('(1 tốt nhất)',125,155,14,col.y,'left');
+
+    const kSz=sg(t,8,10);
+    tftPts.forEach((p,i)=>{
+      const o=sg(t,1.2+i*.035,2.2+i*.035);
+      const r=mx(4.5,3+p.val*.11,kSz);
+      D(mxF(p.hp),myF(p.pl),r,p.c,.72*o);
+    });
+
+    const oR=sg(t,3,4.5);
+    RR(725,150,480,350,12,col.card,oR);RR(725,150,480,350,12,col.bd,oR,1.5);R(725,163,3.5,324,col.y,oR);
+    T('Giải mã 4 ánh xạ trong aes(...)',755,188,21,col.y,'left',oR);
+    T('• x = mau_4_1  (máu ở stage 4-1)',755,236,18,col.fg,'left',oR);
+    T('• y = placement  (scale_y_reverse: 1 trên)',755,274,18,col.fg,'left',sg(t,5,6.5));
+    T('• color = chien_thuat  (3 nhóm màu)',755,312,18,col.b,'left',sg(t,7.5,9));
+    T('• size = gia_tri_doi_hinh  (diện tích điểm)',755,350,18,col.g,'left',sg(t,10,11.5));
+    T('■ Reroll 6   ■ Tempo 7   ■ Fast 8',755,400,17,col.dim,'left',sg(t,11,12.5));
+    T('⚠ Điểm lớn ≠ quan trọng hơn!',755,442,18,col.o,'left',sg(t,14,15.5));
+    T('⚠ Quá nhiều ánh xạ làm tăng tải nhận thức.',755,474,17,col.r,'left',sg(t,16.5,18));
+  }
+},
+{
+  t:'4. Cùng biến, khác dạng hình học',d:22,
+  s:[
+    [0,'Cùng dữ liệu và ánh xạ (nhóm ở trục x, biến số ở trục y), đổi dạng hình học là đổi hẳn thông điệp biểu đồ!'],
+    [5,'Biểu đồ điểm có rung ngang (jitter) giữ từng quan sát thật, thấy rõ mật độ và mức chồng lấp giữa các nhóm.'],
+    [10.5,'Biểu đồ hộp (boxplot) nén mỗi nhóm thành trung vị và tứ phân vị IQR; còn violin cho thấy thêm hình dáng mật độ hai bên.'],
+    [16.5,'Kết luận: không có dạng hình học "tốt nhất" trong chân không — chọn hình học theo câu hỏi và mức chi tiết cần giữ lại!']
+  ],
+  f:t=>{
+    hd('4. Cùng dữ liệu, khác hình học: Jitter vs Boxplot / Violin');
+    const myF=mp(1,8,185,465),xs=[210,340,470],cs=[col.o,col.b,col.g],nms=['Reroll 6','Tempo 7','Fast 8'];
+
+    RR(85,140,490,370,12,col.card2,sg(t,1,2));RR(85,140,490,370,12,col.bd,sg(t,1,2),1.4);
+    T('geom_point (giữ từng quan sát thật)',330,164,19,col.b,'center',sg(t,1,2));
+    const rnd=mkRng(3013);
+    tftPts.forEach((p,i)=>{
+      const o=sg(t,2+i*.035,3+i*.035);
+      D(xs[p.st]+(rnd()-.5)*42,myF(p.pl)+(rnd()-.5)*8,3.6,p.c,.55*o);
+    });
+    nms.forEach((nm,i)=>T(nm,xs[i],492,16,cs[i],'center',sg(t,1.5,2.5)));
+
+    const oR=sg(t,8,9.5);
+    RR(625,140,570,370,12,col.card2,oR);RR(625,140,570,370,12,col.bd,oR,1.4);
+    T('geom_boxplot (nén trung vị & IQR)',910,164,19,col.y,'center',oR);
+    const bx=[750,910,1070],bstats=[[3,5,7],[2.5,4.2,6.5],[2.2,4,6.2]];
+    bstats.forEach(([q1,med,q3],i)=>{
+      const cx=bx[i],c=cs[i],o=sg(t,9.5+i*1.2,11+i*1.2);
+      L(cx,myF(1),cx,myF(8),c,2,o);
+      R(cx-34,myF(q1),68,myF(q3)-myF(q1),c,.65*o);
+      RR(cx-34,myF(q1),68,myF(q3)-myF(q1),2,col.fg,o,1.5);
+      L(cx-34,myF(med),cx+34,myF(med),col.fg,3.2,o);
+      T(nms[i],cx,492,16,c,'center',o);
+    });
+    T('Chọn hình học theo câu hỏi và đơn vị quan sát, không theo thói quen!',640,542,18,col.g,'center',sg(t,15.5,17));
+  }
+},
+{
+  t:'5. Chim cánh cụt: Nhìn gộp vs Theo loài',d:26,
+  s:[
+    [0,'Chuyển sang dữ liệu kinh điển penguins (Hình 1.3, 1.6, 1.7): so sánh chiều dài mỏ và độ sâu mỏ của 342 cá thể chim cánh cụt.'],
+    [5.5,'Khi BỎ ánh xạ màu theo loài (tất cả điểm màu xám), đám mây điểm trông như chiều dài và độ sâu mỏ không liên quan — thậm chí hơi đi xuống!'],
+    [12,'Nhưng ngay khi thêm ánh xạ color="species" (hoặc chia 3 ô facet_wrap theo loài, giữ nền xám là toàn bộ dữ liệu)...'],
+    [18,'...cấu trúc nhóm lập tức lộ ra: trong TỪNG loài (Adelie, Chinstrap, Gentoo), mỏ dài hơn lại đi cùng mỏ SÂU HƠN!'],
+    [22.5,'Thêm ánh xạ màu hay facet không chỉ là "đổi màu cho đẹp" — nó làm lộ cấu trúc bị biểu đồ hai biến che mất!']
+  ],
+  f:t=>{
+    hd('5. Dữ liệu penguins: Bỏ màu (gộp) vs Tô màu & Facet theo loài');
+    T('Chiều dài mỏ (bill_length_mm) vs Độ sâu mỏ (bill_depth_mm) — 342 cá thể có đủ 2 số đo',80,104,19,col.dim);
+
+    const kCol=sg(t,9,11.5),kFac=sg(t,14.5,17);
+    if(kFac<.5){
+      // Khung đơn: Gộp xám -> tô màu theo loài
+      const mxP=mp(31,60,130,680),myP=mp(12.5,22,480,165);
+      RR(95,142,615,370,12,col.card2,1);RR(95,142,615,370,12,col.bd,1,1.4);
+      L(125,485,685,485,col.axis,1.8);L(125,160,125,485,col.axis,1.5);
+      T(kCol<.5?'Bỏ ánh xạ species (nhìn gộp: hơi dốc xuống!)':'Thêm aes(color="species"): lộ rõ 3 cụm dương!',405,162,18,kCol<.5?col.r:col.g,'center');
+      pengPts.forEach(p=>{
+        D(mxP(p.len),myP(p.dep),4.5,kCol<.5?col.dim:p.c,kCol<.5?.75:.88);
+      });
+      T('Chiều dài mỏ (mm)',405,500,15,col.dim,'center');
+
+      // Giải thích bên phải
+      const oR=sg(t,2.5,4);
+      RR(745,142,455,370,12,col.card,oR);RR(745,142,455,370,12,col.bd,oR,1.5);R(745,155,3.5,344,col.y,oR);
+      T('W03-EX01: Bỏ species thì mất gì?',775,182,20,col.y,'left',oR);
+      T('• Nhìn gộp (xám): không thấy cụm loài,',775,234,17,col.fg,'left',oR);
+      T('  mối liên hệ tưởng như hơi ngược chiều.',775,264,17,col.dim,'left',oR);
+      T('• Tô màu theo loài: trong MỖI loài,',775,320,17,col.g,'left',sg(t,9.5,11));
+      T('  mỏ dài hơn đi cùng mỏ sâu hơn!',775,350,17,col.g,'left',sg(t,9.5,11));
+      T('■ Adelie    ■ Chinstrap    ■ Gentoo',775,412,16,col.fg,'left',sg(t,10,11.5));
+      T('⚠ Chỉ vẽ được biến CÓ TRONG dữ liệu.',775,468,16,col.o,'left',sg(t,11.5,13));
+    }else{
+      // 3 ô Facet với nền xám là toàn bộ dữ liệu (Hình 1.6)
+      const nms=['Adelie','Chinstrap','Gentoo'],cs=[col.b,col.o,col.g];
+      nms.forEach((nm,idx)=>{
+        const x0=85+idx*380,o=sg(t,15+idx*.8,16.5+idx*.8);
+        RR(x0,145,355,350,12,col.card2,o);RR(x0,145,355,350,12,col.bd,o,1.4);
+        R(x0,145,355,38,col.card,o);
+        T(`Loài: ${nm}`,x0+177,164,19,cs[idx],'center',o);
+        const mm=mp(31,60,x0+24,x0+330),yy=mp(12.5,22,472,205);
+        // Nền xám toàn bộ dữ liệu
+        pengPts.forEach(p=>D(mm(p.len),yy(p.dep),3.2,col.dim,.24*o));
+        // Lớp nổi bật của loài hiện tại
+        pengPts.filter(p=>p.sp===idx).forEach(p=>D(mm(p.len),yy(p.dep),4.6,p.c,.92*o));
+      });
+      T('Hình 1.6: Facet với nền xám giữ chung thang trục mm → so sánh trực tiếp từng loài với tổng thể!',640,530,17,col.y,'center',sg(t,18,19.5));
+    }
+  }
+},
+{
+  t:'6. Facet: Điều kiện hóa theo bậc (TFT)',d:20,
+  s:[
+    [0,'Áp dụng đúng kỹ thuật Facet (facet_wrap) sang dữ liệu tran_tft để tách 4 bậc xếp hạng: Bạc, Vàng, Bạch Kim, Kim Cương.'],
+    [6,'Nhờ giữ CHUNG thang trục x và trục y trên cả 4 ô, ta kiểm tra được mối liên hệ máu 4-1 và placement có nhất quán giữa các bậc không.'],
+    [13,'Nhắc lại quy tắc đọc facet: luôn kiểm tra tham số scales xem các ô có dùng chung thang trục không trước khi so sánh độ lớn!']
+  ],
+  f:t=>{
+    hd('6. Facet (facet_wrap): Điều kiện hóa theo bậc xếp hạng (TFT)');
+    T('Cùng mối liên hệ (mau_4_1 vs placement), tách thành 4 ô theo bac_xep_hang',80,104,19,col.dim);
+
+    const ranks=['Bạc','Vàng','Bạch Kim','Kim Cương'];
+    ranks.forEach((rk,idx)=>{
+      const x0=80+idx*285,o=sg(t,1.2+idx*1.5,2.6+idx*1.5);
+      RR(x0,148,265,335,10,col.card2,o);RR(x0,148,265,335,10,col.bd,o,1.4);
+      R(x0,148,265,36,col.card,o);
+      T(rk,x0+132,166,18,col.y,'center',o);
+      const mm=mp(10,100,x0+22,x0+245),yy=mp(1,8,205,455);
+      L(x0+18,460,x0+248,460,col.axis,1.4,o);
+      tftPts.filter(p=>p.rank===idx).forEach(p=>D(mm(p.hp),yy(p.pl),4,p.c,.82*o));
+    });
+    const oN=sg(t,11,12.5);
+    RR(80,508,1120,46,10,col.card,oN);RR(80,508,1120,46,10,col.bd,oN,1.3);R(80,516,3.5,30,col.g,oN);
+    T('✓ Điều kiện hóa bằng hình (không tạo thêm quan sát, không tự chứng minh nhân quả)  ·  ⚠ Luôn kiểm tra scales!',640,531,16,col.fg,'center',oN);
+  }
+},
+{
+  t:'7. Ánh xạ vs Thiết lập & Độ mờ alpha',d:24,
+  s:[
+    [0,'Một phân biệt cốt lõi trong Plotnine: ÁNH XẠ (Mapping) bên trong aes() và THIẾT LẬP (Setting) bên ngoài aes().'],
+    [5.5,'Bên trái (Thiết lập): đặt color cố định ngoài aes() → mọi điểm cùng màu, màu sắc không mã hóa thêm biến dữ liệu nào.'],
+    [11,'Bên phải (Ánh xạ): đặt color="chien_thuat" trong aes() → màu thay đổi theo dữ liệu, tách rõ 3 đám mây vàng ở 4-1!'],
+    [16.5,'Tuy nhiên Thiết lập vẫn rất hữu ích: ví dụ đặt alpha = 0,4 (giảm độ đậm) giúp nhìn thấy ngay vùng mật độ điểm chồng lấp dày!'],
+    [21,'Chú ý: xóa chú giải làm mất ý nghĩa ánh xạ; viết nhầm color="blue" vào trong aes() sẽ bị hiểu thành tên một nhóm!']
+  ],
+  f:t=>{
+    hd('7. Ánh xạ (Mapping) vs Thiết lập (Setting) & Mẹo alpha');
+
+    const o1=sg(t,1,2.5),kAlp=sg(t,16,18.5);
+    RR(80,140,535,360,12,col.card2,o1);RR(80,140,535,360,12,col.bd,o1,1.5);R(80,152,3.5,336,col.p,o1);
+    T(kAlp<.5?'THIẾT LẬP: geom_point(color="#a996cf")':'THIẾT LẬP HỮU ÍCH: thêm alpha = 0,35!',347,172,18,col.p,'center',o1);
+    const m1=mp(0,80,115,585),yF=mp(1,8,215,460);
+    L(105,466,595,466,col.axis,1.5,o1);
+    tftPts.forEach(p=>D(m1(p.gold),yF(p.pl),mx(6,7.5,kAlp),col.p,mx(.88,.32,kAlp)*o1));
+    T(kAlp<.5?'Mọi điểm cùng 1 màu → không mang thông tin biến':'Giảm độ đậm alpha giúp thấy rõ chỗ điểm chồng dày!',347,484,15,kAlp<.5?col.dim:col.y,'center',o1);
+
+    const o2=sg(t,7,8.5);
+    RR(665,140,535,360,12,col.card2,o2);RR(665,140,535,360,12,col.bd,o2,1.5);R(665,152,3.5,336,col.g,o2);
+    T('ÁNH XẠ: aes(color="chien_thuat")',932,172,18,col.g,'center',o2);
+    const m2=mp(0,80,700,1170);
+    L(690,466,1180,466,col.axis,1.5,o2);
+    tftPts.forEach(p=>D(m2(p.gold),yF(p.pl),4.5,p.c,.82*o2));
+    T('■ Reroll 6 (vàng thấp)   ■ Tempo 7   ■ Fast 8 (vàng cao)',932,484,15,col.y,'center',sg(t,10,11.5));
+    T('Cảnh giác: Xóa chú giải làm mất khóa ánh xạ; đổi bảng màu không làm đổi dữ liệu.',640,536,17,col.fg,'center',sg(t,19.5,21));
+  }
+},
+{
+  t:'8. Ngữ nghĩa đường nối (TFT & OpenIntro)',d:26,
+  s:[
+    [0,'Dạng hình học không chỉ là sở thích thẩm mỹ — mỗi dạng hình học ngầm khẳng định một tính chất của đơn vị quan sát!'],
+    [5,'Đường nối (geom_line) ngầm khẳng định các điểm là quỹ đạo nối tiếp của CÙNG MỘT ĐƠN VỊ theo một thứ tự có nghĩa.'],
+    [11,'Hình trái (W03-CH01 OpenIntro — SAI): so sánh số câu lạc bộ theo năm học (Năm 1 → Năm 4). Dù năm học có thứ tự, mỗi sinh viên chỉ thuộc 1 năm!'],
+    [17.5,'Nối các điểm giữa các năm học tạo ra những quỹ đạo giả mà dữ liệu không hề có — tương tự việc nối 24 người chơi TFT khác nhau!'],
+    [22,'Hình phải (ĐÚNG): nối 30 trận liên tiếp của CÙNG MỘT người chơi TFT theo thời gian tran_thu từ 1 đến 30.']
+  ],
+  f:t=>{
+    hd('8. Dạng hình học có phải chỉ là phong cách? (Khi nào được nối đường)');
+
+    // Trái: Sai ngữ nghĩa (OpenIntro: số CLB theo năm học)
+    const o1=sg(t,1.5,3);
+    RR(80,140,535,365,12,col.card2,o1);RR(80,140,535,365,12,col.bd,o1,1.5);R(80,152,3.5,341,col.r,o1);
+    T('✗ SAI (OpenIntro): Nối sinh viên các năm học',347,172,18,col.r,'center',o1);
+    const xs=[165,285,405,525],yC=mp(0,8,445,215),rnd=mkRng(3019);
+    for(let s=0;s<10;s++){
+      al(.55*o1);X.strokeStyle=col.r;X.lineWidth=1.4;X.beginPath();
+      for(let yr=0;yr<4;yr++){
+        const v=cl(1.5+yr*.3+(rnd()-.4)*4.2,0,7.5);
+        yr===0?X.moveTo(xs[yr],yC(v)):X.lineTo(xs[yr],yC(v));
+      }
+      X.stroke();
+    }
+    ['Năm 1','Năm 2','Năm 3','Năm 4'].forEach((lb,i)=>T(lb,xs[i],465,15,col.dim,'center',o1));
+    T('Năm học có thứ tự ≠ cùng 1 sinh viên theo thời gian!',347,490,15,col.o,'center',o1);
+
+    // Phải: Đúng ngữ nghĩa (1 người chơi TFT qua 30 trận)
+    const o2=sg(t,13,14.5);
+    RR(665,140,535,365,12,col.card2,o2);RR(665,140,535,365,12,col.bd,o2,1.5);R(665,152,3.5,341,col.g,o2);
+    T('✓ ĐÚNG: 1 người chơi TFT qua 30 trận liên tiếp',932,172,18,col.g,'center',o2);
+    const m2=mp(0,29,700,1170),yF=mp(1,8,215,450);
+    al(.9*o2);X.strokeStyle=col.g;X.lineWidth=2.2;X.beginPath();
+    histPl.forEach((v,i)=>i===0?X.moveTo(m2(i),yF(v)):X.lineTo(m2(i),yF(v)));X.stroke();
+    histPl.forEach((v,i)=>D(m2(i),yF(v),3.8,col.g,o2));
+    T('Cùng 1 đơn vị quan sát theo dõi qua thứ tự thời gian thực.',932,488,15,col.dim,'center',o2);
+  }
+},
+{
+  t:'9. Chuỗi London (arbuthnot) & Chú thích',d:26,
+  s:[
+    [0,'Đây là ví dụ kinh điển nơi đường nối phát huy tối đa sức mạnh: dữ liệu arbuthnot ghi số ca rửa tội ở London suốt 82 năm (1629–1710).'],
+    [5.5,'Mỗi hàng là một năm kế tiếp nhau của cùng một thành phố — biểu đồ đường làm nổi bật ngay cú sụt sâu từ 1642 tới 1660 và đà tăng sau đó.'],
+    [11.5,'Khi giao tiếp với người đọc, hãy dùng TIÊU ĐỀ nêu thông điệp chính và CHÚ THÍCH (annotation) chỉ thẳng vào mốc lịch sử quan trọng!'],
+    [17,'Mốc 1642 là Nội chiến Anh bùng nổ; năm 1660 phục hồi chế độ quân chủ; năm 1665–1666 là Đại dịch hạch và Đại hỏa hoạn London.'],
+    [22,'Bài học thống kê sâu sắc: total là số ca ĐƯỢC GHI VÀO SỔ — luôn tự hỏi hiện tượng thật đổi hay cách ghi sổ sách đổi!']
+  ],
+  f:t=>{
+    hd('9. Giao tiếp bằng đồ họa: Chuỗi thời gian arbuthnot (1629–1710)');
+    T('Tiêu đề nêu thông điệp chính: "Số ca rửa tội giảm mạnh trong thời kỳ Nội chiến Anh"',80,104,19,col.y);
+
+    const mxA=mp(1628,1712,120,1180),myA=mp(4500,17000,480,165);
+    L(110,480,1190,480,col.axis,2);L(120,155,120,485,col.axis,1.5);
+    [6000,10000,14000].forEach(v=>T(String(v),108,myA(v),14,col.dim,'right'));
+    [1630,1642,1660,1666,1680,1700,1710].forEach(v=>T(String(v),mxA(v),504,14,v===1642||v===1666?col.y:col.dim,'center'));
+
+    // Vùng tô mờ Nội chiến Anh 1642-1660
+    const oCW=sg(t,9,11);
+    R(mxA(1642),165,mxA(1660)-mxA(1642),315,col.r,.12*oCW);
+
+    // Vẽ đường Arbuthnot chạy dần theo thời gian
+    const nDraw=Math.max(2,Math.floor(arbData.length*sg(t,1.2,7.5)));
+    al(1);X.strokeStyle=col.b;X.lineWidth=3;X.beginPath();
+    for(let i=0;i<nDraw;i++){
+      const [yr,vl]=arbData[i];
+      i===0?X.moveTo(mxA(yr),myA(vl)):X.lineTo(mxA(yr),myA(vl));
+    }
+    X.stroke();
+
+    // Chú thích (Annotation) mốc 1642 và 1665-1666
+    const oA1=sg(t,11.5,13.5),oA2=sg(t,16.5,18.5);
+    L(mxA(1642),myA(10370),mxA(1647),myA(14200),col.y,2,oA1);
+    D(mxA(1642),myA(10370),6,col.y,oA1);
+    T('Nội chiến Anh bắt đầu (1642)',mxA(1647)+8,myA(14500),17,col.y,'left',oA1);
+    T('(Ghi sổ giáo xứ bị xáo trộn)',mxA(1647)+8,myA(13500),15,col.dim,'left',oA1);
+
+    L(mxA(1666),myA(8997),mxA(1671),myA(7200),col.o,2,oA2);
+    D(mxA(1666),myA(8997),6,col.o,oA2);
+    T('Đại dịch hạch (1665) & Hỏa hoạn (1666)',mxA(1671)+8,myA(7000),16,col.o,'left',oA2);
+
+    T('Bài học: Luôn phân biệt hiện tượng thật thay đổi vs cách dữ liệu được ghi nhận thay đổi!',640,540,17,col.g,'center',sg(t,21,22.5));
+  }
+},
+{
+  t:'10. Nhiều lớp có luôn tốt? & Biến vs Nhãn',d:24,
+  s:[
+    [0,'Hai câu hỏi thiết kế quan trọng trong File 2: Một là "Càng nhiều lớp chồng lên nhau có luôn tốt hơn không?" (W03-EX03).'],
+    [5.5,'Ví dụ chồng đường mật độ (KDE) lên histogram chiều dài mỏ penguins (Hình 2.3), hay chồng điểm lên đường ở arbuthnot.'],
+    [11,'Thực tế khẳng định "càng nhiều lớp càng tốt" là SAI: khi dữ liệu dày, nhiều lớp gây chồng lấp, tăng tải nhận thức và làm mờ thông điệp chính!'],
+    [16.5,'Chỉ thêm một lớp khi nó thực sự trả lời câu hỏi cần thiết — không thêm chỉ vì phần mềm cho phép!'],
+    [20.5,'Hai là phân biệt Tên biến và Nhãn (W03-Q04): giữ nguyên tên biến gốc trong bảng (bill_length_mm) và Việt hóa nhãn hiển thị bằng p9.labs(...)!']
+  ],
+  f:t=>{
+    hd('10. Phản biện "càng nhiều lớp càng tốt" & Tên biến vs Nhãn');
+
+    // Trái: Histogram + KDE chiều dài mỏ penguins (Hình 2.3)
+    const o1=sg(t,1.5,3),oK=sg(t,6,8);
+    RR(80,142,535,360,12,col.card2,o1);RR(80,142,535,360,12,col.bd,o1,1.4);
+    T('Hình 2.3: Histogram + Đường mật độ (penguins)',347,172,18,col.b,'center',o1);
+    const B=460,K=225,bw=27;
+    L(115,B,580,B,col.axis,1.8,o1);
+    billHist.forEach((v,i)=>{
+      const h=v*K*o1;
+      R(125+i*bw,B-h,bw-3,h,col.dim,.5*o1);
+    });
+    if(oK>0){
+      al(oK);X.strokeStyle=col.y;X.lineWidth=3.2;X.beginPath();
+      billHist.forEach((v,i)=>{
+        const cx=125+i*bw+bw/2,cy=B-v*K;
+        i===0?X.moveTo(cx,cy):X.lineTo(cx,cy);
+      });
+      X.stroke();
+    }
+    T('Chiều dài mỏ (mm)',347,484,15,col.dim,'center',o1);
+
+    // Phải trên: Phản biện W03-EX03
+    const o2=sg(t,9.5,11),o3=sg(t,16.5,18);
+    RR(660,142,540,175,12,col.card,o2);RR(660,142,540,175,12,col.bd,o2,1.5);R(660,155,3.5,149,col.r,o2);
+    T('W03-EX03: "Càng nhiều lớp càng tốt" ⇒ SAI!',690,178,19,col.r,'left',o2);
+    T('• Biểu đồ tốt tối ưu cho 1 câu hỏi, không tối đa dấu hiệu',690,222,16,col.fg,'left',o2);
+    T('• Dữ liệu dày: thêm lớp gây chồng lấp, tăng tải nhận thức',690,256,16,col.fg,'left',o2);
+    T('• Chỉ thêm lớp khi thông điệp thực sự cần nó.',690,290,16,col.y,'left',o2);
+
+    // Phải dưới: W03-Q04 Tên biến vs Nhãn
+    RR(660,342,540,160,12,col.card2,o3);RR(660,342,540,160,12,col.bd,o3,1.5);R(660,355,3.5,134,col.g,o3);
+    T('W03-Q04: Không đổi tên cột để làm nhãn!',690,378,19,col.g,'left',o3);
+    T('• Giữ nguyên tên biến gốc (bill_length_mm, species)',690,418,16,col.fg,'left',o3);
+    T('• Việt hóa hiển thị bằng: + p9.labs(x="Chiều dài mỏ (mm)")',690,454,16,col.b,'left',o3);
+  }
+},
+{
+  t:'11. Chuỗi thời gian & Trung bình trượt',d:24,
+  s:[
+    [0,'Trên chuỗi 30 trận liên tiếp của cùng một người chơi TFT, placement từng trận dao động mạnh từ hạng 1 đến hạng 7.'],
+    [5.5,'Ta thêm đường trung bình trượt (rolling mean) để thấy xu hướng dài hạn mà vẫn giữ lại các điểm trận gốc.'],
+    [11,'Quan sát cửa sổ đổi từ 3 → 5 → 10 trận: cửa sổ càng lớn đường càng mượt, nhưng phản ứng càng chậm với biến động mới!'],
+    [17,'Nguyên tắc giao tiếp: luôn giữ điểm gốc (tránh tạo ảo giác ổn định giả) và không chọn cửa sổ sau khi nhìn đường nào "đẹp nhất"!']
+  ],
+  f:t=>{
+    hd('11. Trung bình trượt (Rolling Mean) trên chuỗi thời gian');
+    const w=t<9?3:(t<15?5:10);
+    const roll=histRoll(w);
+    T(`Lịch sử 30 trận TFT — Cửa sổ trung bình trượt hiện tại: ${w} trận   (hạng 1 ở trên)`,80,104,20,col.y);
+
+    const m=mp(1,30,115,1180),y=mp(1,8,175,475);
+    L(105,480,1190,480,col.axis,2);L(115,160,115,485,col.axis,1.5);
+    [1,2,4,6,8].forEach(v=>T(String(v),98,y(v),16,col.dim,'right'));
+    [1,5,10,15,20,25,30].forEach(v=>T(String(v),m(v),505,15,col.dim,'center'));
+
+    al(.45);X.strokeStyle=col.dim;X.lineWidth=1.6;X.beginPath();
+    histPl.forEach((v,i)=>i===0?X.moveTo(m(i+1),y(v)):X.lineTo(m(i+1),y(v)));X.stroke();
+    histPl.forEach((v,i)=>D(m(i+1),y(v),4.5,col.dim,.7));
+
+    const nDraw=Math.max(2,Math.floor(30*sg(t,1.8,4.5)));
+    al(1);X.strokeStyle=col.o;X.lineWidth=3.6;X.beginPath();
+    for(let i=0;i<nDraw;i++)i===0?X.moveTo(m(i+1),y(roll[i])):X.lineTo(m(i+1),y(roll[i]));
+    X.stroke();
+
+    const oA=sg(t,16,17.5);
+    D(m(26),y(1),7.5,col.y,oA);
+    T('1 trận hạng 1 ≠ bằng chứng phong độ đã đổi!',m(25),y(1)+30,17,col.y,'right',oA);
+    T(`Cửa sổ lớn (${w} trận) → đường mượt hơn nhưng phản ứng chậm hơn.`,640,540,18,col.g,'center',sg(t,9.5,11));
+  }
+},
+{
+  t:'12. Dữ liệu thiếu & Selection Bias',d:24,
+  s:[
+    [0,'Đọc code vẽ (W03-PY01): bảng penguins có 344 hàng nhưng chỉ 342 điểm được vẽ vì 2 hàng thiếu số đo mỏ.'],
+    [5.5,'Ở tran_tft, biến so_lan_scout có 922 hàng ghi nhận đầy đủ và 38 hàng bị thiếu (4% tổng số hàng).'],
+    [11.5,'Dùng dropna(subset=["so_lan_scout"]) để chỉ loại hàng thiếu đúng biến đang xét — KHÔNG nên gọi dropna() toàn bảng làm mất dữ liệu oan!'],
+    [17,'Cảnh báo Selection Bias: dropna() không biến mẫu còn lại thành mẫu ngẫu nhiên. Nếu người thoát sớm hay mất telemetry, mẫu còn lại sẽ bị lệch!']
+  ],
+  f:t=>{
+    hd('12. Dữ liệu thiếu (Missing Data) & Thiên lệch chọn mẫu');
+
+    const o1=sg(t,1.5,3);
+    T('Biến so_lan_scout trong tran_tft (960 hàng)  ·  penguins đủ 2 số đo mỏ: 342 / 344 hàng',640,145,20,col.fg,'center',o1);
+    RR(105,180,1070,58,10,col.card2,o1);
+    const wOk=1070*(922/960)*sg(t,3,5.5),wNa=1070*(38/960)*sg(t,5.5,7);
+    R(105,180,wOk,58,col.b,.85);
+    R(105+wOk,180,wNa,58,col.r,.9);
+    T('922 hàng đủ telemetry (96,0%)',105+wOk/2,209,20,'#1e1f24','center',sg(t,4.5,6));
+    T('38 thiếu (4%)',1175,260,17,col.r,'right',sg(t,6.5,8));
+
+    const o2=sg(t,9.5,11),o3=sg(t,15,16.5);
+    RR(105,305,515,210,12,col.card,o2);RR(105,305,515,210,12,col.bd,o2,1.5);R(105,318,3.5,184,col.y,o2);
+    T('Thao tác chuẩn trong pandas',135,345,20,col.y,'left',o2);
+    T('df.dropna(subset=["so_lan_scout"])',135,392,17,col.g,'left',o2);
+    T('• Chỉ loại hàng thiếu ở ĐÚNG biến cần vẽ/tính',135,436,17,col.fg,'left',o2);
+    T('• Luôn báo cáo rõ số hàng bị loại (n = 38)',135,474,17,col.fg,'left',o2);
+
+    RR(660,305,515,210,12,col.card,o3);RR(660,305,515,210,12,col.bd,o3,1.5);R(660,318,3.5,184,col.r,o3);
+    T('Cảnh báo Selection Bias',690,345,20,col.r,'left',o3);
+    T('• dropna() ≠ mẫu còn lại là ngẫu nhiên!',690,392,18,col.o,'left',o3);
+    T('• Nếu người thoát sớm hay mất telemetry,',690,436,17,col.fg,'left',o3);
+    T('  dữ liệu còn lại sẽ lệch về nhóm trụ lâu!',690,474,17,col.fg,'left',o3);
+  }
+},
+{
+  t:'13. Giấc ngủ (msleep) & Thang Log tự nhiên',d:26,
+  s:[
+    [0,'Chuyển sang dữ liệu msleep (File 2): giấc ngủ của 83 loài động vật có vú, từ chuột chù 5 gam đến voi châu Phi nặng 6.654 kg!'],
+    [5.5,'Trên thang khối lượng gốc (trái — bodywt tính bằng kg): voi châu Phi và voi châu Á nằm tách biệt bên phải, ép 81 loài kia dồn sát trục trái!'],
+    [12,'Khi biến đổi sang thang log tự nhiên log_bodywt = ln(bodywt × 1000) (phải): mỗi bước +1 nghĩa là nặng gấp e ≈ 2,72 lần!'],
+    [18,'Lúc này toàn bộ đám mây điểm trải rộng rõ nét: từ dơi nâu nhỏ (ngủ 19,9h) tới voi châu Phi (ngủ 3,3h) — loài càng nặng thường ngủ càng ít!']
+  ],
+  f:t=>{
+    hd('13. Dữ liệu msleep (83 loài): Thang gốc vs Thang Log tự nhiên');
+
+    // Trái: Thang gốc bodywt (kg)
+    const o1=sg(t,1.5,3);
+    RR(75,140,540,365,12,col.card2,o1);RR(75,140,540,365,12,col.bd,o1,1.4);
+    T('Thang gốc: bodywt (kg) — 81 loài dồn sát trái!',345,168,18,col.r,'center',o1);
+    const mKg=mp(-200,7000,115,585),ySl=mp(0,22,472,195);
+    L(110,472,590,472,col.axis,1.6,o1);L(115,190,115,472,col.axis,1.4,o1);
+    msleepPts.forEach(p=>D(mKg(p.kg),ySl(p.sl),4.2,p.hi?col.y:col.b,.78*o1));
+    T('African elephant (6654 kg)',mKg(6654)-8,ySl(3.3)-16,14,col.y,'right',sg(t,4,5.5));
+    T('Little brown bat',mKg(100)+14,ySl(19.9),14,col.y,'left',sg(t,4,5.5));
+    T('Khối lượng (kg)',345,492,14,col.dim,'center',o1);
+
+    // Phải: Thang log_bodywt = ln(gam)
+    const o2=sg(t,10,12);
+    RR(655,140,550,365,12,col.card2,o2);RR(655,140,550,365,12,col.bd,o2,1.4);
+    T('Thang log tự nhiên: log_bodywt (gam) — lộ rõ xu hướng!',930,168,18,col.g,'center',o2);
+    const mLg=mp(1,16.5,695,1175);
+    L(690,472,1180,472,col.axis,1.6,o2);L(695,190,695,472,col.axis,1.4,o2);
+    msleepPts.forEach(p=>D(mLg(p.lg),ySl(p.sl),4.5,p.hi?col.y:col.g,.82*o2));
+    T('Little brown bat (19,9h)',mLg(2.3)+10,ySl(19.9),14,col.y,'left',sg(t,14,15.5));
+    T('African elephant (3,3h)',mLg(15.7)-10,ySl(3.3)-18,14,col.y,'right',sg(t,14,15.5));
+    T('log_bodywt = ln(khối lượng gam)   [+1 ⇒ gấp e ≈ 2,72 lần]',930,492,14,col.dim,'center',o2);
+  }
+},
+{
+  t:'14. Lọc 2D: Giao (and) vs Hợp (or)',d:24,
+  s:[
+    [0,'Bài tập W03-EX04 trên dữ liệu msleep giúp hình dung cực rõ sự khác biệt giữa phép lọc VÀ (and) và HOẶC (or) trên mặt phẳng 2D!'],
+    [5.5,'Bên trái — Giao (A): log_bodywt > 12 AND sleep_total < 5 đòi CẢ HAI cùng đúng → chỉ giữ góc nhỏ dưới-phải gồm đúng 8 loài rất nặng và ngủ rất ít!'],
+    [12,'Bên phải — Hợp (B): log_bodywt > 12 OR sleep_total < 5 chỉ cần ÍT NHẤT MỘT điều kiện đúng → giữ toàn bộ vùng chữ L gồm 14 loài!'],
+    [18,'Vì thế điều kiện AND luôn "chặt hơn" (tập con nhỏ hơn); còn một loài nhỏ nhưng ngủ < 5 giờ sẽ thuộc B nhưng KHÔNG thuộc A!']
+  ],
+  f:t=>{
+    hd('14. Trực quan hóa phép lọc: VÀ (Giao) vs HOẶC (Hợp) trên msleep');
+
+    const ySl=mp(0,22,470,195);
+    // Trái: AND (Giao)
+    const o1=sg(t,1.5,3);
+    RR(75,140,540,365,12,col.card2,o1);RR(75,140,540,365,12,col.bd,o1,1.4);
+    T('A: log_bodywt > 12  AND  sleep_total < 5  (8 loài)',345,168,18,col.o,'center',o1);
+    const m1=mp(1,16.5,115,585);
+    // Tô vùng giao (x > 12, y < 5)
+    R(m1(12),ySl(5),m1(16.5)-m1(12),ySl(0)-ySl(5),col.o,.26*sg(t,4,5.5));
+    L(m1(12),195,m1(12),470,col.y,1.5,o1,[5,4]);L(115,ySl(5),585,ySl(5),col.y,1.5,o1,[5,4]);
+    msleepPts.forEach(p=>{
+      const ok=p.lg>12&&p.sl<5;
+      D(m1(p.lg),ySl(p.sl),ok?5.2:3.6,ok?col.o:col.dim,ok?.95*o1:.35*o1);
+    });
+    T('Chặt hơn: phải thỏa CẢ HAI điều kiện',345,490,15,col.o,'center',o1);
+
+    // Phải: OR (Hợp)
+    const o2=sg(t,10,11.5);
+    RR(655,140,550,365,12,col.card2,o2);RR(655,140,550,365,12,col.bd,o2,1.4);
+    T('B: log_bodywt > 12  OR  sleep_total < 5  (14 loài)',930,168,18,col.g,'center',o2);
+    const m2=mp(1,16.5,695,1175);
+    // Tô vùng hợp (x > 12 hoặc y < 5)
+    R(m2(12),195,m2(16.5)-m2(12),ySl(0)-195,col.g,.2*sg(t,12,13.5));
+    R(695,ySl(5),m2(12)-695,ySl(0)-ySl(5),col.g,.2*sg(t,12,13.5));
+    L(m2(12),195,m2(12),470,col.y,1.5,o2,[5,4]);L(695,ySl(5),1175,ySl(5),col.y,1.5,o2,[5,4]);
+    msleepPts.forEach(p=>{
+      const ok=p.lg>12||p.sl<5;
+      D(m2(p.lg),ySl(p.sl),ok?5.2:3.6,ok?col.g:col.dim,ok?.95*o2:.35*o2);
+    });
+    T('Rộng hơn: thỏa ÍT NHẤT MỘT điều kiện',930,490,15,col.g,'center',o2);
+  }
+},
+{
+  t:'15. Chọn cột vs Lọc hàng & Đạo đức lọc',d:22,
+  s:[
+    [0,'Phân biệt rạch ròi hai chiều cắt bảng: Chọn cột df[[...]] đổi chiều ngang (giữ nguyên mọi hàng); Lọc hàng .query(...) đổi chiều dọc (giữ nguyên mọi cột).'],
+    [6,'Trong tran_tft: lọc bằng phép VÀ (Fast 8 and mau_4_1 >= 50) cho 126 trận; dùng .isin(["Reroll cấp 6", "Fast 8"]) cho 573 trận.'],
+    [12,'Nguyên tắc đạo đức lọc: tiêu chí lọc phải đến từ CÂU HỎI nghiên cứu ban đầu — KHÔNG đổi mốc sau khi xem kết quả để lấy số đẹp!'],
+    [17.5,'Và khi báo cáo trên một tập con, luôn nói rõ phạm vi tập con đó thay vì diễn đạt như kết luận cho toàn bộ dữ liệu.']
+  ],
+  f:t=>{
+    hd('15. Điều kiện hóa bằng phép lọc: Chọn cột vs Lọc hàng');
+
+    const o1=sg(t,1.5,3),o2=sg(t,5,6.5);
+    RR(85,135,535,145,12,col.card,o1);RR(85,135,535,145,12,col.bd,o1,1.5);R(85,148,3.5,119,col.b,o1);
+    T('Chọn cột (đổi chiều ngang)',115,172,21,col.b,'left',o1);
+    T('df[["mau_4_1", "placement"]]',115,216,18,col.fg,'left',o1);
+    T('Giữ đủ số hàng, chỉ lấy các biến cần xem.',115,254,17,col.dim,'left',o1);
+
+    RR(660,135,535,145,12,col.card,o2);RR(660,135,535,145,12,col.bd,o2,1.5);R(660,148,3.5,119,col.g,o2);
+    T('Lọc hàng (đổi chiều dọc — điều kiện hóa)',690,172,21,col.g,'left',o2);
+    T('msleep.query("log_bodywt > 12")',690,216,18,col.fg,'left',o2);
+    T('Giữ đủ 6 cột, chỉ lấy 9 loài động vật lớn.',690,254,17,col.dim,'left',o2);
+
+    const ops=[
+      ['Phép VÀ (and / &)','chien_thuat == "Fast 8" and mau_4_1 >= 50','126 trận',col.y,8.5],
+      ['Phép HOẶC (.isin)','chien_thuat.isin(["Reroll cấp 6", "Fast 8"])','573 trận',col.o,11.5],
+      ['Đạo đức chọn mốc','Tiêu chí lọc từ câu hỏi, KHÔNG thử 40/45/50/55 lấy số đẹp!','Minh bạch tập con',col.r,14.5]
+    ];
+    ops.forEach(([nm,cd,rs,c,st],i)=>{
+      const yy=330+i*68,o=sg(t,st,st+1.3);
+      RR(85,yy-24,1110,54,10,col.card2,o);RR(85,yy-24,1110,54,10,col.bd,o,1.4);R(85,yy-16,3.5,38,c,o);
+      T(nm,112,yy,19,c,'left',o);
+      T(cd,365,yy,17,col.fg,'left',o);
+      T(rs,1168,yy,17,c,'right',o);
+    });
+  }
+},
+{
+  t:'16. Biến logic & Thang đo Log10 (TFT)',d:22,
+  s:[
+    [0,'Một điều kiện lọc bản chất là một biến logic (True/False): trong Python, True = 1 và False = 0, nên .mean() của biến logic chính là TỈ LỆ!'],
+    [6,'Ví dụ: (mau_4_1 >= 50).mean() = 57,0%, còn (placement <= 4).mean() = 50,0% (đúng tỉ lệ top 4 toàn bảng).'],
+    [12,'Bên phải: biến tong_sat_thuong có đuôi phải dài tương tự bodywt; lấy log10 giữ nguyên thứ tự các số dương nhưng kéo giãn phần thân rõ nét!'],
+    [17.5,'Nhớ: luôn ghi rõ trục log10 hoặc ln khi trình bày biểu đồ để người đọc không hiểu nhầm thang đo!']
+  ],
+  f:t=>{
+    hd('16. Trung bình biến logic = Tỉ lệ   &   Biến đổi thang Log10');
+
+    const o1=sg(t,1.5,3);
+    RR(80,145,500,360,12,col.card,o1);RR(80,145,500,360,12,col.bd,o1,1.5);R(80,158,3.5,334,col.y,o1);
+    T('Biến logic: True = 1,  False = 0',330,185,21,col.y,'center',o1);
+    T('mean(biến logic)  =  TỈ LỆ thỏa điều kiện',330,235,20,col.g,'center',sg(t,3.5,5));
+    T('• (mau_4_1 >= 50).mean()',115,300,19,col.dim,'left',sg(t,6,7.5));
+    T('  ⇒  0,570  (57,0% trận còn ≥ 50 máu)',115,336,20,col.fg,'left',sg(t,6,7.5));
+    T('• (placement <= 4).mean()',115,395,19,col.dim,'left',sg(t,9,10.5));
+    T('  ⇒  0,500  (đúng 50% theo thiết kế lobby)',115,431,20,col.b,'left',sg(t,9,10.5));
+
+    const o2=sg(t,11.5,13),kLg=sg(t,15,17.5);
+    RR(620,145,580,360,12,col.card2,o2);RR(620,145,580,360,12,col.bd,o2,1.5);
+    T(kLg<.5?'Thang gốc: tong_sat_thuong (đuôi phải dài)':'Thang log10: phần thân hiện rõ cân đối!',910,178,19,kLg<.5?col.p:col.g,'center',o2);
+    const B=455,K=230,bw=27;
+    L(655,B,1165,B,col.axis,2,o2);
+    for(let i=0;i<18;i++){
+      const v=mx(dmgHist.raw[i],dmgHist.lg[i],kLg),h=v*K*o2;
+      R(668+i*bw,B-h,bw-3,h,kLg<.5?col.p:col.g,.85*o2);
+    }
+    T(kLg<.5?'0           50k          100k         150k':'3,6          4,2          4,8          5,3',910,482,15,col.dim,'center',o2);
+  }
+},
+{
+  t:'17. Pipeline pandas: Lọc vs Nhóm & Thứ tự',d:24,
+  s:[
+    [0,'Một pipeline pandas (method chaining) nên đọc như một câu lập luận từ trên xuống dưới: dữ liệu → lọc → tạo biến → nhóm → tóm tắt.'],
+    [6,'Lọc (query) loại bỏ các hàng ngoài phạm vi; Nhóm (groupby) giữ mọi hàng và chia tổ để tính cùng một tóm tắt cho từng nhóm.'],
+    [12,'Cảnh giác: THỨ TỰ THAO TÁC làm đổi hoàn toàn mẫu số! Nhóm trước rồi tính mean("top4") cho tỉ lệ thật (45,2% / 51,4% / 53,3%).'],
+    [18,'Nếu lỡ lọc query("top4") trước rồi mới tính mean("top4"), mẫu số đã bị cắt mất toàn bộ trận thua → mọi nhóm ra 100% vô nghĩa!']
+  ],
+  f:t=>{
+    hd('17. Pipeline pandas là một lập luận: Thứ tự làm đổi mẫu số!');
+
+    const steps=[['tran_tft',col.fg],['.query(...)',col.b],['.assign(...)',col.p],['.groupby(...)',col.y],['.agg(...)',col.g]];
+    steps.forEach(([tx,c],i)=>{
+      const x=80+i*228,o=sg(t,1+i*.8,2.2+i*.8);
+      RR(x,142,195,58,10,col.card,o);RR(x,142,195,58,10,c,o,1.6);
+      T(tx,x+97,171,19,c,'center',o);
+      if(i<4)T('→',x+211,171,22,col.dim,'center',o);
+    });
+
+    const o1=sg(t,10,11.5),o2=sg(t,15.5,17);
+    RR(85,245,535,270,12,col.card,o1);RR(85,245,535,270,12,col.bd,o1,1.5);R(85,258,3.5,244,col.g,o1);
+    T('✓ ĐÚNG: Nhóm trước, tính mean("top4")',115,282,20,col.g,'left',o1);
+    T('Mẫu số = toàn bộ trận của từng chiến thuật',115,318,17,col.dim,'left',o1);
+    T('• Reroll cấp 6:   45,2%   (299 trận)',115,368,20,col.o,'left',o1);
+    T('• Tempo cấp 7:   51,4%   (387 trận)',115,412,20,col.b,'left',o1);
+    T('• Fast 8:             53,3%   (274 trận)',115,456,20,col.g,'left',o1);
+
+    RR(660,245,535,270,12,col.card,o2);RR(660,245,535,270,12,col.bd,o2,1.5);R(660,258,3.5,244,col.r,o2);
+    T('✗ SAI THỨ TỰ: .query("top4") trước!',690,282,20,col.r,'left',o2);
+    T('Mẫu số chỉ còn các trận đã thắng → vô nghĩa!',690,318,17,col.o,'left',o2);
+    T('• Reroll cấp 6:   100,0%',690,368,21,col.r,'left',o2);
+    T('• Tempo cấp 7:   100,0%',690,412,21,col.r,'left',o2);
+    T('• Fast 8:             100,0%',690,456,21,col.r,'left',o2);
+  }
+},
+{
+  t:'18. Tỉ lệ gộp (Biên) vs Có điều kiện',d:24,
+  s:[
+    [0,'So sánh tỉ lệ BIÊN (gộp mọi lobby) với tỉ lệ CÓ ĐIỀU KIỆN (tách riêng lobby Chậm và Nhanh) trong tran_tft!'],
+    [5.5,'Gộp chung 960 trận (trái): Fast 8 dẫn đầu (53,3%), Tempo 51,4%, Reroll thấp nhất (45,2%).'],
+    [11.5,'Điều kiện hóa theo nhip_lobby (phải): trong lobby CHẬM, Fast 8 tụt xuống cuối bảng (45,8%), thua cả Reroll (48,2%) lẫn Tempo (55,2%)!'],
+    [17.5,'Còn trong lobby NHANH, Fast 8 vọt lên 58,1% và Reroll rớt mạnh xuống 36,0% — một con số gộp đã che mất hai bối cảnh trái ngược!']
+  ],
+  f:t=>{
+    hd('18. Tỉ lệ gộp (Biên) che giấu cấu trúc theo nhịp lobby');
+
+    const B=465,K=420,o1=sg(t,1.5,3);
+    L(90,B,475,B,col.axis,2,o1);L(90,B-.5*K,475,B-.5*K,col.y,1.5,o1,[6,4]);
+    T('Tỉ lệ GỘP (mọi lobby)',282,152,20,col.y,'center',o1);
+    [['Reroll',.452,col.o],['Tempo',.514,col.b],['Fast 8',.533,col.g]].forEach(([nm,v,c],i)=>{
+      const k=sg(t,2.5+i*1,4+i*1),h=v*K*k,cx=155+i*125;
+      R(cx-34,B-h,68,h,c,.88*k);
+      T(f(v*100,1)+'%',cx,B-h-18,18,c,'center',k);
+      T(nm,cx,B+26,17,col.fg,'center',k);
+    });
+
+    const o2=sg(t,9.5,11);
+    L(555,B,1195,B,col.axis,2,o2);L(555,B-.5*K,1195,B-.5*K,col.y,1.5,o2,[6,4]);
+    T('CÓ ĐIỀU KIỆN: Tách theo nhip_lobby',875,152,20,col.g,'center',o2);
+
+    const groups=[
+      ['Lobby Chậm',695,[.482,.552,.458],11],
+      ['Lobby Nhanh',1035,[.360,.486,.581],15.5]
+    ];
+    const cs=[col.o,col.b,col.g];
+    groups.forEach(([tt,cx,vals,st])=>{
+      const k=sg(t,st,st+2);
+      T(tt,cx,B+32,20,col.fg,'center',k);
+      vals.forEach((v,j)=>{
+        const h=v*K*k,bx=cx-82+j*56;
+        R(bx,B-h,48,h,cs[j],.9*k);
+        T(f(v*100,0)+'%',bx+24,B-h-16,15,cs[j],'center',k);
+      });
+    });
+    T('■ Reroll 6   ■ Tempo 7   ■ Fast 8   --- mốc 50%',875,532,16,col.dim,'center',o2);
+  }
+},
+{
+  t:'19. Nghịch lý Simpson & Cơ chế trọng số',d:26,
+  s:[
+    [0,'Khi cơ cấu nhóm lệch mạnh, chiều so sánh khi gộp có thể ĐẢO NGƯỢC HOÀN TOÀN so với từng nhóm — đó là Nghịch lý Simpson!'],
+    [6,'Ví dụ giải đấu TFT (hay bài toán tác vụ Dễ / Khó ở File 2): trong lobby Chậm, Fast 8 thắng 95% > Reroll 90%.'],
+    [12,'Trong lobby Nhanh, Fast 8 thắng 20% vẫn HƠN Reroll 10%! Nghĩa là Fast 8 hơn Reroll ở CẢ HAI bối cảnh.'],
+    [17.5,'Thế nhưng khi gộp chung (phải), Reroll bất ngờ đảo chiều thắng lớn: 82% so với chỉ 35%!'],
+    [22,'Nguyên nhân là TRỌNG SỐ: 90% Reroll rơi vào nhóm dễ (Chậm), còn 80% Fast 8 rơi vào nhóm khó (Nhanh)!']
+  ],
+  f:t=>{
+    hd('19. Nghịch lý Simpson: Hơn ở mọi nhóm nhưng thua khi gộp!');
+
+    const B=460,K=270,o1=sg(t,1.5,3);
+    L(90,B,620,B,col.axis,2,o1);
+    T('Trong từng nhóm: Fast 8 (B) HƠN cả hai!',355,148,20,col.g,'center',o1);
+    const pairs=[
+      ['Chậm / Dễ',220,.90,.95,'81/90','19/20',3],
+      ['Nhanh / Khó',480,.10,.20,'1/10','16/80',8.5]
+    ];
+    pairs.forEach(([tt,cx,vR,vF,sR,sF,st])=>{
+      const k=sg(t,st,st+2);
+      const hR=vR*K*k,hF=vF*K*k;
+      R(cx-64,B-hR,56,hR,col.o,.9*k);T(f(vR*100,0)+'%',cx-36,B-hR-18,18,col.o,'center',k);
+      R(cx+8,B-hF,56,hF,col.g,.9*k);T(f(vF*100,0)+'%',cx+36,B-hF-18,18,col.g,'center',k);
+      T(tt,cx,B+26,18,col.fg,'center',k);
+      T(`${sR} vs ${sF}`,cx,B+52,15,col.dim,'center',k);
+    });
+
+    const o2=sg(t,14,16);
+    L(700,B,1180,B,col.axis,2,o2);
+    T('GỘP LẠI: Reroll (A) ĐẢO CHIỀU thắng lớn!',940,148,20,col.r,'center',o2);
+    const hR2=.82*K*o2,hF2=.35*K*o2;
+    R(810,B-hR2,95,hR2,col.o,.9*o2);T('82%',857,B-hR2-20,24,col.o,'center',o2);T('Reroll / A (82/100)',857,B+28,17,col.o,'center',o2);
+    R(985,B-hF2,95,hF2,col.g,.9*o2);T('35%',1032,B-hF2-20,24,col.g,'center',o2);T('Fast 8 / B (35/100)',1032,B+28,17,col.g,'center',o2);
+    T('Cơ chế trọng số: 90% A ở nhóm dễ  ·  80% B ở nhóm khó!',640,545,18,col.y,'center',sg(t,20,21.5));
+  }
+},
+{
+  t:'20. Số đếm vs Tỉ lệ & Bẫy cắt trục',d:24,
+  s:[
+    [0,'Cùng một tập số liệu đúng nhưng hai cách vẽ có thể gây hai ấn tượng thị giác hoàn toàn khác nhau!'],
+    [5.5,'Bên trái: biểu đồ SỐ ĐẾM chịu ảnh hưởng bởi quy mô từng nhóm; muốn hỏi "trong mỗi nhóm bao nhiêu %?", phải chuẩn hóa về TỈ LỆ 100%.'],
+    [12,'Bên phải (Bẫy cắt trục): cùng 3 tỉ lệ 45,2%, 51,4% và 53,3%, nhưng khi cắt trục tung bắt đầu từ 42% thay vì 0%...'],
+    [18,'...cột Fast 8 trông cao gấp 4 lần Reroll! Với biểu đồ cột mã hóa độ lớn bằng chiều dài, trục tung BẮT BUỘC bắt đầu từ 0!']
+  ],
+  f:t=>{
+    hd('20. Cùng số liệu, khác ấn tượng: Số đếm vs Tỉ lệ & Bẫy cắt trục');
+
+    const o1=sg(t,1.5,3),kPct=sg(t,7.5,10);
+    RR(80,140,520,365,12,col.card2,o1);RR(80,140,520,365,12,col.bd,o1,1.4);
+    T(kPct<.5?'Số đếm (phụ thuộc cỡ mẫu từng lõi)':'Tỉ lệ 100% trong từng loại lõi',340,172,19,col.b,'center',o1);
+    const B=455,loi=[['Kinh tế',160,166],['Giao tranh',215,198],['Linh hoạt',105,116]];
+    L(115,B,565,B,col.axis,2,o1);
+    loi.forEach(([nm,t4,no],i)=>{
+      const tot=t4+no,cx=190+i*150;
+      const h1=mx(t4/440*230,t4/tot*220,kPct)*o1;
+      const h2=mx(no/440*230,no/tot*220,kPct)*o1;
+      R(cx-36,B-h1,72,h1,col.b,.9*o1);
+      R(cx-36,B-h1-h2,72,h2,col.dim,.45*o1);
+      T(nm,cx,B+26,16,col.fg,'center',o1);
+    });
+
+    const o2=sg(t,12.5,14),kCut=sg(t,16.5,19);
+    RR(645,140,555,365,12,col.card2,o2);RR(645,140,555,365,12,col.bd,o2,1.4);
+    T(kCut<.5?'✓ Trục đầy đủ 0 – 100% (trung thực)':'✗ Cắt trục từ 42% (phóng đại chênh lệch!)',922,172,19,kCut<.5?col.g:col.r,'center',o2);
+    L(685,B,1165,B,col.axis,2,o2);
+    [['Reroll',.452,col.o],['Tempo',.514,col.b],['Fast 8',.533,col.g]].forEach(([nm,v,c],i)=>{
+      const hFull=v*240,hCut=(v-.42)/(.57-.42)*240;
+      const h=mx(hFull,hCut,kCut)*o2,cx=775+i*150;
+      R(cx-38,B-h,76,h,c,.9*o2);
+      T(f(v*100,1)+'%',cx,B-h-18,17,c,'center',o2);
+      T(nm,cx,B+26,16,col.fg,'center',o2);
+    });
+    T(kCut<.5?'0%':'42%',675,B,15,kCut<.5?col.g:col.r,'right',o2);
+  }
+},
+{
+  t:'21. Điều kiện hóa ≠ Nhân quả & 6 lỗi',d:24,
+  s:[
+    [0,'Thử thách tổng hợp: các trận còn ≥ 50 máu ở 4-1 có tỉ lệ top 4 = 64,7% (vs 30,5% ở nhóm < 50 máu), giữ vững ở cả 4 bậc xếp hạng!'],
+    [6,'Tuy nhiên kết luận "giữ 50 máu ở 4-1 SẼ LÀM người chơi vào top 4" vẫn là sai lầm nhân quả!'],
+    [12,'Vì kỹ năng, lõi, cửa hàng và nhịp lobby cùng tác động lên cả máu lẫn hạng — điều kiện hóa chỉ cho thấy LIÊN HỆ, chưa phải nhân quả.'],
+    [18,'Bên phải tóm gọn 6 lỗi hay gặp nhất Tuần 03 cần kiểm tra trước khi đưa ra bất kỳ khuyến nghị nào từ dữ liệu.']
+  ],
+  f:t=>{
+    hd('21. Điều kiện hóa ≠ Nhân quả & 6 lỗi hay gặp Tuần 03');
+
+    const o1=sg(t,1,2.5),B=465,K=260;
+    RR(75,140,485,375,12,col.card2,o1);RR(75,140,485,375,12,col.bd,o1,1.4);
+    T('CH01: Tỉ lệ top 4 theo máu 4-1 (tách 4 bậc)',317,170,18,col.y,'center',o1);
+    L(105,B,535,B,col.axis,2,o1);
+    const ch=[['Bạc',.321,.667],['Vàng',.279,.672],['B.Kim',.302,.627],['K.Cương',.354,.597]];
+    ch.forEach(([nm,lo,hi],i)=>{
+      const cx=160+i*105,k=sg(t,2+i*.8,3.5+i*.8);
+      R(cx-28,B-lo*K*k,26,lo*K*k,col.dim,.65*k);
+      R(cx+2,B-hi*K*k,26,hi*K*k,col.b,.9*k);
+      T(nm,cx,B+24,14,col.fg,'center',k);
+    });
+    T('■ < 50 máu (30,5%)   ■ ≥ 50 máu (64,7%)',317,205,15,col.b,'center',o1);
+
+    const errs=[
+      ['1. Nối đường cho quan sát không có quỹ đạo thật',col.r,5],
+      ['2. Nhầm ánh xạ với thiết lập hoặc xóa chú giải',col.o,8],
+      ['3. Coi dropna() là lấy mẫu ngẫu nhiên',col.o,11],
+      ['4. Lọc top4 trước rồi mới tính mean("top4")',col.r,14],
+      ['5. Cắt chân trục tung của biểu đồ cột',col.r,17],
+      ['6. Đọc tỉ lệ có điều kiện thành kết luận nhân quả',col.y,20]
+    ];
+    errs.forEach(([tx,c,st],i)=>{
+      const yy=168+i*59,o=sg(t,st,st+1.2);
+      RR(595,yy-22,605,46,10,col.card,o);RR(595,yy-22,605,46,10,col.bd,o,1.4);R(595,yy-14,3.5,30,c,o);
+      T('✗  '+tx,620,yy,17,c,'left',o);
+    });
+  }
+},
+{
+  t:'22. Tổng hợp khái niệm & Công cụ',d:28,
+  s:[
+    [0,'Cuối cùng, hãy cùng hệ thống lại toàn bộ 8 nhóm kiến thức cốt lõi từ cả hai tài liệu của Tuần 03 trên bảng tổng hợp trực quan.'],
+    [5,'Cột trái gồm 4 thành phần Ngữ pháp đồ họa, Mapping vs Setting cùng alpha, ngữ nghĩa đường nối (Arbuthnot/OpenIntro) và trung bình trượt.'],
+    [11.5,'Cột phải gồm lọc Giao/Hợp và biến logic, biến đổi thang log (ln/log10), pipeline pandas, phân phối biên vs có điều kiện và Nghịch lý Simpson.'],
+    [18,'Luôn nhớ kiểm tra: đơn vị quan sát, dữ liệu thiếu, trục 0% của biểu đồ cột, và ranh giới giữa liên hệ với nhân quả!'],
+    [23.5,'Hãy bấm phím Space để tạm dừng tại bảng tổng hợp này nếu bạn muốn ghi chép và ôn tập lại nhé!']
+  ],
+  f:t=>{
+    const pal={gold:'#e5b91a',txt:'#dcdde2',mut:'#989ba5',bg:'#35373d',bd:'#4c4f58'};
+    T('22. Tổng hợp kiến thức trọng tâm Tuần 03 (Cả 2 file)',80,58,35,pal.gold);
+    const card=(x,y,title,st,draw)=>{
+      const o=sg(t,st,st+1.2);
+      RR(x,y,555,104,10,pal.bg,o);RR(x,y,555,104,10,pal.bd,o,1.4);
+      R(x,y+12,3.5,80,pal.gold,o);
+      T(title,x+18,y+22,16,pal.gold,'left',o);
+      draw(x,y,o);
+    };
+
+    card(75,112,'1. Bốn thành phần Ngữ pháp đồ họa (Plotnine)',1,(x,y,o)=>{
+      T('Data  +  aes(Mappings)  +  geom_*  +  facet_wrap',x+22,y+55,18,pal.txt,'left',o);
+      T('Đọc rõ đơn vị quan sát; giữ tên biến, Việt hóa bằng labs()',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(75,230,'2. Ánh xạ (Mapping) vs Thiết lập (Setting)',3.5,(x,y,o)=>{
+      T('Trong aes(): biến điều khiển màu/cỡ (cần chú giải)',x+22,y+55,18,pal.txt,'left',o);
+      T('Ngoài aes(): giá trị cố định (VD: alpha=0,4 giảm chồng lấp)',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(75,348,'3. Ngữ nghĩa hình học, Chú thích & Rolling Mean',6,(x,y,o)=>{
+      T('geom_line chỉ dùng khi có thứ tự thật (arbuthnot, lịch sử trận)',x+22,y+55,16,pal.txt,'left',o);
+      T('Không nhồi lớp thừa; dùng chú thích & giữ điểm gốc khi làm mượt',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(75,466,'4. Dữ liệu thiếu & Biến đổi thang Log (ln / log10)',8.5,(x,y,o)=>{
+      T('.dropna(subset=[...]) ≠ mẫu ngẫu nhiên (selection bias)',x+22,y+55,17,pal.txt,'left',o);
+      T('msleep (ln) & sát thương (log10): kéo giãn phần thân bị nén',x+22,y+86,15,pal.mut,'left',o);
+    });
+
+    card(650,112,'5. Lọc hàng (and / or), Chọn cột & Biến logic',11,(x,y,o)=>{
+      T('.query(...) lọc hàng (and=giao, or=hợp) | df[[...]] chọn cột',x+22,y+55,16,pal.txt,'left',o);
+      T('True = 1, False = 0  ⇒  mean(biến logic) = Tỉ lệ',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(650,230,'6. Pipeline pandas & Thứ tự thao tác',13.5,(x,y,o)=>{
+      T('df.query().assign().groupby(..., observed=True).agg()',x+22,y+55,17,pal.txt,'left',o);
+      T('Cảnh giác: lọc biến mục tiêu trước sẽ làm sai mẫu số!',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(650,348,'7. Tỉ lệ gộp vs Có điều kiện & Nghịch lý Simpson',16,(x,y,o)=>{
+      T('Gộp nhóm dễ che giấu hoặc đảo chiều (cơ chế trọng số)',x+22,y+55,17,pal.txt,'left',o);
+      T('Luôn kiểm tra theo biến bối cảnh (loài penguins, nhịp lobby)',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(650,466,'8. Trực quan trung thực & Ranh giới Nhân quả',18.5,(x,y,o)=>{
+      T('Biểu đồ cột bắt đầu từ 0%  |  Kiểm tra scales trên facet',x+22,y+55,17,pal.txt,'left',o);
+      T('Điều kiện hóa chỉ cho thấy LIÊN HỆ, chưa phải nhân quả!',x+22,y+86,16,pal.mut,'left',o);
+    });
+  }
+}
+];
+
+// ===== Điều khiển trình phát tương tác =====
+const ST=[];let TOT=0;sc.forEach(s=>{ST.push(TOT);TOT+=s.d});
+const idx=()=>Math.max(0,ST.findLastIndex(x=>x<=g));
+const $=(q)=>document.querySelector(q);
+const pg=$('#pg'),mn=$('#mn'),ui=$('#ui'),sub=$('#sub'),bp=$('#bp'),bt=$('#bt'),bn=$('#bn'),bc=$('#bc'),bs=$('#bs'),bm=$('#bm'),tm=$('#tm');
+const ic=d=>`<svg viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+const IP=ic('M8 5v14l11-7z'),IA=ic('M6 19h4V5H6zm8-14v14h4V5z');
+bt.innerHTML=ic('M6 6h2v12H6zm3.5 6l8.5 6V6z');
+bn.innerHTML=ic('M6 18l8.5-6L6 6zm10-12v12h2V6z');
+bm.innerHTML=ic('M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z');
+
+sc.forEach((s,i)=>{
+  const e=document.createElement('div');e.className='sg';e.style.flexGrow=s.d;e.innerHTML='<i></i>';pg.appendChild(e);
+  const m=document.createElement('div');m.textContent=s.t;m.onclick=()=>{g=ST[i];mn.classList.remove('o');rd()};mn.appendChild(m);
+});
+const sgs=[...pg.children],mns=[...mn.children];
+
+let g=0,pl=1,cc=1,sp=1,lt=0,ht=0,dr=0;
+const sps=[.75,1,1.25,1.5,2];
+const ft=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+const sh=()=>{ui.classList.remove('h');clearTimeout(ht);if(pl)ht=setTimeout(()=>ui.classList.add('h'),3000)};
+const up=()=>{bp.innerHTML=pl?IA:IP;if(!pl)ui.classList.remove('h');else sh()};
+
+function rs(){
+  const dpr=Math.min(2,devicePixelRatio||1),w=innerWidth,h=innerHeight,r=Math.min(w/W,h/H);
+  C.style.width=W*r+'px';C.style.height=H*r+'px';
+  C.width=Math.round(W*r*dpr);C.height=Math.round(H*r*dpr);
+}
+addEventListener('resize',rs);rs();
+
+let lastSub='';
+function rd(){
+  const k=C.width/W;X.setTransform(k,0,0,k,0,0);X.globalAlpha=1;X.fillStyle='#2c2d31';X.fillRect(0,0,W,H);
+  const i=idx(),t=g-ST[i],s=sc[i];
+  FA=Math.min(cl(t/.4),cl((s.d-t)/.4));
+  s.f(t);
+  X.globalAlpha=1;
+  sgs.forEach((e,j)=>{e.firstChild.style.width=(j<i?100:j>i?0:cl(t/s.d)*100)+'%'});
+  mns.forEach((e,j)=>e.classList.toggle('c',j===i));
+  tm.textContent=`${ft(g)} / ${ft(TOT)} · ${s.t}`;
+  let tx='';
+  if(cc)for(const [a,b] of s.s)if(t>=a)tx=b;
+  if(tx!==lastSub){
+    lastSub=tx;
+    sub.textContent=tx;
+    sub.classList.toggle('e',!tx);
+  }
+}
+
+function lp(n){
+  if(lt&&pl){g+=Math.min(.1,(n-lt)/1000)*sp;if(g>=TOT){g=TOT;pl=0;up()}}
+  lt=n;rd();requestAnimationFrame(lp);
+}
+requestAnimationFrame(lp);up();
+
+const tg=()=>{if(g>=TOT)g=0;pl^=1;up()};
+bp.onclick=tg;
+bt.onclick=()=>{const i=idx();g=ST[g-ST[i]>2?i:Math.max(0,i-1)];sh()};
+bn.onclick=()=>{const i=idx();g=i<sc.length-1?ST[i+1]:TOT;sh()};
+bc.onclick=()=>{cc^=1;bc.classList.toggle('on',!!cc);lastSub='__';rd()};
+bs.onclick=()=>{sp=sps[(sps.indexOf(sp)+1)%sps.length];bs.textContent=sp+'×'};
+bm.onclick=()=>mn.classList.toggle('o');
+C.onclick=()=>{if(mn.classList.contains('o'))mn.classList.remove('o');else tg()};
+
+const sk=e=>{const r=pg.getBoundingClientRect();g=cl((e.clientX-r.left)/r.width)*TOT;rd()};
+pg.onpointerdown=e=>{dr=1;pg.setPointerCapture(e.pointerId);sk(e)};
+pg.onpointermove=e=>{if(dr)sk(e)};
+pg.onpointerup=()=>{dr=0};
+addEventListener('pointermove',sh);
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();tg()}
+  else if(e.key==='ArrowLeft')bt.click();
+  else if(e.key==='ArrowRight')bn.click();
+  else if(e.key==='c'||e.key==='C')bc.click();
+  else if(e.key==='m'||e.key==='M')bm.click();
+});
+</script>
+</body>
+</html>

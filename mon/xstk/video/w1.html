@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tuần 1: Câu hỏi và dữ liệu</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#2c2d31;--fg:#dcdde2;--ac:#e5b91a}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden;user-select:none}
+#st{position:fixed;inset:0;display:grid;place-items:center}
+canvas{display:block}
+/* Cố định phụ đề ở sát mép đáy màn hình, không đổi vị trí khi thanh điều khiển ẩn/hiện */
+#sub{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);
+  max-width:min(980px,94vw);
+  padding:10px 20px;
+  border-radius:10px;
+  background:rgba(36,37,41,.94);
+  border:1px solid #4c4f58;
+  color:#dcdde2;
+  font-size:clamp(14px,1.45vw,19px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:center;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:5;
+}
+#sub.e{opacity:0}
+#ui{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:20px 0 0;
+  background:linear-gradient(transparent,rgba(32,33,37,.92));
+  transition:opacity .3s;
+  z-index:10;
+}
+#ui.h{opacity:0;pointer-events:none}
+#pg{display:flex;gap:2px;height:14px;align-items:flex-end;cursor:pointer;touch-action:none}
+.sg{flex:1;height:4px;background:#ffffff24;border-radius:0;overflow:hidden;transition:height .15s}
+#pg:hover .sg{height:8px}
+.sg i{display:block;height:100%;background:var(--ac)}
+#rw{display:flex;align-items:center;gap:6px;padding:0 18px 8px}
+button{background:none;border:0;color:var(--fg);width:42px;height:42px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font:600 14px inherit;font-family:inherit}
+button:hover{background:#ffffff1a}
+button.on{color:var(--ac)}
+svg{width:24px;height:24px;fill:currentColor}
+#tm{font-size:14px;font-weight:600;margin-left:8px;flex:1;color:#989ba5}
+#mn{position:fixed;top:0;right:0;bottom:0;width:min(340px,86vw);background:#242529f5;border-left:1px solid #4c4f58;padding:18px 8px;overflow:auto;transform:translateX(100%);transition:transform .25s;z-index:20}
+#mn.o{transform:none}
+#mn div{padding:11px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;color:#dcdde2}
+#mn div:hover{background:#ffffff12}
+#mn div.c{color:var(--ac);background:#e5b91a18}
+</style>
+</head>
+<body>
+<div id="st"><canvas id="c"></canvas></div>
+<div id="mn"></div>
+<div id="ui">
+  <div id="rw">
+    <button id="bp" title="Phát/Tạm dừng (Space)"></button>
+    <button id="bt" title="Cảnh trước (←)"></button>
+    <button id="bn" title="Cảnh sau (→)"></button>
+    <span id="tm"></span>
+    <button id="bc" class="on" title="Bật/tắt phụ đề (C)">CC</button>
+    <button id="bs" title="Tốc độ">1×</button>
+    <button id="bm" title="Mục lục (M)"></button>
+  </div>
+  <div id="pg"></div>
+</div>
+<div id="sub"></div>
+
+<script>
+// Thiết lập canvas logic 1280x720 và các hàm vẽ, tiện ích toán học dùng chung
+const W=1280,H=720,C=document.getElementById('c'),X=C.getContext('2d');
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const sm=v=>{v=cl(v);return v*v*(3-2*v)};
+const sg=(t,a,b)=>sm((t-a)/(b-a));
+const mx=(a,b,k)=>a+(b-a)*k;
+const mp=(a,b,p,q)=>v=>p+(q-p)*(v-a)/(b-a);
+const f=(v,d=1)=>v.toFixed(d).replace('.',',');
+const col={fg:'#dcdde2',dim:'#989ba5',b:'#78a9d6',o:'#df9368',g:'#7cc99c',y:'#e5b91a',r:'#d97373',p:'#a996cf',card:'#35373d',card2:'#26272b',bd:'#4c4f58',axis:'#545760'};
+
+let FA=1;
+const al=a=>{X.globalAlpha=cl(a===undefined?1:a)*FA};
+function T(s,x,y,z,c,a,o){al(o);X.fillStyle=c||col.fg;X.font=`${z>=34?800:600} ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;X.textAlign=a||'left';X.textBaseline='middle';X.fillText(s,x,y)}
+function L(a,b,c,d,k,w,o,ds){al(o);X.strokeStyle=k;X.lineWidth=w||2;X.setLineDash(ds||[]);X.beginPath();X.moveTo(a,b);X.lineTo(c,d);X.stroke();X.setLineDash([])}
+function R(x,y,w,h,c,o){al(o);X.fillStyle=c;X.fillRect(x,y,w,h)}
+function RR(x,y,w,h,r,c,o,st){
+  al(o);X.beginPath();X.roundRect(x,y,w,h,r);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+function D(x,y,r,c,o,st){
+  al(o);X.beginPath();X.arc(x,y,r,0,Math.PI*2);
+  if(st){X.fillStyle='#2c2d31';X.fill();X.strokeStyle=c;X.lineWidth=st;X.stroke()}
+  else{X.fillStyle=c;X.fill()}
+}
+const hd=s=>T(s,80,58,35,col.y);
+
+// Bộ sinh số giả ngẫu nhiên cố định seed và dữ liệu mô phỏng Tuần 01
+function mkRng(seed){let s=seed>>>0;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+function mkNorm(rnd){
+  return ()=>{
+    const u=Math.max(1e-7,rnd()),v=rnd();
+    return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+  };
+}
+
+// Dữ liệu mô phỏng W01-R02: Động lực -> giờ học & GPA (giờ học KHÔNG có trong công thức GPA)
+const gpaSim=(()=>{
+  const rnd=mkRng(42),gn=mkNorm(rnd),pts=[];
+  for(let i=0;i<180;i++){
+    const dl=gn();
+    const gh=cl(12+4*dl+gn()*3,0,26);
+    const gpa=cl(3.0+0.35*dl+gn()*0.28,1.6,4.0);
+    pts.push([gh,gpa,dl]);
+  }
+  return pts;
+})();
+
+// Dữ liệu mô phỏng W01-CH06: 100 thiết bị x 1000 lần đo vs 100.000 thiết bị độc lập (300 lần lặp)
+const repSim=(()=>{
+  const rnd=mkRng(1006),gn=mkNorm(rnd);
+  const bRep=new Array(24).fill(0),bInd=new Array(24).fill(0);
+  // SD lý thuyết: đo lặp = sqrt(2*(5^2/50 + 1^2/50000)) ≈ 1.000; độc lập = sqrt(2*(26/50000)) ≈ 0.032
+  for(let i=0;i<300;i++){
+    const d1=gn()*1.005;
+    const i1=Math.floor((d1+3.2)/6.4*24);
+    if(i1>=0&&i1<24)bRep[i1]++;
+    const d2=gn()*0.031;
+    const i2=Math.floor((d2+3.2)/6.4*24);
+    if(i2>=0&&i2<24)bInd[i2]++;
+  }
+  const mx1=Math.max(...bRep);
+  return {rep:bRep.map(v=>v/mx1),ind:bInd};
+})();
+
+// Danh sách 17 cảnh tương tác của Tuần 01
+const sc=[
+{
+  t:'1. Dữ liệu ghi gì & Nói đến đâu?',d:24,
+  s:[
+    [0,'Chào mừng bạn đến với Tuần 01: Câu hỏi và dữ liệu — bước đầu tiên trước khi tính bất kỳ con số nào!'],
+    [5,'Trong khảo sát lớp STAT 20 (Berkeley), 70% người trả lời nói họ chưa từng viết code. Cùng con số 70% nhưng có hai câu nói rất khác nhau:'],
+    [11,'Câu (1) chỉ nói về người ĐÃ TRẢ LỜI khảo sát — đó là TÓM TẮT. Câu (2) suy rộng ra TOÀN BỘ sinh viên Berkeley — đó là TỔNG QUÁT HÓA!'],
+    [17.5,'Một bảng dữ liệu không tự nhiên mà có: nó sinh ra từ QUÁ TRÌNH TẠO DỮ LIỆU (đo ai, đo gì, đo mấy lần, có can thiệp hay chỉ quan sát).']
+  ],
+  f:t=>{
+    hd('1. Hai câu hỏi gốc: Dữ liệu ghi gì & Cho phép nói đến đâu?');
+    T('UET.MAT1052 — Tuần 01: Câu hỏi → Quá trình tạo dữ liệu → Dữ liệu → Khẳng định',80,104,20,col.dim);
+
+    // W01-Q01: Cùng con số 70%, hai câu nói khác nhau
+    const o1=sg(t,2,3.5),o2=sg(t,7,8.5);
+    RR(80,148,540,185,12,col.card,o1);RR(80,148,540,185,12,col.bd,o1,1.5);R(80,160,3.5,161,col.g,o1);
+    T('Câu (1): Tóm tắt (Summary)',110,184,21,col.g,'left',o1);
+    T('"70% người trả lời khảo sát chưa viết code."',110,232,19,col.fg,'left',o1);
+    T('→ Chỉ mô tả đúng những người CÓ TRONG dữ liệu.',110,282,17,col.dim,'left',o1);
+
+    RR(660,148,540,185,12,col.card,o2);RR(660,148,540,185,12,col.bd,o2,1.5);R(660,160,3.5,161,col.o,o2);
+    T('Câu (2): Tổng quát hóa (Generalization)',690,184,21,col.o,'left',o2);
+    T('"70% sinh viên Berkeley chưa viết code."',690,232,19,col.fg,'left',o2);
+    T('→ Suy rộng ra nhóm lớn hơn (tùy vào cách chọn mẫu!).',690,282,17,col.dim,'left',o2);
+
+    // Chuỗi Quá trình tạo dữ liệu bên dưới
+    const steps=[
+      ['Câu hỏi',col.y,13],
+      ['Đơn vị & Biến',col.b,14.5],
+      ['Quá trình tạo DL',col.o,16],
+      ['Bảng dữ liệu',col.p,17.5],
+      ['Khẳng định',col.g,19]
+    ];
+    steps.forEach(([nm,c,st],i)=>{
+      const x=80+i*230,o=sg(t,st,st+1.2);
+      RR(x,388,195,84,10,col.card2,o);RR(x,388,195,84,10,c,o,1.8);
+      T(nm,x+97,430,19,c,'center',o);
+      if(i<4)T('→',x+212,430,24,col.dim,'center',o);
+    });
+    T('Đọc kết luận của người khác = đi ngược lại: kết luận này đòi hỏi dữ liệu được tạo ra thế nào?',640,522,18,col.y,'center',sg(t,20.5,22));
+  }
+},
+{
+  t:'2. Bốn loại khẳng định từ dữ liệu',d:26,
+  s:[
+    [0,'Mọi kết luận dựa trên dữ liệu trong khóa học này đều xếp vào một trong BỐN LOẠI khẳng định cốt lõi.'],
+    [5.5,'1. TÓM TẮT mô tả chính dữ liệu đang có (VD: 36/50 khoản vay trong loan50 có kỳ hạn 36 tháng). 2. TỔNG QUÁT HÓA nói về tổng thể lớn hơn từ một mẫu.'],
+    [12.5,'3. NHÂN QUẢ nói rằng chủ động thay đổi X sẽ làm Y thay đổi (VD: bật tiết kiệm pin LÀM máy chạy lâu hơn). 4. DỰ ĐOÁN đoán giá trị chưa biết của MỘT đơn vị mới!'],
+    [19.5,'Tuyệt đối KHÔNG phân loại bằng cách dò từ khóa như "sẽ", "thường", "ước tính" — hãy hỏi 3 câu: nói về ai, có can thiệp không, và có đoán cho 1 đơn vị cụ thể không?']
+  ],
+  f:t=>{
+    hd('2. Bốn loại khẳng định: Đừng dò từ khóa, hãy hỏi ý nghĩa!');
+
+    const cards=[
+      ['1. Tóm tắt (Summary)','Mô tả CHÍNH dữ liệu đang có','VD: Trong 50 khoản loan50, 36 khoản kỳ hạn 36 tháng.','Độ khó: Cần đo & tính đúng',col.b,1.5],
+      ['2. Tổng quát hóa (Generalization)','Nói về một TỔNG THỂ lớn hơn','VD: Từ mẫu 1.000 cử tri, ước tính 52% cả nước ủng hộ.','Độ khó: Cần biết cách lấy mẫu',col.g,6],
+      ['3. Nhân quả (Causal claim)','CAN THIỆP đổi X làm Y thay đổi','VD: Bật tiết kiệm pin LÀM điện thoại dùng lâu hơn.','Độ khó: Cần thiết kế tách tác động',col.o,10.5],
+      ['4. Dự đoán (Prediction)','Đoán giá trị chưa biết của 1 ĐƠN VỊ','VD: Căn hộ đang rao này sẽ bán được khoảng 3 tỉ.','Độ khó: Kiểm chứng trên ca mới',col.y,15]
+    ];
+    cards.forEach(([tt,ds,ex,lv,c,st],i)=>{
+      const x=80+(i%2)*570,y=130+Math.floor(i/2)*172,o=sg(t,st,st+1.4);
+      RR(x,y,545,150,12,col.card,o);RR(x,y,545,150,12,col.bd,o,1.5);R(x,y+12,3.5,126,c,o);
+      T(tt,x+26,y+30,20,c,'left',o);
+      T(ds,x+26,y+64,18,col.fg,'left',o);
+      T(ex,x+26,y+98,15,col.dim,'left',o);
+      T(lv,x+26,y+128,15,c,'left',o);
+    });
+
+    const oQ=sg(t,19.5,21);
+    RR(80,492,1115,52,10,col.card2,oQ);RR(80,492,1115,52,10,col.bd,oQ,1.4);R(80,500,3.5,36,col.y,oQ);
+    T('3 câu hỏi phân loại:  (1) Nói về dữ liệu hay tổng thể?   (2) Có can thiệp không?   (3) Có đoán giá trị 1 đơn vị cụ thể?',640,518,17,col.y,'center',oQ);
+  }
+},
+{
+  t:'3. Tổng quát hóa vs Dự đoán & Quan hệ 2 biến',d:24,
+  s:[
+    [0,'Hai chỗ dễ nhầm nhất khi phân loại khẳng định: thứ nhất là phân biệt Tổng quát hóa với Dự đoán (W01-CH01).'],
+    [5.5,'Cả hai đều nói về điều chưa quan sát: Nhóm A ước tính TỈ LỆ hộ có Internet toàn thành phố (đặc điểm cả tổng thể → Tổng quát hóa); Nhóm B đoán MỘT hộ mới cụ thể có Internet không (→ Dự đoán)!'],
+    [12.5,'Thứ hai là các câu nói về quan hệ hai biến, ví dụ nhiệt độ máy chủ (temperature) và độ trễ (latency):'],
+    [18,'Cùng 2 cột nhưng 3 câu khác hẳn nhau: "hay đi cùng nhau" là mô tả MỐI LIÊN HỆ (không phải loại thứ 5!); "biết X đoán Y" là Dự đoán; "tăng X làm tăng Y" là Nhân quả!']
+  ],
+  f:t=>{
+    hd('3. Phân biệt Tổng quát hóa vs Dự đoán & Quan hệ 2 biến');
+
+    // Trên: W01-CH01
+    const o1=sg(t,1.5,3);
+    RR(80,128,535,165,12,col.card,o1);RR(80,128,535,165,12,col.bd,o1,1.5);R(80,140,3.5,141,col.g,o1);
+    T('W01-CH01 — Nhóm A: Tổng quát hóa',108,162,20,col.g,'left',o1);
+    T('Mục tiêu: Tỉ lệ hộ có Internet TOÀN THÀNH PHỐ',108,205,17,col.fg,'left',o1);
+    T('→ Kết quả là 1 con số mô tả CẢ NHÓM LỚN.',108,252,16,col.dim,'left',o1);
+
+    const o2=sg(t,5.5,7);
+    RR(665,128,535,165,12,col.card,o2);RR(665,128,535,165,12,col.bd,o2,1.5);R(665,140,3.5,141,col.y,o2);
+    T('W01-CH01 — Nhóm B: Dự đoán',693,162,20,col.y,'left',o2);
+    T('Mục tiêu: Hộ mới CỤ THỂ này có Internet không?',693,205,17,col.fg,'left',o2);
+    T('→ Đoán giá trị của 1 ĐƠN VỊ (kể cả đang tồn tại!).',693,252,16,col.dim,'left',o2);
+
+    // Dưới: 3 câu về temperature & latency
+    const rows=[
+      ['Mô tả mối liên hệ','Trong log, lúc nhiệt độ cao thì độ trễ thường cao hơn.','(Tóm tắt / Tổng quát hóa)',col.b,11.5],
+      ['Dự đoán','Biết nhiệt độ lúc này, ta đoán độ trễ lần chạy tới.','(Đoán cho 1 ca mới)',col.y,15],
+      ['Khẳng định nhân quả','Chủ động tăng nhiệt độ lên thì độ trễ sẽ tăng.','(Có thể SAI nếu do tải nặng!)',col.r,18.5]
+    ];
+    rows.forEach(([tp,tx,nt,c,st],i)=>{
+      const yy=348+i*66,o=sg(t,st,st+1.2);
+      RR(80,yy-24,1120,54,10,col.card2,o);RR(80,yy-24,1120,54,10,col.bd,o,1.4);R(80,yy-16,3.5,38,c,o);
+      T(tp,108,yy,19,c,'left',o);
+      T(tx,365,yy,17,col.fg,'left',o);
+      T(nt,1175,yy,16,col.dim,'right',o);
+    });
+  }
+},
+{
+  t:'4. Dữ liệu thật: Thú cưng Seattle & GSS',d:24,
+  s:[
+    [0,'Thực hành với hai bộ dữ liệu thật: đầu tiên là danh sách 52.519 giấy phép nuôi thú cưng ở Seattle (seattlepets.csv).'],
+    [5.5,'Chó chiếm 35.181 bản ghi (nhiều gấp đôi mèo: 17.294). Trong dữ liệu, tên Lucy phổ biến ở chó (337 ~ 0,96%) hơn mèo (102 ~ 0,59%) → đây là TÓM TẮT.'],
+    [12,'Nhưng nếu nói "dữ liệu này phản ánh MỌI thú cưng ở Seattle" là TỔNG QUÁT HÓA rủi ro: mèo nuôi trong nhà ít đăng ký giấy phép hơn chó dắt ra đường!'],
+    [18,'Ngược lại ở khảo sát GSS (W01-OI02): nhờ chọn MẪU NGẪU NHIÊN 1.155 người Mỹ (trung bình 1,65 giờ thư giãn/ngày), ta có cơ sở tốt hơn để tổng quát hóa!']
+  ],
+  f:t=>{
+    hd('4. Dữ liệu thật: Giấy phép thú cưng Seattle & Khảo sát GSS');
+
+    // Trái: Biểu đồ seattlepets (52.519 hàng)
+    const o1=sg(t,1.5,3),B=445,K=230;
+    RR(80,138,545,385,12,col.card2,o1);RR(80,138,545,385,12,col.bd,o1,1.4);
+    T('seattlepets.csv (52.519 giấy phép)',352,168,20,col.b,'center',o1);
+    L(115,B,590,B,col.axis,2,o1);
+    const sp=[['Chó (Dog)',35181,col.b],['Mèo (Cat)',17294,col.o],['Dê / Lợn',44,col.g]];
+    sp.forEach(([nm,v,c],i)=>{
+      const k=sg(t,2.5+i*1,4+i*1),h=Math.max(4,v/38000*K*k),cx=205+i*150;
+      R(cx-42,B-h,84,h,c,.88*k);
+      T(v.toLocaleString('vi-VN'),cx,B-h-18,17,c,'center',k);
+      T(nm,cx,B+26,17,col.fg,'center',k);
+    });
+    T('Top 1: Chó = Lucy (337)  |  Mèo = Luna (111)',352,498,16,col.y,'center',sg(t,6,7.5));
+
+    // Phải trên: Ai bị bỏ ra ngoài?
+    const o2=sg(t,10,11.5),o3=sg(t,16.5,18);
+    RR(660,138,540,180,12,col.card,o2);RR(660,138,540,180,12,col.bd,o2,1.5);R(660,150,3.5,156,col.r,o2);
+    T('W01-OI01: Cẩn thận khi Tổng quát hóa!',690,174,20,col.r,'left',o2);
+    T('• Đơn vị quan sát: 1 giấy phép thú cưng ở Seattle',690,216,17,col.fg,'left',o2);
+    T('• Mèo trong nhà ít đăng ký hơn chó ra đường',690,252,17,col.o,'left',o2);
+    T('→ Luôn hỏi: Ai có mặt và ai bị bỏ ra ngoài bảng?',690,290,17,col.y,'left',o2);
+
+    // Phải dưới: GSS (1.155 người Mỹ)
+    RR(660,342,540,180,12,col.card,o3);RR(660,342,540,180,12,col.bd,o3,1.5);R(660,354,3.5,156,col.g,o3);
+    T('W01-OI02: Khảo sát GSS (1.155 người Mỹ)',690,378,20,col.g,'left',o3);
+    T('• Biến: Số giờ thư giãn/ngày (biến số liên tục)',690,420,17,col.fg,'left',o3);
+    T('• Trong 1.155 người, TB = 1,65h → Tóm tắt',690,456,17,col.fg,'left',o3);
+    T('• Mẫu ngẫu nhiên giúp Tổng quát hóa đáng tin hơn!',690,492,17,col.b,'left',o3);
+  }
+},
+{
+  t:'5. Đơn vị quan sát & Phân loại biến',d:24,
+  s:[
+    [0,'Sang Phần 2 — Ba khái niệm nền tảng đi liền nhau: Đơn vị quan sát (đối tượng được đo), Biến (đặc điểm đo) và Giá trị (kết quả cụ thể).'],
+    [6,'Hệ thống phân loại biến (Hình 1.3) chia mọi biến thành hai nhánh lớn: BIẾN SỐ (định lượng) và BIẾN PHÂN LOẠI (định tính).'],
+    [12,'Biến số có độ lớn cộng trừ được: Liên tục (lãi suất, chiều dài, nhiệt độ) và Rời rạc (số đếm: số người trong hộ, số lỗi phần mềm).'],
+    [18,'Biến phân loại nhận các mức/nhóm: Danh nghĩa không có thứ tự (loài, ngành học, bang) và Thứ bậc có thứ tự tự nhiên (hạng A–G, trình độ học vấn).']
+  ],
+  f:t=>{
+    hd('5. Hệ thống phân loại biến (Hình 1.3)');
+    T('Đơn vị quan sát (đối tượng)  ·  Biến (đặc điểm)  ·  Giá trị (kết quả cụ thể)',80,104,20,col.dim);
+
+    // Sơ đồ cây phân loại biến Hình 1.3
+    const o0=sg(t,1.5,3),o1=sg(t,4.5,6),o2=sg(t,9.5,11),o3=sg(t,14.5,16);
+    // Nút gốc
+    RR(490,145,300,62,12,col.card,o0);RR(490,145,300,62,12,col.y,o0,2);
+    T('Mọi biến (All variables)',640,176,20,col.y,'center',o0);
+
+    // Mũi tên cấp 1
+    L(640,207,345,260,col.b,2.5,o1);L(640,207,935,260,col.o,2.5,o1);
+    RR(185,260,320,66,12,col.card,o1);RR(185,260,320,66,12,col.b,o1,2);
+    T('Biến số (Định lượng)',345,283,20,col.b,'center',o1);
+    T('Độ lớn cộng, trừ có nghĩa',345,309,15,col.dim,'center',o1);
+
+    RR(775,260,320,66,12,col.card,o1);RR(775,260,320,66,12,col.o,o1,2);
+    T('Biến phân loại (Định tính)',935,283,20,col.o,'center',o1);
+    T('Giá trị là các mức / nhóm',935,309,15,col.dim,'center',o1);
+
+    // Cấp 2 — Biến số
+    L(345,326,205,390,col.b,2,o2);L(345,326,485,390,col.b,2,o2);
+    RR(80,390,250,108,10,col.card2,o2);RR(80,390,250,108,10,col.b,o2,1.5);
+    T('Liên tục (Continuous)',205,418,18,col.b,'center',o2);
+    T('Mọi giá trị trên khoảng',205,450,15,col.fg,'center',o2);
+    T('VD: lãi suất, chiều dài',205,478,14,col.dim,'center',o2);
+
+    RR(360,390,250,108,10,col.card2,o2);RR(360,390,250,108,10,col.g,o2,1.5);
+    T('Rời rạc (Discrete)',485,418,18,col.g,'center',o2);
+    T('Giá trị tách rời / đếm',485,450,15,col.fg,'center',o2);
+    T('VD: số người trong hộ',485,478,14,col.dim,'center',o2);
+
+    // Cấp 2 — Biến phân loại
+    L(935,326,795,390,col.o,2,o3);L(935,326,1075,390,col.o,2,o3);
+    RR(670,390,250,108,10,col.card2,o3);RR(670,390,250,108,10,col.o,o3,1.5);
+    T('Danh nghĩa (Nominal)',795,418,18,col.o,'center',o3);
+    T('Không có thứ tự tự nhiên',795,450,15,col.fg,'center',o3);
+    T('VD: loài, bang, ngành học',795,478,14,col.dim,'center',o3);
+
+    RR(950,390,250,108,10,col.card2,o3);RR(950,390,250,108,10,col.p,o3,1.5);
+    T('Thứ bậc (Ordinal)',1075,418,18,col.p,'center',o3);
+    T('Có thứ tự (A > B > C)',1075,450,15,col.fg,'center',o3);
+    T('VD: hạng vay, mức đồng ý',1075,478,14,col.dim,'center',o3);
+
+    T('Loại biến quyết định cách vẽ biểu đồ, phép tính tóm tắt và mô hình ở các tuần sau!',640,535,18,col.y,'center',sg(t,19.5,21));
+  }
+},
+{
+  t:'6. Bẫy dtype: Chữ số ≠ Biến số',d:24,
+  s:[
+    [0,'Một sai lầm rất hay gặp: thấy cột chứa toàn chữ số và phần mềm báo dtype = int64 là kết luận ngay đó là biến số!'],
+    [5.5,'Thử chạy pandas trên 4 mã sinh viên [24001234, 24005678, 23009911, 24000102]: máy không hề báo lỗi và trả về trung bình = 23.754.231,25!'],
+    [12,'Con số này đúng số học nhưng HOÀN TOÀN VÔ NGHĨA thống kê: mã sinh viên chỉ để định danh (biến phân loại danh nghĩa)!'],
+    [17.5,'Tương tự ở W01-CH02 với cột x gồm {1, 2, 3, 4, 5}: nếu là số lỗi phần mềm thì là biến số rời rạc; nếu là mức đánh giá Likert 1–5 thì là phân loại thứ bậc!']
+  ],
+  f:t=>{
+    hd('6. Bẫy kiểu lưu trữ (dtype): Máy tính không biết ý nghĩa!');
+
+    // Trái: Code chạy trung bình mã sinh viên
+    const o1=sg(t,1.5,3);
+    RR(80,145,545,355,12,col.card2,o1);RR(80,145,545,355,12,col.bd,o1,1.5);R(80,158,3.5,329,col.r,o1);
+    T('Mã sinh viên: lưu kiểu int64 nhưng là Danh nghĩa!',108,184,19,col.r,'left',o1);
+    T('ma_sv = [24001234, 24005678, 23009911, 24000102]',108,236,16,col.b,'left',sg(t,3,4.5));
+    T('ma_sv.dtype   →   int64',108,282,19,col.fg,'left',sg(t,4.5,6));
+    T('ma_sv.mean()  →   23.754.231,25',108,332,22,col.y,'left',sg(t,6.5,8));
+    T('✗ Đúng số học, nhưng VÔ NGHĨA thống kê!',108,396,19,col.r,'left',sg(t,9.5,11));
+    T('dtype chỉ nói máy LƯU cột như thế nào.',108,448,18,col.dim,'left',sg(t,11,12.5));
+
+    // Phải: W01-CH02 (cột x chỉ chứa 1, 2, 3, 4, 5)
+    const o2=sg(t,13,14.5);
+    RR(660,145,540,355,12,col.card,o2);RR(660,145,540,355,12,col.bd,o2,1.5);R(660,158,3.5,329,col.y,o2);
+    T('W01-CH02: Cột x = {1, 2, 3, 4, 5} (int64)',690,184,20,col.y,'left',o2);
+    T('Chưa có tài liệu mô tả → KHÔNG ĐỦ thông tin xếp loại!',690,232,17,col.o,'left',o2);
+
+    RR(690,268,480,92,10,col.card2,sg(t,15.5,17));RR(690,268,480,92,10,col.g,sg(t,15.5,17),1.4);
+    T('Tình huống 1: Số lỗi tìm thấy khi kiểm thử',712,298,17,col.g,'left',sg(t,15.5,17));
+    T('→ Cộng trừ có nghĩa ⇒ Biến số rời rạc',712,334,16,col.fg,'left',sg(t,15.5,17));
+
+    RR(690,380,480,92,10,col.card2,sg(t,18.5,20));RR(690,380,480,92,10,col.p,sg(t,18.5,20),1.4);
+    T('Tình huống 2: Mức độ hài lòng (1 đến 5)',712,410,17,col.p,'left',sg(t,18.5,20));
+    T('→ Khoảng cách 1→2 ≠ 4→5 ⇒ Phân loại thứ bậc',712,446,16,col.fg,'left',sg(t,18.5,20));
+  }
+},
+{
+  t:'7. Data frame vs Bảng đếm (Hình 1.4)',d:24,
+  s:[
+    [0,'Sang Phần 3 — Data frame (khung dữ liệu): mỗi HÀNG là một quan sát, mỗi CỘT là một biến, mỗi Ô là đúng một giá trị.'],
+    [5.5,'Chú ý: KHÔNG phải bảng tính nào cũng là data frame! Bảng người ngoài hành tinh (trái) là BẢNG ĐẾM (bảng liên hợp) sau khi đã gộp dữ liệu.'],
+    [12,'Hàng "Đêm" không phải 1 lần nhìn thấy, cột "Xanh lá" không phải 1 biến, ô 55 chỉ là số lần đếm!'],
+    [17.5,'Muốn có data frame (phải), phải bung ra đủ 144 hàng — mỗi hàng là 1 lần nhìn thấy với 2 biến mau và thoi_diem. Đi từ data frame sang bảng đếm dễ, đi ngược có thể mất vĩnh viễn biến khác!']
+  ],
+  f:t=>{
+    hd('7. Data frame ≠ Bảng tính bất kỳ (Hình 1.4: Người ngoài hành tinh)');
+
+    // Trái: Bảng liên hợp 2x2 (không phải data frame)
+    const o1=sg(t,1.5,3);
+    RR(80,150,490,265,12,col.card2,o1);RR(80,150,490,265,12,col.r,o1,1.6);
+    T('✗ Bảng đếm (Bảng liên hợp) — ≠ Data frame',325,184,18,col.r,'center',o1);
+    T('Thời điểm \\ Màu',105,232,16,col.dim,'left',o1);
+    T('Xanh lá',315,232,17,col.g,'center',o1);T('Xanh dương',440,232,17,col.b,'center',o1);T('Tổng',535,232,17,col.y,'center',o1);
+    L(100,254,555,254,col.axis,1.5,o1);
+    [['Đêm',55,11,66],['Ngày',23,55,78],['Tổng',78,66,144]].forEach(([nm,a,b,s],i)=>{
+      const yy=288+i*44;if(i===2)L(100,yy-22,555,yy-22,col.axis,1.5,o1);
+      T(nm,105,yy,18,i===2?col.y:col.fg,'left',o1);
+      T(String(a),315,yy,20,col.fg,'center',o1);
+      T(String(b),440,yy,20,col.fg,'center',o1);
+      T(String(s),535,yy,20,col.y,'center',o1);
+    });
+    T('Ô "55" là kết quả ĐẾM sau khi gộp!',325,442,17,col.o,'center',sg(t,6,7.5));
+
+    // Mũi tên chuyển đổi ở giữa
+    const oM=sg(t,10,11.5);
+    T('⇄',612,282,34,col.y,'center',oM);
+
+    // Phải: Data frame 144 hàng x 2 cột
+    const o2=sg(t,11,12.5);
+    RR(655,150,545,295,12,col.card,o2);RR(655,150,545,295,12,col.g,o2,1.6);
+    T('✓ Data frame chuẩn: shape = (144, 2)',927,184,19,col.g,'center',o2);
+    T('Hàng (1 lần thấy)',685,226,16,col.y,'left',o2);T('mau',890,226,17,col.b,'center',o2);T('thoi_diem',1070,226,17,col.o,'center',o2);
+    L(675,248,1180,248,col.axis,1.5,o2);
+    [['0','Xanh lá','Đêm'],['1','Xanh lá','Đêm'],['…','…','…'],['91','Xanh dương','Ngày'],['143','Xanh dương','Ngày']].forEach(([id,m,td],i)=>{
+      const yy=276+i*32;
+      T(id,730,yy,16,col.dim,'center',o2);T(m,890,yy,17,col.fg,'center',o2);T(td,1070,yy,17,col.fg,'center',o2);
+    });
+    T('Đi xuôi (DF → Bảng đếm): dễ. Đi ngược: mất địa điểm, người báo cáo!',640,515,18,col.y,'center',sg(t,18,19.5));
+  }
+},
+{
+  t:'8. Thực hành đọc cấu trúc: email50 & loan50',d:24,
+  s:[
+    [0,'Áp dụng quy tắc đọc ý nghĩa (không đọc dtype) trên hai bộ dữ liệu thật: email50 (50 thư × 21 biến) và loan50 (50 khoản vay).'],
+    [6,'Trong email50 (trái): spam được lưu int64 (0/1) nhưng là phân loại DANH NGHĨA; image lưu float64 nhưng là số đếm RỜI RẠC; còn number tên như biến số nhưng lại chứa {none, small, big} → phân loại THỨ BẬC!'],
+    [13.5,'Trong loan50 (phải): mỗi hàng là một khoản vay. term (36 hoặc 60 tháng) là biến số rời rạc dù lưu float64; grade (A–G) là phân loại thứ bậc; state (CA, NJ) là danh nghĩa; interest_rate là số liên tục!'],
+    [20,'Một data frame có thể chứa đồng thời mọi loại biến trên cùng một hàng — luôn đọc mô tả biến trước khi phân tích!']
+  ],
+  f:t=>{
+    hd('8. Đọc cấu trúc dữ liệu thật: email50 & loan50');
+
+    // Trái: email50 (W01-EX01)
+    const o1=sg(t,1.5,3);
+    RR(80,140,535,360,12,col.card,o1);RR(80,140,535,360,12,col.bd,o1,1.5);R(80,153,3.5,334,col.b,o1);
+    T('email50.csv (50 thư × 21 biến)',347,174,20,col.b,'center',o1);
+    const eRows=[
+      ['spam','int64 (0/1)','Phân loại danh nghĩa!',col.r],
+      ['cc','int64','Biến số rời rạc',col.g],
+      ['image','float64','Biến số rời rạc (đếm)',col.o],
+      ['number','str (none/small/big)','Phân loại thứ bậc!',col.y]
+    ];
+    eRows.forEach(([nm,dt,tp,c],i)=>{
+      const yy=232+i*62,o=sg(t,3+i*1.5,4.2+i*1.5);
+      RR(105,yy-22,485,48,8,col.card2,o);
+      T(nm,122,yy,18,col.fg,'left',o);
+      T(dt,235,yy,15,col.dim,'left',o);
+      T(tp,575,yy,16,c,'right',o);
+    });
+
+    // Phải: loan50 (W01-EX02)
+    const o2=sg(t,11,12.5);
+    RR(665,140,535,360,12,col.card,o2);RR(665,140,535,360,12,col.bd,o2,1.5);R(665,153,3.5,334,col.g,o2);
+    T('loan50.csv (50 khoản vay)',932,174,20,col.g,'center',o2);
+    const lRows=[
+      ['term','float64 (36 / 60)','Biến số rời rạc (tháng)',col.o],
+      ['grade','str (A đến G)','Phân loại thứ bậc',col.y],
+      ['state','str (CA, NJ…)','Phân loại danh nghĩa',col.b],
+      ['interest_rate','float64 (10,90%)','Biến số liên tục',col.g]
+    ];
+    lRows.forEach(([nm,dt,tp,c],i)=>{
+      const yy=232+i*62,o=sg(t,12.5+i*1.5,13.7+i*1.5);
+      RR(690,yy-22,485,48,8,col.card2,o);
+      T(nm,706,yy,18,col.fg,'left',o);
+      T(dt,845,yy,15,col.dim,'left',o);
+      T(tp,1160,yy,16,c,'right',o);
+    });
+    T('Đừng nhìn tên cột (như "number") hay dtype để đoán loại biến!',640,534,18,col.y,'center',sg(t,19.5,21));
+  }
+},
+{
+  t:'9. Phim Marvel & Chim cánh cụt Palmer',d:22,
+  s:[
+    [0,'Hai ví dụ tiếp theo giúp phân biệt rõ số quan sát, số biến, giá trị và quyết định nhập liệu.'],
+    [5,'Bảng phim Marvel (mcu_films.csv, 23×7): có 23 quan sát (mỗi hàng 1 phim), 7 biến. movie là BIẾN, còn "Iron Man" là một GIÁ TRỊ của biến đó.'],
+    [11,'Bộ Palmer penguins (344×8) đo tại Nam Cực: mỗi hàng là 1 con chim cánh cụt, gồm 4 biến số hình thái liên tục (mỏ dài/sâu, cánh, khối lượng) và 3 biến phân loại danh nghĩa (species, island, sex).'],
+    [17,'Lưu ý: cột year (2007–2009) là số nhưng tùy câu hỏi có thể dùng như nhóm; và một số ô có NaN (giá trị thiếu). Đơn vị quan sát KHÔNG phải là một biến!']
+  ],
+  f:t=>{
+    hd('9. Đếm quan sát & biến: mcu_films & Palmer penguins');
+
+    // Trái: Marvel
+    const o1=sg(t,1.5,3);
+    RR(80,140,535,355,12,col.card,o1);RR(80,140,535,355,12,col.bd,o1,1.5);R(80,153,3.5,329,col.o,o1);
+    T('W01-IMS01: mcu_films.csv  [shape: (23, 7)]',110,178,20,col.o,'left',o1);
+    T('• 23 quan sát (mỗi hàng = 1 phim Marvel)',110,232,18,col.fg,'left',o1);
+    T('• 7 biến (cột): movie, length_hrs, gross_us…',110,276,18,col.fg,'left',o1);
+    T('• movie là BIẾN  |  "Iron Man" là GIÁ TRỊ',110,322,19,col.y,'left',sg(t,5.5,7));
+    T('• Tách length_hrs & length_min thành 2 cột',110,378,17,col.dim,'left',sg(t,7.5,9));
+    T('  là quyết định nhập liệu, không phải bản chất phim.',110,410,17,col.dim,'left',sg(t,7.5,9));
+
+    // Phải: Penguins
+    const o2=sg(t,10,11.5);
+    RR(665,140,535,355,12,col.card,o2);RR(665,140,535,355,12,col.bd,o2,1.5);R(665,153,3.5,329,col.b,o2);
+    T('W01-IMS02: penguins.csv  [shape: (344, 8)]',695,178,20,col.b,'left',o2);
+    T('• Đơn vị quan sát: 1 con chim cánh cụt (3 đảo)',695,232,18,col.fg,'left',o2);
+    T('• 4 biến số liên tục: bill_length/depth, flipper, mass',695,276,17,col.g,'left',sg(t,12,13.5));
+    T('• 3 biến danh nghĩa: species, island, sex',695,320,17,col.y,'left',sg(t,14,15.5));
+    T('• Cột year (2007–2009): số hoặc nhóm theo mùa đo',695,368,17,col.dim,'left',sg(t,16,17.5));
+    T('• Có giá trị thiếu (NaN) ở hàng 3!',695,414,18,col.r,'left',sg(t,17.5,19));
+
+    T('Đơn vị quan sát không phải là một biến — nó là đối tượng mà các biến được đo trên đó!',640,532,18,col.y,'center',sg(t,19,20.5));
+  }
+},
+{
+  t:'10. Một bảng, nhiều mức chi tiết',d:24,
+  s:[
+    [0,'Không phải lúc nào một hàng cũng là "một người"! Xét bảng điểm của phòng đào tạo (W01-CH03): An học 2 môn (MAT1052, PHY1001), Bình học 1 môn.'],
+    [6,'Đơn vị quan sát ở đây KHÔNG phải là sinh viên, mà là một lượt "sinh viên × học phần × học kỳ" — nên An xuất hiện ở hai hàng!'],
+    [12,'Nếu ta ghép thêm cột năm sinh (birth_year) vào bảng điểm này, năm sinh của An (2006) bị CHÉP LẶP HAI LẦN!'],
+    [18,'Hậu quả: nếu tính "năm sinh trung bình" từ bảng đã ghép, An bị đếm 2 lần! Muốn lưu đặc điểm sinh viên, cần tách thành bảng riêng mỗi sinh viên một hàng.']
+  ],
+  f:t=>{
+    hd('10. Một hàng có luôn là "một người"? (W01-CH03)');
+
+    const kMerge=sg(t,9.5,12);
+    // Bảng điểm ở trên
+    const o1=sg(t,1.5,3);
+    RR(100,138,1080,225,12,col.card,o1);RR(100,138,1080,225,12,col.bd,o1,1.5);
+    T('sinh_vien',180,175,18,col.y,'center',o1);
+    T('hoc_phan',380,175,18,col.y,'center',o1);
+    T('hoc_ky',580,175,18,col.y,'center',o1);
+    T('diem',760,175,18,col.y,'center',o1);
+    T('birth_year (ghép thêm!)',995,175,18,col.r,'center',kMerge);
+    L(125,200,1155,200,col.axis,1.5,o1);
+
+    const rows=[
+      ['An','MAT1052','2026A','8,5','2006',col.o],
+      ['An','PHY1001','2026A','7,5','2006',col.o],
+      ['Bình','MAT1052','2026A','9,0','2005',col.b]
+    ];
+    rows.forEach(([sv,hp,hk,d,ns,c],i)=>{
+      const yy=234+i*44;
+      if(i<2&&kMerge>.4)R(885,yy-18,220,36,col.r,.22*kMerge);
+      T(sv,180,yy,19,c,'center',o1);
+      T(hp,380,yy,19,col.fg,'center',o1);
+      T(hk,580,yy,19,col.dim,'center',o1);
+      T(d,760,yy,19,col.g,'center',o1);
+      T(ns,995,yy,20,i<2?col.r:col.fg,'center',kMerge);
+    });
+
+    // Giải thích bên dưới
+    const o2=sg(t,5.5,7),o3=sg(t,14,15.5);
+    RR(100,392,515,130,12,col.card2,o2);RR(100,392,515,130,12,col.bd,o2,1.4);R(100,404,3.5,106,col.b,o2);
+    T('Đơn vị quan sát thực sự:',128,426,19,col.b,'left',o2);
+    T('1 lượt (sinh_vien × hoc_phan × hoc_ky)',128,464,18,col.fg,'left',o2);
+    T('Không được nhồi nhiều điểm vào chung 1 ô!',128,498,16,col.dim,'left',o2);
+
+    RR(665,392,515,130,12,col.card2,o3);RR(665,392,515,130,12,col.bd,o3,1.4);R(665,404,3.5,106,col.r,o3);
+    T('Cảnh báo khi ghép cột cấp cao hơn:',693,426,19,col.r,'left',o3);
+    T('An bị lặp 2 lần → trung bình năm sinh bị lệch!',693,464,18,col.o,'left',o3);
+    T('Giải pháp: Tách 2 bảng (bảng SV & bảng điểm).',693,498,16,col.g,'left',o3);
+  }
+},
+{
+  t:'11. Câu hỏi quyết định mức chi tiết (40 pin)',d:24,
+  s:[
+    [0,'Không có một cấu trúc bảng "tốt nhất cho mọi câu hỏi" — chính CÂU HỎI nghiên cứu quyết định mỗi hàng nên là gì!'],
+    [5.5,'Xét thí nghiệm W01-R01: 40 bộ pin × 3 cảm biến × 1.008 thời điểm (mỗi 10 phút trong 7 ngày) tạo ra bảng log khổng lồ 120.960 hàng!'],
+    [12,'Câu A hỏi: khi 1 cảm biến tăng nhiệt đột ngột, 2 cảm biến kia đổi thế nào CÙNG THỜI ĐIỂM? Bắt buộc phải giữ nguyên 120.960 hàng (pin × cảm biến × thời điểm)!'],
+    [18,'Câu B hỏi: bộ pin nào có nhiệt độ trung bình cả tuần cao nhất? Ta gộp bảng bằng groupby("pin_id").mean() xuống chỉ còn 40 hàng × 2 cột — trả lời ngay nhưng mất sạch diễn biến theo thời gian!']
+  ],
+  f:t=>{
+    hd('11. Câu hỏi quyết định mức chi tiết (W01-R01: 40 bộ pin)');
+
+    // Trái: Bảng gốc 120.960 hàng
+    const o1=sg(t,1.5,3);
+    RR(80,145,515,355,12,col.card,o1);RR(80,145,515,355,12,col.b,o1,1.6);
+    T('Bảng gốc: shape = (120.960, 4)',337,180,21,col.b,'center',o1);
+    T('40 pin × 3 cảm biến × 1.008 thời điểm',337,214,16,col.dim,'center',o1);
+    T('pin_id | cam_bien | thoi_diem | nhiet_do_c',337,258,16,col.y,'center',o1);
+    T('   1   |    1     |     0     |   36,72',337,292,16,col.fg,'center',o1);
+    T('   1   |    1     |     1     |   36,42',337,322,16,col.fg,'center',o1);
+    T('   …   |    …     |     …     |    …',337,352,16,col.dim,'center',o1);
+    RR(105,388,465,88,10,col.card2,sg(t,8,9.5));RR(105,388,465,88,10,col.g,sg(t,8,9.5),1.4);
+    T('✓ Trả lời Câu A (so 3 cảm biến cùng lúc)',337,418,17,col.g,'center',sg(t,8,9.5));
+    T('Không được bỏ chiều thời điểm hay cảm biến!',337,452,15,col.fg,'center',sg(t,8,9.5));
+
+    // Mũi tên gộp dữ liệu
+    const oM=sg(t,13.5,15);
+    T('groupby',640,290,15,col.y,'center',oM);
+    T('→',640,320,34,col.y,'center',oM);
+
+    // Phải: Bảng gộp 40 hàng
+    const o2=sg(t,14.5,16);
+    RR(685,145,515,355,12,col.card,o2);RR(685,145,515,355,12,col.o,o2,1.6);
+    T('Bảng gộp: shape = (40, 2)',942,180,21,col.o,'center',o2);
+    T('Mỗi hàng = 1 bộ pin (trung bình cả tuần)',942,214,16,col.dim,'center',o2);
+    T('pin_id   |   nhiet_do_c (mean)',942,258,16,col.y,'center',o2);
+    T('  31     |      39,25 °C  (cao nhất)',942,292,16,col.y,'center',o2);
+    T('  23     |      37,47 °C',942,322,16,col.fg,'center',o2);
+    T('  36     |      37,26 °C',942,352,16,col.fg,'center',o2);
+    RR(710,388,465,88,10,col.card2,sg(t,17.5,19));RR(710,388,465,88,10,col.r,sg(t,17.5,19),1.4);
+    T('✓ Trả lời nhanh Câu B (pin nóng nhất)',942,418,17,col.g,'center',sg(t,17.5,19));
+    T('✗ Mất diễn biến thời gian → hết trả lời được A!',942,452,15,col.r,'center',sg(t,17.5,19));
+  }
+},
+{
+  t:'12. Dữ liệu quan sát & Bẫy nhân quả (GPA)',d:26,
+  s:[
+    [0,'Khi nào dữ liệu KHÔNG THỂ trả lời câu hỏi? Xét W01-R02: thu thập giờ tự học và GPA của 600 sinh viên mà không ai bị chỉ định học bao nhiêu giờ.'],
+    [6,'Nhóm phân tích hỏi: "Nếu học thêm 1 giờ/tuần, GPA sẽ tăng bao nhiêu?" — đây là câu hỏi NHÂN QUẢ (can thiệp)!'],
+    [12,'Quan sát biểu đồ mô phỏng bên trái: ta tự lập trình sao cho ĐỘNG LỰC tạo ra cả giờ học lẫn GPA, còn giờ học KHÔNG HỀ CÓ trong công thức GPA!'],
+    [18.5,'Thế nhưng đồ thị vẫn dốc lên rất đẹp! Với dữ liệu thật ta không biết công thức ngầm, nên dữ liệu quan sát tự nó chỉ nói về MỐI LIÊN HỆ, không chứng minh nhân quả!']
+  ],
+  f:t=>{
+    hd('12. Khi dữ liệu không trả lời được câu hỏi (W01-R02)');
+
+    // Trái: Scatter plot mô phỏng 600 SV (giờ học vs GPA)
+    const o1=sg(t,1.5,3);
+    RR(80,140,590,375,12,col.card2,o1);RR(80,140,590,375,12,col.bd,o1,1.4);
+    T('Mô phỏng: Giờ học KHÔNG có trong công thức GPA!',375,168,18,col.y,'center',o1);
+    const mX=mp(0,26,130,640),mY=mp(1.5,4.1,472,195);
+    L(122,472,648,472,col.axis,1.8,o1);L(130,190,130,478,col.axis,1.5,o1);
+    gpaSim.forEach(([gh,gpa],i)=>{
+      const k=sg(t,2+i*.03,3+i*.03);
+      D(mX(gh),mY(gpa),3.8,col.b,.68*k);
+    });
+    T('Số giờ tự học / tuần',385,498,15,col.dim,'center',o1);
+    T('GPA',98,330,15,col.dim,'center',o1);
+
+    // Phải: Sơ đồ nguyên nhân thật (Động lực -> Giờ học & GPA)
+    const o2=sg(t,10,11.5);
+    RR(705,140,500,375,12,col.card,o2);RR(705,140,500,375,12,col.bd,o2,1.5);R(705,153,3.5,349,col.r,o2);
+    T('Cơ chế thật trong mô phỏng:',955,176,20,col.y,'center',o2);
+
+    RR(845,212,220,48,10,col.card2,o2);RR(845,212,220,48,10,col.o,o2,1.8);
+    T('Động lực (ẩn)',955,236,18,col.o,'center',o2);
+    L(905,260,810,320,col.o,2.5,o2);L(1005,260,1100,320,col.o,2.5,o2);
+
+    RR(730,320,165,48,10,col.card2,o2);RR(730,320,165,48,10,col.b,o2,1.6);
+    T('Giờ học',812,344,18,col.b,'center',o2);
+
+    RR(1015,320,165,48,10,col.card2,o2);RR(1015,320,165,48,10,col.g,o2,1.6);
+    T('GPA',1097,344,18,col.g,'center',o2);
+
+    L(895,344,1015,344,col.r,2,sg(t,14,15.5),[5,5]);
+    T('✗ 0 tác động!',955,326,15,col.r,'center',sg(t,14,15.5));
+
+    T('• Động lực, năng lực nền, độ khó ngành…',735,416,16,col.fg,'left',sg(t,16.5,18));
+    T('  cùng tác động lên cả giờ học lẫn GPA.',735,444,16,col.fg,'left',sg(t,16.5,18));
+    T('→ Quan sát chỉ thấy LIÊN HỆ, ≠ Nhân quả!',735,484,18,col.y,'left',sg(t,19,20.5));
+  }
+},
+{
+  t:'13. Gộp dữ liệu đổi nghĩa "Trung bình"',d:26,
+  s:[
+    [0,'Gộp dữ liệu không chỉ làm mất thông tin dao động — nó còn âm thầm ĐỔI NGHĨA của từ "trung bình" (W01-R03)!'],
+    [5.5,'Xét 5 máy chủ S1–S5 (máy S1, S2 nhanh ~21 ms; máy S3, S4, S5 chậm ~65 ms). Ban đầu mỗi máy đều đo đúng 100 lần: cả hai trung bình đều bằng 47,3 ms!'],
+    [12.5,'Nhưng bây giờ đổi số lần đo: hai máy nhanh S1, S2 đo 1.000 lần mỗi máy, còn ba máy chậm chỉ đo 100 lần!'],
+    [18.5,'Trung bình trên mọi lần đo gốc tụt mạnh xuống 27,1 ms (vì 2.000/2.300 lần đo thuộc máy nhanh), còn trung bình của 5 máy chủ vẫn giữ nguyên 47,3 ms!'],
+    [22.5,'Không số nào sai: bảng gốc hỏi về "1 lần đo", còn bảng gộp đã đổi đơn vị quan sát thành "1 máy chủ"!']
+  ],
+  f:t=>{
+    hd('13. Gộp dữ liệu âm thầm đổi đơn vị quan sát (W01-R03)');
+
+    const kUnb=sg(t,10.5,13.5);
+    const cnts=[Math.round(mx(100,1000,kUnb)),Math.round(mx(100,1000,kUnb)),100,100,100];
+    const means=[20.3,21.4,59.4,65.1,70.3];
+    let num=0,den=0;
+    for(let i=0;i<5;i++){num+=cnts[i]*means[i];den+=cnts[i]}
+    const rawMean=num/den,srvMean=47.3;
+
+    // Bảng 5 máy chủ bên trái
+    const o1=sg(t,1,2.5);
+    RR(80,145,515,355,12,col.card,o1);RR(80,145,515,355,12,col.bd,o1,1.5);
+    T(kUnb<.5?'Trường hợp 1: Mọi máy đo đều 100 lần':'Trường hợp 2: S1, S2 đo gấp 10 lần!',337,180,19,kUnb<.5?col.b:col.y,'center',o1);
+    T('Máy chủ',150,222,16,col.dim,'center',o1);T('Số lần đo',335,222,16,col.dim,'center',o1);T('Độ trễ TB',495,222,16,col.dim,'center',o1);
+    L(105,244,570,244,col.axis,1.5,o1);
+    for(let i=0;i<5;i++){
+      const yy=276+i*42,c=i<2?col.g:col.o;
+      T(`S${i+1}`,150,yy,18,c,'center',o1);
+      T(String(cnts[i]),335,yy,19,i<2&&kUnb>.4?col.y:col.fg,'center',o1);
+      T(`${f(means[i],1)} ms`,495,yy,18,c,'center',o1);
+    }
+
+    // Biểu đồ so sánh 2 con số trung bình bên phải
+    const o2=sg(t,3.5,5),B=455,K=4.2;
+    RR(640,145,560,355,12,col.card2,o2);RR(640,145,560,355,12,col.bd,o2,1.4);
+    T('So sánh 2 cách tính "Độ trễ trung bình"',920,180,19,col.fg,'center',o2);
+    L(685,B,1160,B,col.axis,2,o2);
+
+    const h1=rawMean*K*o2,h2=srvMean*K*o2;
+    R(760,B-h1,120,h1,col.b,.9*o2);
+    T(`${f(rawMean,1)} ms`,820,B-h1-20,22,col.b,'center',o2);
+    T('Mọi lần đo gốc',820,B+26,17,col.fg,'center',o2);
+
+    R(970,B-h2,120,h2,col.y,.9*o2);
+    T(`${f(srvMean,1)} ms`,1030,B-h2-20,22,col.y,'center',o2);
+    T('TB 5 máy chủ',1030,B+26,17,col.fg,'center',o2);
+
+    T('Hai con số trả lời 2 câu hỏi khác nhau: "1 lần đo" vs "1 máy chủ"!',640,534,18,col.y,'center',sg(t,18,19.5));
+  }
+},
+{
+  t:'14. Đọc cấu trúc bằng pandas & Thiết kế bảng',d:24,
+  s:[
+    [0,'Trong Phần 4, Python và pandas chỉ làm một việc cốt lõi: giúp ta nhìn nhanh cấu trúc của DataFrame qua 4 thao tác quen thuộc.'],
+    [5.5,'df.head() xem vài hàng đầu; df.shape cho biết (số hàng, số cột); df.columns liệt kê tên biến; df.dtypes cho biết kiểu lưu trữ của máy.'],
+    [11.5,'Ta cũng có thể khai báo rõ biến phân loại CÓ THỨ TỰ bằng pd.Categorical(df["grade"], categories=["A"…"G"], ordered=True) để máy hiểu phép so sánh hạng!'],
+    [17.5,'Khi tự thiết kế bảng (W01-D01: nhiệt độ phòng & thời gian tác vụ), cần xác định rõ đơn vị (người × buổi × tác vụ) và giữ cột ID nhận diện đo lặp — nhớ rằng sửa bảng không biến dữ liệu quan sát thành thí nghiệm!']
+  ],
+  f:t=>{
+    hd('14. Đọc cấu trúc bảng bằng pandas & Tự thiết kế DataFrame');
+
+    // Trái: 4 lệnh pandas + Categorical
+    const o1=sg(t,1.5,3);
+    RR(80,140,540,365,12,col.card2,o1);RR(80,140,540,365,12,col.bd,o1,1.5);R(80,153,3.5,339,col.b,o1);
+    T('4 thao tác đọc cấu trúc pandas',110,176,20,col.b,'left',o1);
+    const cmds=[
+      ['df.head()','Xem vài hàng đầu của bảng'],
+      ['df.shape','(số hàng, số cột) — chưa phải số đơn vị!'],
+      ['df.columns','Danh sách tên các biến'],
+      ['df.dtypes','Kiểu máy lưu (≠ loại biến thống kê!)']
+    ];
+    cmds.forEach(([c,d],i)=>{
+      const yy=226+i*48,o=sg(t,2.5+i*1.1,3.7+i*1.1);
+      T(c,110,yy,18,col.y,'left',o);
+      T(d,250,yy,16,col.fg,'left',o);
+    });
+    const oCat=sg(t,10,11.5);
+    RR(105,412,490,72,8,col.card,oCat);RR(105,412,490,72,8,col.g,oCat,1.4);
+    T('Khai báo thứ bậc: pd.Categorical(..., ordered=True)',122,436,15,col.g,'left',oCat);
+    T('→ (loan["grade"] <= "B").sum()  # đếm hạng A, B',122,464,15,col.fg,'left',oCat);
+
+    // Phải: W01-D01 Thiết kế bảng nghiên cứu nhiệt độ phòng
+    const o2=sg(t,14,15.5);
+    RR(660,140,540,365,12,col.card,o2);RR(660,140,540,365,12,col.bd,o2,1.5);R(660,153,3.5,339,col.y,o2);
+    T('W01-D01: Tự thiết kế bảng dữ liệu tối thiểu',690,176,20,col.y,'left',o2);
+    T('• Mỗi hàng: 1 (người × buổi × tác vụ)',690,224,17,col.fg,'left',o2);
+    T('• Kết quả: completion_time_s (giây)',690,262,17,col.g,'left',o2);
+    T('• Giải thích: room_temperature_c (°C)',690,300,17,col.b,'left',o2);
+    T('• Nhận diện đo lặp: participant_id, session_id, task_id',690,338,16,col.o,'left',sg(t,16.5,18));
+    T('• Biến phụ: độ khó, kinh nghiệm, giờ trong ngày…',690,376,16,col.dim,'left',sg(t,16.5,18));
+    RR(688,412,485,72,8,col.card2,sg(t,19,20.5));RR(688,412,485,72,8,col.r,sg(t,19,20.5),1.4);
+    T('⚠ Muốn hỏi nhân quả: phải đổi CÁCH TẠO DỮ LIỆU,',705,436,15,col.r,'left',sg(t,19,20.5));
+    T('không phải chỉ đổi tên hay thêm cột trong bảng!',705,464,15,col.fg,'left',sg(t,19,20.5));
+  }
+},
+{
+  t:'15. Đo lặp: 100.000 hàng ≠ n = 100.000!',d:26,
+  s:[
+    [0,'Một bài học cực kỳ quan trọng ở Phần 5 (W01-CH06): phân biệt SỐ HÀNG của bảng với SỐ ĐƠN VỊ ĐỘC LẬP!'],
+    [5.5,'Công ty theo dõi 100 thiết bị (50 loại A, 50 loại B hoàn toàn giống nhau), mỗi thiết bị đo 1.000 lần → bảng có đúng 100.000 hàng.'],
+    [12,'Mô phỏng 300 lần lặp nghiên cứu: nếu 100.000 hàng là 100.000 thiết bị độc lập (cột cam), chênh lệch A − B hẹp dính sát vạch 0 (SD = 0,031°C)!'],
+    [18.5,'Nhưng với 100 thiết bị đo lặp (cột xanh dương), chênh lệch dao động rộng gấp 32 lần (SD = 1,005°C), có lúc lệch tới 2–3°C dù hai loại giống hệt nhau!'],
+    [23,'Đo thêm lần thứ 1.001 trên cùng thiết bị không tạo thêm thiết bị độc lập mới — khi viết n, luôn nói rõ đang đếm cái gì!']
+  ],
+  f:t=>{
+    hd('15. Đo lặp (W01-CH06): 100.000 hàng có phải n = 100.000?');
+    T('Mô phỏng 300 lần lặp: 50 thiết bị A vs 50 thiết bị B HOÀN TOÀN GIỐNG NHAU',80,104,20,col.dim);
+
+    // Biểu đồ 2 histogram chồng nhau quanh vạch 0
+    const o1=sg(t,1.5,3),B=465,K=250;
+    RR(80,138,710,385,12,col.card2,o1);RR(80,138,710,385,12,col.bd,o1,1.4);
+    const x0=120,x1=750,bw=(x1-x0)/24;
+    L(x0-10,B,x1+10,B,col.axis,2,o1);
+
+    // Histogram xanh dương: 100 thiết bị x 1000 lần đo (rộng, SD = 1.005)
+    const oRep=sg(t,4,6.5);
+    repSim.rep.forEach((v,i)=>{
+      const h=v*K*oRep;
+      R(x0+i*bw+1,B-h,bw-2,h,col.b,.72*oRep);
+    });
+
+    // Histogram cam: 100.000 thiết bị độc lập (cực hẹp quanh 0, SD = 0.031)
+    const oInd=sg(t,10,12.5);
+    const cx=x0+12*bw;
+    R(cx-7,B-275*oInd,14,275*oInd,col.o,.92*oInd);
+    L(cx,160,cx,B,col.fg,1.6,o1,[5,4]);
+
+    [-3,-2,-1,0,1,2,3].forEach(v=>{
+      const px=mp(-3.2,3.2,x0,x1)(v);
+      T(String(v),px,B+22,15,v===0?col.y:col.dim,'center',o1);
+    });
+    T('Chênh lệch nhiệt độ trung bình A − B (°C)',435,504,15,col.dim,'center',o1);
+
+    // Thẻ kết luận bên phải
+    const oR=sg(t,13,14.5);
+    RR(825,138,380,385,12,col.card,oR);RR(825,138,380,385,12,col.bd,oR,1.5);R(825,151,3.5,359,col.y,oR);
+    T('Độ rộng điển hình (SD)',1015,176,20,col.y,'center',oR);
+    T('■ Đo lặp (100 thiết bị):',852,226,18,col.b,'left',oR);
+    T('  SD = 1,005 °C  (dao động rộng!)',852,258,18,col.fg,'left',oR);
+    T('■ Độc lập (100.000 TB):',852,314,18,col.o,'left',oR);
+    T('  SD = 0,031 °C  (dính sát 0!)',852,346,18,col.fg,'left',oR);
+    L(852,386,1180,386,col.axis,1.5,oR);
+    T('Coi 100.000 hàng là 100.000',852,418,16,col.r,'left',sg(t,19,20.5));
+    T('thiết bị độc lập → tự tin ảo!',852,446,16,col.r,'left',sg(t,19,20.5));
+    T('Luôn ghi rõ n đang đếm gì!',852,486,17,col.g,'left',sg(t,21,22.5));
+  }
+},
+{
+  t:'16. Lệch thứ tự hàng & 6 lỗi hay gặp',d:24,
+  s:[
+    [0,'Ở tình huống tổng hợp email50 (W01-CASE01): mọi cột trong DataFrame phải luôn khớp cùng một thứ tự hàng (index) cho từng thư điện tử!'],
+    [5.5,'Nếu vô tình sắp xếp riêng một cột (như exclaim_mess), hàng 0 lập tức ghép nhãn spam của thư này với số dấu chấm than của thư khác — code không báo lỗi nhưng mọi phân tích đều vô nghĩa!'],
+    [12,'Trước khi sang bảng tổng hợp, hãy rà lại 6 lỗi phổ biến nhất ở Tuần 01: phân loại khẳng định theo từ khóa; nhìn chữ số hay dtype để đoán loại biến;'],
+    [18,'...tưởng mỗi hàng luôn là 1 người; lấy số hàng làm n khi có đo lặp; coi TB của các TB bằng TB gốc; và kết luận nhân quả từ dữ liệu quan sát!']
+  ],
+  f:t=>{
+    hd('16. Cẩn thận lệch hàng (email50) & 6 lỗi hay gặp Tuần 01');
+
+    // Trái: Minh họa lệch hàng email50
+    const o1=sg(t,1.5,3);
+    RR(80,145,420,355,12,col.card2,o1);RR(80,145,420,355,12,col.bd,o1,1.4);R(80,158,3.5,329,col.o,o1);
+    T('W01-CASE01: Sắp xếp riêng 1 cột!',290,180,19,col.o,'center',o1);
+    T('Đúng thứ tự:',110,224,16,col.g,'left',o1);
+    T('Hàng 0: spam=0  |  exclaim=8,0',110,256,16,col.fg,'left',o1);
+    T('Hàng 1: spam=0  |  exclaim=1,0',110,284,16,col.fg,'left',o1);
+    L(110,316,470,316,col.axis,1.4,o1);
+    T('✗ Sau khi sort riêng cột exclaim:',110,348,16,col.r,'left',sg(t,5,6.5));
+    T('Hàng 0: spam=0  |  exclaim=0,0',110,380,16,col.r,'left',sg(t,5,6.5));
+    T('Hàng 1: spam=0  |  exclaim=0,0',110,408,16,col.r,'left',sg(t,5,6.5));
+    T('→ Ghép râu ông nọ cắm cằm bà kia!',110,462,16,col.y,'left',sg(t,7,8.5));
+
+    // Phải: 6 lỗi hay gặp
+    const errs=[
+      ['1. Phân loại khẳng định bằng từ khóa','→ Hỏi về phạm vi, can thiệp, đơn vị',9.5],
+      ['2. Thấy int64 / chữ số → kết luận biến số','→ Xét ý nghĩa cộng trừ (mã SV, 1–5)',11.5],
+      ['3. Tưởng mỗi hàng luôn là 1 người','→ Luôn hỏi "mỗi hàng là gì?"',13.5],
+      ['4. Lấy số hàng làm n khi có đo lặp','→ Đếm số đơn vị độc lập',15.5],
+      ['5. Coi TB của các TB = TB mọi lần đo','→ Khác nhau khi số lần đo lệch!',17.5],
+      ['6. Kết luận nhân quả từ dữ liệu quan sát','→ Cần thiết kế tách tác động',19.5]
+    ];
+    errs.forEach(([e,fx,st],i)=>{
+      const yy=168+i*59,o=sg(t,st,st+1.2);
+      RR(535,yy-22,670,46,10,col.card,o);RR(535,yy-22,670,46,10,col.bd,o,1.4);R(535,yy-14,3.5,30,col.r,o);
+      T('✗ '+e,556,yy-8,15,col.r,'left',o);
+      T(fx,572,yy+12,14,col.g,'left',o);
+    });
+  }
+},
+{
+  t:'17. Tổng hợp khái niệm Tuần 01',d:28,
+  s:[
+    [0,'Cuối cùng, hãy cùng hệ thống lại toàn bộ 8 nhóm khái niệm cốt lõi của Tuần 01 trên bảng tổng hợp trực quan.'],
+    [5,'Cột trái gồm: quá trình tạo dữ liệu, bốn loại khẳng định, phân loại biến số và biến phân loại, cùng quy tắc phân biệt ý nghĩa với dtype.'],
+    [11.5,'Cột phải gồm: chuẩn cấu trúc data frame, mức chi tiết và tác động của gộp dữ liệu, phân biệt số hàng với đơn vị độc lập, và 4 câu hỏi đầu tiên khi mở bảng mới.'],
+    [18.5,'Hãy bấm phím Space để tạm dừng tại cảnh này để ghi chép và ôn tập trước khi bước sang Tuần 02 nhé!']
+  ],
+  f:t=>{
+    const pal={gold:'#e5b91a',txt:'#dcdde2',mut:'#989ba5',bg:'#35373d',bd:'#4c4f58'};
+    T('17. Tổng hợp kiến thức trọng tâm Tuần 01',80,58,35,pal.gold);
+    const card=(x,y,title,st,draw)=>{
+      const o=sg(t,st,st+1.2);
+      RR(x,y,555,104,10,pal.bg,o);RR(x,y,555,104,10,pal.bd,o,1.4);
+      R(x,y+12,3.5,80,pal.gold,o);
+      T(title,x+18,y+22,16,pal.gold,'left',o);
+      draw(x,y,o);
+    };
+
+    // Cột trái (4 thẻ)
+    card(75,112,'1. Quá trình tạo dữ liệu (Data-Generating Process)',1,(x,y,o)=>{
+      T('Câu hỏi → Đo ai/gì/thế nào → Dữ liệu → Khẳng định',x+22,y+55,17,pal.txt,'left',o);
+      T('Độ mạnh kết luận phụ thuộc cách tạo dữ liệu, ≠ số hàng',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(75,230,'2. Bốn loại khẳng định từ dữ liệu',3.5,(x,y,o)=>{
+      T('Tóm tắt · Tổng quát hóa · Nhân quả · Dự đoán',x+22,y+55,19,pal.txt,'left',o);
+      T('Phân loại theo phạm vi, can thiệp & đơn vị — không dò từ khóa',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(75,348,'3. Hệ thống phân loại biến',6,(x,y,o)=>{
+      T('Biến số: Liên tục / Rời rạc (độ lớn cộng trừ có nghĩa)',x+22,y+55,17,pal.txt,'left',o);
+      T('Phân loại: Danh nghĩa / Thứ bậc (xếp theo ý nghĩa, ≠ dtype)',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(75,466,'4. Data frame vs Bảng đếm & Lệch hàng',8.5,(x,y,o)=>{
+      T('Mỗi hàng = 1 quan sát · Mỗi cột = 1 biến · Mỗi ô = 1 giá trị',x+22,y+55,16,pal.txt,'left',o);
+      T('Không sắp xếp riêng 1 cột; đọc cấu trúc: head/shape/dtypes',x+22,y+86,15,pal.mut,'left',o);
+    });
+
+    // Cột phải (4 thẻ)
+    card(650,112,'5. Mức chi tiết & Gộp dữ liệu (Aggregation)',11,(x,y,o)=>{
+      T('Câu hỏi quyết định mỗi hàng là gì (pin×cảm biến×giờ vs pin)',x+22,y+55,16,pal.txt,'left',o);
+      T('Gộp dữ liệu làm mất dao động & đổi nghĩa "trung bình"',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(650,230,'6. Số hàng vs Số đơn vị độc lập (Đo lặp)',13.5,(x,y,o)=>{
+      T('100 thiết bị × 1.000 lần đo = 100.000 hàng ≠ n = 100.000',x+22,y+55,16,pal.txt,'left',o);
+      T('Khi viết n, luôn nói rõ đang đếm lần đo hay đơn vị độc lập',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(650,348,'7. Quan hệ hai biến & Ranh giới nhân quả',16,(x,y,o)=>{
+      T('Mối liên hệ ≠ Dự đoán ≠ Nhân quả (VD: động lực → GPA)',x+22,y+55,17,pal.txt,'left',o);
+      T('Đổi tên/thêm cột không biến dữ liệu quan sát thành thí nghiệm',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(650,466,'8. Bốn câu hỏi đầu tiên khi mở bảng mới (W01-Q05)',18.5,(x,y,o)=>{
+      T('1. Mỗi hàng là gì?   2. Mỗi cột ghi điều gì?',x+22,y+55,18,pal.txt,'left',o);
+      T('3. Dữ liệu tạo ra thế nào?   4. Ta muốn khẳng định loại nào?',x+22,y+86,16,pal.mut,'left',o);
+    });
+  }
+}
+];
+
+// ===== Điều khiển trình phát tương tác =====
+const ST=[];let TOT=0;sc.forEach(s=>{ST.push(TOT);TOT+=s.d});
+const idx=()=>Math.max(0,ST.findLastIndex(x=>x<=g));
+const $=(q)=>document.querySelector(q);
+const pg=$('#pg'),mn=$('#mn'),ui=$('#ui'),sub=$('#sub'),bp=$('#bp'),bt=$('#bt'),bn=$('#bn'),bc=$('#bc'),bs=$('#bs'),bm=$('#bm'),tm=$('#tm');
+const ic=d=>`<svg viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+const IP=ic('M8 5v14l11-7z'),IA=ic('M6 19h4V5H6zm8-14v14h4V5z');
+bt.innerHTML=ic('M6 6h2v12H6zm3.5 6l8.5 6V6z');
+bn.innerHTML=ic('M6 18l8.5-6L6 6zm10-12v12h2V6z');
+bm.innerHTML=ic('M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z');
+
+sc.forEach((s,i)=>{
+  const e=document.createElement('div');e.className='sg';e.style.flexGrow=s.d;e.innerHTML='<i></i>';pg.appendChild(e);
+  const m=document.createElement('div');m.textContent=s.t;m.onclick=()=>{g=ST[i];mn.classList.remove('o');rd()};mn.appendChild(m);
+});
+const sgs=[...pg.children],mns=[...mn.children];
+
+let g=0,pl=1,cc=1,sp=1,lt=0,ht=0,dr=0;
+const sps=[.75,1,1.25,1.5,2];
+const ft=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+const sh=()=>{ui.classList.remove('h');clearTimeout(ht);if(pl)ht=setTimeout(()=>ui.classList.add('h'),3000)};
+const up=()=>{bp.innerHTML=pl?IA:IP;if(!pl)ui.classList.remove('h');else sh()};
+
+function rs(){
+  const dpr=Math.min(2,devicePixelRatio||1),w=innerWidth,h=innerHeight,r=Math.min(w/W,h/H);
+  C.style.width=W*r+'px';C.style.height=H*r+'px';
+  C.width=Math.round(W*r*dpr);C.height=Math.round(H*r*dpr);
+}
+addEventListener('resize',rs);rs();
+
+let lastSub='';
+function rd(){
+  const k=C.width/W;X.setTransform(k,0,0,k,0,0);X.globalAlpha=1;X.fillStyle='#2c2d31';X.fillRect(0,0,W,H);
+  const i=idx(),t=g-ST[i],s=sc[i];
+  FA=Math.min(cl(t/.4),cl((s.d-t)/.4));
+  s.f(t);
+  X.globalAlpha=1;
+  sgs.forEach((e,j)=>{e.firstChild.style.width=(j<i?100:j>i?0:cl(t/s.d)*100)+'%'});
+  mns.forEach((e,j)=>e.classList.toggle('c',j===i));
+  tm.textContent=`${ft(g)} / ${ft(TOT)} · ${s.t}`;
+  let tx='';
+  if(cc)for(const [a,b] of s.s)if(t>=a)tx=b;
+  if(tx!==lastSub){
+    lastSub=tx;
+    sub.textContent=tx;
+    sub.classList.toggle('e',!tx);
+  }
+}
+
+function lp(n){
+  if(lt&&pl){g+=Math.min(.1,(n-lt)/1000)*sp;if(g>=TOT){g=TOT;pl=0;up()}}
+  lt=n;rd();requestAnimationFrame(lp);
+}
+requestAnimationFrame(lp);up();
+
+const tg=()=>{if(g>=TOT)g=0;pl^=1;up()};
+bp.onclick=tg;
+bt.onclick=()=>{const i=idx();g=ST[g-ST[i]>2?i:Math.max(0,i-1)];sh()};
+bn.onclick=()=>{const i=idx();g=i<sc.length-1?ST[i+1]:TOT;sh()};
+bc.onclick=()=>{cc^=1;bc.classList.toggle('on',!!cc);lastSub='__';rd()};
+bs.onclick=()=>{sp=sps[(sps.indexOf(sp)+1)%sps.length];bs.textContent=sp+'×'};
+bm.onclick=()=>mn.classList.toggle('o');
+C.onclick=()=>{if(mn.classList.contains('o'))mn.classList.remove('o');else tg()};
+
+const sk=e=>{const r=pg.getBoundingClientRect();g=cl((e.clientX-r.left)/r.width)*TOT;rd()};
+pg.onpointerdown=e=>{dr=1;pg.setPointerCapture(e.pointerId);sk(e)};
+pg.onpointermove=e=>{if(dr)sk(e)};
+pg.onpointerup=()=>{dr=0};
+addEventListener('pointermove',sh);
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();tg()}
+  else if(e.key==='ArrowLeft')bt.click();
+  else if(e.key==='ArrowRight')bn.click();
+  else if(e.key==='c'||e.key==='C')bc.click();
+  else if(e.key==='m'||e.key==='M')bm.click();
+});
+</script>
+</body>
+</html>

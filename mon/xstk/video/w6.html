@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tuần 6: Phân phối xác suất và biến ngẫu nhiên rời rạc</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#2c2d31;--fg:#dcdde2;--ac:#e5b91a}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden;user-select:none}
+#st{position:fixed;inset:0;display:grid;place-items:center}
+canvas{display:block}
+/* Cố định phụ đề ở sát mép đáy màn hình, không đổi vị trí khi thanh điều khiển ẩn/hiện */
+#sub{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);
+  max-width:min(980px,94vw);
+  padding:10px 20px;
+  border-radius:10px;
+  background:rgba(36,37,41,.94);
+  border:1px solid #4c4f58;
+  color:#dcdde2;
+  font-size:clamp(14px,1.45vw,19px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:center;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:5;
+}
+#sub.e{opacity:0}
+#ui{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:20px 0 0;
+  background:linear-gradient(transparent,rgba(32,33,37,.92));
+  transition:opacity .3s;
+  z-index:10;
+}
+#ui.h{opacity:0;pointer-events:none}
+#pg{display:flex;gap:2px;height:14px;align-items:flex-end;cursor:pointer;touch-action:none}
+.sg{flex:1;height:4px;background:#ffffff24;border-radius:0;overflow:hidden;transition:height .15s}
+#pg:hover .sg{height:8px}
+.sg i{display:block;height:100%;background:var(--ac)}
+#rw{display:flex;align-items:center;gap:6px;padding:0 18px 8px}
+button{background:none;border:0;color:var(--fg);width:42px;height:42px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font:600 14px inherit;font-family:inherit}
+button:hover{background:#ffffff1a}
+button.on{color:var(--ac)}
+svg{width:24px;height:24px;fill:currentColor}
+#tm{font-size:14px;font-weight:600;margin-left:8px;flex:1;color:#989ba5}
+#mn{position:fixed;top:0;right:0;bottom:0;width:min(340px,86vw);background:#242529f5;border-left:1px solid #4c4f58;padding:18px 8px;overflow:auto;transform:translateX(100%);transition:transform .25s;z-index:20}
+#mn.o{transform:none}
+#mn div{padding:11px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;color:#dcdde2}
+#mn div:hover{background:#ffffff12}
+#mn div.c{color:var(--ac);background:#e5b91a18}
+</style>
+</head>
+<body>
+<div id="st"><canvas id="c"></canvas></div>
+<div id="mn"></div>
+<div id="ui">
+  <div id="rw">
+    <button id="bp" title="Phát/Tạm dừng (Space)"></button>
+    <button id="bt" title="Cảnh trước (←)"></button>
+    <button id="bn" title="Cảnh sau (→)"></button>
+    <span id="tm"></span>
+    <button id="bc" class="on" title="Bật/tắt phụ đề (C)">CC</button>
+    <button id="bs" title="Tốc độ">1×</button>
+    <button id="bm" title="Mục lục (M)"></button>
+  </div>
+  <div id="pg"></div>
+</div>
+<div id="sub"></div>
+
+<script>
+// Thiết lập canvas logic 1280x720 và các hàm vẽ, toán học dùng chung
+const W=1280,H=720,C=document.getElementById('c'),X=C.getContext('2d');
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const sm=v=>{v=cl(v);return v*v*(3-2*v)};
+const sg=(t,a,b)=>sm((t-a)/(b-a));
+const mx=(a,b,k)=>a+(b-a)*k;
+const mp=(a,b,p,q)=>v=>p+(q-p)*(v-a)/(b-a);
+const f=(v,d=2)=>v.toFixed(d).replace('.',',');
+const col={fg:'#dcdde2',dim:'#989ba5',b:'#78a9d6',o:'#df9368',g:'#7cc99c',y:'#e5b91a',r:'#d97373',p:'#a996cf',card:'#35373d',card2:'#26272b',bd:'#4c4f58',axis:'#545760'};
+
+let FA=1;
+const al=a=>{X.globalAlpha=cl(a===undefined?1:a)*FA};
+function T(s,x,y,z,c,a,o){al(o);X.fillStyle=c||col.fg;X.font=`${z>=34?800:600} ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;X.textAlign=a||'left';X.textBaseline='middle';X.fillText(s,x,y)}
+function L(a,b,c,d,k,w,o,ds){al(o);X.strokeStyle=k;X.lineWidth=w||2;X.setLineDash(ds||[]);X.beginPath();X.moveTo(a,b);X.lineTo(c,d);X.stroke();X.setLineDash([])}
+function R(x,y,w,h,c,o){al(o);X.fillStyle=c;X.fillRect(x,y,w,h)}
+function RR(x,y,w,h,r,c,o,st){
+  al(o);X.beginPath();X.roundRect(x,y,w,h,r);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+function D(x,y,r,c,o,st){
+  al(o);X.beginPath();X.arc(x,y,r,0,Math.PI*2);
+  if(st){X.fillStyle='#2c2d31';X.fill();X.strokeStyle=c;X.lineWidth=st;X.stroke()}
+  else{X.fillStyle=c;X.fill()}
+}
+// Vẽ phân số 2 dòng (tử số trên, gạch ngang, mẫu số dưới), trả về độ rộng khung phân số
+function FR(num,den,x,y,z,c,o){
+  X.font=`600 ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;
+  const w=Math.max(X.measureText(num).width,X.measureText(den).width)+14;
+  T(num,x,y-z*.66,z,c,'center',o);
+  L(x-w/2,y,x+w/2,y,c||col.fg,1.8,o);
+  T(den,x,y+z*.72,z,c,'center',o);
+  return w;
+}
+const hd=s=>T(s,80,58,35,col.y);
+
+// Các hàm tính phân phối xác suất rời rạc
+function fact(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+function comb(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r}
+function binom(k,n,p){return comb(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k)}
+function hyper(k,N,K,n){return comb(K,k)*comb(N-K,n-k)/comb(N,n)}
+function pois(k,lam){return Math.exp(-lam)*Math.pow(lam,k)/fact(k)}
+
+// Bộ sinh số giả ngẫu nhiên cố định seed cho mô phỏng hộp 5 lá thăm
+function mkRng(seed){let s=seed>>>0;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const boxSim=(()=>{
+  const vals=[1,2,2,3,4],ms=[20,200,2000],out={};
+  ms.forEach(m=>{
+    const rnd=mkRng(6000+m),cnt=[0,0,0,0];
+    for(let i=0;i<m;i++)cnt[vals[Math.floor(rnd()*5)]-1]++;
+    out[m]=cnt.map(c=>c/m);
+  });
+  return out;
+})();
+
+// Danh sách 17 cảnh tương tác của Tuần 06
+const sc=[
+{
+  t:'1. Hộp 5 lá thăm & PMF',d:24,
+  s:[
+    [0,'Chào mừng bạn đến với Tuần 06: Phân phối xác suất và biến ngẫu nhiên rời rạc.'],
+    [4.5,'Từ tuần này, ta chuyển từ biến cố trừu tượng sang gán con số cụ thể cho mỗi kết quả ngẫu nhiên.'],
+    [9.5,'Xét chiếc hộp gồm 5 lá thăm [1, 2, 2, 3, 4]. Mỗi lá thăm được rút với khả năng như nhau bằng 1/5 = 0,20.'],
+    [15,'Vì có hai lá thăm ghi số 2, giá trị 2 xuất hiện với xác suất 2/5 = 0,40; các giá trị 1, 3, 4 có xác suất 0,20.'],
+    [20,'Bảng gán xác suất cho từng giá trị có thể của X được gọi là hàm khối xác suất (PMF), và tổng các cột luôn bằng 1.']
+  ],
+  f:t=>{
+    hd('1. Từ hộp 5 lá thăm đến phân phối xác suất');
+    T('UET.MAT1052 — Tuần 06: Biến ngẫu nhiên rời rạc & Hàm khối xác suất (PMF)',80,104,20,col.dim);
+
+    // Hộp 5 lá thăm bên trái
+    RR(85,180,380,260,14,col.card2,sg(t,1,2));RR(85,180,380,260,14,col.bd,sg(t,1,2),1.8);
+    T('Chiếc hộp 5 lá thăm',275,158,21,col.dim,'center',sg(t,1,2));
+    const cards=[[1,125,215,col.b],[2,235,215,col.o],[2,345,215,col.o],[3,180,325,col.b],[4,290,325,col.b]];
+    cards.forEach(([v,x,y,c],i)=>{
+      const o=sg(t,1.5+i*.4,2.8+i*.4);
+      RR(x,y,74,88,10,c,.22*o);RR(x,y,74,88,10,c,o,2.5);
+      T(String(v),x+37,y+44,34,c,'center',o);
+    });
+    T('5 lá đồng khả năng (1/5 mỗi lá)',275,472,18,col.dim,'center',sg(t,4,5.5));
+
+    // Biểu đồ cột PMF bên phải
+    const m=mp(0.5,4.5,560,1180),B=480,K=620;
+    L(540,B,1200,B,col.axis,2);
+    const pmf=[[1,.2,col.b],[2,.4,col.o],[3,.2,col.b],[4,.2,col.b]];
+    pmf.forEach(([v,p,c],i)=>{
+      const k=sg(t,8+i*1.2,9.5+i*1.2),h=p*K*k,px=m(v);
+      R(px-42,B-h,84,h,c,.88*k);
+      T(f(p,2),px,B-h-18,22,c,'center',k);
+      T(`x = ${v}`,px,B+26,20,col.fg,'center',k);
+    });
+    T('Tổng PMF:  0,2 + 0,4 + 0,2 + 0,2 = 1,00',870,165,22,col.y,'center',sg(t,16,17.5));
+  }
+},
+{
+  t:'2. Lý thuyết vs Tần suất mô phỏng',d:24,
+  s:[
+    [0,'Xác suất lý thuyết là con số của mô hình; tần suất thực nghiệm là tỉ lệ quan sát được sau m lần rút có hoàn lại.'],
+    [5.5,'Khi chỉ rút m = 20 lần, tần suất dao động khá mạnh quanh giá trị lý thuyết 0,20 và 0,40.'],
+    [11,'Tăng lên m = 200 lần, hình dáng biểu đồ tần suất đã bắt đầu bám sát phân phối lý thuyết.'],
+    [16.5,'Đến m = 2.000 lần rút, các cột tần suất gần như trùng khít đường nét đứt lý thuyết.'],
+    [20.5,'Mô phỏng kiểm chứng tính toán trong mô hình, còn độ khớp thực tế luôn phụ thuộc vào giả định ban đầu.']
+  ],
+  f:t=>{
+    hd('2. Xác suất lý thuyết vs Tần suất mô phỏng');
+    T('Rút có hoàn lại từ hộp [1, 2, 2, 3, 4] với cỡ mẫu m tăng dần (nét đứt = lý thuyết)',80,104,20,col.dim);
+    const ms=[20,200,2000],th=[.2,.4,.2,.2],B=475,K=580;
+
+    ms.forEach((mVal,idx)=>{
+      const x0=90+idx*385,x1=x0+330,mm=mp(0.5,4.5,x0,x1);
+      const o=sg(t,1.5+idx*4.5,3+idx*4.5);
+      L(x0-10,B,x1+10,B,col.axis,2,o);
+      T(`m = ${mVal} lần rút`,(x0+x1)/2,155,22,col.y,'center',o);
+      const emp=boxSim[mVal];
+      emp.forEach((v,j)=>{
+        const px=mm(j+1),h=v*K*o,ht=th[j]*K;
+        const c=j===1?col.o:col.b;
+        R(px-24,B-h,48,h,c,.85*o);
+        L(px-28,B-ht,px+28,B-ht,col.y,2.2,o,[5,4]);
+        T(f(v,2),px,B-h-14,15,c,'center',o);
+        T(String(j+1),px,B+22,18,col.fg,'center',o);
+      });
+    });
+    T('Số lần lặp m càng lớn → tần suất tương đối càng ổn định quanh xác suất lý thuyết',640,530,20,col.g,'center',sg(t,18,19.5));
+  }
+},
+{
+  t:'3. Tổng 2 xúc xắc (36 cặp)',d:24,
+  s:[
+    [0,'Gieo hai xúc xắc cân đối độc lập và gọi S là tổng số chấm của hai mặt.'],
+    [5,'Không gian mẫu đồng khả năng gồm 6 × 6 = 36 cặp có thứ tự, chứ không phải 11 giá trị tổng từ 2 đến 12.'],
+    [10.5,'Số cặp thuận lợi tăng đều từ 1 cách (tổng 2) lên đỉnh 6 cách (tổng 7), rồi giảm đối xứng về 1 cách (tổng 12).'],
+    [16.5,'Do đó phân phối PMF của tổng S có dạng tam giác đối xứng, với đỉnh tại S = 7 có xác suất 6/36 = 1/6.'],
+    [20.5,'Sai lầm kinh điển là chia đều 1/11 cho mỗi tổng mà quên kiểm tra cấp đồng khả năng!']
+  ],
+  f:t=>{
+    hd('3. Phân phối xác suất của tổng 2 xúc xắc (S = X₁ + X₂)');
+    T('36 cặp có thứ tự đồng khả năng → PMF của tổng S có dạng tam giác đối xứng quanh S = 7',80,104,20,col.dim);
+
+    const m=mp(1.5,12.5,110,1170),B=495,K=1700;
+    L(90,B,1190,B,col.axis,2);
+    for(let s=2;s<=12;s++){
+      const cnt=6-Math.abs(s-7),p=cnt/36;
+      const k=sg(t,2+Math.abs(s-2)*.7,3.5+Math.abs(s-2)*.7),h=p*K*k,px=m(s);
+      const c=s===7?col.y:col.b;
+      R(px-30,B-h,60,h,c,.88*k);
+      T(`${cnt}/36`,px,B-h-16,16,c,'center',k);
+      T(String(s),px,B+26,20,s===7?col.y:col.fg,'center',k);
+    }
+    T('Đỉnh phân phối: P(S = 7) = 6/36 = 1/6 ≈ 16,67%',640,160,22,col.y,'center',sg(t,12,13.5));
+  }
+},
+{
+  t:'4. Quy tắc nhân, cộng & Sơ đồ cây',d:24,
+  s:[
+    [0,'Để đếm nhanh số kết quả mà không phải liệt kê thủ công, ta dựa vào quy tắc nhân và quy tắc cộng.'],
+    [5,'Quy tắc nhân: nếu phép thử gồm r bước nối tiếp nhau với k₁, k₂, …, kᵣ cách chọn, tổng số cách là tích k₁ · k₂ · … · kᵣ.'],
+    [11,'Sơ đồ cây bên trái minh họa 3 áo phối với 2 quần: 3 nhánh cấp 1 nhân 2 nhánh cấp 2 tạo ra đúng 6 bộ đồ.'],
+    [16.5,'Quy tắc cộng: nếu chia bài toán thành các nhóm rời nhau (không giao nhau), tổng số cách bằng tổng số phần tử từng nhóm.'],
+    [20.5,'Lưu ý: chọn nối tiếp từng bước thì NHÂN, chia trường hợp xung khắc thì CỘNG.']
+  ],
+  f:t=>{
+    hd('4. Quy tắc nhân, quy tắc cộng và sơ đồ cây');
+
+    // Sơ đồ cây 3 áo x 2 quần bên trái
+    RR(75,305,110,50,10,col.card,sg(t,.8,1.8));RR(75,305,110,50,10,col.bd,sg(t,.8,1.8),1.4);T('Chọn đồ',130,330,18,col.fg,'center',sg(t,.8,1.8));
+    const ys=[205,330,455];
+    ys.forEach((y1,i)=>{
+      const k1=sg(t,1.8+i*.8,3+i*.8);
+      L(185,330,mx(185,320,k1),mx(330,y1,k1),col.b,2.4,k1);
+      RR(320,y1-22,120,44,10,col.card,k1);RR(320,y1-22,120,44,10,col.b,k1,1.6);
+      T(`Áo ${i+1}`,380,y1,18,col.b,'center',k1);
+      [-32,32].forEach((dy,j)=>{
+        const y2=y1+dy,k2=sg(t,4.5+i*.7+j*.4,6+i*.7+j*.4);
+        L(440,y1,mx(440,590,k2),mx(y1,y2,k2),col.fg,2,.7*k2);
+        RR(590,y2-18,125,36,8,col.card,k2);RR(590,y2-18,125,36,8,col.bd,k2,1.2);
+        T(`Áo ${i+1} + Quần ${j+1}`,652,y2,15,col.fg,'center',k2);
+      });
+    });
+
+    // Khung công thức bên phải
+    const oR=sg(t,7.5,9);
+    RR(770,175,435,145,12,col.card,oR);RR(770,175,435,145,12,col.bd,oR,1.5);R(770,188,3.5,119,col.b,oR);
+    T('Quy tắc nhân (r bước nối tiếp)',795,212,21,col.b,'left',oR);
+    T('Số cách = k₁ · k₂ · … · kᵣ',795,256,25,col.fg,'left',oR);
+    T('VD: 3 áo × 2 quần = 6 bộ',795,295,19,col.dim,'left',oR);
+
+    const oR2=sg(t,12,13.5);
+    RR(770,350,435,145,12,col.card,oR2);RR(770,350,435,145,12,col.bd,oR2,1.5);R(770,363,3.5,119,col.g,oR2);
+    T('Quy tắc cộng (nhóm rời nhau)',795,387,21,col.g,'left',oR2);
+    T('Số cách = n₁ + n₂ + … + nₘ',795,431,25,col.fg,'left',oR2);
+    T('VD: Đi xe buýt (4) hoặc tàu (2) → 6 cách',795,470,18,col.dim,'left',oR2);
+  }
+},
+{
+  t:'5. Chỉnh hợp & Tổ hợp',d:26,
+  s:[
+    [0,'Khi chọn k phần tử không hoàn lại từ n phần tử phân biệt, câu hỏi đầu tiên luôn là: THỨ TỰ có quan trọng không?'],
+    [5.5,'Nếu CÓ thứ tự (ví dụ trao giải Nhất, Nhì, Ba cho 3 trong 5 người), ta dùng chỉnh hợp P(n, k) = n! / (n − k)!.'],
+    [11,'Với n = 5, k = 3, số cách xếp giải là 5 × 4 × 3 = 60 cách.'],
+    [15.5,'Nếu KHÔNG xét thứ tự (chọn một nhóm 3 người đi thi), mỗi nhóm bị lặp k! = 6 thứ tự, nên ta chia cho k!.'],
+    [21,'Ta được tổ hợp C(n, k) = n! / (k!(n − k)!). Với 5 chọn 3, số nhóm chỉ còn 60 / 6 = 10 nhóm.']
+  ],
+  f:t=>{
+    hd('5. Chỉnh hợp P(n, k) và Tổ hợp C(n, k)');
+    T('Ví dụ: Chọn k = 3 người từ n = 5 người phân biệt (không hoàn lại)',80,104,20,col.dim);
+
+    const cols=[
+      ['CÓ thứ tự — Chỉnh hợp','P(n, k) = n! / (n − k)!','P(5, 3) = 5·4·3 = 60','VD: Giải Nhất – Nhì – Ba',col.b,2],
+      ['Mỗi nhóm lặp k! thứ tự','k! = 3! = 6 hoán vị','P(n, k) = k! · C(n, k)','{A,B,C} có 6 cách xếp hàng',col.y,8.5],
+      ['KHÔNG thứ tự — Tổ hợp','C(n, k) = n! / (k!(n−k)!)','C(5, 3) = 60 / 6 = 10','VD: Chọn ban tổ chức 3 người',col.g,14.5]
+    ];
+    cols.forEach(([tt,fm,rs,ex,c,st],i)=>{
+      const x=85+i*385,o=sg(t,st,st+1.5);
+      RR(x,165,355,255,12,col.card,o);RR(x,165,355,255,12,col.bd,o,1.5);R(x,178,3.5,229,c,o);
+      T(tt,x+177,205,19,c,'center',o);
+      T(fm,x+177,262,21,col.fg,'center',o);
+      T(rs,x+177,322,23,col.y,'center',o);
+      T(ex,x+177,378,18,col.dim,'center',o);
+    });
+    T('Chú ý: Nếu bài toán rút CÓ hoàn lại và có thứ tự, số kết quả là nᵏ (VD: 5³ = 125).',640,485,20,col.o,'center',sg(t,20,21.5));
+  }
+},
+{
+  t:'6. Biến ngẫu nhiên X & hàm Y = g(X)',d:26,
+  s:[
+    [0,'Biến ngẫu nhiên rời rạc X là một hàm ánh xạ mỗi kết quả trong không gian mẫu Ω thành một con số thực.'],
+    [5.5,'Ví dụ tung 3 đồng xu cân đối, gọi X là số mặt ngửa. Tám kết quả đồng khả năng được gom thành 4 giá trị X ∈ {0, 1, 2, 3}.'],
+    [11.5,'Xác suất tại mỗi giá trị là tổng xác suất các kết quả gom về đó: 1/8, 3/8, 3/8 và 1/8.'],
+    [17,'Nếu đặt biến mới Y = 2X − 3 (ví dụ lãi/lỗ khi chơi), các giá trị đổi thành −3, −1, 1, 3 nhưng xác suất tương ứng vẫn giữ nguyên!'],
+    [22,'Hàm 1-1 giữ nguyên cột xác suất; nếu nhiều giá trị X cho cùng một Y, ta cộng dồn xác suất của chúng lại.']
+  ],
+  f:t=>{
+    hd('6. Biến ngẫu nhiên X, PMF và biến đổi Y = 2X − 3');
+    T('Tung 3 đồng xu cân đối (8 kết quả đều) → X = số mặt ngửa → Y = 2X − 3',80,104,20,col.dim);
+
+    T('Không gian mẫu Ω',210,152,19,col.b,'center');
+    T('Giá trị X',545,152,19,col.y,'center');
+    T('P(X = x)',700,152,19,col.g,'center');
+    T('Y = 2X − 3',990,152,19,col.o,'center',sg(t,10,11.5));
+
+    const groups=[
+      ['TTT',0,'1/8',220],
+      ['HTT, THT, TTH',1,'3/8',300],
+      ['HHT, HTH, THH',2,'3/8',380],
+      ['HHH',3,'1/8',460]
+    ];
+    groups.forEach(([strs,x,p,y],i)=>{
+      const o1=sg(t,1+i*.6,2+i*.6),o2=sg(t,3+i*.6,4+i*.6),o3=sg(t,5.5+i*.6,6.5+i*.6),o4=sg(t,10.5+i*.6,11.5+i*.6);
+      RR(85,y-24,250,48,10,col.card,o1);RR(85,y-24,250,48,10,col.bd,o1,1.5);R(85,y-16,3.5,32,col.b,o1);
+      T(strs,210,y,19,col.fg,'center',o1);
+      L(335,y,mx(335,495,o2),y,col.y,2.5,o2);
+      D(545,y,24,col.y,.2*o2);D(545,y,24,col.y,o2,2);T(String(x),545,y,24,col.y,'center',o2);
+      T(p,700,y,25,col.g,'center',o3);
+      L(755,y,mx(755,910,o4),y,col.o,2,o4,[5,5]);
+      RR(925,y-22,130,44,10,col.card,o4);RR(925,y-22,130,44,10,col.bd,o4,1.5);R(925,y-14,3.5,28,col.o,o4);
+      T('Y = '+(2*x-3),990,y,22,col.o,'center',o4);
+    });
+  }
+},
+{
+  t:'7. Bài toán Roulette 6 lượt',d:24,
+  s:[
+    [0,'Xét bài toán đặt cược 1 đơn vị vào màu Đỏ trên bàn Roulette Mỹ (18/38 thắng) trong 6 lượt độc lập.'],
+    [5.5,'Gọi K là số lượt thắng (K ∈ {0, …, 6}). Lợi nhuận ròng sau 6 lượt là Y = 2K − 6, nhận các số chẵn từ −6 đến +6.'],
+    [11,'Xác suất để hòa vốn (Y = 0, tức thắng đúng 3 lượt) là C(6,3)·(18/38)³·(20/38)³ ≈ 31,0%.'],
+    [16.5,'Xác suất có lãi (Y > 0, tức thắng 4, 5 hoặc 6 lượt) chỉ khoảng 30,2% — thấp hơn xác suất thua lỗ (38,8%).'],
+    [20.5,'Phân phối lợi nhuận hơi lệch về phía âm do lợi thế 2 ô xanh của nhà cái.']
+  ],
+  f:t=>{
+    hd('7. Phân phối lợi nhuận Roulette Mỹ sau 6 lượt (Y = 2K − 6)');
+    T('Đặt 1 đv vào Đỏ mỗi lượt (p = 18/38 ≈ 0,4737), chơi 6 lượt độc lập',80,104,20,col.dim);
+
+    const p=18/38,m=mp(-7.5,7.5,120,1160),B=495,K=960;
+    L(100,B,1180,B,col.axis,2);
+    let pWin=0,pLose=0;
+    for(let k=0;k<=6;k++){
+      const yVal=2*k-6,pr=binom(k,6,p);
+      if(yVal>0)pWin+=pr;if(yVal<0)pLose+=pr;
+      const a=sg(t,1.5+k*1.1,3+k*1.1),h=pr*K*a,px=m(yVal);
+      const c=yVal>0?col.g:(yVal===0?col.y:col.r);
+      R(px-36,B-h,72,h,c,.88*a);
+      T(f(pr*100,1)+'%',px,B-h-18,18,c,'center',a);
+      T(yVal>0?`+${yVal}`:String(yVal),px,B+26,20,c,'center',a);
+    }
+    const oS=sg(t,13,14.5);
+    T(`Lỗ (Y < 0): ${f(pLose*100,1)}%`,260,168,21,col.r,'center',oS);
+    T('Hòa (Y = 0): 31,0%',640,168,21,col.y,'center',oS);
+    T(`Lãi (Y > 0): ${f(pWin*100,1)}%`,1010,168,21,col.g,'center',oS);
+  }
+},
+{
+  t:'8. Hàm phân phối tích lũy CDF',d:24,
+  s:[
+    [0,'Bên cạnh PMF, hàm phân phối tích lũy F(x) = P(X ≤ x) cho biết tổng xác suất tích lũy từ −∞ đến x.'],
+    [5,'Với biến ngẫu nhiên rời rạc (ví dụ X ∈ {0, 1, 2} với PMF 0,25 – 0,50 – 0,25), đồ thị CDF là một hàm BẬC THANG.'],
+    [11,'Tại mỗi giá trị x thuộc tập hỗ trợ, đồ thị nhảy lên một đoạn đúng bằng P(X = x), với đầu tròn ĐẶC bên trái và đầu RỖNG bên phải.'],
+    [16.5,'Hàm CDF luôn không giảm, tiến về 0 khi x → −∞, tiến về 1 khi x → +∞ và liên tục phải tại mọi điểm.'],
+    [20.5,'Từ CDF ta tính ngay xác suất trên đoạn: P(a < X ≤ b) = F(b) − F(a).']
+  ],
+  f:t=>{
+    hd('8. Hàm phân phối tích lũy bậc thang CDF: F(x) = P(X ≤ x)');
+    T('Ví dụ tung 2 đồng xu (X ∈ {0, 1, 2}):  PMF = (0,25 ; 0,50 ; 0,25)',80,104,20,col.dim);
+
+    const m=mp(-0.8,2.8,140,1140),y=mp(0,1,495,185);
+    L(120,495,1160,495,col.axis,2);L(m(0),170,m(0),505,col.axis,1.5);
+    [0,.25,.75,1].forEach(v=>{
+      L(135,y(v),1145,y(v),col.axis,1,.4,[4,4]);
+      T(f(v,2),115,y(v),17,col.dim,'right');
+    });
+    [0,1,2].forEach(v=>T(String(v),m(v),522,20,col.fg,'center'));
+
+    // Các bậc thang CDF
+    const segs=[[-.8,0,0,1],[0,1,.25,3.5],[1,2,.75,7],[2,2.8,1,10.5]];
+    segs.forEach(([a,b,val,st],i)=>{
+      const k=sg(t,st,st+1.8);
+      const x1=m(a),x2=mx(m(a),m(b),k),yy=y(val);
+      L(x1,yy,x2,yy,col.b,3.5,k);
+      if(i>0){
+        L(x1,y(segs[i-1][2]),x1,yy,col.y,1.8,k,[4,4]);
+        D(x1,yy,6.5,col.b,k);
+        D(x1,y(segs[i-1][2]),6.5,col.b,k,2.2);
+        const jump=val-segs[i-1][2];
+        T(`+${f(jump,2)}`,x1+44,(yy+y(segs[i-1][2]))/2,17,col.y,'left',k);
+      }
+    });
+    T('Chấm đặc: lấy giá trị tại x (liên tục phải)   |   P(a < X ≤ b) = F(b) − F(a)',640,152,19,col.g,'center',sg(t,14,16));
+  }
+},
+{
+  t:'9. Đọc ngưỡng < vs ≤ & SciPy',d:26,
+  s:[
+    [0,'Với biến rời rạc nhận giá trị nguyên, dấu bé hơn hẳn (<) và bé hơn hoặc bằng (≤) cho hai kết quả KHÁC NHAU!'],
+    [5.5,'Ví dụ X ~ Binomial(6, 0,5): P(X < 3) chỉ cộng k = 0, 1, 2, tức là bằng F(2) chứ không phải F(3).'],
+    [11.5,'Khi tính đuôi phải P(X ≥ 3), phần bù của nó là X ≤ 2, nên P(X ≥ 3) = 1 − F(2) = sf(2) trong SciPy!'],
+    [17.5,'Nhầm sf(3) thành P(X ≥ 3) là lỗi lập trình cực kỳ phổ biến vì hàm sf(k) trong SciPy định nghĩa là P(X > k) = 1 − F(k).'],
+    [22,'Quy tắc an toàn: luôn viết ra tập các số nguyên k thỏa mãn điều kiện rồi mới chuyển sang lệnh cdf hoặc sf.']
+  ],
+  f:t=>{
+    hd('9. Đọc ngưỡng < vs ≤ và lệnh SciPy cho biến nguyên');
+    const m=mp(-0.5,6.5,110,640),B=455,K=260;
+    L(90,B,660,B,col.axis,2);
+    T('Minh họa X ~ Binomial(6, 0,5): tách tại k = 3',375,148,20,col.fg,'center');
+    const ph=sg(t,6,8);
+    for(let k=0;k<=6;k++){
+      const pr=binom(k,6,.5),px=m(k),h=pr*K;
+      const c=k<3?col.b:(k===3?(ph>.5?col.y:col.g):col.g);
+      R(px-24,B-h,48,h,c,.88);
+      T(String(k),px,B+24,19,c,'center');
+    }
+    T('X ≤ 2  (F(2))',220,505,18,col.b,'center',sg(t,2,3.5));
+    T('X = 3',m(3),505,18,col.y,'center',sg(t,6,7.5));
+    T('X > 3  (sf(3))',540,505,18,col.g,'center',sg(t,9,10.5));
+
+    // Bảng chuyển đổi SciPy bên phải
+    const rows=[
+      ['Biến cố','Đưa về F(k)','Lệnh SciPy'],
+      ['P(X = k)','p(k)','dist.pmf(k)'],
+      ['P(X ≤ k)','F(k)','dist.cdf(k)'],
+      ['P(X < k)','F(k − 1)','dist.cdf(k - 1)'],
+      ['P(X > k)','1 − F(k)','dist.sf(k)'],
+      ['P(X ≥ k)','1 − F(k − 1)','dist.sf(k - 1)']
+    ];
+    rows.forEach((r,idx)=>{
+      const yy=175+idx*56,o=sg(t,2+idx*2.2,3.2+idx*2.2);
+      const c=idx===0?col.y:(idx===3||idx===5?col.o:col.fg);
+      T(r[0],705,yy,19,c,'left',o);
+      T(r[1],860,yy,19,idx===0?col.y:col.b,'left',o);
+      T(r[2],1025,yy,18,idx===0?col.y:col.g,'left',o);
+      if(idx===0)L(700,yy+22,1220,yy+22,col.axis,1.5,o);
+    });
+  }
+},
+{
+  t:'10. Phân phối Đều & Bernoulli',d:24,
+  s:[
+    [0,'Bây giờ ta đi qua 5 họ phân phối rời rạc kinh điển, bắt đầu từ hai phân phối cơ bản nhất: Đều rời rạc và Bernoulli.'],
+    [5.5,'Phân phối Đều rời rạc trên m giá trị gán cùng xác suất 1/m cho mỗi giá trị, như gieo một xúc xắc cân đối (1/6).'],
+    [11.5,'Phân phối Bernoulli(p) mô tả đúng 1 phép thử chỉ có hai kết quả: thành công (X = 1, xác suất p) hoặc thất bại (X = 0, xác suất 1 − p).'],
+    [17.5,'Quan sát bên phải khi tham số p thay đổi: hai cột xác suất nâng lên hạ xuống đối nghịch nhau nhưng tổng chiều cao luôn bằng 1.'],
+    [21,'Bernoulli là "viên gạch cơ sở" để xây dựng phân phối Nhị thức ở cảnh tiếp theo.']
+  ],
+  f:t=>{
+    hd('10. Phân phối Đều rời rạc và Phân phối Bernoulli(p)');
+
+    // Bên trái: Đều rời rạc 1..6
+    const m1=mp(0.5,6.5,100,560),B=445;
+    L(90,B,570,B,col.axis,2);
+    T('Đều rời rạc trên {1, 2, 3, 4, 5, 6}',330,150,21,col.b,'center');
+    for(let k=1;k<=6;k++){
+      const o=sg(t,1.5+k*.4,2.8+k*.4),h=150*o,px=m1(k);
+      R(px-24,B-h,48,h,col.b,.85*o);
+      T('1/6',px,B-h-16,16,col.b,'center',o);
+      T(String(k),px,B+24,19,col.fg,'center',o);
+    }
+    T('P(X = x) = 1/m   với mọi x thuộc miền',330,505,18,col.dim,'center',sg(t,5,6.5));
+
+    // Bên phải: Bernoulli(p) biến thiên p
+    const p=mx(.25,.75,.5-.5*Math.cos(Math.max(0,t-8)*.85));
+    const m2=mp(-0.5,1.5,730,1150);
+    L(700,B,1180,B,col.axis,2);
+    const oR=sg(t,7,8.5);
+    T(`Bernoulli(p = ${f(p,2)})`,940,150,22,col.y,'center',oR);
+    const h0=(1-p)*270*oR,h1=p*270*oR;
+    R(m2(0)-52,B-h0,104,h0,col.o,.88*oR);
+    R(m2(1)-52,B-h1,104,h1,col.g,.88*oR);
+    T(f(1-p,2),m2(0),B-h0-18,22,col.o,'center',oR);
+    T(f(p,2),m2(1),B-h1-18,22,col.g,'center',oR);
+    T('0 (thất bại)',m2(0),B+26,19,col.fg,'center',oR);
+    T('1 (thành công)',m2(1),B+26,19,col.fg,'center',oR);
+    T('P(X = 1) = p,   P(X = 0) = 1 − p',940,505,18,col.dim,'center',oR);
+  }
+},
+{
+  t:'11. Phân phối Nhị thức Binomial(n, p)',d:26,
+  s:[
+    [0,'Lặp lại n phép thử Bernoulli độc lập với cùng xác suất thành công p, số lần thành công X tuân theo phân phối Nhị thức Bin(n, p).'],
+    [5.5,'Công thức PMF: P(X = k) = C(n, k) · pᵏ · (1 − p)ⁿ⁻ᵏ — tích của số cách chọn k vị trí với xác suất từng chuỗi.'],
+    [11.5,'Quan sát hình dáng phân phối với n = 20 khi p biến thiên: khi p = 0,2 phân phối lệch phải và tập trung quanh np = 4.'],
+    [17,'Khi p = 0,5 phân phối hoàn toàn đối xứng hình chuông tại np = 10; khi p = 0,8 phân phối lệch trái về phía np = 16.'],
+    [22,'Nhớ 4 điều kiện BINS: hai kết quả (Binary), độc lập (Independent), số lần cố định (Number), và p không đổi (Same p).']
+  ],
+  f:t=>{
+    hd('11. Phân phối Nhị thức: X ~ Binomial(n = 20, p)');
+    const s1=sg(t,5,10),s2=sg(t,12,17);
+    const p=t<11?mx(.20,.50,s1):mx(.50,.80,s2);
+    T(`P(X = k) = C(n, k) · pᵏ · (1 − p)ⁿ⁻ᵏ     |     p = ${f(p,2)},   đỉnh quanh np = ${f(20*p,1)}`,80,104,20,col.y);
+
+    const m=mp(-0.5,20.5,100,1180),B=485,K=780;
+    L(85,B,1195,B,col.axis,2);
+    for(let k=0;k<=20;k++){
+      const pr=binom(k,20,p),px=m(k),h=pr*K;
+      const c=Math.abs(k-20*p)<1.5?col.y:col.b;
+      R(px-18,B-h,36,h,c,.88);
+      if(k%2===0)T(String(k),px,B+24,17,col.dim,'center');
+    }
+    const shape=p<.35?'Lệch phải (p < 0,5)':(p>.65?'Lệch trái (p > 0,5)':'Đối xứng tại np = 10 (p = 0,5)');
+    T(shape,640,165,24,col.g,'center');
+    T('4 điều kiện BINS: Binary · Independent · fixed Number n · Same p',640,535,19,col.dim,'center',sg(t,18,20));
+  }
+},
+{
+  t:'12. Phân phối Siêu bội Hypergeom',d:24,
+  s:[
+    [0,'Nếu ta rút mẫu n phần tử KHÔNG HOÀN LẠI từ tổng thể hữu hạn N phần tử (gồm K phần tử tốt), xác suất thay đổi sau mỗi lần rút.'],
+    [5.5,'Số phần tử tốt trong mẫu X không còn theo Nhị thức mà tuân theo phân phối Siêu bội Hypergeom(N, K, n).'],
+    [11,'Công thức dựa trên phép đếm tổ hợp thuần túy: P(X = k) = C(K, k) · C(N − K, n − k) / C(N, n).'],
+    [16.5,'Ví dụ N = 10 sản phẩm có K = 6 tốt, rút n = 3 không hoàn lại: xác suất có đúng 2 tốt là C(6,2)·C(4,1)/C(10,3) = 60/120 = 0,50.'],
+    [20.5,'Lưu ý thứ tự tham số trong SciPy là hypergeom(M=N, n=K, N=n) — rất dễ nhầm ký hiệu nếu không đọc kỹ!']
+  ],
+  f:t=>{
+    hd('12. Phân phối Siêu bội: Rút không hoàn lại từ tổng thể hữu hạn');
+
+    // Hộp bên trái (6 tốt, 4 lỗi)
+    RR(85,175,380,220,12,col.card,sg(t,1,2));RR(85,175,380,220,12,col.bd,sg(t,1,2),1.5);
+    T('VD: N = 10, K = 6 tốt, n = 3',275,205,21,col.y,'center',sg(t,1,2));
+    for(let i=0;i<10;i++){
+      const r=Math.floor(i/5),c=i%5,cx=135+c*68,cy=265+r*68;
+      const good=i<6;
+      D(cx,cy,22,good?col.g:col.o,.26*sg(t,2,3.5));
+      D(cx,cy,22,good?col.g:col.o,sg(t,2,3.5),2.2);
+      T(good?'1':'0',cx,cy,20,good?col.g:col.o,'center',sg(t,2,3.5));
+    }
+    T('Rút n = 3 KHÔNG hoàn lại',275,428,19,col.dim,'center',sg(t,3.5,5));
+
+    // Biểu đồ cột bên phải
+    const m=mp(-0.5,3.5,560,1180),B=480,K=540;
+    L(540,B,1200,B,col.axis,2);
+    for(let k=0;k<=3;k++){
+      const pr=hyper(k,10,6,3),a=sg(t,7+k*1.2,8.5+k*1.2),h=pr*K*a,px=m(k);
+      const c=k===2?col.y:col.b;
+      R(px-44,B-h,88,h,c,.88*a);
+      T(f(pr,4),px,B-h-18,19,c,'center',a);
+      T(`k = ${k}`,px,B+26,20,col.fg,'center',a);
+    }
+    T('P(X = k) = C(K,k)·C(N−K,n−k) / C(N,n)',870,152,20,col.g,'center',sg(t,5,6.5));
+  }
+},
+{
+  t:'13. Có vs Không hoàn lại & Xấp xỉ',d:24,
+  s:[
+    [0,'So sánh trực tiếp trên cùng tỉ lệ p = K/N = 0,6: rút không hoàn lại (Siêu bội) luôn tập trung quanh trung tâm HƠN rút có hoàn lại (Nhị thức).'],
+    [5.5,'Với N = 10 nhỏ, hai phân phối lệch nhau rõ rệt (tại k = 2: 0,500 vs 0,432), vì mỗi lần rút làm đổi đáng kể tỉ lệ trong hộp.'],
+    [11.5,'Nhưng khi tổng thể N rất lớn so với cỡ mẫu n — cụ thể quy tắc kinh nghiệm n / N ≤ 0,05 (lấy không quá 5%)...'],
+    [17,'...thì việc rút một vài phần tử hầu như không làm thay đổi tỉ lệ p, nên Siêu bội có thể xấp xỉ rất tốt bằng Nhị thức Bin(n, K/N)!'],
+    [21,'Đây là cơ sở để khảo sát xã hội học lấy mẫu không hoàn lại từ dân số hàng triệu người vẫn dùng mô hình Nhị thức.']
+  ],
+  f:t=>{
+    hd('13. Siêu bội vs Nhị thức và quy tắc xấp xỉ n/N ≤ 0,05');
+
+    // Biểu đồ so sánh N=10, K=6, n=3
+    const m=mp(-0.6,3.6,100,560),B=470,K=540;
+    L(85,B,575,B,col.axis,2);
+    T('N = 10, K = 6, n = 3 (n/N = 30%)',330,148,20,col.fg,'center');
+    for(let k=0;k<=3;k++){
+      const pH=hyper(k,10,6,3),pB=binom(k,3,.6);
+      const a=sg(t,1.5+k*.8,3+k*.8),px=m(k);
+      const h1=pH*K*a,h2=pB*K*a;
+      R(px-34,B-h1,32,h1,col.o,.9*a);
+      R(px+2,B-h2,32,h2,col.b,.85*a);
+      T(String(k),px,B+24,18,col.fg,'center',a);
+    }
+    T('■ Siêu bội (nhọn hơn)   ■ Nhị thức',330,520,17,col.dim,'center',sg(t,4,5.5));
+
+    // Bảng sai số khi N tăng dần bên phải
+    const rows=[
+      ['Tổng thể N','Tỉ lệ n/N','Max |P_H − P_B|'],
+      ['N = 10','30,0%','0,0680 (lệch lớn)'],
+      ['N = 50','6,0%','0,0119'],
+      ['N = 100','3,0%','0,0059 (xấp xỉ tốt)'],
+      ['N = 1.000','0,3%','0,0006 (gần như trùng)']
+    ];
+    rows.forEach((r,idx)=>{
+      const yy=185+idx*58,o=sg(t,7+idx*2.2,8.5+idx*2.2);
+      const c=idx===0?col.y:(idx>=3?col.g:col.fg);
+      T(r[0],680,yy,20,c,'left',o);
+      T(r[1],845,yy,20,c,'center',o);
+      T(r[2],945,yy,19,c,'left',o);
+      if(idx===0)L(670,yy+24,1200,yy+24,col.axis,1.5,o);
+    });
+    T('Quy tắc thực hành: Khi n / N ≤ 0,05 ⇒ Hypergeom(N, K, n) ≈ Binomial(n, K/N)',935,492,18,col.y,'center',sg(t,18,19.5));
+  }
+},
+{
+  t:'14. Phân phối Poisson(λ)',d:26,
+  s:[
+    [0,'Khi đếm số sự kiện xảy ra trong một khoảng thời gian hoặc không gian cố định với tốc độ trung bình λ, ta dùng phân phối Poisson(λ).'],
+    [5.5,'Ví dụ: số cuộc gọi đến tổng đài mỗi phút, số lỗi in trên mỗi trang sách, hay số gói tin lỗi mỗi giây.'],
+    [11,'Công thức PMF: P(X = k) = e⁻λ · λᵏ / k! cho mọi k = 0, 1, 2, … (tập giá trị vô hạn đếm được).'],
+    [16.5,'Tính chất cộng cực đẹp: nếu trung bình 1 giây có λ = 4 truy cập, thì trong 3 giây độc lập số truy cập tuân theo Poisson(12)!'],
+    [21.5,'Hãy luôn kiểm tra đơn vị thời gian: đổi khoảng thời gian nhân c lần thì phải nhân tham số λ lên c lần tương ứng.']
+  ],
+  f:t=>{
+    hd('14. Phân phối Poisson(λ): Đếm sự kiện trên khoảng cố định');
+    T('P(X = k) = e⁻λ · λᵏ / k!   (k = 0, 1, 2, …)   —   tham số λ > 0 phải khớp đơn vị khoảng',80,104,20,col.dim);
+
+    // Bên trái: Poisson(1)
+    const m1=mp(-0.5,6.5,100,560),B=475,K1=680;
+    L(85,B,575,B,col.axis,2);
+    T('λ = 1 (rất lệch phải)',330,152,21,col.b,'center');
+    for(let k=0;k<=6;k++){
+      const pr=pois(k,1),a=sg(t,1.5+k*.5,3+k*.5),h=pr*K1*a,px=m1(k);
+      R(px-22,B-h,44,h,col.b,.88*a);
+      if(k<=3)T(f(pr,2),px,B-h-14,15,col.b,'center',a);
+      T(String(k),px,B+24,18,col.fg,'center',a);
+    }
+
+    // Bên phải: Poisson(4) và Poisson(12)
+    const m2=mp(-0.5,18.5,660,1190),K2=1250;
+    const oR=sg(t,8,9.5),shift=sg(t,13.5,16.5);
+    const lam=mx(4,12,shift);
+    L(645,B,1205,B,col.axis,2,oR);
+    T(`Đổi khoảng 1 giây → 3 giây:  λ = ${f(lam,1)}`,925,152,21,col.y,'center',oR);
+    for(let k=0;k<=18;k++){
+      const pr=pois(k,lam),px=m2(k),h=pr*K2*oR;
+      R(px-11,B-h,22,h,shift>.5?col.g:col.o,.88*oR);
+      if(k%3===0)T(String(k),px,B+24,16,col.dim,'center',oR);
+    }
+    T('X ~ Pois(λ₁), Y ~ Pois(λ₂) độc lập ⇒ X + Y ~ Pois(λ₁ + λ₂)',925,522,17,col.g,'center',sg(t,17,18.5));
+  }
+},
+{
+  t:'15. Giới hạn Poisson & Bài toán tổng hợp',d:28,
+  s:[
+    [0,'Khi số phép thử n rất lớn và xác suất p rất nhỏ sao cho np = λ vừa phải, Nhị thức Bin(n, p) hội tụ về Poisson(λ).'],
+    [5.5,'Ví dụ hệ thống 1.000 cảm biến độc lập, mỗi cảm biến lỗi với p = 0,004 (λ = 4): xác suất Bin(1000; 0,004) và Poisson(4) gần như trùng khớp!'],
+    [12,'Sang bài toán tổng hợp quản lý tồn kho: cửa hàng có 10 xích và 8 trục dự phòng; 15 khách đặt mua độc lập (p = 0,75 chọn bộ xích, 0,25 chọn trục).'],
+    [18.5,'Để đủ hàng cho cả 15 khách, số khách chọn xích K phải thỏa K ≤ 10 VÀ số khách chọn trục 15 − K ≤ 8, tức 7 ≤ K ≤ 10.'],
+    [23.5,'Cộng xác suất Bin(15; 0,75) từ k = 7 đến k = 10, ta thu được xác suất đáp ứng đủ nhu cầu chỉ khoảng 30,9%!']
+  ],
+  f:t=>{
+    hd('15. Giới hạn Poisson & Bài toán tồn kho');
+
+    // Bên trái: Bin(1000, 0.004) vs Pois(4)
+    const m1=mp(-0.5,11.5,95,580),B=465,K1=1250;
+    L(85,B,590,B,col.axis,2);
+    T('1.000 cảm biến (p=0,004): Bin ≈ Pois(4)',337,140,20,col.b,'center');
+    for(let k=0;k<=11;k++){
+      const pP=pois(k,4),a=sg(t,1.5+k*.4,3+k*.4),px=m1(k),h=pP*K1*a;
+      R(px-15,B-h,30,h,col.b,.82*a);
+      D(px,B-h,4.5,col.y,a);
+      if(k%2===0)T(String(k),px,B+24,16,col.dim,'center',a);
+    }
+    T('■ Binomial(1000; 0,004)   ● Poisson(4)',337,516,17,col.dim,'center',sg(t,5,6.5));
+
+    // Bên phải: Tồn kho 10 xích, 8 trục (15 khách, p=0,75)
+    const m2=mp(-0.5,15.5,650,1200),K2=1150;
+    const oR=sg(t,11.5,13);
+    L(640,B,1210,B,col.axis,2,oR);
+    T('Tồn kho 10 xích, 8 trục (15 khách, p = 0,75)',925,140,20,col.g,'center',oR);
+    let pOk=0;
+    for(let k=0;k<=15;k++){
+      const pr=binom(k,15,.75),px=m2(k),h=pr*K2*sg(t,12,14);
+      const ok=k>=7&&k<=10;
+      if(ok)pOk+=pr;
+      R(px-13,B-h,26,h,ok?col.g:col.bd,.88*oR);
+      if(k%3===0||k===7||k===10)T(String(k),px,B+24,15,ok?col.g:col.dim,'center',oR);
+    }
+    T(`Đủ hàng ⇔ 7 ≤ K ≤ 10  →  P ≈ ${f(pOk*100,1)}%`,925,516,20,col.y,'center',sg(t,18,19.5));
+  }
+},
+{
+  t:'16. Tóm tắt & 6 lỗi hay gặp',d:24,
+  s:[
+    [0,'Trước khi sang Tuần 07 về kỳ vọng và phương sai, hãy ghi nhớ 6 lỗi phổ biến nhất ở Tuần 06.'],
+    [4.5,'Một là nhầm lẫn giữa phân phối Nhị thức (có hoàn lại) và Siêu bội (không hoàn lại từ tổng thể nhỏ).'],
+    [9.5,'Hai là quên đổi dấu ngưỡng < thành ≤ (k − 1) khi dùng hàm cdf hoặc sf trong SciPy.'],
+    [14.5,'Ba là dùng sai thứ tự tham số trong scipy.stats.hypergeom; bốn là quên nhân lại λ khi đổi đơn vị thời gian cho Poisson.'],
+    [19.5,'Năm là dùng tổ hợp/chỉnh hợp sai khi đề có yêu cầu thứ tự; sáu là tưởng X và Y = g(X) luôn có PMF giống nhau kể cả khi g không 1-1.']
+  ],
+  f:t=>{
+    hd('16. Sáu lỗi hay gặp cần tránh ở Tuần 06');
+    const errs=[
+      ['1. Nhầm Nhị thức và Siêu bội','→ Kiểm tra hoàn lại & tỉ lệ n/N ≤ 0,05',1.5],
+      ['2. Dùng sf(k) cho P(X ≥ k)','→ Đúng phải là sf(k − 1) = 1 − F(k − 1)',4.5],
+      ['3. Nhầm thứ tự tham số hypergeom','→ SciPy nhận (M=N, n=K, N=n)',7.5],
+      ['4. Quên tỉ lệ lại λ của Poisson','→ Khoảng gấp c lần thì λ mới = c·λ',10.5],
+      ['5. Nhầm Chỉnh hợp và Tổ hợp','→ Hỏi ngay: đổi vị trí có tạo kết quả mới?',13.5],
+      ['6. Quên cộng dồn PMF khi g(X) trùng','→ Cộng P(X=x) của mọi x cho cùng y',16.5]
+    ];
+    errs.forEach(([e,fx,st],i)=>{
+      const yy=148+i*62,o=sg(t,st,st+1.2);
+      RR(85,yy-23,1110,48,10,col.card,o);RR(85,yy-23,1110,48,10,col.bd,o,1.4);R(85,yy-15,3.5,32,col.r,o);
+      T('✗  '+e,112,yy,20,col.r,'left',o);
+      T(fx,645,yy,20,col.g,'left',o);
+    });
+  }
+},
+{
+  t:'17. Tổng hợp công thức',d:28,
+  s:[
+    [0,'Cuối cùng, hãy cùng hệ thống lại toàn bộ 8 nhóm công thức trọng tâm của Tuần 06 trên một bảng tổng hợp trực quan.'],
+    [4.5,'Cột trái gồm công thức chỉnh hợp, tổ hợp, điều kiện chuẩn hóa PMF và các quy tắc đọc CDF cho biến rời rạc.'],
+    [10.5,'Tiếp theo là hai phân phối cơ sở: Đều rời rạc với xác suất 1/m và Bernoulli(p) cho 1 phép thử nhị phân.'],
+    [16.5,'Cột phải gồm ba phân phối chủ lực: Nhị thức Bin(n, p), Siêu bội Hypergeom(N, K, n) cùng điều kiện xấp xỉ, và Poisson(λ).'],
+    [22.5,'Hãy bấm phím Space để tạm dừng nếu bạn muốn ghi chép nhanh trước khi chuyển sang Tuần 07!']
+  ],
+  f:t=>{
+    const pal={gold:'#e5b91a',txt:'#dcdde2',mut:'#989ba5',bg:'#35373d',bd:'#4c4f58'};
+    T('17. Tổng hợp các công thức trọng tâm Tuần 06',80,58,35,pal.gold);
+    const card=(x,y,title,st,draw)=>{
+      const o=sg(t,st,st+1.2);
+      RR(x,y,555,104,10,pal.bg,o);RR(x,y,555,104,10,pal.bd,o,1.4);
+      R(x,y+12,3.5,80,pal.gold,o);
+      T(title,x+18,y+22,16,pal.gold,'left',o);
+      draw(x,y,o);
+    };
+
+    // Cột trái (4 thẻ)
+    card(75,112,'1. Chỉnh hợp P(n, k) & Tổ hợp C(n, k)',1,(x,y,o)=>{
+      T('P(n,k) =',x+20,y+64,19,pal.txt,'left',o);
+      FR('n!','(n − k)!',x+148,y+64,17,pal.txt,o);
+      T(';   C(n,k) =',x+202,y+64,19,pal.txt,'left',o);
+      FR('n!','k!(n − k)!',x+368,y+64,17,pal.txt,o);
+    });
+    card(75,230,'2. Hàm khối xác suất (PMF) & CDF bậc thang',3,(x,y,o)=>{
+      T('∑ₓ p(x) = 1 ,   F(x) = P(X ≤ x)',x+22,y+55,20,pal.txt,'left',o);
+      T('P(X < k) = F(k−1)  ;   P(X ≥ k) = 1 − F(k−1)',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(75,348,'3. Phân phối Đều rời rạc (trên m giá trị)',5.5,(x,y,o)=>{
+      T('P(X = x) =',x+24,y+64,20,pal.txt,'left',o);
+      FR('1','m',x+158,y+64,19,pal.txt,o);
+      T('với mọi x thuộc miền',x+195,y+64,17,pal.mut,'left',o);
+    });
+    card(75,466,'4. Phân phối Bernoulli(p) — 1 phép thử',8,(x,y,o)=>{
+      T('P(X = x) = pˣ · (1 − p)¹⁻ˣ ,   x ∈ {0, 1}',x+22,y+56,20,pal.txt,'left',o);
+      T('Thành công X = 1 (p)  |  Thất bại X = 0 (1 − p)',x+22,y+86,16,pal.mut,'left',o);
+    });
+
+    // Cột phải (4 thẻ)
+    card(650,112,'5. Phân phối Nhị thức Binomial(n, p)',10.5,(x,y,o)=>{
+      T('P(X = k) = C(n, k) · pᵏ · (1 − p)ⁿ⁻ᵏ',x+22,y+55,20,pal.txt,'left',o);
+      T('k = 0, 1, …, n   (độc lập, có hoàn lại, p không đổi)',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(650,230,'6. Phân phối Siêu bội Hypergeom(N, K, n)',13,(x,y,o)=>{
+      T('P(X = k) =',x+22,y+64,19,pal.txt,'left',o);
+      FR('C(K, k) · C(N − K, n − k)','C(N, n)',x+278,y+64,17,pal.txt,o);
+    });
+    card(650,348,'7. Xấp xỉ Siêu bội bằng Nhị thức',15.5,(x,y,o)=>{
+      T('Khi',x+22,y+64,19,pal.txt,'left',o);
+      FR('n','N',x+82,y+64,17,pal.txt,o);
+      T('≤ 0,05  ⇒  Hyper ≈ Bin(n, p) ,  p =',x+110,y+64,18,pal.txt,'left',o);
+      FR('K','N',x+495,y+64,17,pal.txt,o);
+    });
+    card(650,466,'8. Phân phối Poisson(λ) & Giới hạn',18,(x,y,o)=>{
+      T('P(X = k) =',x+22,y+64,19,pal.txt,'left',o);
+      FR('e⁻λ · λᵏ','k!',x+182,y+64,18,pal.txt,o);
+      T('(n lớn, p nhỏ: λ = np)',x+258,y+64,16,pal.mut,'left',o);
+    });
+  }
+}
+];
+
+// ===== Điều khiển trình phát tương tác =====
+const ST=[];let TOT=0;sc.forEach(s=>{ST.push(TOT);TOT+=s.d});
+const idx=()=>Math.max(0,ST.findLastIndex(x=>x<=g));
+const $=(q)=>document.querySelector(q);
+const pg=$('#pg'),mn=$('#mn'),ui=$('#ui'),sub=$('#sub'),bp=$('#bp'),bt=$('#bt'),bn=$('#bn'),bc=$('#bc'),bs=$('#bs'),bm=$('#bm'),tm=$('#tm');
+const ic=d=>`<svg viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+const IP=ic('M8 5v14l11-7z'),IA=ic('M6 19h4V5H6zm8-14v14h4V5z');
+bt.innerHTML=ic('M6 6h2v12H6zm3.5 6l8.5 6V6z');
+bn.innerHTML=ic('M6 18l8.5-6L6 6zm10-12v12h2V6z');
+bm.innerHTML=ic('M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z');
+
+sc.forEach((s,i)=>{
+  const e=document.createElement('div');e.className='sg';e.style.flexGrow=s.d;e.innerHTML='<i></i>';pg.appendChild(e);
+  const m=document.createElement('div');m.textContent=s.t;m.onclick=()=>{g=ST[i];mn.classList.remove('o');rd()};mn.appendChild(m);
+});
+const sgs=[...pg.children],mns=[...mn.children];
+
+let g=0,pl=1,cc=1,sp=1,lt=0,ht=0,dr=0;
+const sps=[.75,1,1.25,1.5,2];
+const ft=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+const sh=()=>{ui.classList.remove('h');clearTimeout(ht);if(pl)ht=setTimeout(()=>ui.classList.add('h'),3000)};
+const up=()=>{bp.innerHTML=pl?IA:IP;if(!pl)ui.classList.remove('h');else sh()};
+
+function rs(){
+  const dpr=Math.min(2,devicePixelRatio||1),w=innerWidth,h=innerHeight,r=Math.min(w/W,h/H);
+  C.style.width=W*r+'px';C.style.height=H*r+'px';
+  C.width=Math.round(W*r*dpr);C.height=Math.round(H*r*dpr);
+}
+addEventListener('resize',rs);rs();
+
+let lastSub='';
+function rd(){
+  const k=C.width/W;X.setTransform(k,0,0,k,0,0);X.globalAlpha=1;X.fillStyle='#2c2d31';X.fillRect(0,0,W,H);
+  const i=idx(),t=g-ST[i],s=sc[i];
+  FA=Math.min(cl(t/.4),cl((s.d-t)/.4));
+  s.f(t);
+  X.globalAlpha=1;
+  sgs.forEach((e,j)=>{e.firstChild.style.width=(j<i?100:j>i?0:cl(t/s.d)*100)+'%'});
+  mns.forEach((e,j)=>e.classList.toggle('c',j===i));
+  tm.textContent=`${ft(g)} / ${ft(TOT)} · ${s.t}`;
+  let tx='';
+  if(cc)for(const [a,b] of s.s)if(t>=a)tx=b;
+  if(tx!==lastSub){
+    lastSub=tx;
+    sub.textContent=tx;
+    sub.classList.toggle('e',!tx);
+  }
+}
+
+function lp(n){
+  if(lt&&pl){g+=Math.min(.1,(n-lt)/1000)*sp;if(g>=TOT){g=TOT;pl=0;up()}}
+  lt=n;rd();requestAnimationFrame(lp);
+}
+requestAnimationFrame(lp);up();
+
+const tg=()=>{if(g>=TOT)g=0;pl^=1;up()};
+bp.onclick=tg;
+bt.onclick=()=>{const i=idx();g=ST[g-ST[i]>2?i:Math.max(0,i-1)];sh()};
+bn.onclick=()=>{const i=idx();g=i<sc.length-1?ST[i+1]:TOT;sh()};
+bc.onclick=()=>{cc^=1;bc.classList.toggle('on',!!cc);lastSub='__';rd()};
+bs.onclick=()=>{sp=sps[(sps.indexOf(sp)+1)%sps.length];bs.textContent=sp+'×'};
+bm.onclick=()=>mn.classList.toggle('o');
+C.onclick=()=>{if(mn.classList.contains('o'))mn.classList.remove('o');else tg()};
+
+const sk=e=>{const r=pg.getBoundingClientRect();g=cl((e.clientX-r.left)/r.width)*TOT;rd()};
+pg.onpointerdown=e=>{dr=1;pg.setPointerCapture(e.pointerId);sk(e)};
+pg.onpointermove=e=>{if(dr)sk(e)};
+pg.onpointerup=()=>{dr=0};
+addEventListener('pointermove',sh);
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();tg()}
+  else if(e.key==='ArrowLeft')bt.click();
+  else if(e.key==='ArrowRight')bn.click();
+  else if(e.key==='c'||e.key==='C')bc.click();
+  else if(e.key==='m'||e.key==='M')bm.click();
+});
+</script>
+</body>
+</html>

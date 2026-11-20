@@ -1,219 +1,62 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Xác Suất Thống Kê (MAT1052) — Nền Tảng &amp; Ôn Thi Giữa Kỳ UET</title>
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,800;1,400&family=Lexend+Deca&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&family=Lexend+Deca&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <script>
 window.MathJax = {
-    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true },
-    options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
-    chtml: { scale: .96 }
+  tex: {
+    inlineMath: [["$", "$"], ["\\(", "\\)"]],
+    displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"] },
+  svg: { fontCache: "global" }
 };
 </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="style.css">
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="xstk.css">
 </head>
-<body class="lg-theme" data-lg-bg="ios">
+<body>
 
-<!-- Bộ lọc SVG cho hiệu ứng khúc xạ của Google Chrome -->
-<svg id="lg-defs" width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">
-  <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-    <feTurbulence type="fractalNoise" baseFrequency="0.010 0.016" numOctaves="2" seed="7" result="n"/>
-    <feDisplacementMap in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-</svg>
-
-<!-- Vòng tròn nền Liquid Glass (Aurora) -->
-<div id="lg-orbs" class="lg-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-
-<!-- Nền phong cách iOS Silk Wave -->
-<div id="lg-bg-ios" class="lg-bg-ios" aria-hidden="true">
-  <svg viewBox="0 0 1440 900" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-    <defs>
-      <linearGradient id="ios-cyan-blue" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#38bdf8" />
-        <stop offset="50%" stop-color="#0284c7" />
-        <stop offset="100%" stop-color="#1e3a8a" />
-      </linearGradient>
-      <linearGradient id="ios-magenta-purple" x1="100%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#ec4899" />
-        <stop offset="50%" stop-color="#a855f7" />
-        <stop offset="100%" stop-color="#4338ca" />
-      </linearGradient>
-      <linearGradient id="ios-amber-teal" x1="0%" y1="100%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#06b6d4" />
-        <stop offset="60%" stop-color="#3b82f6" />
-        <stop offset="100%" stop-color="#6366f1" />
-      </linearGradient>
-      <filter id="ios-glow-heavy" x="-30%" y="-30%" width="160%" height="160%">
-        <feGaussianBlur stdDeviation="65" />
-      </filter>
-      <filter id="ios-glow-mid" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="30" />
-      </filter>
-      <filter id="ios-glow-fine" x="-10%" y="-10%" width="120%" height="120%">
-        <feGaussianBlur stdDeviation="4" />
-      </filter>
-    </defs>
-    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="url(#ios-cyan-blue)" stroke-width="170" fill="none" opacity="0.65" filter="url(#ios-glow-heavy)" />
-    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="url(#ios-magenta-purple)" stroke-width="160" fill="none" opacity="0.55" filter="url(#ios-glow-heavy)" />
-    <path d="M 180 -120 C 420 320, 720 740, 1320 820 C 1520 860, 1620 740, 1700 680" stroke="url(#ios-amber-teal)" stroke-width="150" fill="none" opacity="0.5" filter="url(#ios-glow-heavy)" />
-    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="#38bdf8" stroke-width="36" fill="none" opacity="0.45" filter="url(#ios-glow-mid)" />
-    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="#f472b6" stroke-width="32" fill="none" opacity="0.4" filter="url(#ios-glow-mid)" />
-    <path d="M-100 200 C 350 50, 500 650, 950 420 C 1220 280, 1380 120, 1600 80" stroke="#e0f2fe" stroke-width="2.5" fill="none" opacity="0.75" filter="url(#ios-glow-fine)" />
-    <path d="M-80 540 C 380 620, 680 180, 1120 300 C 1360 380, 1460 560, 1600 620" stroke="#fce7f3" stroke-width="2" fill="none" opacity="0.7" filter="url(#ios-glow-fine)" />
-  </svg>
-</div>
-
-<!-- Popup Cài đặt Giao diện -->
-<div id="theme-modal-overlay" class="theme-modal-overlay" hidden>
-  <div id="theme-modal" class="theme-modal-box" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
-    <div class="theme-modal-header">
-      <h3 id="theme-modal-title">Cài đặt giao diện</h3>
-      <button type="button" id="theme-modal-close" class="theme-modal-close-btn" aria-label="Đóng popup" style="font-size:12px;font-weight:700;width:auto;padding:4px 10px;border-radius:8px">Đóng</button>
-    </div>
-
-    <!-- Chuyển đổi giữa 2 giao diện -->
-    <div class="theme-mode-select" role="group" aria-label="Chọn giao diện">
-      <button type="button" id="thm-opt-default" class="thm-toggle-btn">Dracula</button>
-      <button type="button" id="thm-opt-liquid" class="thm-toggle-btn active">Liquid Glass</button>
-      <button type="button" id="thm-opt-monkeytype" class="thm-toggle-btn">Monkeytype</button>
-    </div>
-
-    <div id="default-theme-notice" class="theme-default-notice" style="display:none">
-      Đang sử dụng giao diện <b>Dracula</b>. Chuyển sang <b>Liquid Glass</b> để thay đổi trải nghiệm đọc và bật các tuỳ chỉnh chi tiết.
-    </div>
-
-    <!-- Panel tuỳ chỉnh của Liquid Glass Theme -->
-    <div id="lg-settings-panel" class="theme-ctrl-group">
-      <div class="theme-ctrl-item">
-        <div class="theme-ctrl-item-head">
-          <label id="lbl-lg-bg" style="font-weight:700">Hình nền Liquid Glass</label>
-          <output id="o-lg-bg">iOS</output>
-        </div>
-        <div class="theme-bg-selector" role="radiogroup" aria-labelledby="lbl-lg-bg">
-          <button type="button" id="btn-bg-ios" class="theme-bg-card active" data-bg="ios" aria-checked="true" role="radio" title="Hình nền iOS phong cách dải lụa neon Apple">
-            <span class="theme-bg-preview preview-ios"></span>
-            <span class="theme-bg-name">iOS</span>
-          </button>
-          <button type="button" id="btn-bg-aurora" class="theme-bg-card" data-bg="aurora" aria-checked="false" role="radio" title="Hình nền Aurora với các khối cầu đa sắc">
-            <span class="theme-bg-preview preview-aurora"></span>
-            <span class="theme-bg-name">Aurora</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="theme-ctrl-item">
-        <div class="theme-ctrl-item-head">
-          <span>Làm mờ kính (Backdrop Blur)</span>
-          <output id="o-lg-blur">16px</output>
-        </div>
-        <input id="r-lg-blur" type="range" min="4" max="32" value="16" aria-label="Độ làm mờ kính">
-      </div>
-
-      <div class="theme-ctrl-item">
-        <div class="theme-ctrl-item-head">
-          <span>Độ đậm lớp kính (Fill Opacity)</span>
-          <output id="o-lg-fill">0.14</output>
-        </div>
-        <input id="r-lg-fill" type="range" min="0.04" max="0.45" step="0.01" value="0.14" aria-label="Độ đậm kính">
-      </div>
-
-      <div class="theme-ctrl-item">
-        <div class="theme-ctrl-item-head">
-          <span>Độ bão hoà màu (Saturate)</span>
-          <output id="o-lg-sat">200%</output>
-        </div>
-        <input id="r-lg-sat" type="range" min="100" max="260" step="5" value="200" aria-label="Độ bão hoà màu">
-      </div>
-
-      <div class="theme-ctrl-item">
-        <div class="theme-ctrl-item-head">
-          <span>Làm mờ nền / Vòng tròn (kéo min = ẩn)</span>
-          <output id="o-lg-orb-blur">16px</output>
-        </div>
-        <input id="r-lg-orb-blur" type="range" min="0" max="50" value="16" aria-label="Làm mờ nền hoặc ẩn vòng tròn">
-      </div>
-
-      <div class="theme-modal-actions">
-        <button type="button" id="b-lg-glow" class="theme-btn-action" aria-pressed="false">Vệt sáng chuột: Tắt</button>
-        <button type="button" id="b-lg-refract" class="theme-btn-action" aria-pressed="false">Khúc xạ (Chrome): Tắt</button>
-        <button type="button" id="b-lg-reset" class="theme-btn-action">Đặt lại</button>
-      </div>
-    </div>
+<!-- Thanh taskbar trên cùng -->
+<div id="tb" role="toolbar" aria-label="Thanh công cụ">
+  <button id="mb" class="tb-b tb-logo" type="button" aria-label="Mở menu và mục lục" aria-expanded="false" aria-controls="mn" title="Menu &amp; mục lục (Esc để đóng)">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.5" y="2.5" width="17" height="15" rx="3.5"/><path d="M5.5 7h9M5.5 13h9"/></svg>
+  </button>
+  <span id="tb-badge" class="tb-badge">Tuần</span>
+  <span id="tb-title" class="tb-title"></span>
+  <button id="tb-fp" class="tb-b" type="button" aria-pressed="false" aria-label="Ghim công thức (T)" title="Ghim công thức (T)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 3.5h-8l4 4.5-4 4.5h8"/></svg></button>
+  <button id="tb-video" class="tb-b" type="button" aria-pressed="false" aria-label="Bài giảng video (V)" title="Bài giảng video (V)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><polygon points="6.5 5.5 10.5 8 6.5 10.5" fill="currentColor"/></svg></button>
+  <button id="tb-top" class="tb-b" type="button" aria-label="Lên đầu trang" title="Lên đầu trang"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13V3.5M4 7l4-4 4 4"/></svg></button>
+  <span class="tb-sp"></span>
+  <div class="tb-r">
+    <button id="tb-prev" class="tb-b" type="button" aria-label="Tuần trước" title="Tuần trước"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3.5 5.5 8l4.500 4.500"/></svg></button>
+    <button id="tb-next" class="tb-b" type="button" aria-label="Tuần sau" title="Tuần sau"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.500 8 6 12.500"/></svg></button>
   </div>
 </div>
 
-<!-- Nút mở menu bài học & mục lục (Góc trên bên trái) -->
-<button id="mb" type="button" aria-label="Mở menu chọn bài và mục lục" aria-expanded="false" aria-controls="mn">
-  <span></span><span></span><span></span>
-</button>
-
-<!-- Menu bài học & Mục lục -->
-<nav id="mn" hidden aria-label="Menu bài học và mục lục">
-  <div class="nav-view-row">
-    <div class="menu-label">Xác suất Thống kê</div>
-    <button type="button" id="btn-theme-settings" class="btn-theme-settings" aria-label="Cài đặt giao diện" title="Cài đặt giao diện">
-      Cài đặt
-    </button>
-  </div>
+<!-- Menu điều hướng chứa bộ chọn bài học và mục lục bài đang mở -->
+<nav id="mn" hidden aria-label="Mục lục">
   <div id="ls"></div>
-  <select id="lesson-select" style="display:none" onchange="loadLesson(this.value)">
-    <option value="1">Tuần 1: Câu hỏi &amp; Dữ liệu</option>
-    <option value="2">Tuần 2: Tóm tắt dữ liệu 1 biến</option>
-    <option value="3">Tuần 3: Tóm tắt 2 biến &amp; Đồ họa</option>
-    <option value="4">Tuần 4: Tương quan &amp; Hồi quy OLS</option>
-    <option value="5">Tuần 5: Nền tảng Xác suất &amp; Bayes</option>
-    <option value="6">Tuần 6: Biến ngẫu nhiên &amp; Phân phối</option>
-    <option value="7">Tuần 7: Kỳ vọng, Phương sai &amp; CLT</option>
-  </select>
-  <div class="toc-title">Mục lục bài đang mở</div>
   <div id="toc-links"></div>
 </nav>
 
-<!-- Khung giao diện Monkeytype (chỉ hiện khi bật theme Monkeytype) -->
-<svg class="mt-sprite" width="0" height="0" style="position:absolute;width:0;height:0;margin:0;border:0;background:none" aria-hidden="true">
-  <defs>
-    <symbol id="i-gear" viewBox="0 0 24 24"><path d="M19.4 13a7.7 7.7 0 0 0 0-2l2.1-1.6a.5.5 0 0 0 .1-.6l-2-3.5a.5.5 0 0 0-.6-.2l-2.5 1a7.3 7.3 0 0 0-1.7-1l-.4-2.6a.5.5 0 0 0-.5-.4h-4a.5.5 0 0 0-.5.4l-.4 2.6a7.3 7.3 0 0 0-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.6 11a7.700 7.700 0 0 0 0 2l-2.100 1.600a.5.5 0 0 0-.1.6l2 3.500a.5.5 0 0 0 .6.2l2.500-1a7.300 7.300 0 0 0 1.700 1l.4 2.600a.5.5 0 0 0 .5.4h4a.5.5 0 0 0 .5-.4l.4-2.600a7.300 7.300 0 0 0 1.700-1l2.500 1a.5.5 0 0 0 .6-.2l2-3.500a.5.5 0 0 0-.1-.6L19.400 13zM12 15.500a3.500 3.500 0 1 1 0-7 3.500 3.500 0 0 1 0 7z"/></symbol>
-    <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0 0 20 2 2 0 0 0 1.500-3.300 2 2 0 0 1 1.500-3.300h2.300A4.700 4.700 0 0 0 22 10.700C22 5.800 17.500 2 12 2zM6.500 12a1.500 1.500 0 1 1 0-3 1.500 1.500 0 0 1 0 3zm3-4a1.500 1.500 0 1 1 0-3 1.500 1.500 0 0 1 0 3zm5 0a1.500 1.500 0 1 1 0-3 1.500 1.500 0 0 1 0 3zm3 4a1.500 1.500 0 1 1 0-3 1.500 1.500 0 0 1 0 3z"/></symbol>
-    <symbol id="i-globe" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.900 6h-3a15.700 15.700 0 0 0-1.400-3.600A8 8 0 0 1 18.900 8zM12 4c.800 1.200 1.500 2.500 1.900 4h-3.800c.4-1.500 1.100-2.800 1.900-4zM4.300 14a8.200 8.200 0 0 1 0-4h3.400a16.500 16.500 0 0 0 0 4H4.300zm.8 2h3a15.700 15.700 0 0 0 1.400 3.600A8 8 0 0 1 5.100 16zm3-8h-3a8 8 0 0 1 4.400-3.600C8.900 5.600 8.400 6.800 8.100 8zM12 20c-.8-1.200-1.500-2.500-1.900-4h3.800c-.4 1.500-1.100 2.800-1.900 4zm2.300-6H9.700a14.700 14.700 0 0 1 0-4h4.600a14.700 14.700 0 0 1 0 4zm.2 5.600c.6-1.100 1.100-2.300 1.400-3.600h3a8 8 0 0 1-4.400 3.600zm1.800-5.600a16.500 16.500 0 0 0 0-4h3.400a8.200 8.200 0 0 1 0 4h-3.400z"/></symbol>
-    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></symbol>
-  </defs>
-</svg>
-
-<header class="mt-topbar">
-  <div class="mt-topbar-left">
-    <a class="mt-logo" href="#" aria-label="Về đầu trang">
-      <span class="mt-logo-mark">&Sigma;</span>
-      <span class="mt-logo-text"><small>mat1052 &middot; uet</small><strong>xstk</strong></span>
-    </a>
-    <button type="button" class="mt-icon-btn" data-menu-toggle aria-label="Mở menu chọn bài và mục lục"><svg><use href="#i-menu"/></svg></button>
+<!-- Modal trình chiếu video bài giảng (chiếm 96% diện tích màn hình) -->
+<div id="video-modal-overlay" class="video-modal-overlay" hidden>
+  <div class="video-modal-container" role="dialog" aria-modal="true" aria-label="Trình chiếu bài giảng video">
+    <button type="button" id="video-modal-close" class="video-modal-close" aria-label="Đóng video (Esc)" title="Đóng video (Esc)">✕</button>
+    <iframe id="video-frame" src="about:blank" allow="fullscreen; autoplay" allowfullscreen></iframe>
   </div>
-  <div class="mt-topbar-right">
-    <button type="button" class="mt-icon-btn" id="mt-settings-btn" aria-label="Cài đặt giao diện"><svg><use href="#i-gear"/></svg></button>
-  </div>
-</header>
+</div>
 
-<nav class="mt-config" aria-label="Chọn tuần học">
-  <div class="mt-group" id="mt-weeks"></div>
-  <div class="mt-lang"><svg><use href="#i-globe"/></svg><span id="mt-lesson-title"></span></div>
-</nav>
-
-<!-- VÙNG NỘI DUNG CHÍNH -->
+<!-- Khu vực chứa nội dung bài học được nạp động (chỉ giữ 1 bài trong DOM để chống lag) -->
 <main id="app-content"></main>
-
-<footer class="mt-footer">
-  <div class="mt-hints"><kbd>esc</kbd><span>- đóng menu hoặc cài đặt</span></div>
-  <div class="mt-footer-row">
-    <span>xác suất thống kê &middot; ôn thi giữa kỳ</span>
-    <button type="button" id="mt-theme-btn"><svg><use href="#i-palette"/></svg>serika dark</button>
-  </div>
-</footer>
 
 <!-- ==========================================
      TEMPLATES CÁC TUẦN TỪ 1 ĐẾN 7
@@ -241,7 +84,7 @@ window.MathJax = {
     </ul>
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Bảng Đối Chiếu 4 Loại Khẳng Định (Trọng Tâm Thi Giữa Kỳ)</h3>
     <div class="tw">
       <table>
@@ -281,7 +124,7 @@ window.MathJax = {
         </tbody>
       </table>
     </div>
-  </div>
+  
 
   <div class="box warn">
     <strong>CẢNH BÁO BẪY THI GIỮA KỲ:</strong>
@@ -301,7 +144,7 @@ window.MathJax = {
   <p>Là đối tượng cụ thể mà mỗi dòng trong bảng dữ liệu thu thập thông tin. Nó có thể là: một sinh viên, một giao dịch chuyển tiền, một lần bấm nút trên trang web, hoặc một lượt sinh viên - học phần - học kỳ.</p>
 
   <h3>2.2 Phân loại biến: Bản chất quyết định phép tính</h3>
-  <div class="key">
+  
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:6px 0">
       <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
         <h4 style="color:var(--c1);margin:0 0 10px;font-size:18px">1. BIẾN SỐ (Định lượng - Numerical)</h4>
@@ -321,7 +164,7 @@ window.MathJax = {
         </ul>
       </div>
     </div>
-  </div>
+  
 
   <div class="box warn">
     <strong>BẪY THI KINH ĐIỂN: CỘT CHỨA SỐ CHƯA CHẮC LÀ BIẾN SỐ!</strong>
@@ -346,14 +189,14 @@ window.MathJax = {
     <br>&rarr; <strong>Phân tích:</strong> Các hành động của cùng một người là <em>phép đo lặp</em> (repeated measures), chúng phụ thuộc lẫn nhau mật thiết (thói quen, tốc độ bấm của người đó). Cỡ mẫu độc lập thực tế chỉ là $n = 50$, không phải $100.000$! Nếu giả định các quan sát độc lập để tính phương sai, bạn sẽ phạm sai lầm nghiêm trọng!
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Quy Tắc Nhận Diện Khung Dữ Liệu Chuẩn (Tidy Data)</h3>
     <ol>
       <li>Mỗi <strong>hàng (row)</strong> biểu diễn đúng một đơn vị quan sát độc lập.</li>
       <li>Mỗi <strong>cột (column)</strong> biểu diễn đúng một biến đo lường.</li>
       <li>Mỗi <strong>ô (cell)</strong> chứa đúng một giá trị duy nhất.</li>
     </ol>
-  </div>
+  
 </div>
 
 <div class="card c3" id="w1-sec4">
@@ -423,7 +266,7 @@ window.MathJax = {
     Khi nhìn vào một biểu đồ tần số (Histogram), điều đầu tiên người làm thống kê cần nhận diện không phải là con số cụ thể, mà là <strong>hình dạng phân phối</strong>. Hình dạng sẽ quyết định phương pháp tính toán nào là đúng đắn và công bằng nhất.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Hai Thuộc Tính Nhận Dạng Hình Dạng Phân Phối</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:6px 0">
       <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
@@ -444,7 +287,7 @@ window.MathJax = {
         </ul>
       </div>
     </div>
-  </div>
+  
 
   <div class="box analogy">
     <strong>Mẹo nhớ chiều lệch:</strong>
@@ -462,7 +305,7 @@ window.MathJax = {
     Làm sao để đại diện cho cả một tập hợp dữ liệu bằng một con số duy nhất? Ta có 3 công cụ kinh điển, nhưng mỗi công cụ có một "tính cách" hoàn toàn khác nhau.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Bảng So Sánh 3 Đại Lượng Trung Tâm (Trọng Tâm Thi)</h3>
     <div class="tw">
       <table>
@@ -496,7 +339,7 @@ window.MathJax = {
         </tbody>
       </table>
     </div>
-  </div>
+  
 
   <div class="box warn">
     <strong>MỐI QUAN HỆ GIỮA MEAN VÀ MEDIAN (CÂU HỎI THI KINH ĐIỂN):</strong>
@@ -515,7 +358,7 @@ window.MathJax = {
     Hai lớp học cùng có điểm trung bình là 7.0, nhưng một lớp toàn điểm 6.5 đến 7.5, lớp kia có người 0 điểm và người 10 điểm. Trung tâm giống nhau, nhưng <strong>độ phân tán (sự biến động)</strong> hoàn toàn khác nhau!
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Các Thước Đo Độ Phân Tán Cốt Lõi</h3>
     <ol>
       <li>
@@ -538,7 +381,7 @@ window.MathJax = {
         </ul>
       </li>
     </ol>
-  </div>
+  
 
   <div class="box warn">
     <strong>QUY TẮC 1.5 IQR ĐỂ PHÁT HIỆN GIÁ TRỊ NGOẠI LAI (OUTLIERS):</strong>
@@ -551,7 +394,7 @@ window.MathJax = {
   </div>
 
   <h3>3.1 Tác động của Biến Đổi Tuyến Tính $Y = aX + b$</h3>
-  <div class="key">
+  
     Nếu nhân mọi quan sát với $a$ rồi cộng thêm hằng số $b$:
     <ul>
       <li><strong>Trung tâm (Mean, Median):</strong> Bị tịnh tiến và co giãn hoàn toàn: $\bar{y} = a\bar{x} + b$, $M_y = a M_x + b$.</li>
@@ -560,7 +403,7 @@ window.MathJax = {
         Phương sai nhân với $a^2$: $\mathbf{s_Y^2 = a^2 s_X^2}$.
       </li>
     </ul>
-  </div>
+  
 </div>
 
 <div class="card c3" id="w2-sec4">
@@ -647,7 +490,7 @@ window.MathJax = {
     Thay vì học vẹt từng loại biểu đồ rời rạc, khoa học dữ liệu hiện đại coi biểu đồ như một <strong>ngôn ngữ có ngữ pháp</strong> (nền tảng của thư viện <code>ggplot2</code> trong R và <code>seaborn / plotnine</code> trong Python). Khi nắm vững ngữ pháp, bạn có thể tạo ra bất kỳ biểu đồ trực quan nào!
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Bốn Lớp Cốt Lõi Của Ngữ Pháp Đồ Họa</h3>
     <ol>
       <li><strong>Dữ liệu (Data):</strong> Bảng dữ liệu đầu vào dạng DataFrame (mỗi hàng là một đơn vị quan sát, mỗi cột là một biến).</li>
@@ -668,7 +511,7 @@ window.MathJax = {
       </li>
       <li><strong>Phân nhóm / Chia lưới (Facets):</strong> Tách đồ thị thành nhiều ô nhỏ kề nhau theo giá trị của một biến phân loại (ví dụ: chia thành 3 ô cho 3 loài chim cánh cụt).</li>
     </ol>
-  </div>
+  
 </div>
 
 <div class="card c1" id="w3-sec2">
@@ -688,14 +531,14 @@ window.MathJax = {
     <strong>Ghi nhớ:</strong> Luôn đọc kỹ câu hỏi thi xem <em>"nhóm làm chuẩn (mẫu số)"</em> là ai trước khi bấm máy tính!
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Phân Phối Biên vs. Phân Phối Có Điều Kiện</h3>
     <ul>
       <li><strong>Phân phối biên (Marginal distribution):</strong> Phân phối của riêng một biến ở cột Tổng (lề bảng), hoàn toàn phớt lờ biến kia.</li>
       <li><strong>Phân phối có điều kiện (Conditional distribution):</strong> Phân phối của một biến khi ta <strong>cố định</strong> một nhóm cụ thể của biến kia (xem từng hàng hoặc từng cột riêng rẽ).</li>
       <li><strong>Khi nào hai biến ĐỘC LẬP (Không có mối liên hệ)?</strong> Khi phân phối có điều kiện của biến này <em>giống hệt nhau</em> ở mọi mức của biến kia! (Ví dụ: tỷ lệ có việc của Nam là 50% và Nữ cũng là 50% &rarr; Giới tính không liên quan đến việc làm).</li>
     </ul>
-  </div>
+  
 </div>
 
 <div class="card c2" id="w3-sec3">
@@ -704,11 +547,11 @@ window.MathJax = {
     Nghịch lý Simpson là một trong những hiện tượng kỳ lạ và cuốn hút nhất của khoa học dữ liệu, chứng minh rằng: <strong>Một cái nhìn hời hợt gộp chung dữ liệu có thể dẫn tới kết luận hoàn toàn trái ngược với sự thật bên trong!</strong>
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Định Nghĩa và Bản Chất</h3>
     <p><strong>Nghịch lý Simpson</strong> xảy ra khi một xu hướng hoặc mối liên hệ xuất hiện ở nhiều nhóm dữ liệu con, nhưng lại <strong>bị đảo ngược hoàn toàn</strong> khi gộp các nhóm con đó lại với nhau!</p>
     <p>Nguyên nhân là do sự tồn tại của một <strong>biến gây nhiễu (Confounder / Lurking variable)</strong> có liên quan mạnh mẽ tới cả hai biến đang nghiên cứu và phân bố không đồng đều giữa các nhóm.</p>
-  </div>
+  
 
   <div class="box analogy">
     <strong>Ví dụ kinh điển: Tuyển sinh tại UC Berkeley (1973)</strong>
@@ -807,14 +650,14 @@ window.MathJax = {
     Khi hai biến số cùng tăng hoặc cùng giảm, làm sao để lượng hóa mức độ gắn kết giữa chúng bằng một con số chuẩn mực từ $-1$ đến $+1$? Đó chính là <strong>hệ số tương quan Pearson $r$</strong>.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Công Thức &amp; Bản Chất Của Pearson r</h3>
     <div class="f">
       $$r = \frac{1}{n-1} \sum_{i=1}^n \left(\frac{x_i - \bar{x}}{s_x}\right)\left(\frac{y_i - \bar{y}}{s_y}\right) = \frac{1}{n-1}\sum_{i=1}^n z_{x,i} \cdot z_{y,i} = \frac{S_{xy}}{\sqrt{S_{xx} S_{yy}}}$$
     </div>
     <p><strong>Trực giác cốt lõi:</strong> $r$ chính là trung bình cộng của <em>tích hai điểm số chuẩn hóa ($z_x \cdot z_y$)</em>.
     Nếu $x$ lớn hơn trung bình ($z_x > 0$) mà $y$ cũng lớn hơn trung bình ($z_y > 0$), tích của chúng mang dấu dương. Khi đa số các điểm cùng nằm ở góc phần tư cùng dấu, tổng sẽ dương và $r > 0$.</p>
-  </div>
+  
 
   <div class="box warn">
     <strong>NĂM TÍNH CHẤT BẮT BUỘC PHẢI NHỚ CỦA r (THI RẤT HAY HỎI):</strong>
@@ -834,7 +677,7 @@ window.MathJax = {
     Nếu $r$ chỉ cho biết hai biến gắn bó mạnh hay yếu, thì <strong>phương trình hồi quy tuyến tính</strong> cho phép chúng ta <em>dự đoán giá trị của $y$ khi biết trước $x$</em>: $\hat{y} = b_0 + b_1 x$.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Công Thức Cốt Lõi Của Đường Hồi Quy Tuyến Tính OLS</h3>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:6px 0">
       <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
@@ -851,10 +694,10 @@ window.MathJax = {
         Hệ số chặn $b_0$ là giá trị dự báo của $y$ khi $x = 0$.</p>
       </div>
     </div>
-  </div>
+  
 
   <h3>2.1 Phần dư (Residuals) &amp; Hệ số xác định $R^2$</h3>
-  <div class="key">
+  
     <ul>
       <li><strong>Phần dư của quan sát thứ $i$:</strong> Khoảng cách theo phương thẳng đứng từ điểm thực tế đến đường dự báo:
         <div class="f">$$e_i = y_i - \hat{y}_i = \text{Giá trị thực tế} - \text{Giá trị dự báo}$$</div>
@@ -870,7 +713,7 @@ window.MathJax = {
         <br><strong>Ý nghĩa:</strong> $R^2$ đo lường <em>tỷ lệ phần trăm sự biến thiên của biến phản hồi $y$ được giải thích bởi quan hệ tuyến tính với biến $x$</em>. Ví dụ: $r = 0.8 \implies R^2 = 0.64 = 64\%$ biến thiên của $y$ do $x$ quyết định, còn lại 36% do các yếu tố ngẫu nhiên khác.
       </li>
     </ul>
-  </div>
+  
 
   <div class="box warn">
     <strong>BẪY THI CẦN TRÁNH:</strong>
@@ -993,7 +836,7 @@ window.MathJax = {
     Xác suất là công cụ toán học dùng để định lượng <strong>sự bất định (uncertainty)</strong>. Mọi bài toán xác suất đều bắt đầu từ một phép thử ngẫu nhiên và một danh sách đầy đủ tất cả những gì có thể xảy ra.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Các Khái Niệm Nền Tảng Không Thể Bỏ Quên</h3>
     <ul>
       <li><strong>Không gian mẫu ($\Omega$ hoặc $S$):</strong> Tập hợp tất cả các kết quả sơ cấp có thể xảy ra của phép thử. Ví dụ: tung đồng xu 2 lần thì $\Omega = \{SS, SN, NS, NN\}$.</li>
@@ -1006,10 +849,10 @@ window.MathJax = {
         <em>Chiến thuật làm bài thi:</em> Khi đề bài có cụm từ <strong>"có ít nhất một..."</strong>, dùng biến cố phần bù là cách giải nhanh nhất: $P(\text{Ít nhất 1 lần xảy ra}) = 1 - P(\text{Không lần nào xảy ra})$.
       </li>
     </ul>
-  </div>
+  
 
   <h3>1.1 Quy Tắc Cộng Xác Suất</h3>
-  <div class="key">
+  
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:6px 0">
       <div style="background:rgba(255,255,255,0.06);padding:20px 22px;border-radius:16px;border:1px solid rgba(255,255,255,0.15)">
         <h4 style="color:var(--c1);margin:0 0 10px;font-size:18px">1. Hai biến cố Xung khắc (Rời nhau)</h4>
@@ -1023,7 +866,7 @@ window.MathJax = {
         <div class="f">$$P(A \cup B) = P(A) + P(B) - P(A \cap B)$$</div>
       </div>
     </div>
-  </div>
+  
 </div>
 
 <div class="card c1" id="w5-sec2">
@@ -1032,7 +875,7 @@ window.MathJax = {
     Khi nhận thêm một thông tin mới $B$, khả năng xảy ra của $A$ thay đổi như thế nào? Đây là trái tim của việc ra quyết định dựa trên dữ liệu.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Định Nghĩa Xác Suất Có Điều Kiện &amp; Quy Tắc Nhân</h3>
     <div class="f">
       $$P(A \mid B) = \frac{P(A \cap B)}{P(B)} \quad (\text{với } P(B) > 0)$$
@@ -1042,7 +885,7 @@ window.MathJax = {
     <div class="f">
       $$P(A \cap B) = P(B) \cdot P(A \mid B) = P(A) \cdot P(B \mid A)$$
     </div>
-  </div>
+  
 
   <div class="box warn">
     <strong>BẪY THI CỰC LỚN: XUNG KHẮC (MUTUALLY EXCLUSIVE) KHÔNG PHẢI LÀ ĐỘC LẬP (INDEPENDENT)!</strong>
@@ -1067,7 +910,7 @@ window.MathJax = {
     Định lý Bayes cho phép chúng ta <strong>đảo ngược điều kiện</strong>: Từ xác suất thuận $P(\text{Bằng chứng} \mid \text{Nguyên nhân})$ suy ra xác suất nghịch $P(\text{Nguyên nhân} \mid \text{Bằng chứng})$.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Bộ Đôi Công Thức Vàng Trong Xác Suất</h3>
     <ol>
       <li>
@@ -1086,7 +929,7 @@ window.MathJax = {
         </ul>
       </li>
     </ol>
-  </div>
+  
 
   <div class="box analogy">
     <strong>Nghịch lý Xét nghiệm Y tế (Tại sao dương tính vẫn chưa chắc có bệnh?):</strong>
@@ -1219,7 +1062,7 @@ window.MathJax = {
     Trong thực tế, ta không chỉ quan tâm đến biến cố chữ (như "mặt ngửa", "hỏng máy") mà muốn <strong>gán cho mỗi kết quả một con số toán học</strong> để tính toán đại số. Ánh xạ biến thế giới thực thành con số đó gọi là <strong>Biến ngẫu nhiên (Random Variable)</strong>.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">PMF vs. CDF Của Biến Rời Rạc</h3>
     <ul>
       <li><strong>Hàm khối xác suất (PMF - Probability Mass Function) $p_X(x)$:</strong> Cho biết xác suất để $X$ nhận chính xác giá trị $x$:
@@ -1229,7 +1072,7 @@ window.MathJax = {
         <div class="f">$$F_X(t) = P(X \le t) = \sum_{x \le t} p_X(x)$$</div>
       </li>
     </ul>
-  </div>
+  
 
   <div class="box warn">
     <strong>BẪY TÍNH XÁC SUẤT ĐẦU MÚT VỚI BIẾN RỜI RẠC NGUYÊN (THI CỰC HAY BẪY):</strong>
@@ -1257,16 +1100,16 @@ window.MathJax = {
     Khi đọc một bài toán xác suất, chìa khóa để giải quyết trong 30 giây là: <strong>Nhận diện đúng mô hình phân phối</strong> từ các dấu hiệu đặc trưng trong đề bài.
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">1. Phân Phối Nhị Thức: $\text{Binomial}(n, p)$</h3>
     <p><strong>Dấu hiệu:</strong> Đếm số lần thành công trong $n$ phép thử độc lập cố định, mỗi phép thử chỉ có 2 kết quả và xác suất thành công $p$ không đổi.</p>
     <div class="f">
       $$P(X = k) = \binom{n}{k} p^k (1-p)^{n-k} \quad (k = 0, 1, 2, \dots, n)$$
     </div>
     <p><em>Ý nghĩa từng thành phần:</em> $p^k(1-p)^{n-k}$ là xác suất xảy ra của một chuỗi cụ thể gồm $k$ thành công và $n-k$ thất bại; còn tổ hợp $\binom{n}{k} = \frac{n!}{k!(n-k)!}$ là số cách sắp xếp vị trí của $k$ lần thành công đó trong $n$ lần thử.</p>
-  </div>
+  
 
-  <div class="key" style="margin-top:24px">
+  
     <h3 style="margin-top:0">2. Phân Phối Hình Học: $\text{Geometric}(p)$</h3>
     <p><strong>Dấu hiệu:</strong> Thực hiện các phép thử Bernoulli độc lập cho đến khi <strong>lần đầu tiên thành công</strong> thì dừng lại. Biến ngẫu nhiên $X$ là <em>số lần thử cần thiết</em>.</p>
     <div class="f">
@@ -1274,9 +1117,9 @@ window.MathJax = {
     </div>
     <p><em>Ý nghĩa:</em> $k-1$ lần đầu đều thất bại (xác suất $(1-p)^{k-1}$), và lần thứ $k$ thành công (xác suất $p$).<br>
     <strong>Tính chất không nhớ (Memoryless):</strong> Nếu đã thất bại 10 lần, xác suất để cần thêm 3 lần nữa mới thành công vẫn bằng xác suất cần 3 lần từ đầu: $P(X > s + t \mid X > s) = P(X > t) = (1-p)^t$.</p>
-  </div>
+  
 
-  <div class="key" style="margin-top:24px">
+  
     <h3 style="margin-top:0">3. Phân Phối Siêu Bội: $\text{Hypergeometric}(N, K, n)$</h3>
     <p><strong>Dấu hiệu:</strong> Rút <strong>KHÔNG HOÀN LẠI</strong> $n$ phần tử từ một chiếc hộp hữu hạn gồm $N$ phần tử (trong đó có sẵn $K$ phần tử loại 1 và $N-K$ phần tử loại 2).</p>
     <div class="f">
@@ -1289,9 +1132,9 @@ window.MathJax = {
       <li><em>Quy tắc xấp xỉ:</em> Nếu kích thước hộp $N$ rất lớn so với số lá rút $n$ ($n/N \le 0.05$), ta có thể xem như rút có hoàn lại và xấp xỉ siêu bội bằng nhị thức với $p = K/N$!</li>
     </ul>
     </p>
-  </div>
+  
 
-  <div class="key" style="margin-top:24px">
+  
     <h3 style="margin-top:0">4. Phân Phối Poisson: $\text{Poisson}(\lambda)$</h3>
     <p><strong>Dấu hiệu:</strong> Đếm số lần xuất hiện của một <em>sự kiện hiếm</em> trong một khoảng thời gian hoặc không gian liên tục cố định (ví dụ: số cuộc gọi đến tổng đài trong 1 phút, số lỗi chính tả trên 1 trang sách, số hạt phóng xạ phát ra trong 1 giây).</p>
     <div class="f">
@@ -1300,7 +1143,7 @@ window.MathJax = {
     <p>Trong đó $\lambda > 0$ là <strong>tốc độ trung bình</strong> xuất hiện sự kiện trong khoảng thời gian đó.<br>
     <strong>Tính chất cộng Poisson:</strong> Nếu $X \sim \text{Poisson}(\lambda)$ và $Y \sim \text{Poisson}(\mu)$ độc lập, thì tổng $X + Y \sim \text{Poisson}(\lambda + \mu)$.<br>
     <strong>Xấp xỉ Nhị thức sang Poisson:</strong> Khi số phép thử $n$ rất lớn ($n \ge 100$) và xác suất $p$ rất nhỏ ($p \le 0.01$), ta có thể xấp xỉ $\text{Binomial}(n, p) \approx \text{Poisson}(\lambda = n \cdot p)$.</p>
-  </div>
+  
 </div>
 
 <div class="card c2" id="w6-sec3">
@@ -1411,7 +1254,7 @@ window.MathJax = {
     Kỳ vọng $E[X]$ và Phương sai $\text{Var}(X)$ là hai "trụ cột" định lượng quan trọng nhất của toàn bộ môn Xác suất Thống kê. Nắm vững hai đại lượng này, bạn đã nắm được một nửa điểm số của bài thi giữa kỳ!
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Định Nghĩa Toán Học Chuẩn Xác</h3>
     <div class="tw">
       <table>
@@ -1438,7 +1281,7 @@ window.MathJax = {
         </tbody>
       </table>
     </div>
-  </div>
+  
 
   <div class="box warn">
     <strong>NĂM TÍNH CHẤT ĐẠI SỐ BẮT BUỘC PHẢI NHỚ (CỰC HAY GẶP BẪY):</strong>
@@ -1487,7 +1330,7 @@ window.MathJax = {
     Với biến ngẫu nhiên liên tục, ta không thể hỏi <em>"Xác suất để sinh viên nặng chính xác 65.000000 kg là bao nhiêu?"</em> (vì xác suất tại một điểm toán học bằng 0 tuyệt đối!). Thay vào đó, ta hỏi xác suất rơi vào một khoảng: <strong>Xác suất là diện tích dưới đường cong hàm mật độ (PDF)!</strong>
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Quy Tắc Thực Nghiệm 68 – 95 – 99.7 &amp; Điểm Chuẩn Hóa Z</h3>
     <p>Mọi phân phối chuẩn $\mathcal{N}(\mu, \sigma^2)$ đều có hình chuông đối xứng quanh $\mu$:</p>
     <ul>
@@ -1504,7 +1347,7 @@ window.MathJax = {
     <div class="f">
       $$\Phi(-z) = 1 - \Phi(z) \quad \text{và} \quad P(a \le X \le b) = \Phi\left(\frac{b-\mu}{\sigma}\right) - \Phi\left(\frac{a-\mu}{\sigma}\right)$$
     </div>
-  </div>
+  
 </div>
 
 <div class="card c2" id="w7-sec3">
@@ -1513,7 +1356,7 @@ window.MathJax = {
     Định lý Giới hạn Trung tâm (CLT) được tôn vinh là một trong những thành tựu vĩ đại nhất của lịch sử toán học: <strong>Nó giải thích tại sao thế giới tự nhiên và xã hội tràn ngập hình ảnh quả chuông phân phối chuẩn!</strong>
   </div>
 
-  <div class="key">
+  
     <h3 style="margin-top:0">Phát Biểu Định Lý Giới Hạn Trung Tâm (CLT)</h3>
     <p>Giả sử $X_1, X_2, \dots, X_n$ là các biến ngẫu nhiên <strong>độc lập và cùng phân phối (i.i.d.)</strong> với kỳ vọng $\mu$ và phương sai $\sigma^2$ hữu hạn.</p>
     <p>Khi cỡ mẫu $n$ đủ lớn (thông thường $\mathbf{n \ge 30}$):</p>
@@ -1528,10 +1371,10 @@ window.MathJax = {
       </li>
     </ol>
     <p><strong>Sự kỳ diệu của CLT:</strong> <em>Bất kể phân phối gốc ban đầu của từng biến $X_i$ là gì</em>, chỉ cần lấy trung bình của nhiều lần rút độc lập, đồ thị phân phối của $\bar{X}$ sẽ tự động bo tròn thành hình chuông chuẩn!</p>
-  </div>
+  
 
   <h3>3.1 Xấp Xỉ Chuẩn Cho Phân Phối Nhị Thức &amp; Hiệu Chỉnh Liên Tục</h3>
-  <div class="key">
+  
     <p>Khi $X \sim \text{Binomial}(n, p)$ với điều kiện <strong>$np \ge 10$ và $n(1-p) \ge 10$</strong>, ta có thể dùng phân phối chuẩn $Y \sim \mathcal{N}(\mu = np, \; \sigma^2 = np(1-p))$ để xấp xỉ:</p>
     <div class="box warn">
       <strong>KỸ THUẬT HIỆU CHỈNH LIÊN TỤC (CONTINUITY CORRECTION):</strong>
@@ -1543,7 +1386,7 @@ window.MathJax = {
         <li>$P(X \ge k) \approx P(Y \ge k - 0.5)$</li>
       </ul>
     </div>
-  </div>
+  
 </div>
 
 <div class="card c3" id="w7-sec4">
@@ -1662,6 +1505,6 @@ window.MathJax = {
 
 
 
-<script src="app.js"></script>
+<script src="xstk.js"></script>
 </body>
 </html>

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tuần 2: Tóm tắt dữ liệu (1/3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#2c2d31;--fg:#dcdde2;--ac:#e5b91a}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden;user-select:none}
+#st{position:fixed;inset:0;display:grid;place-items:center}
+canvas{display:block}
+/* Cố định phụ đề ở sát mép đáy màn hình, không đổi vị trí khi thanh điều khiển ẩn/hiện */
+#sub{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);
+  max-width:min(980px,94vw);
+  padding:10px 20px;
+  border-radius:10px;
+  background:rgba(36,37,41,.94);
+  border:1px solid #4c4f58;
+  color:#dcdde2;
+  font-size:clamp(14px,1.45vw,19px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:center;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:5;
+}
+#sub.e{opacity:0}
+#ui{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:20px 0 0;
+  background:linear-gradient(transparent,rgba(32,33,37,.92));
+  transition:opacity .3s;
+  z-index:10;
+}
+#ui.h{opacity:0;pointer-events:none}
+#pg{display:flex;gap:2px;height:14px;align-items:flex-end;cursor:pointer;touch-action:none}
+.sg{flex:1;height:4px;background:#ffffff24;border-radius:0;overflow:hidden;transition:height .15s}
+#pg:hover .sg{height:8px}
+.sg i{display:block;height:100%;background:var(--ac)}
+#rw{display:flex;align-items:center;gap:6px;padding:0 18px 8px}
+button{background:none;border:0;color:var(--fg);width:42px;height:42px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font:600 14px inherit;font-family:inherit}
+button:hover{background:#ffffff1a}
+button.on{color:var(--ac)}
+svg{width:24px;height:24px;fill:currentColor}
+#tm{font-size:14px;font-weight:600;margin-left:8px;flex:1;color:#989ba5}
+#mn{position:fixed;top:0;right:0;bottom:0;width:min(340px,86vw);background:#242529f5;border-left:1px solid #4c4f58;padding:18px 8px;overflow:auto;transform:translateX(100%);transition:transform .25s;z-index:20}
+#mn.o{transform:none}
+#mn div{padding:11px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;color:#dcdde2}
+#mn div:hover{background:#ffffff12}
+#mn div.c{color:var(--ac);background:#e5b91a18}
+</style>
+</head>
+<body>
+<div id="st"><canvas id="c"></canvas></div>
+<div id="mn"></div>
+<div id="ui">
+  <div id="rw">
+    <button id="bp" title="Phát/Tạm dừng (Space)"></button>
+    <button id="bt" title="Cảnh trước (←)"></button>
+    <button id="bn" title="Cảnh sau (→)"></button>
+    <span id="tm"></span>
+    <button id="bc" class="on" title="Bật/tắt phụ đề (C)">CC</button>
+    <button id="bs" title="Tốc độ">1×</button>
+    <button id="bm" title="Mục lục (M)"></button>
+  </div>
+  <div id="pg"></div>
+</div>
+<div id="sub"></div>
+
+<script>
+// Thiết lập canvas logic 1280x720 và các hàm vẽ, tiện ích toán học dùng chung
+const W=1280,H=720,C=document.getElementById('c'),X=C.getContext('2d');
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const sm=v=>{v=cl(v);return v*v*(3-2*v)};
+const sg=(t,a,b)=>sm((t-a)/(b-a));
+const mx=(a,b,k)=>a+(b-a)*k;
+const mp=(a,b,p,q)=>v=>p+(q-p)*(v-a)/(b-a);
+const f=(v,d=1)=>v.toFixed(d).replace('.',',');
+const col={fg:'#dcdde2',dim:'#989ba5',b:'#78a9d6',o:'#df9368',g:'#7cc99c',y:'#e5b91a',r:'#d97373',p:'#a996cf',card:'#35373d',card2:'#26272b',bd:'#4c4f58',axis:'#545760'};
+
+let FA=1;
+const al=a=>{X.globalAlpha=cl(a===undefined?1:a)*FA};
+function T(s,x,y,z,c,a,o){al(o);X.fillStyle=c||col.fg;X.font=`${z>=34?800:600} ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;X.textAlign=a||'left';X.textBaseline='middle';X.fillText(s,x,y)}
+function L(a,b,c,d,k,w,o,ds){al(o);X.strokeStyle=k;X.lineWidth=w||2;X.setLineDash(ds||[]);X.beginPath();X.moveTo(a,b);X.lineTo(c,d);X.stroke();X.setLineDash([])}
+function R(x,y,w,h,c,o){al(o);X.fillStyle=c;X.fillRect(x,y,w,h)}
+function RR(x,y,w,h,r,c,o,st){
+  al(o);X.beginPath();X.roundRect(x,y,w,h,r);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+function D(x,y,r,c,o,st){
+  al(o);X.beginPath();X.arc(x,y,r,0,Math.PI*2);
+  if(st){X.fillStyle='#2c2d31';X.fill();X.strokeStyle=c;X.lineWidth=st;X.stroke()}
+  else{X.fillStyle=c;X.fill()}
+}
+// Vẽ phân số 2 dòng (tử số trên, gạch ngang, mẫu số dưới), trả về độ rộng khung phân số
+function FR(num,den,x,y,z,c,o){
+  X.font=`600 ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;
+  const w=Math.max(X.measureText(num).width,X.measureText(den).width)+14;
+  T(num,x,y-z*.66,z,c,'center',o);
+  L(x-w/2,y,x+w/2,y,c||col.fg,1.8,o);
+  T(den,x,y+z*.72,z,c,'center',o);
+  return w;
+}
+const hd=s=>T(s,80,58,35,col.y);
+
+// Bộ sinh số giả ngẫu nhiên cố định seed và dữ liệu thực hành Tuần 02
+function mkRng(seed){let s=seed>>>0;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const mo16=[39.1,39.5,40.3,36.7,39.3,38.9,39.2,41.1,38.6,34.6,36.6,38.7,42.5,34.4,46.0,37.8];
+const npdf=(x,mu=0,sd=1)=>Math.exp(-.5*Math.pow((x-mu)/sd,2))/(sd*Math.sqrt(2*Math.PI));
+
+// Dữ liệu mô phỏng giờ ngoại khóa (195 quan sát Exp(scale=7) + 1 ngoại lai 62h)
+const gioData=(()=>{
+  const rnd=mkRng(42),arr=[];
+  for(let i=0;i<195;i++)arr.push(-7*Math.log(Math.max(1e-6,1-rnd())));
+  arr.push(62);
+  const mkHist=w=>{
+    const nBins=Math.ceil(70/w),bins=new Array(nBins).fill(0);
+    arr.forEach(v=>{const bi=Math.min(nBins-1,Math.floor(v/w));bins[bi]++});
+    return bins;
+  };
+  return {w20:mkHist(20),w10:mkHist(10),w2:mkHist(2)};
+})();
+
+function drawCurve(fn,xmin,xmax,mxFn,myFn,c,w,o){
+  al(o);X.strokeStyle=c;X.lineWidth=w||2.8;X.beginPath();
+  for(let i=0;i<=140;i++){
+    const xv=xmin+(xmax-xmin)*i/140,px=mxFn(xv),py=myFn(fn(xv));
+    i===0?X.moveTo(px,py):X.lineTo(px,py);
+  }
+  X.stroke();
+}
+function fillCurve(fn,a,b,mxFn,myFn,baseY,c,o){
+  al(o);X.fillStyle=c;X.beginPath();X.moveTo(mxFn(a),baseY);
+  for(let i=0;i<=80;i++){const xv=a+(b-a)*i/80;X.lineTo(mxFn(xv),myFn(fn(xv)))}
+  X.lineTo(mxFn(b),baseY);X.closePath();X.fill();
+}
+
+// Danh sách 17 cảnh tương tác của Tuần 02
+const sc=[
+{
+  t:'1. Nén dữ liệu & Chọn công cụ',d:24,
+  s:[
+    [0,'Chào mừng bạn đến với Tuần 02: Tóm tắt dữ liệu — làm sao nén 10.000 dòng dữ liệu mà không trả lời sai câu hỏi?'],
+    [5.5,'Một phép tính có thể đúng tuyệt đối về mặt số học, nhưng vẫn trả lời sai câu hỏi thực tế nếu chọn sai đại lượng hoặc sai mẫu số!'],
+    [11.5,'Hãy nhớ 4 loại khẳng định từ Tuần 01: Tuần này chỉ làm TÓM TẮT — mô tả đúng tập dữ liệu hiện có, không khái quát hóa hay kết luận nhân quả.'],
+    [17.5,'Bước đầu tiên luôn là nhận diện loại biến: biến phân loại (species) dùng bảng đếm, tỉ lệ, biểu đồ cột; biến số (body_mass_g) dùng histogram, trung tâm và độ phân tán.']
+  ],
+  f:t=>{
+    hd('1. Tóm tắt dữ liệu: Nén thông tin mà không trả lời sai');
+    T('UET.MAT1052 — Tuần 02: Dữ liệu phân loại, Dữ liệu số, Độ phân tán & Phản biện',80,104,20,col.dim);
+
+    // 4 loại khẳng định bên trái
+    const claims=[
+      ['1. Tóm tắt (Tuần 02)','Mô tả đúng tập dữ liệu đang có',col.g,1.5],
+      ['2. Khái quát hóa','Suy rộng từ mẫu ra quần thể',col.dim,4.5],
+      ['3. Nhân quả','X có trực tiếp gây ra Y không?',col.dim,6.5],
+      ['4. Dự đoán','Ước lượng cho quan sát mới',col.dim,8.5]
+    ];
+    claims.forEach(([tt,ds,c,st],i)=>{
+      const yy=168+i*84,o=sg(t,st,st+1.2);
+      RR(85,yy-28,510,66,10,i===0?col.card:col.card2,o);RR(85,yy-28,510,66,10,i===0?col.g:col.bd,o,i===0?1.8:1.2);
+      R(85,yy-18,3.5,46,c,o);
+      T(tt,112,yy-7,20,c,'left',o);
+      T(ds,112,yy+20,16,i===0?col.fg:col.dim,'left',o);
+    });
+
+    // Chọn công cụ theo loại biến bên phải
+    const o1=sg(t,12,13.5),o2=sg(t,16,17.5);
+    RR(645,140,555,165,12,col.card,o1);RR(645,140,555,165,12,col.bd,o1,1.5);R(645,153,3.5,139,col.b,o1);
+    T('Biến phân loại (Định tính)',675,176,22,col.b,'left',o1);
+    T('VD: species (Adelie, Chinstrap, Gentoo)',675,214,18,col.dim,'left',o1);
+    T('→ Bảng đếm · Bảng liên hợp · Tỉ lệ · Biểu đồ cột',675,260,19,col.fg,'left',o1);
+
+    RR(645,332,555,165,12,col.card,o2);RR(645,332,555,165,12,col.bd,o2,1.5);R(645,345,3.5,139,col.o,o2);
+    T('Biến số (Định lượng)',675,368,22,col.o,'left',o2);
+    T('VD: body_mass_g, bill_length_mm, GPA',675,406,18,col.dim,'left',o2);
+    T('→ Histogram · Trung tâm (x̄, Med) · Phân tán (SD, IQR)',675,452,18,col.fg,'left',o2);
+
+    T('Nguyên tắc: Không tính trung bình trên nhãn nhóm; không đếm thô từng số thực liên tục!',640,538,18,col.y,'center',sg(t,19.5,21));
+  }
+},
+{
+  t:'2. Bảng liên hợp & Biểu đồ cột (Penguins)',d:24,
+  s:[
+    [0,'Xét 333 con chim cánh cụt Palmer: đọc từng hàng dữ liệu thô không thấy bức tranh chung, nhưng bảng liên hợp 4×4 lập tức làm lộ cấu trúc!'],
+    [6,'Gentoo (119 con) chỉ sống ở Biscoe, Chinstrap (68 con) chỉ sống ở Dream, còn Adelie (146 con) phân bố ở cả ba đảo.'],
+    [12,'Từ bảng liên hợp ta vẽ hai loại biểu đồ cột: Cột chồng (trên) làm nổi bật TỔNG số con từng loài (cột Adelie cao nhất = 146).'],
+    [18,'Cột nhóm (dưới) đặt các đảo đứng cạnh nhau để dễ so sánh xem loài Adelie sống ở đảo nào nhiều nhất (Dream: 55 con).']
+  ],
+  f:t=>{
+    hd('2. Từ DataFrame (333 con) đến Bảng liên hợp & Biểu đồ cột');
+
+    // Bảng liên hợp 4x4 bên trái
+    const oT=sg(t,1,2.5);
+    RR(80,145,535,285,12,col.card,oT);RR(80,145,535,285,12,col.bd,oT,1.5);
+    T('Loài \\ Đảo',105,182,18,col.y,'left',oT);
+    ['Biscoe','Dream','Torgersen','Tổng'].forEach((h,i)=>T(h,295+i*92,182,17,i===3?col.y:col.dim,'center',oT));
+    L(98,205,595,205,col.axis,1.5,oT);
+    const rows=[
+      ['Adelie',[44,55,47,146],col.b],
+      ['Chinstrap',[0,68,0,68],col.o],
+      ['Gentoo',[119,0,0,119],col.g],
+      ['Tổng',[163,123,47,333],col.y]
+    ];
+    rows.forEach(([nm,vs,c],r)=>{
+      const yy=242+r*52,o=sg(t,2+r*1.2,3.2+r*1.2);
+      if(r===3)L(98,yy-26,595,yy-26,col.axis,1.5,o);
+      T(nm,105,yy,19,c,'left',o);
+      vs.forEach((v,j)=>T(String(v),295+j*92,yy,20,j===3||r===3?col.y:(v===0?col.dim:col.fg),'center',o));
+    });
+    T('Ô (cell) · Tổng hàng/cột (biên) · Tổng chung (333)',347,462,17,col.dim,'center',sg(t,7,8.5));
+
+    // Biểu đồ cột chồng vs cột nhóm bên phải
+    const kMode=sg(t,13.5,16);
+    const oC=sg(t,8,9.5),B=470,K=1.75;
+    L(665,B,1200,B,col.axis,2,oC);
+    T(kMode<.5?'Cột chồng: nổi bật TỔNG mỗi loài':'Cột nhóm: dễ so từng đảo trong mỗi loài',932,155,20,col.y,'center',oC);
+
+    const sp=['Adelie','Chinstrap','Gentoo'],dat=[[44,55,47],[0,68,0],[119,0,0]],cs=[col.b,col.o,col.g];
+    sp.forEach((nm,i)=>{
+      const cx=765+i*165,o=sg(t,9+i*1,10.5+i*1);
+      let acc=0;
+      dat[i].forEach((v,j)=>{
+        const h=v*K*o;
+        const xS=cx-32,wS=64,yS=B-acc-h;
+        const xG=cx-48+j*34,wG=30,yG=B-h;
+        if(v>0)R(mx(xS,xG,kMode),mx(yS,yG,kMode),mx(wS,wG,kMode),h,cs[j],.88*o);
+        acc+=h;
+      });
+      T(nm,cx,B+26,18,col.fg,'center',o);
+    });
+    T('■ Biscoe   ■ Dream   ■ Torgersen',932,525,17,col.dim,'center',oC);
+  }
+},
+{
+  t:'3. Đếm hay Tỉ lệ? & Ba mẫu số (Titanic)',d:26,
+  s:[
+    [0,'Xét bảng hành khách tàu Titanic (2.201 người). Một sinh viên nói: "Người lớn sống sót tốt hơn trẻ em vì 654 > 57!"'],
+    [6,'Lập luận này sai hoàn toàn vì hai nhóm chênh nhau gần 20 lần quy mô (2.092 người lớn vs chỉ 109 trẻ em)!'],
+    [12,'Phải chia cho đúng tổng từng nhóm: tỉ lệ sống sót của người lớn chỉ là 654/2092 = 31,3%, còn trẻ em lên tới 57/109 = 52,3%!'],
+    [18,'Đặc biệt lưu ý: cùng một ô 654 có thể chia cho BA MẪU SỐ khác nhau để trả lời ba câu hỏi hoàn toàn khác nhau:'],
+    [22,'654/2201 = 29,7% (trong toàn bộ tàu); 654/2092 = 31,3% (trong người lớn); và 654/711 = 92,0% (trong người sống sót)!']
+  ],
+  f:t=>{
+    hd('3. Đếm hay Tỉ lệ? và Một ô – Ba mẫu số (Titanic)');
+
+    // Bảng Titanic bên trái trên
+    const oT=sg(t,1,2.5);
+    RR(80,132,510,192,12,col.card,oT);RR(80,132,510,192,12,col.bd,oT,1.5);
+    T('Tuổi \\ Kết quả',102,164,17,col.y,'left',oT);
+    ['Tử vong','Sống sót','Tổng'].forEach((h,i)=>T(h,315+i*105,164,17,i===2?col.y:col.dim,'center',oT));
+    L(98,186,570,186,col.axis,1.5,oT);
+    [['Người lớn',1438,654,2092],['Trẻ em',52,57,109],['Tổng',1490,711,2201]].forEach(([nm,a,b,c],r)=>{
+      const yy=218+r*40;if(r===2)L(98,yy-20,570,yy-20,col.axis,1.5,oT);
+      T(nm,102,yy,18,r===2?col.y:col.fg,'left',oT);
+      T(String(a),315,yy,19,col.dim,'center',oT);
+      T(String(b),420,yy,21,r===0?col.y:(r===1?col.g:col.b),'center',oT);
+      T(String(c),525,yy,19,r===2?col.y:col.fg,'center',oT);
+    });
+
+    // Phản biện bên trái dưới
+    const oW=sg(t,6,7.5);
+    RR(80,348,510,165,12,col.card2,oW);RR(80,348,510,165,12,col.bd,oW,1.5);R(80,360,3.5,141,col.r,oW);
+    T('✗ Sai: "654 > 57 nên người lớn sống tốt hơn"',108,386,18,col.r,'left',oW);
+    T('✓ Đúng: Phải chia cho cỡ mẫu từng nhóm!',108,430,18,col.g,'left',sg(t,9.5,11));
+    T('Người lớn: 31,3%   <   Trẻ em: 52,3%',108,476,22,col.y,'left',sg(t,11.5,13));
+
+    // 3 mẫu số cho cùng ô 654 bên phải
+    const dens=[
+      ['654 / 2201 = 29,7%','Mẫu số = Tổng chung (cả tàu)','Trong toàn bộ hành khách, bao nhiêu % là người lớn sống?',col.b,15],
+      ['654 / 2092 = 31,3%','Mẫu số = Tổng hàng (Người lớn)','Trong SỐ NGƯỜI LỚN, bao nhiêu % sống sót?',col.g,18],
+      ['654 / 711  = 92,0%','Mẫu số = Tổng cột (Sống sót)','Trong SỐ NGƯỜI SỐNG SÓT, bao nhiêu % là người lớn?',col.o,21]
+    ];
+    dens.forEach(([fm,dn,q,c,st],i)=>{
+      const yy=175+i*122,o=sg(t,st,st+1.4);
+      RR(630,yy-42,575,104,12,col.card,o);RR(630,yy-42,575,104,12,col.bd,o,1.5);R(630,yy-30,3.5,80,c,o);
+      T(fm,658,yy-16,22,c,'left',o);
+      T(dn,1185,yy-16,16,col.y,'right',o);
+      T(q,658,yy+24,16,col.fg,'left',o);
+    });
+  }
+},
+{
+  t:'4. Phân phối có điều kiện & Mối liên hệ',d:24,
+  s:[
+    [0,'Hai biến phân loại có MỐI LIÊN HỆ khi phân phối có điều kiện (cơ cấu tỉ lệ) thay đổi từ nhóm này sang nhóm khác!'],
+    [5.5,'Hình trái (Penguins thật): cơ cấu loài đổi hoàn toàn giữa Biscoe, Dream và Torgersen ⇒ loài và đảo liên hệ rất mạnh.'],
+    [11,'Hình phải (Giả định không liên hệ): cả 3 đảo đều có chung tỉ lệ 44% Adelie, 20% Chinstrap, 36% Gentoo — biết đảo không giúp đoán loài!'],
+    [16.5,'Ví dụ Lending Club (10.000 khoản vay): 9,4% người thuê nhà nộp hồ sơ chung, nhưng tới 41,1% hồ sơ cá nhân là người thuê nhà.'],
+    [20.5,'Cảnh giác cốt lõi: Mối liên hệ trong bảng KHÔNG PHẢI là nhân quả (ví dụ tuổi không tự gây sống sót trên Titanic mà do quy tắc ưu tiên xuồng cứu sinh).']
+  ],
+  f:t=>{
+    hd('4. Phân phối có điều kiện: Có liên hệ vs Không liên hệ');
+
+    const B=460,K=260,cs=[col.b,col.o,col.g],isls=['Biscoe','Dream','Torgersen'];
+    // Trái: Dữ liệu thật
+    const o1=sg(t,1.5,3);
+    RR(80,140,530,365,12,col.card2,o1);RR(80,140,530,365,12,col.bd,o1,1.4);
+    T('Dữ liệu thật: Cơ cấu đổi theo đảo (CÓ liên hệ)',345,172,18,col.g,'center',o1);
+    L(115,B,575,B,col.axis,2,o1);
+    const real=[[44/163,0,119/163],[55/123,68/123,0],[1,0,0]];
+    real.forEach((arr,i)=>{
+      const cx=195+i*150,k=sg(t,3+i*1,4.5+i*1);let acc=0;
+      arr.forEach((v,j)=>{const h=v*K*k;if(v>0)R(cx-36,B-acc-h,72,h,cs[j],.9*k);acc+=h});
+      T(isls[i],cx,B+26,17,col.fg,'center',k);
+    });
+
+    // Phải: Giả định không liên hệ
+    const o2=sg(t,8.5,10);
+    RR(660,140,540,365,12,col.card2,o2);RR(660,140,540,365,12,col.bd,o2,1.4);
+    T('Giả định: Mọi đảo đều 44–20–36% (KHÔNG liên hệ)',930,172,18,col.dim,'center',o2);
+    L(695,B,1165,B,col.axis,2,o2);
+    for(let i=0;i<3;i++){
+      const cx=780+i*150,k=sg(t,10+i*.9,11.5+i*.9);let acc=0;
+      [.44,.20,.36].forEach((v,j)=>{const h=v*K*k;R(cx-36,B-acc-h,72,h,cs[j],.85*k);acc+=h});
+      T(isls[i],cx,B+26,17,col.fg,'center',k);
+    }
+
+    T('■ Adelie   ■ Chinstrap   ■ Gentoo   |   Mối liên hệ trong bảng ≠ Nhân quả!',640,536,19,col.y,'center',sg(t,16,17.5));
+  }
+},
+{
+  t:'5. Cột chuẩn hóa vs Biểu đồ tròn',d:24,
+  s:[
+    [0,'Cùng bảng Titanic, hai cách vẽ có thể tạo hai ấn tượng thị giác trái ngược nhau!'],
+    [5,'Biểu đồ cột chồng số đếm (trái) nhấn mạnh quy mô nên dễ khiến người xem nhầm người lớn sống nhiều hơn; cột chuẩn hóa 100% mới cho thấy đúng cơ cấu tỉ lệ!'],
+    [11.5,'Với biểu đồ tròn (phải — 50 khoản vay loan50): mỗi lát có góc tỉ lệ với tỉ lệ nhóm, chỉ vẽ được MỘT biến phân loại.'],
+    [17.5,'Mắt người so độ dài chính xác hơn nhiều so với góc hay diện tích: khi có nhiều nhóm nhỏ (5, 4, 2 khoản), biểu đồ cột sắp xếp luôn dễ đọc hơn biểu đồ tròn!']
+  ],
+  f:t=>{
+    hd('5. Chọn biểu đồ cho biến phân loại: Cột chuẩn hóa & Tròn');
+
+    // Trái: Titanic số đếm -> chuẩn hóa 100%
+    const o1=sg(t,1.5,3),kNorm=sg(t,6,9);
+    RR(80,140,520,365,12,col.card2,o1);RR(80,140,520,365,12,col.bd,o1,1.4);
+    T(kNorm<.5?'Titanic: Số đếm (lấn át bởi quy mô!)':'Titanic: Chuẩn hóa 100% (thấy rõ 52,3% > 31,3%)',340,172,18,kNorm<.5?col.r:col.g,'center',o1);
+    const B=460;L(120,B,560,B,col.axis,2,o1);
+    // Người lớn (1438 chết, 654 sống) & Trẻ em (52 chết, 57 sống)
+    const hAdL=mx(654/2200*240,.313*230,kNorm),hAdD=mx(1438/2200*240,.687*230,kNorm);
+    const hChL=mx(57/2200*240,.523*230,kNorm),hChD=mx(52/2200*240,.477*230,kNorm);
+    R(195,B-hAdL,90,hAdL,col.g,.9*o1);R(195,B-hAdL-hAdD,90,hAdD,col.r,.75*o1);
+    R(395,B-hChL,90,hChL,col.g,.9*o1);R(395,B-hChL-hChD,90,hChD,col.r,.75*o1);
+    T('Người lớn',240,B+26,18,col.fg,'center',o1);T('Trẻ em',440,B+26,18,col.fg,'center',o1);
+
+    // Phải: Biểu đồ tròn loan50 (24, 9, 5, 5, 4, 2, 1)
+    const o2=sg(t,11,12.5);
+    RR(645,140,555,365,12,col.card2,o2);RR(645,140,555,365,12,col.bd,o2,1.4);
+    T('Biểu đồ tròn (loan50): Khó so các lát nhỏ!',922,172,19,col.y,'center',o2);
+    const slices=[24,9,5,5,4,2,1],scs=[col.b,col.g,col.o,col.y,col.p,col.r,col.dim];
+    let ang=-Math.PI/2;
+    slices.forEach((v,i)=>{
+      const da=v/50*Math.PI*2*o2;
+      al(.88*o2);X.fillStyle=scs[i];X.beginPath();X.moveTo(815,345);X.arc(815,345,105,ang,ang+da);X.closePath();X.fill();
+      X.strokeStyle='#26272b';X.lineWidth=2;X.stroke();
+      ang+=da;
+    });
+    const lbs=['Trả nợ (24)','Thẻ tín dụng (9)','Sửa nhà (5)','Khác (5)','Kinh doanh (4)','Xe (2) / Nhà (1)'];
+    lbs.forEach((lb,i)=>T('■ '+lb,955,255+i*36,16,scs[i],'left',o2));
+    T('Biểu đồ cột ngang sắp xếp luôn dễ đọc hơn khi có > 4 nhóm!',922,482,15,col.dim,'center',sg(t,17,18.5));
+  }
+},
+{
+  t:'6. Từ Dot plot đến Histogram & 4 ý mô tả',d:24,
+  s:[
+    [0,'Chuyển sang Phần 2 — Dữ liệu số: với 192 điểm GPA hay chiều dài mỏ 16 con Adelie, đếm từng giá trị riêng lẻ không cho thấy bức tranh chung.'],
+    [6,'Dot plot (trái trên) đặt mỗi quan sát là một chấm đúng vị trí trên trục số, nhưng khi dữ liệu nhiều các chấm sẽ chồng dày lên nhau.'],
+    [12,'Histogram (trái dưới) chia trục số thành các khoảng liền nhau rồi đếm số quan sát trong mỗi khoảng: mất vị trí từng điểm nhưng lộ rõ hình dạng chung!'],
+    [18,'Khi mô tả bất kỳ phân phối số nào, luôn nêu đủ 4 ý khung chuẩn: 1. Hình dạng · 2. Trung tâm · 3. Độ phân tán · 4. Giá trị ngoại lai!']
+  ],
+  f:t=>{
+    hd('6. Từ Dot plot đến Histogram & Bốn ý mô tả phân phối số');
+
+    // Trái trên: Dot plot 16 con Adelie
+    const o1=sg(t,1.5,3),m=mp(33.5,47,120,680);
+    RR(80,138,630,135,12,col.card2,o1);RR(80,138,630,135,12,col.bd,o1,1.4);
+    T('Dot plot: chiều dài mỏ 16 con Adelie (giữ từng điểm)',395,166,18,col.b,'center',o1);
+    L(110,230,690,230,col.axis,2,o1);
+    mo16.forEach((v,i)=>D(m(v),218,5.5,col.b,.78*sg(t,2+i*.15,3+i*.15)));
+    [34,38,42,46].forEach(v=>T(String(v),m(v),252,15,col.dim,'center',o1));
+
+    // Trái dưới: Histogram 16 con Adelie (bin width 1.5 mm)
+    const o2=sg(t,8.5,10);
+    RR(80,295,630,220,12,col.card2,o2);RR(80,295,630,220,12,col.bd,o2,1.4);
+    T('Histogram: gom vào các khoảng liền nhau trên trục số',395,322,18,col.g,'center',o2);
+    const B=475;L(110,B,690,B,col.axis,2,o2);
+    const bins=[[34,36,2],[36,38,3],[38,40,6],[40,42,3],[42,44,1],[44,46.5,1]];
+    bins.forEach(([a,b,cnt],i)=>{
+      const k=sg(t,10+i*.5,11.2+i*.5),h=cnt*20*k;
+      R(m(a)+1,B-h,m(b)-m(a)-2,h,col.g,.82*k);
+    });
+    [34,38,42,46].forEach(v=>T(String(v),m(v),496,15,col.dim,'center',o2));
+
+    // Phải: 4 ý khung mô tả phân phối số
+    const items=[
+      ['1. Hình dạng','Số đỉnh (1/2/nhiều) & độ lệch (trái/phải/đối xứng)',col.y,13],
+      ['2. Trung tâm','Giá trị "điển hình" nằm khoảng nào? (x̄, Med)',col.b,15],
+      ['3. Độ phân tán','Dữ liệu tập trung hay trải rộng? (SD, IQR)',col.g,17],
+      ['4. Ngoại lai','Có điểm nào tách hẳn khỏi phần còn lại không?',col.r,19]
+    ];
+    items.forEach(([tt,ds,c,st],i)=>{
+      const yy=172+i*92,o=sg(t,st,st+1.2);
+      RR(745,yy-32,460,76,10,col.card,o);RR(745,yy-32,460,76,10,col.bd,o,1.4);R(745,yy-22,3.5,56,c,o);
+      T(tt,772,yy-10,20,c,'left',o);
+      T(ds,772,yy+18,15,col.fg,'left',o);
+    });
+  }
+},
+{
+  t:'7. Độ rộng khoảng, Mật độ & Violin plot',d:26,
+  s:[
+    [0,'Độ rộng khoảng chia (bin width) trong histogram là quyết định của người vẽ — đổi độ rộng là đổi diện mạo biểu đồ!'],
+    [5.5,'Quan sát dữ liệu 196 sinh viên (giờ ngoại khóa): khoảng quá rộng 20h làm mất chi tiết; khoảng 10h rõ dáng lệch phải và ngoại lai 62h; khoảng 2h lại lởm chởm nhiễu!'],
+    [12.5,'Khi các khoảng rộng hẹp khác nhau, phải dùng THANG MẬT ĐỘ: mật độ = q / w (tỉ lệ chia độ rộng), để diện tích cột bằng tỉ lệ và tổng diện tích = 1.'],
+    [19,'Từ thang mật độ ta có đường mật độ mượt (KDE) với tham số băng thông (bandwidth), và khi lấy đối xứng theo nhóm ta được Violin plot!']
+  ],
+  f:t=>{
+    hd('7. Độ rộng khoảng chia, Thang mật độ & Đường mật độ');
+
+    // Trái: Hoạt ảnh đổi độ rộng khoảng chia (20 -> 10 -> 2 giờ)
+    const phase=t<7?0:(t<14?1:2);
+    const hist=phase===0?gioData.w20:(phase===1?gioData.w10:gioData.w2);
+    const wLb=phase===0?'20 giờ (quá thô)':(phase===1?'10 giờ (rõ cấu trúc)':'2 giờ (nhiều gai nhiễu)');
+    const o1=sg(t,1,2.5);
+    RR(80,140,610,365,12,col.card2,o1);RR(80,140,610,365,12,col.bd,o1,1.4);
+    T(`Giờ ngoại khóa (196 SV) — Độ rộng: ${wLb}`,385,172,19,phase===1?col.g:col.y,'center',o1);
+    const B=460,maxH=Math.max(...hist),bw=540/hist.length;
+    L(110,B,660,B,col.axis,2,o1);
+    hist.forEach((v,i)=>{
+      const h=v/maxH*245*o1;
+      R(115+i*bw+1,B-h,Math.max(2,bw-2),h,phase===1?col.g:col.b,.85*o1);
+    });
+    [0,20,40,60].forEach(v=>T(String(v),115+v/70*540,B+24,16,col.dim,'center',o1));
+    T('Ngoại lai 62h',600,415,15,col.r,'center',sg(t,8,9.5));
+
+    // Phải trên: Công thức thang mật độ
+    const o2=sg(t,12,13.5),o3=sg(t,18,19.5);
+    RR(730,140,470,168,12,col.card,o2);RR(730,140,470,168,12,col.bd,o2,1.5);R(730,153,3.5,142,col.y,o2);
+    T('Thang mật độ (Density scale)',760,174,20,col.y,'left',o2);
+    T('mật độ =',760,235,21,col.fg,'left',o2);
+    FR('tỉ lệ q','độ rộng w',915,235,18,col.g,o2);
+    T('Diện tích = q  (tổng diện tích = 1)',760,285,16,col.dim,'left',o2);
+
+    // Phải dưới: KDE & Violin plot
+    RR(730,332,470,173,12,col.card,o3);RR(730,332,470,173,12,col.bd,o3,1.5);R(730,345,3.5,147,col.p,o3);
+    T('Đường mật độ (KDE) & Violin plot',760,366,20,col.p,'left',o3);
+    T('• Băng thông (bandwidth) ~ độ rộng khoảng',760,410,17,col.fg,'left',o3);
+    T('• Violin = 2 đường mật độ đối xứng theo nhóm',760,446,17,col.fg,'left',o3);
+    T('• Không "ép" độ rộng khoảng cho đẹp ý sẵn!',760,482,16,col.o,'left',o3);
+  }
+},
+{
+  t:'8. Hình dạng: Số đỉnh & Độ lệch',d:24,
+  s:[
+    [0,'Khi đọc hình dạng phân phối, hai đặc điểm quan trọng nhất là ĐỘ LỆCH (skewness) và SỐ ĐỈNH (modality).'],
+    [5.5,'Phân phối LỆCH PHẢI có đuôi kéo dài về phía giá trị lớn (như thu nhập hộ gia đình, lãi suất); LỆCH TRÁI có đuôi kéo dài về phía giá trị nhỏ (như điểm GPA).'],
+    [12,'Phân phối NHIỀU ĐỈNH thường là dấu hiệu có nhiều nhóm ẩn bị trộn lẫn!'],
+    [17.5,'Ví dụ chiều dài mỏ của cả 333 con chim cánh cụt có 2 đỉnh rõ rệt — khi tách theo loài, đỉnh trái là Adelie, đỉnh phải là Chinstrap và Gentoo!']
+  ],
+  f:t=>{
+    hd('8. Nhận diện hình dạng: Độ lệch & Dấu hiệu nhiều đỉnh');
+
+    const B=310;
+    // 3 hình nhỏ hàng trên: Lệch phải, Đối xứng, Lệch trái
+    const shapes=[
+      ['Lệch phải (đuôi phải dài)',85,x=>x<=0?0:Math.pow(x,1.5)*Math.exp(-x*1.1)*1.4,0,6,col.o,1.5],
+      ['Đối xứng (hình chuông)',470,x=>npdf(x,3,1)*2.4,0,6,col.g,4.5],
+      ['Lệch trái (đuôi trái dài)',855,x=>x>=6?0:Math.pow(6-x,1.5)*Math.exp(-(6-x)*1.1)*1.4,0,6,col.b,7.5]
+    ];
+    shapes.forEach(([tt,x0,fn,a,b,c,st])=>{
+      const o=sg(t,st,st+1.3),mm=mp(a,b,x0+20,x0+320),yy=mp(0,1.1,B-20,175);
+      RR(x0,130,340,198,12,col.card2,o);RR(x0,130,340,198,12,col.bd,o,1.3);
+      T(tt,x0+170,156,17,c,'center',o);
+      L(x0+18,B-20,x0+322,B-20,col.axis,1.6,o);
+      fillCurve(fn,a,b,mm,yy,B-20,c,.3*o);drawCurve(fn,a,b,mm,yy,c,2.6,o);
+    });
+
+    // Hàng dưới: Hai đỉnh (333 con penguins) -> tách 3 loài
+    const oB=sg(t,12,13.5),kSep=sg(t,16.5,19);
+    RR(85,352,1110,180,12,col.card,oB);RR(85,352,1110,180,12,col.bd,oB,1.5);
+    T(kSep<.5?'333 con penguins gộp chung: Hai đỉnh (Bimodal)!':'Tách theo loài: Adelie (39 mm) vs Chinstrap & Gentoo (48 mm)!',640,382,20,col.y,'center',oB);
+    const mP=mp(30,60,160,1120),yP=mp(0,.22,510,405);
+    L(150,510,1130,510,col.axis,1.6,oB);
+    const fAd=x=>npdf(x,38.8,2.6)*.44,fCh=x=>npdf(x,48.8,3.0)*.20,fGe=x=>npdf(x,47.5,3.0)*.36;
+    if(kSep<.5){
+      const fAll=x=>fAd(x)+fCh(x)+fGe(x);
+      fillCurve(fAll,31,59,mP,yP,510,col.y,.25*oB);drawCurve(fAll,31,59,mP,yP,col.y,3,oB);
+    }else{
+      drawCurve(x=>fAd(x)*1.8,31,50,mP,yP,col.b,2.8,kSep);
+      drawCurve(x=>fCh(x)*2.4,38,59,mP,yP,col.o,2.8,kSep);
+      drawCurve(x=>fGe(x)*2.0,38,59,mP,yP,col.g,2.8,kSep);
+      T('Adelie',mP(38.8),420,16,col.b,'center',kSep);
+      T('Gentoo',mP(47.2),422,16,col.g,'center',kSep);
+      T('Chinstrap',mP(52.5),445,16,col.o,'center',kSep);
+    }
+  }
+},
+{
+  t:'9. Trung bình, Trung vị & Mốt',d:24,
+  s:[
+    [0,'Ba thước đo trung tâm phổ biến nhất là Trung bình mẫu (x̄), Trung vị (Med) và Mốt (Mode).'],
+    [5.5,'Trung bình x̄ = (1/n)∑xᵢ là điểm cân bằng vật lý; Trung vị chia dữ liệu đã sắp xếp thành hai nửa 50%–50%; Mốt là giá trị xuất hiện nhiều nhất (hoặc đỉnh phân phối).'],
+    [12,'Trên phân phối ĐỐI XỨNG, trung bình, trung vị và mốt nằm trùng nhau ở chính giữa.'],
+    [17,'Trên phân phối LỆCH PHẢI (như thu nhập, lãi suất), đuôi dài bên phải kéo trung bình lệch sang phải: x̄ > Med. Ngược lại, phân phối LỆCH TRÁI thường có x̄ < Med!']
+  ],
+  f:t=>{
+    hd('9. Đo vị trí trung tâm: Trung bình (x̄), Trung vị (Med) & Mốt');
+
+    // 3 thẻ định nghĩa hàng trên
+    const defs=[
+      ['Trung bình mẫu x̄','x̄ = (1/n) · ∑ xᵢ','Điểm cân bằng trọng tâm',col.o,1],
+      ['Trung vị (Med)','Giá trị đứng giữa (50%)','Chia đôi dữ liệu đã sắp xếp',col.g,4],
+      ['Mốt (Mode)','Xuất hiện nhiều nhất','Dùng được cả cho biến phân loại!',col.b,7]
+    ];
+    defs.forEach(([tt,fm,ds,c,st],i)=>{
+      const x=85+i*385,o=sg(t,st,st+1.2);
+      RR(x,125,355,138,12,col.card,o);RR(x,125,355,138,12,col.bd,o,1.5);R(x,138,3.5,112,c,o);
+      T(tt,x+177,156,21,c,'center',o);
+      T(fm,x+177,196,21,col.fg,'center',o);
+      T(ds,x+177,234,16,col.dim,'center',o);
+    });
+
+    // Minh họa vị trí trên phân phối lệch phải (ở dưới)
+    const oR=sg(t,11,12.5);
+    RR(85,295,1110,235,12,col.card2,oR);RR(85,295,1110,235,12,col.bd,oR,1.4);
+    T('Vị trí tương đối trên phân phối Lệch phải (VD: thu nhập hộ gia đình)',640,326,19,col.y,'center',oR);
+    const m=mp(0,8,160,1120),B=495,y=mp(0,.75,B,355);
+    L(145,B,1135,B,col.axis,2,oR);
+    const fn=x=>x<=0?0:Math.pow(x,1.6)*Math.exp(-x*.95)*1.15;
+    fillCurve(fn,0,8,m,y,B,col.b,.22*oR);drawCurve(fn,0,8,m,y,col.fg,2.6,oR);
+
+    const oM=sg(t,14,16);
+    L(m(1.68),365,m(1.68),B,col.b,2.5,oM,[5,4]);T('Mốt',m(1.68),352,18,col.b,'center',oM);
+    L(m(2.38),365,m(2.38),B,col.g,2.8,oM);T('Trung vị (Med)',m(2.38),514,17,col.g,'center',oM);
+    L(m(3.15),365,m(3.15),B,col.o,2.8,oM);T('Trung bình (x̄)',m(3.55),514,17,col.o,'center',oM);
+    T('Lệch phải:  x̄ > Med   (đuôi phải kéo x̄ sang phải!)',940,400,19,col.o,'center',sg(t,17.5,19));
+  }
+},
+{
+  t:'10. Tính bền vững & Tối ưu SSE của x̄',d:26,
+  s:[
+    [0,'Tại sao trung vị được gọi là đại lượng BỀN VỮNG (robust), còn trung bình thì rất nhạy cảm với giá trị ngoại lai?'],
+    [5.5,'Quan sát bộ 5 điểm [2, 4, 5, 7, x₅]: khi ta kéo điểm lớn nhất x₅ từ 8 vọt lên 40, trung vị VẪN GIỮ NGUYÊN BẰNG 5!'],
+    [11.5,'Trong khi đó, trung bình x̄ bị kéo mạnh từ 5,2 lên tới 11,6 — vượt qua cả 4 trong 5 quan sát của bộ dữ liệu!'],
+    [17.5,'Thế tại sao thống kê vẫn rất cần trung bình? Vì xét hàm tổng bình phương sai lệch L(c) = ∑(xᵢ − c)² (hình phải)...'],
+    [22,'...L(c) là một parabol mở lên đạt CỰC TIỂU DUY NHẤT tại c = x̄! Trung bình tối ưu bình phương sai lệch (cơ sở của hồi quy Tuần 04).']
+  ],
+  f:t=>{
+    hd('10. Tính bền vững (Robustness) & Tính tối ưu L(c) của x̄');
+
+    // Bên trái: Kéo x5 từ 8 -> 40 trên trục số
+    const kPull=sg(t,3.5,10.5);
+    const x5=mx(8,40,kPull),meanCur=(2+4+5+7+x5)/5;
+    const o1=sg(t,1,2.5);
+    RR(80,145,565,360,12,col.card2,o1);RR(80,145,565,360,12,col.bd,o1,1.4);
+    T('Thí nghiệm kéo điểm x₅ từ 8 → 40',362,178,20,col.y,'center',o1);
+    const m1=mp(0,44,115,610),ay=320;
+    L(105,ay,620,ay,col.axis,2.5,o1);
+    [2,4,5,7].forEach(v=>D(m1(v),ay,7,col.b,o1));
+    D(m1(x5),ay,9,col.r,o1);T(`x₅ = ${f(x5,0)}`,m1(x5),ay-24,18,col.r,'center',o1);
+
+    // Mũi tên Med & Mean
+    L(m1(5),ay+14,m1(5),ay+54,col.g,3,o1);T('Med = 5,0 (không đổi!)',m1(5)+10,ay+72,18,col.g,'left',o1);
+    L(m1(meanCur),ay-14,m1(meanCur),ay-62,col.o,3,o1);T(`x̄ = ${f(meanCur,1)}`,m1(meanCur),ay-78,20,col.o,'center',o1);
+    T('Trung vị bền vững; trung bình bị kéo theo ngoại lai!',362,468,17,col.dim,'center',o1);
+
+    // Bên phải: Parabol L(c) = sum(x_i - c)^2 cho (2, 4, 9), x_bar = 5
+    const o2=sg(t,14,15.5);
+    RR(680,145,525,360,12,col.card2,o2);RR(680,145,525,360,12,col.bd,o2,1.4);
+    T('Vì sao dùng x̄? Tối ưu L(c) = ∑(xᵢ − c)²',942,178,19,col.b,'center',o2);
+    const m2=mp(1,9,725,1165),y2=mp(20,76,455,220);
+    L(715,455,1175,455,col.axis,2,o2);
+    const Lfn=c=>(2-c)*(2-c)+(4-c)*(4-c)+(9-c)*(9-c);
+    drawCurve(Lfn,1.3,8.7,m2,y2,col.b,3,o2);
+    const cCur=mx(2.2,5,sg(t,17,20.5));
+    D(m2(cCur),y2(Lfn(cCur)),8,col.y,o2);
+    L(m2(5),y2(26),m2(5),455,col.g,1.8,sg(t,20,21.5),[5,4]);
+    T('Đáy duy nhất tại c = x̄ = 5 (L = 26)',942,482,18,col.g,'center',sg(t,20.5,22));
+  }
+},
+{
+  t:'11. Phương sai s² & Độ lệch chuẩn SD',d:24,
+  s:[
+    [0,'Hai bộ dữ liệu có thể có cùng trung bình x̄ = 5 nhưng trải rộng hoàn toàn khác nhau: ta cần đo ĐỘ PHÂN TÁN (Phần 3).'],
+    [5.5,'Phương sai mẫu s² là trung bình bình phương độ lệch quanh x̄, nhưng chia cho n − 1 thay vì n: s² = ∑(xᵢ − x̄)² / (n − 1).'],
+    [11.5,'Vì tổng các độ lệch ∑(xᵢ − x̄) luôn bằng 0, chỉ có n − 1 độ lệch tự do — chia cho n − 1 cho ước lượng không lệch phương sai quần thể!'],
+    [17,'Lấy căn bậc hai của phương sai ta được Độ lệch chuẩn mẫu s = SD = √s², đưa đơn vị trở lại cùng đơn vị gốc với dữ liệu (VD: gam, mm).'],
+    [21,'Ví dụ với x = (2, 4, 9): x̄ = 5, tổng bình phương độ lệch = 9 + 1 + 16 = 26 ⇒ s² = 26/2 = 13 ⇒ SD = √13 ≈ 3,61.']
+  ],
+  f:t=>{
+    hd('11. Đo độ phân tán: Phương sai mẫu s² & Độ lệch chuẩn s');
+
+    // Trái: 2 phân phối cùng trung bình, khác độ phân tán
+    const m=mp(-4.5,4.5,105,585),B=455,y=mp(0,.6,B,175);
+    L(95,B,595,B,col.axis,2);
+    T('Cùng trung bình x̄ = 5, khác độ lệch chuẩn s',345,148,19,col.fg,'center');
+    fillCurve(x=>npdf(x,0,.75),-4,4,m,y,B,col.b,.24*sg(t,1,2.5));
+    drawCurve(x=>npdf(x,0,.75),-4,4,m,y,col.b,2.8,sg(t,1,2.5));
+    fillCurve(x=>npdf(x,0,1.65),-4,4,m,y,B,col.o,.22*sg(t,3,4.5));
+    drawCurve(x=>npdf(x,0,1.65),-4,4,m,y,col.o,2.8,sg(t,3,4.5));
+    L(m(0),175,m(0),B,col.y,1.8,sg(t,2,3),[5,4]);
+    T('s nhỏ (tập trung)',m(1.2),y(.44),17,col.b,'left',sg(t,2,3.5));
+    T('s lớn (trải rộng)',m(1.8),y(.17),17,col.o,'left',sg(t,4,5.5));
+    T('x̄ = 5',m(0),B+24,18,col.y,'center');
+
+    // Phải: Công thức & tính tay x = (2, 4, 9)
+    const o1=sg(t,5.5,7),o2=sg(t,15,16.5);
+    RR(640,148,565,165,12,col.card,o1);RR(640,148,565,165,12,col.bd,o1,1.5);R(640,161,3.5,139,col.y,o1);
+    T('s² =',670,215,24,col.y,'left',o1);
+    FR('∑ (xᵢ − x̄)²','n − 1',795,215,20,col.fg,o1);
+    T(';    s = SD = √s²',875,215,22,col.g,'left',o1);
+    T('• Cùng đơn vị với dữ liệu; nhạy với ngoại lai như x̄',670,282,17,col.dim,'left',o1);
+
+    RR(640,338,565,168,12,col.card2,o2);RR(640,338,565,168,12,col.bd,o2,1.5);R(640,351,3.5,142,col.b,o2);
+    T('Tính tay với x = (2, 4, 9)  [n = 3, x̄ = 5]:',670,372,19,col.b,'left',o2);
+    T('• Độ lệch: (−3 ; −1 ; +4)  →  tổng = 0',670,412,18,col.fg,'left',o2);
+    T('• Bình phương: 9 + 1 + 16 = 26',670,446,18,col.fg,'left',o2);
+    T('• s² = 26 / (3 − 1) = 13   ⇒   s = √13 ≈ 3,61',670,482,20,col.y,'left',sg(t,19,20.5));
+  }
+},
+{
+  t:'12. Tứ phân vị, IQR & Biểu đồ hộp',d:26,
+  s:[
+    [0,'Khi phân phối lệch hoặc có ngoại lai, ta dùng cặp thước đo BỀN VỮNG: Trung vị (trung tâm) đi cùng Khoảng tứ phân vị IQR (độ phân tán).'],
+    [6,'Tứ phân vị Q₁ (25%) và Q₃ (75%) đóng khung 50% dữ liệu ở giữa; độ rộng IQR = Q₃ − Q₁ hoàn toàn không bị ảnh hưởng bởi các điểm cực đoan hai đầu!'],
+    [12.5,'Biểu đồ hộp (Boxplot) trực quan hóa trọn vẹn 5 con số: hộp từ Q₁ đến Q₃, vạch giữa là trung vị Med, hai râu vươn tới điểm xa nhất nằm trong hàng rào 1,5 × IQR.'],
+    [19,'Mọi điểm vượt ra ngoài hàng rào [Q₁ − 1,5·IQR ; Q₃ + 1,5·IQR] được chấm riêng thành ứng viên NGOẠI LAI (outliers) để kiểm tra!']
+  ],
+  f:t=>{
+    hd('12. Khoảng tứ phân vị IQR & Biểu đồ hộp (Boxplot)');
+    T('Tóm tắt 5 số: Min · Q₁ (25%) · Med (50%) · Q₃ (75%) · Max   |   IQR = Q₃ − Q₁ (bền vững)',80,104,19,col.dim);
+
+    // Vẽ Boxplot ngang cỡ lớn ở giữa màn hình
+    const o1=sg(t,2,3.5),o2=sg(t,8,9.5),o3=sg(t,15,17);
+    const m=mp(0,100,110,1170),cy=300;
+    L(100,415,1180,415,col.axis,2,o1);
+
+    // Vùng 1.5 IQR (nét đứt)
+    L(m(10),215,m(10),415,col.r,1.8,o3,[6,5]);T('Q₁ − 1,5·IQR',m(10),195,16,col.r,'center',o3);
+    L(m(82),215,m(82),415,col.r,1.8,o3,[6,5]);T('Q₃ + 1,5·IQR',m(82),195,16,col.r,'center',o3);
+
+    // Râu trái & râu phải
+    L(m(16),cy,m(34),cy,col.fg,3,o2);L(m(16),cy-28,m(16),cy+28,col.fg,3,o2);
+    L(m(58),cy,m(75),cy,col.fg,3,o2);L(m(75),cy-28,m(75),cy+28,col.fg,3,o2);
+
+    // Hộp Q1 -> Q3 và vạch Med
+    R(m(34),cy-48,m(58)-m(34),96,col.b,.35*o1);
+    RR(m(34),cy-48,m(58)-m(34),96,4,col.b,o1,3);
+    L(m(44),cy-48,m(44),cy+48,col.y,4.5,o1);
+
+    // 2 điểm ngoại lai bên phải
+    D(m(91),cy,8,col.r,o3);D(m(96),cy,8,col.r,o3);
+    T('Ngoại lai',m(93.5),cy-28,17,col.r,'center',o3);
+
+    // Nhãn mốc trên trục
+    [[16,'Râu dưới',col.dim],[34,'Q₁ (25%)',col.b],[44,'Med (50%)',col.y],[58,'Q₃ (75%)',col.b],[75,'Râu trên',col.dim]].forEach(([v,lb,c])=>{
+      T(lb,m(v),442,17,c,'center',o1);
+    });
+    // Dấu ngoặc IQR
+    L(m(34),225,m(58),225,col.g,3,o2);
+    T('IQR = Q₃ − Q₁ (50% dữ liệu ở giữa)',m(46),205,19,col.g,'center',o2);
+    T('Lưu ý: Boxplot không cho biết phân phối có 1 đỉnh hay 2 đỉnh — hãy kết hợp cùng Histogram / Violin!',640,515,18,col.o,'center',sg(t,20,21.5));
+  }
+},
+{
+  t:'13. Phép đổi thang đo Y = aX + b',d:24,
+  s:[
+    [0,'Khi đổi đơn vị đo theo phép biến đổi tuyến tính Y = aX + b (ví dụ đổi độ C sang độ F: F = 1,8C + 32), các đại lượng tóm tắt đổi ra sao?'],
+    [6,'Bước 1 — Tịnh tiến (+ b): dịch toàn bộ phân phối sang phải b đơn vị. Trung bình và trung vị TĂNG THÊM b, nhưng độ phân tán SD và IQR KHÔNG ĐỔI!'],
+    [12.5,'Bước 2 — Co giãn (× a): nhân mọi giá trị với a làm trung tâm nhân a, còn độ phân tán SD và IQR nhân với TRỊ TUYỆT ĐỐI |a| (vì độ rộng luôn không âm)!'],
+    [18.5,'Phương sai s² có đơn vị bình phương nên nhân với a²: s²(aX + b) = a² · s²(X).'],
+    [21.5,'Kiểm tra nhanh: đổi 30°C (SD = 5°C) sang độ F → trung bình 1,8(30)+32 = 86°F, còn SD chỉ là 1,8 × 5 = 9°F (không cộng 32!).']
+  ],
+  f:t=>{
+    hd('13. Tác động của phép đổi thang đo tuyến tính: Y = aX + b');
+
+    // Hoạt ảnh phân phối tịnh tiến +b rồi co giãn xa
+    const kShift=sg(t,4,8),kScale=sg(t,10.5,14.5);
+    const muCur=mx(0,1.8,kShift),sdCur=mx(.8,1.5,kScale);
+    const m=mp(-4.5,6.5,110,1170),B=325,y=mp(0,.55,B,150);
+    L(95,B,1185,B,col.axis,2);
+    // Phân phối gốc nét đứt
+    drawCurve(x=>npdf(x,0,.8),-3.5,3.5,m,y,col.dim,2,.55);
+    // Phân phối sau đổi thang đo
+    fillCurve(x=>npdf(x,muCur,sdCur),-4,6,m,y,B,col.b,.28);
+    drawCurve(x=>npdf(x,muCur,sdCur),-4,6,m,y,col.b,3);
+    L(m(muCur),155,m(muCur),B,col.y,2.2,1,[5,4]);
+    T(kScale>.3?'Đổi thang ×a: cả trung tâm & độ rộng đều đổi!':(kShift>.3?'Tịnh tiến +b: trung tâm dịch +b, độ rộng giữ nguyên!':'Phân phối gốc X'),640,132,19,col.y,'center');
+
+    // 2 thẻ quy tắc bên dưới
+    const o1=sg(t,8,9.5),o2=sg(t,14.5,16);
+    RR(85,365,535,165,12,col.card,o1);RR(85,365,535,165,12,col.bd,o1,1.5);R(85,378,3.5,139,col.b,o1);
+    T('Đại lượng VỊ TRÍ (chịu cả a và b)',115,402,20,col.b,'left',o1);
+    T('ȳ = a · x̄ + b',115,448,23,col.fg,'left',o1);
+    T('Med(Y) = a · Med(X) + b   (khi a > 0)',115,492,19,col.dim,'left',o1);
+
+    RR(660,365,535,165,12,col.card,o2);RR(660,365,535,165,12,col.bd,o2,1.5);R(660,378,3.5,139,col.g,o2);
+    T('Đại lượng PHÂN TÁN (chỉ chịu |a|, bỏ b!)',690,402,20,col.g,'left',o2);
+    T('SD(Y) = |a| · SD(X)   ;   IQR(Y) = |a| · IQR(X)',690,448,20,col.fg,'left',o2);
+    T('Var(Y) = a² · Var(X)   (VD: F = 1,8C + 32 → SD×1,8)',690,492,18,col.y,'left',o2);
+  }
+},
+{
+  t:'14. Tự xây phản ví dụ (Tư duy phản biện)',d:24,
+  s:[
+    [0,'Sang Phần 4 — Phản biện thống kê: chỉ cần MỘT PHẢN VÍ DỤ nhỏ là đủ bác bỏ hoàn toàn một mệnh đề sai về tóm tắt dữ liệu!'],
+    [5.5,'Mệnh đề sai 1: "Hai tập dữ liệu có cùng trung bình và cùng trung vị thì giống nhau." Phản ví dụ: (4, 5, 6) và (0, 5, 10) đều có x̄ = Med = 5 nhưng SD khác nhau gấp 5 lần!'],
+    [12.5,'Mệnh đề sai 2: "Không bao giờ có quá một nửa số quan sát lớn hơn trung bình." Phản ví dụ: (0, 9, 10) có x̄ = 6,33 nhưng có tới 2/3 (67%) số quan sát lớn hơn x̄!'],
+    [19,'Mệnh đề sai 3: "Giá trị ngoại lai luôn làm tăng trung bình." Phản ví dụ: ngoại lai nằm ở ĐẦU NHỎ (như điểm 0 trong lớp toàn 9–10) sẽ kéo trung bình TỤT XUỐNG!']
+  ],
+  f:t=>{
+    hd('14. Tư duy phản biện: Tự xây phản ví dụ bác bỏ mệnh đề sai');
+
+    const cases=[
+      ['Mệnh đề sai 1: "Cùng x̄ và Med ⇒ hai bộ dữ liệu giống nhau"','Phản ví dụ: A = (4, 5, 6)  vs  B = (0, 5, 10)  → cùng x̄ = Med = 5, nhưng SD_B = 5·SD_A!',col.b,2],
+      ['Mệnh đề sai 2: "Không thể có quá 50% quan sát > trung bình x̄"','Phản ví dụ: X = (0, 9, 10)  →  x̄ = 6,33, nhưng 2/3 (66,7%) quan sát lớn hơn x̄!',col.o,9.5],
+      ['Mệnh đề sai 3: "Mọi giá trị ngoại lai đều kéo trung bình tăng lên"','Phản ví dụ: X = (0, 9, 9, 10) → điểm 0 ở đuôi trái kéo x̄ từ 9,3 tụt xuống 7,0!',col.g,17]
+    ];
+    cases.forEach(([m,pv,c,st],i)=>{
+      const yy=185+i*122,o=sg(t,st,st+1.4);
+      RR(85,yy-42,1110,104,12,col.card,o);RR(85,yy-42,1110,104,12,col.bd,o,1.5);R(85,yy-30,3.5,80,c,o);
+      T('✗  '+m,115,yy-16,20,col.r,'left',o);
+      T('✓  '+pv,115,yy+24,19,c,'left',sg(t,st+2.5,st+4));
+    });
+  }
+},
+{
+  t:'15. Kiểm chứng nhanh bằng Python / pandas',d:22,
+  s:[
+    [0,'Trong Phần 5, ta dùng vài dòng Python và pandas để kiểm chứng mọi phép tính tay của Tuần 02.'],
+    [5,'Với biến phân loại: pd.crosstab(df["a"], df["b"], margins=True) tạo bảng liên hợp; thêm normalize="index" để chia theo hàng, "columns" để chia theo cột.'],
+    [11.5,'Với biến số: .mean(), .median(), .std(ddof=1) tính trung bình, trung vị và độ lệch chuẩn mẫu chia n − 1; .quantile([0.25, 0.75]) tính Q₁, Q₃.'],
+    [17.5,'Nhớ: luôn dự đoán kết quả (ví dụ so sánh x̄ và Med theo hình dạng) TRƯỚC KHI chạy code để phát hiện ngay lỗi đơn vị hay ngoại lai!']
+  ],
+  f:t=>{
+    hd('15. Lệnh Python / pandas trọng tâm Tuần 02');
+
+    const cmds=[
+      ['Bảng liên hợp + Tổng biên','pd.crosstab(df["species"], df["island"], margins=True)',col.b,1.5],
+      ['Tỉ lệ theo hàng / theo cột','pd.crosstab(..., normalize="index")  # hoặc "columns"',col.g,5],
+      ['Trung tâm & Phân tán mẫu','s.mean(),  s.median(),  s.std(ddof=1),  s.var(ddof=1)',col.y,8.5],
+      ['Tứ phân vị & IQR','q1, q3 = s.quantile([0.25, 0.75]);  iqr = q3 - q1',col.o,12],
+      ['Tóm tắt nhanh 8 chỉ số','penguins["body_mass_g"].describe()',col.p,15.5]
+    ];
+    cmds.forEach(([lb,cd,c,st],i)=>{
+      const yy=168+i*74,o=sg(t,st,st+1.2);
+      RR(85,yy-26,1110,58,10,col.card2,o);RR(85,yy-26,1110,58,10,col.bd,o,1.4);R(85,yy-18,3.5,42,c,o);
+      T(lb,112,yy,19,c,'left',o);
+      T(cd,440,yy,18,col.fg,'left',o);
+    });
+    T('Chú ý mặc định: pandas dùng ddof=1 (chia n−1); còn numpy.std() mặc định ddof=0 (chia n)!',640,536,18,col.r,'center',sg(t,18,19.5));
+  }
+},
+{
+  t:'16. Tóm tắt & 6 lỗi hay gặp',d:24,
+  s:[
+    [0,'Trước khi sang bảng tổng hợp công thức, hãy rà lại 6 lỗi phổ biến nhất cần tránh ở Tuần 02.'],
+    [4.5,'Một là so sánh số đếm thô giữa hai nhóm lệch quy mô; hai là chọn sai mẫu số (nhầm chia theo hàng với chia theo cột) trong bảng liên hợp.'],
+    [10,'Ba là đọc mối liên hệ trong bảng thành kết luận nhân quả; bốn là kết luận số đỉnh chỉ từ một cách chia độ rộng histogram duy nhất.'],
+    [15.5,'Năm là chỉ báo cáo trung bình và SD trên phân phối lệch nặng có ngoại lai; sáu là cộng hằng số b vào SD hoặc quên lấy trị tuyệt đối |a| khi đổi thang đo!']
+  ],
+  f:t=>{
+    hd('16. Sáu lỗi hay gặp cần tránh ở Tuần 02');
+    const errs=[
+      ['1. So số đếm thô giữa nhóm lệch cỡ','→ Phải tính tỉ lệ theo cỡ mẫu từng nhóm',1.5],
+      ['2. Nhầm mẫu số hàng vs cột','→ Đọc kỹ cụm "trong số ..." để xác định mẫu số',4.5],
+      ['3. Đọc mối liên hệ thành nhân quả','→ Tóm tắt chỉ mô tả dữ liệu hiện có',7.5],
+      ['4. Chốt số đỉnh từ 1 bin width','→ Luôn thử nhiều độ rộng khoảng chia',10.5],
+      ['5. Chỉ dùng x̄, SD khi dữ liệu lệch','→ Báo cáo kèm Trung vị (Med) và IQR',13.5],
+      ['6. Cộng b vào SD khi đổi Y=aX+b','→ SD(aX + b) = |a|·SD(X) (b không đổi độ rộng)',16.5]
+    ];
+    errs.forEach(([e,fx,st],i)=>{
+      const yy=148+i*62,o=sg(t,st,st+1.2);
+      RR(85,yy-23,1110,48,10,col.card,o);RR(85,yy-23,1110,48,10,col.bd,o,1.4);R(85,yy-15,3.5,32,col.r,o);
+      T('✗  '+e,112,yy,20,col.r,'left',o);
+      T(fx,615,yy,19,col.g,'left',o);
+    });
+  }
+},
+{
+  t:'17. Tổng hợp công thức',d:28,
+  s:[
+    [0,'Cuối cùng, hãy cùng hệ thống lại toàn bộ 8 nhóm công thức trọng tâm của Tuần 02 trên bảng tổng hợp trực quan.'],
+    [5,'Cột trái gồm tỉ lệ có điều kiện trong bảng liên hợp, công thức mật độ histogram q chia w, trung bình mẫu cùng tính tối ưu SSE, và trung vị / mốt.'],
+    [11.5,'Cột phải gồm phương sai mẫu và độ lệch chuẩn mẫu chia n − 1, khoảng tứ phân vị IQR, quy tắc hàng rào ngoại lai 1,5 IQR, và quy tắc đổi thang đo Y = aX + b.'],
+    [18.5,'Hãy bấm phím Space để tạm dừng tại bảng công thức này nếu bạn muốn ghi chép và ôn tập trước khi sang Tuần 03 nhé!']
+  ],
+  f:t=>{
+    const pal={gold:'#e5b91a',txt:'#dcdde2',mut:'#989ba5',bg:'#35373d',bd:'#4c4f58'};
+    T('17. Tổng hợp các công thức trọng tâm Tuần 02',80,58,35,pal.gold);
+    const card=(x,y,title,st,draw)=>{
+      const o=sg(t,st,st+1.2);
+      RR(x,y,555,104,10,pal.bg,o);RR(x,y,555,104,10,pal.bd,o,1.4);
+      R(x,y+12,3.5,80,pal.gold,o);
+      T(title,x+18,y+22,16,pal.gold,'left',o);
+      draw(x,y,o);
+    };
+
+    // Cột trái (4 thẻ)
+    card(75,112,'1. Tỉ lệ có điều kiện (Bảng liên hợp)',1,(x,y,o)=>{
+      T('Tỉ lệ(A | B) =',x+22,y+64,19,pal.txt,'left',o);
+      FR('Số ô (A và B)','Tổng nhóm B',x+225,y+64,17,pal.txt,o);
+      T('(nói rõ mẫu số!)',x+320,y+64,16,pal.mut,'left',o);
+    });
+    card(75,230,'2. Histogram theo thang mật độ (Density)',3.5,(x,y,o)=>{
+      T('mật độ =',x+22,y+64,19,pal.txt,'left',o);
+      FR('tỉ lệ q','độ rộng w',x+162,y+64,17,pal.txt,o);
+      T('⇒  Diện tích = q  (tổng = 1)',x+232,y+64,16,pal.mut,'left',o);
+    });
+    card(75,348,'3. Trung bình mẫu x̄ & Tính tối ưu SSE',6,(x,y,o)=>{
+      T('x̄ =',x+22,y+64,20,pal.txt,'left',o);
+      FR('1','n',x+72,y+64,18,pal.txt,o);
+      T('∑ xᵢ   (cực tiểu hóa L(c) = ∑(xᵢ − c)²)',x+102,y+64,17,pal.txt,'left',o);
+    });
+    card(75,466,'4. Trung vị (Med) & Mốt (Mode)',8.5,(x,y,o)=>{
+      T('Med: giá trị giữa (50%–50%, bền vững)',x+22,y+55,18,pal.txt,'left',o);
+      T('Lệch phải: x̄ > Med   |   Lệch trái: x̄ < Med',x+22,y+86,16,pal.mut,'left',o);
+    });
+
+    // Cột phải (4 thẻ)
+    card(650,112,'5. Phương sai mẫu s² & Độ lệch chuẩn s (SD)',11,(x,y,o)=>{
+      T('s² =',x+22,y+64,20,pal.txt,'left',o);
+      FR('∑ (xᵢ − x̄)²','n − 1',x+135,y+64,17,pal.txt,o);
+      T(';   s = √s²  (cùng đơn vị x)',x+208,y+64,18,pal.txt,'left',o);
+    });
+    card(650,230,'6. Khoảng tứ phân vị IQR (Bền vững)',13.5,(x,y,o)=>{
+      T('IQR = Q₃ − Q₁   (độ rộng 50% dữ liệu giữa)',x+22,y+55,19,pal.txt,'left',o);
+      T('Q₁: phân vị 25%   |   Q₃: phân vị 75%',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(650,348,'7. Quy tắc hàng rào ngoại lai (Boxplot)',16,(x,y,o)=>{
+      T('Dưới: Q₁ − 1,5·IQR   |   Trên: Q₃ + 1,5·IQR',x+22,y+55,18,pal.txt,'left',o);
+      T('Điểm nằm ngoài 2 ngưỡng được chấm làm ngoại lai',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(650,466,'8. Phép đổi thang đo tuyến tính Y = aX + b',18.5,(x,y,o)=>{
+      T('ȳ = a·x̄ + b   ;   SD(Y) = |a|·SD(X)',x+22,y+55,19,pal.txt,'left',o);
+      T('IQR(Y) = |a|·IQR(X)   ;   Var(Y) = a²·Var(X)',x+22,y+86,16,pal.mut,'left',o);
+    });
+  }
+}
+];
+
+// ===== Điều khiển trình phát tương tác =====
+const ST=[];let TOT=0;sc.forEach(s=>{ST.push(TOT);TOT+=s.d});
+const idx=()=>Math.max(0,ST.findLastIndex(x=>x<=g));
+const $=(q)=>document.querySelector(q);
+const pg=$('#pg'),mn=$('#mn'),ui=$('#ui'),sub=$('#sub'),bp=$('#bp'),bt=$('#bt'),bn=$('#bn'),bc=$('#bc'),bs=$('#bs'),bm=$('#bm'),tm=$('#tm');
+const ic=d=>`<svg viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+const IP=ic('M8 5v14l11-7z'),IA=ic('M6 19h4V5H6zm8-14v14h4V5z');
+bt.innerHTML=ic('M6 6h2v12H6zm3.5 6l8.5 6V6z');
+bn.innerHTML=ic('M6 18l8.5-6L6 6zm10-12v12h2V6z');
+bm.innerHTML=ic('M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z');
+
+sc.forEach((s,i)=>{
+  const e=document.createElement('div');e.className='sg';e.style.flexGrow=s.d;e.innerHTML='<i></i>';pg.appendChild(e);
+  const m=document.createElement('div');m.textContent=s.t;m.onclick=()=>{g=ST[i];mn.classList.remove('o');rd()};mn.appendChild(m);
+});
+const sgs=[...pg.children],mns=[...mn.children];
+
+let g=0,pl=1,cc=1,sp=1,lt=0,ht=0,dr=0;
+const sps=[.75,1,1.25,1.5,2];
+const ft=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+const sh=()=>{ui.classList.remove('h');clearTimeout(ht);if(pl)ht=setTimeout(()=>ui.classList.add('h'),3000)};
+const up=()=>{bp.innerHTML=pl?IA:IP;if(!pl)ui.classList.remove('h');else sh()};
+
+function rs(){
+  const dpr=Math.min(2,devicePixelRatio||1),w=innerWidth,h=innerHeight,r=Math.min(w/W,h/H);
+  C.style.width=W*r+'px';C.style.height=H*r+'px';
+  C.width=Math.round(W*r*dpr);C.height=Math.round(H*r*dpr);
+}
+addEventListener('resize',rs);rs();
+
+let lastSub='';
+function rd(){
+  const k=C.width/W;X.setTransform(k,0,0,k,0,0);X.globalAlpha=1;X.fillStyle='#2c2d31';X.fillRect(0,0,W,H);
+  const i=idx(),t=g-ST[i],s=sc[i];
+  FA=Math.min(cl(t/.4),cl((s.d-t)/.4));
+  s.f(t);
+  X.globalAlpha=1;
+  sgs.forEach((e,j)=>{e.firstChild.style.width=(j<i?100:j>i?0:cl(t/s.d)*100)+'%'});
+  mns.forEach((e,j)=>e.classList.toggle('c',j===i));
+  tm.textContent=`${ft(g)} / ${ft(TOT)} · ${s.t}`;
+  let tx='';
+  if(cc)for(const [a,b] of s.s)if(t>=a)tx=b;
+  if(tx!==lastSub){
+    lastSub=tx;
+    sub.textContent=tx;
+    sub.classList.toggle('e',!tx);
+  }
+}
+
+function lp(n){
+  if(lt&&pl){g+=Math.min(.1,(n-lt)/1000)*sp;if(g>=TOT){g=TOT;pl=0;up()}}
+  lt=n;rd();requestAnimationFrame(lp);
+}
+requestAnimationFrame(lp);up();
+
+const tg=()=>{if(g>=TOT)g=0;pl^=1;up()};
+bp.onclick=tg;
+bt.onclick=()=>{const i=idx();g=ST[g-ST[i]>2?i:Math.max(0,i-1)];sh()};
+bn.onclick=()=>{const i=idx();g=i<sc.length-1?ST[i+1]:TOT;sh()};
+bc.onclick=()=>{cc^=1;bc.classList.toggle('on',!!cc);lastSub='__';rd()};
+bs.onclick=()=>{sp=sps[(sps.indexOf(sp)+1)%sps.length];bs.textContent=sp+'×'};
+bm.onclick=()=>mn.classList.toggle('o');
+C.onclick=()=>{if(mn.classList.contains('o'))mn.classList.remove('o');else tg()};
+
+const sk=e=>{const r=pg.getBoundingClientRect();g=cl((e.clientX-r.left)/r.width)*TOT;rd()};
+pg.onpointerdown=e=>{dr=1;pg.setPointerCapture(e.pointerId);sk(e)};
+pg.onpointermove=e=>{if(dr)sk(e)};
+pg.onpointerup=()=>{dr=0};
+addEventListener('pointermove',sh);
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();tg()}
+  else if(e.key==='ArrowLeft')bt.click();
+  else if(e.key==='ArrowRight')bn.click();
+  else if(e.key==='c'||e.key==='C')bc.click();
+  else if(e.key==='m'||e.key==='M')bm.click();
+});
+</script>
+</body>
+</html>

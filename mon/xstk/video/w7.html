@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tuần 7: Kỳ vọng, phương sai và xấp xỉ chuẩn</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#2c2d31;--fg:#dcdde2;--ac:#e5b91a}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden;user-select:none}
+#st{position:fixed;inset:0;display:grid;place-items:center}
+canvas{display:block}
+/* Cố định phụ đề ở sát mép đáy màn hình, không đổi vị trí khi thanh điều khiển ẩn/hiện */
+#sub{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);
+  max-width:min(980px,94vw);
+  padding:10px 20px;
+  border-radius:10px;
+  background:rgba(36,37,41,.94);
+  border:1px solid #4c4f58;
+  color:#dcdde2;
+  font-size:clamp(14px,1.45vw,19px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:center;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:5;
+}
+#sub.e{opacity:0}
+#ui{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:20px 0 0;
+  background:linear-gradient(transparent,rgba(32,33,37,.92));
+  transition:opacity .3s;
+  z-index:10;
+}
+#ui.h{opacity:0;pointer-events:none}
+#pg{display:flex;gap:2px;height:14px;align-items:flex-end;cursor:pointer;touch-action:none}
+.sg{flex:1;height:4px;background:#ffffff24;border-radius:0;overflow:hidden;transition:height .15s}
+#pg:hover .sg{height:8px}
+.sg i{display:block;height:100%;background:var(--ac)}
+#rw{display:flex;align-items:center;gap:6px;padding:0 18px 8px}
+button{background:none;border:0;color:var(--fg);width:42px;height:42px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font:600 14px inherit;font-family:inherit}
+button:hover{background:#ffffff1a}
+button.on{color:var(--ac)}
+svg{width:24px;height:24px;fill:currentColor}
+#tm{font-size:14px;font-weight:600;margin-left:8px;flex:1;color:#989ba5}
+#mn{position:fixed;top:0;right:0;bottom:0;width:min(340px,86vw);background:#242529f5;border-left:1px solid #4c4f58;padding:18px 8px;overflow:auto;transform:translateX(100%);transition:transform .25s;z-index:20}
+#mn.o{transform:none}
+#mn div{padding:11px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;color:#dcdde2}
+#mn div:hover{background:#ffffff12}
+#mn div.c{color:var(--ac);background:#e5b91a18}
+</style>
+</head>
+<body>
+<div id="st"><canvas id="c"></canvas></div>
+<div id="mn"></div>
+<div id="ui">
+  <div id="rw">
+    <button id="bp" title="Phát/Tạm dừng (Space)"></button>
+    <button id="bt" title="Cảnh trước (←)"></button>
+    <button id="bn" title="Cảnh sau (→)"></button>
+    <span id="tm"></span>
+    <button id="bc" class="on" title="Bật/tắt phụ đề (C)">CC</button>
+    <button id="bs" title="Tốc độ">1×</button>
+    <button id="bm" title="Mục lục (M)"></button>
+  </div>
+  <div id="pg"></div>
+</div>
+<div id="sub"></div>
+
+<script>
+// Thiết lập canvas logic 1280x720 và các hàm toán học, vẽ đồ thị dùng chung
+const W=1280,H=720,C=document.getElementById('c'),X=C.getContext('2d');
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const sm=v=>{v=cl(v);return v*v*(3-2*v)};
+const sg=(t,a,b)=>sm((t-a)/(b-a));
+const mx=(a,b,k)=>a+(b-a)*k;
+const mp=(a,b,p,q)=>v=>p+(q-p)*(v-a)/(b-a);
+const f=(v,d=2)=>v.toFixed(d).replace('.',',');
+const col={fg:'#dcdde2',dim:'#989ba5',b:'#78a9d6',o:'#df9368',g:'#7cc99c',y:'#e5b91a',r:'#d97373',p:'#a996cf',card:'#35373d',card2:'#26272b',bd:'#4c4f58',axis:'#545760'};
+
+let FA=1;
+const al=a=>{X.globalAlpha=cl(a===undefined?1:a)*FA};
+function T(s,x,y,z,c,a,o){al(o);X.fillStyle=c||col.fg;X.font=`${z>=34?800:600} ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;X.textAlign=a||'left';X.textBaseline='middle';X.fillText(s,x,y)}
+function L(a,b,c,d,k,w,o,ds){al(o);X.strokeStyle=k;X.lineWidth=w||2;X.setLineDash(ds||[]);X.beginPath();X.moveTo(a,b);X.lineTo(c,d);X.stroke();X.setLineDash([])}
+function R(x,y,w,h,c,o){al(o);X.fillStyle=c;X.fillRect(x,y,w,h)}
+function RR(x,y,w,h,r,c,o,st){
+  al(o);X.beginPath();X.roundRect(x,y,w,h,r);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+function D(x,y,r,c,o,st){
+  al(o);X.beginPath();X.arc(x,y,r,0,Math.PI*2);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+// Vẽ phân số 2 dòng (tử số trên, gạch ngang, mẫu số dưới), trả về độ rộng khung phân số
+function FR(num,den,x,y,z,c,o){
+  X.font=`600 ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;
+  const w=Math.max(X.measureText(num).width,X.measureText(den).width)+14;
+  T(num,x,y-z*.66,z,c,'center',o);
+  L(x-w/2,y,x+w/2,y,c||col.fg,1.8,o);
+  T(den,x,y+z*.72,z,c,'center',o);
+  return w;
+}
+const hd=s=>T(s,80,58,35,col.y);
+
+// Hàm mật độ chuẩn và xấp xỉ phân phối nhị thức
+const npdf=(x,mu=0,sd=1)=>Math.exp(-.5*Math.pow((x-mu)/sd,2))/(sd*Math.sqrt(2*Math.PI));
+function comb(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r}
+function binom(k,n,p){return comb(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k)}
+
+// Bộ sinh số giả ngẫu nhiên cố định seed cho mô phỏng Luật số lớn (xúc xắc)
+function mkRng(seed){let s=seed>>>0;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const llnPts=(()=>{
+  const rnd=mkRng(7007),pts=[];
+  let sum=0;
+  for(let n=1;n<=1000;n++){
+    sum+=Math.floor(rnd()*6)+1;
+    if(n<=40||n%10===0)pts.push([n,sum/n]);
+  }
+  return pts;
+})();
+
+// Tạo histogram phân phối trung bình mẫu từ phân phối mũ lệch cho cảnh CLT
+const cltHists=(()=>{
+  const ns=[1,5,30],out={};
+  ns.forEach(n=>{
+    const rnd=mkRng(7700+n),bins=new Array(24).fill(0),N=4000;
+    for(let i=0;i<N;i++){
+      let s=0;for(let j=0;j<n;j++)s+=-Math.log(Math.max(1e-9,1-rnd()));
+      const avg=s/n,bi=Math.floor(avg/3*24);
+      if(bi>=0&&bi<24)bins[bi]++;
+    }
+    const mxB=Math.max(...bins);
+    out[n]=bins.map(v=>v/mxB);
+  });
+  return out;
+})();
+
+// Vẽ đường cong mật độ và tô diện tích trong [a, b]
+function drawCurve(fn,xmin,xmax,mxFn,myFn,c,w,o){
+  al(o);X.strokeStyle=c;X.lineWidth=w||2.8;X.beginPath();
+  for(let i=0;i<=160;i++){
+    const xv=xmin+(xmax-xmin)*i/160,px=mxFn(xv),py=myFn(fn(xv));
+    i===0?X.moveTo(px,py):X.lineTo(px,py);
+  }
+  X.stroke();
+}
+function fillCurve(fn,a,b,mxFn,myFn,baseY,c,o){
+  al(o);X.fillStyle=c;X.beginPath();X.moveTo(mxFn(a),baseY);
+  for(let i=0;i<=80;i++){
+    const xv=a+(b-a)*i/80;X.lineTo(mxFn(xv),myFn(fn(xv)));
+  }
+  X.lineTo(mxFn(b),baseY);X.closePath();X.fill();
+}
+
+// Danh sách 17 cảnh tương tác của Tuần 07
+const sc=[
+{
+  t:'1. Từ phân phối đến con số tóm tắt',d:22,
+  s:[
+    [0,'Chào mừng bạn đến với Tuần 07: Kỳ vọng, phương sai, biến ngẫu nhiên liên tục và xấp xỉ chuẩn.'],
+    [5,'Biết trọn vẹn bảng phân phối là lý tưởng, nhưng thường ta cần hai con số tóm tắt nhanh: giá trị trung tâm và mức độ phân tán.'],
+    [11,'Kỳ vọng E[X] đo vị trí trung tâm (trung bình dài hạn); còn phương sai Var(X) và độ lệch chuẩn SD(X) đo mức độ trải rộng quanh trung tâm.'],
+    [17,'Nửa sau buổi học, ta mở rộng sang biến liên tục (Đều, Chuẩn, Mũ) và cầu nối quan trọng nhất thống kê: Định lý giới hạn trung tâm!']
+  ],
+  f:t=>{
+    hd('1. Tóm tắt phân phối & Mở rộng sang biến liên tục');
+    T('UET.MAT1052 — Tuần 07: Kỳ vọng, Phương sai, Luật số lớn & Định lý giới hạn trung tâm',80,104,19,col.dim);
+
+    const blocks=[
+      ['1. Kỳ vọng E[X]','Vị trí trung tâm / Trọng tâm','Trung bình dài hạn khi lặp lại vô hạn',col.y,1.5],
+      ['2. Phương sai & SD','Mức độ phân tán quanh μ','SD(X) = √Var(X) cùng đơn vị với X',col.o,5.5],
+      ['3. Biến liên tục (PDF)','Đều · Chuẩn · Mũ','Xác suất = Diện tích dưới đường mật độ',col.b,9.5],
+      ['4. LLN & CLT','Hội tụ & Xấp xỉ Chuẩn','Trung bình mẫu → μ và tiến về chuông chuẩn',col.g,13.5]
+    ];
+    blocks.forEach(([tt,sub1,sub2,c,st],i)=>{
+      const x=85+(i%2)*570,y=165+Math.floor(i/2)*190,o=sg(t,st,st+1.4);
+      RR(x,y,540,155,12,col.card,o);RR(x,y,540,155,12,col.bd,o,1.5);R(x,y+14,3.5,127,c,o);
+      T(tt,x+28,y+44,24,c,'left',o);
+      T(sub1,x+28,y+88,21,col.fg,'left',o);
+      T(sub2,x+28,y+124,17,col.dim,'left',o);
+    });
+  }
+},
+{
+  t:'2. Kỳ vọng E[X] là điểm cân bằng',d:24,
+  s:[
+    [0,'Kỳ vọng của biến ngẫu nhiên rời rạc X là trung bình có trọng số theo xác suất: E[X] = ∑ x · P(X = x).'],
+    [5.5,'Về mặt vật lý, E[X] chính là điểm tựa trọng tâm làm cho thanh bập bênh chứa các khối xác suất đứng thăng bằng!'],
+    [11,'Xét hộp [1, 2, 2, 3, 4] có PMF (0,2 ; 0,4 ; 0,2 ; 0,2): kỳ vọng E[X] = 1·0,2 + 2·0,4 + 3·0,2 + 4·0,2 = 2,4.'],
+    [17,'Lưu ý quan trọng: E[X] = 2,4 không nhất thiết là một giá trị mà X có thể nhận (ví dụ gieo xúc xắc có E[X] = 3,5).'],
+    [20.5,'Ta cũng ký hiệu kỳ vọng là μ; đây là hằng số đặc trưng của mô hình, không phải biến ngẫu nhiên.']
+  ],
+  f:t=>{
+    hd('2. Kỳ vọng E[X] = ∑ x · P(X = x) như điểm cân bằng');
+    T('Ví dụ hộp 5 lá thăm [1, 2, 2, 3, 4] → E[X] = 1(0,2) + 2(0,4) + 3(0,2) + 4(0,2) = 2,4',80,104,20,col.dim);
+
+    const m=mp(0.5,4.5,160,1120),B=425,K=420;
+    const pivot=mx(1.5,2.4,sg(t,4,9));
+    const tilt=(2.4-pivot)*.06;
+
+    X.save();
+    X.translate(m(pivot),B);
+    X.rotate(tilt);
+    L(m(0.7)-m(pivot),0,m(4.3)-m(pivot),0,col.fg,4);
+    const pmf=[[1,.2,col.b],[2,.4,col.o],[3,.2,col.b],[4,.2,col.b]];
+    pmf.forEach(([v,p,c])=>{
+      const rx=m(v)-m(pivot),h=p*K;
+      R(rx-38,-h,76,h,c,.88);
+      T(f(p,1),rx,-h-16,18,c,'center');
+      T(String(v),rx,24,20,col.fg,'center');
+    });
+    X.restore();
+
+    // Điểm tựa tam giác tại pivot
+    const px=m(pivot);
+    al(1);X.fillStyle=col.y;X.beginPath();X.moveTo(px,B+3);X.lineTo(px-20,B+42);X.lineTo(px+20,B+42);X.closePath();X.fill();
+    T(`Điểm tựa = ${f(pivot,2)}`,px,B+68,21,col.y,'center');
+    T('Cân bằng hoàn hảo tại μ = E[X] = 2,40',640,545,22,col.g,'center',sg(t,9.5,11));
+  }
+},
+{
+  t:'3. Tuyến tính của kỳ vọng',d:24,
+  s:[
+    [0,'Tính chất quyền năng nhất của kỳ vọng là tính tuyến tính: E[aX + b] = a·E[X] + b.'],
+    [5,'Và kỳ vọng của tổng luôn bằng tổng các kỳ vọng: E[X + Y] = E[X] + E[Y] — NGAY CẢ KHI X và Y KHÔNG ĐỘC LẬP!'],
+    [11,'Nhờ đó ta tính cực nhanh kỳ vọng của các họ phân phối: với Nhị thức Bin(n, p) là tổng n biến Bernoulli, ta có ngay E[X] = np.'],
+    [17,'Với Siêu bội Hypergeom(N, K, n), dù các lần rút phụ thuộc nhau nhưng mỗi lần đều có P(tốt) = K/N, nên E[X] vẫn bằng n·(K/N)!'],
+    [21,'Cẩn thận: với hàm phi tuyến như X², nói chung E[X²] ≠ (E[X])² — phần chênh lệch chính là phương sai!']
+  ],
+  f:t=>{
+    hd('3. Tính tuyến tính của kỳ vọng (không cần độc lập!)');
+
+    const o1=sg(t,1,2.5),o2=sg(t,4.5,6);
+    RR(85,140,535,145,12,col.card,o1);RR(85,140,535,145,12,col.bd,o1,1.5);R(85,153,3.5,119,col.y,o1);
+    T('Biến đổi tuyến tính',115,176,20,col.y,'left',o1);
+    T('E[aX + b] = a · E[X] + b',115,222,28,col.fg,'left',o1);
+    T('VD: Y = 2X − 3 ⇒ E[Y] = 2·E[X] − 3',115,260,18,col.dim,'left',o1);
+
+    RR(660,140,535,145,12,col.card,o2);RR(660,140,535,145,12,col.bd,o2,1.5);R(660,153,3.5,119,col.g,o2);
+    T('Tổng các biến ngẫu nhiên',690,176,20,col.g,'left',o2);
+    T('E[X + Y] = E[X] + E[Y]',690,222,28,col.fg,'left',o2);
+    T('✓ Đúng MỌI LÚC, không cần độc lập!',690,260,18,col.g,'left',o2);
+
+    const apps=[
+      ['Bernoulli(p)','E[X] = p','X ∈ {0, 1}',col.b,9],
+      ['Binomial(n, p)','E[X] = n · p','Tổng n biến Bernoulli',col.y,11.5],
+      ['Hypergeom(N, K, n)','E[X] = n · (K/N)','Phụ thuộc vẫn cộng được!',col.g,14],
+      ['Poisson(λ)','E[X] = λ','Tốc độ trung bình trên khoảng',col.o,16.5]
+    ];
+    apps.forEach(([nm,fm,nt,c,st],i)=>{
+      const yy=335+i*48,o=sg(t,st,st+1.2);
+      RR(85,yy-20,1110,42,8,col.card2,o);RR(85,yy-20,1110,42,8,col.bd,o,1.2);R(85,yy-12,3.5,26,c,o);
+      T(nm,112,yy,19,c,'left',o);
+      T(fm,450,yy,21,col.fg,'left',o);
+      T(nt,780,yy,18,col.dim,'left',o);
+    });
+    T('Cảnh báo: E[X²] ≠ (E[X])²  (hàm phi tuyến không đẩy E vào trong được!)',640,545,19,col.r,'center',sg(t,19.5,21));
+  }
+},
+{
+  t:'4. Phương sai Var(X) & Độ lệch chuẩn SD(X)',d:24,
+  s:[
+    [0,'Hai phân phối có thể có cùng kỳ vọng μ = 0 nhưng mức độ rủi ro hoàn toàn khác nhau: ta cần đo độ phân tán quanh μ.'],
+    [5.5,'Phương sai là trung bình bình phương độ lệch quanh kỳ vọng: Var(X) = E[(X − μ)²] = E[X²] − (E[X])².'],
+    [11,'Vì phương sai có đơn vị bình phương (ví dụ VNĐ²), ta lấy căn bậc hai để được độ lệch chuẩn SD(X) = σ = √Var(X) cùng đơn vị với X.'],
+    [17,'Khi đổi thang đo Y = aX + b: cộng hằng số b chỉ tịnh tiến phân phối nên KHÔNG đổi phương sai; nhân a làm Var nhân a² và SD nhân |a|.'],
+    [21,'Ví dụ với Bin(n, p): Var(X) = np(1 − p); với Poisson(λ): Var(X) = λ (bằng đúng kỳ vọng!).']
+  ],
+  f:t=>{
+    hd('4. Phương sai Var(X) và Độ lệch chuẩn SD(X)');
+
+    // Minh họa 2 phân phối cùng μ = 0, khác σ
+    const m=mp(-4.5,4.5,110,600),B=455,y=mp(0,.6,B,175);
+    L(95,B,615,B,col.axis,2);
+    T('Cùng kỳ vọng μ = 0, khác độ lệch chuẩn σ',355,145,20,col.fg,'center');
+    fillCurve(x=>npdf(x,0,.7),-4.2,4.2,m,y,B,col.b,.22*sg(t,1,2.5));
+    drawCurve(x=>npdf(x,0,.7),-4.2,4.2,m,y,col.b,2.8,sg(t,1,2.5));
+    fillCurve(x=>npdf(x,0,1.6),-4.2,4.2,m,y,B,col.o,.22*sg(t,3,4.5));
+    drawCurve(x=>npdf(x,0,1.6),-4.2,4.2,m,y,col.o,2.8,sg(t,3,4.5));
+    L(m(0),175,m(0),B,col.y,1.8,sg(t,2,3),[5,4]);
+    T('σ = 0,7 (tập trung)',m(1.3),y(.44),17,col.b,'left',sg(t,2,3.5));
+    T('σ = 1,6 (trải rộng)',m(1.9),y(.16),17,col.o,'left',sg(t,4,5.5));
+    T('μ = 0',m(0),B+24,18,col.y,'center');
+
+    // Khung công thức bên phải
+    const o1=sg(t,5,6.5),o2=sg(t,11,12.5),o3=sg(t,16.5,18);
+    RR(660,155,540,115,12,col.card,o1);RR(660,155,540,115,12,col.bd,o1,1.5);R(660,168,3.5,89,col.y,o1);
+    T('Định nghĩa & Công thức tính nhanh',688,186,18,col.y,'left',o1);
+    T('Var(X) = E[(X − μ)²] = E[X²] − (E[X])²',688,232,21,col.fg,'left',o1);
+
+    RR(660,290,540,105,12,col.card,o2);RR(660,290,540,105,12,col.bd,o2,1.5);R(660,303,3.5,79,col.o,o2);
+    T('Độ lệch chuẩn (cùng đơn vị với X)',688,322,18,col.o,'left',o2);
+    T('SD(X) = σ = √Var(X) ≥ 0',688,364,23,col.fg,'left',o2);
+
+    RR(660,415,540,105,12,col.card,o3);RR(660,415,540,105,12,col.bd,o3,1.5);R(660,428,3.5,79,col.g,o3);
+    T('Quy tắc đổi thang đo  Y = aX + b',688,447,18,col.g,'left',o3);
+    T('Var(aX + b) = a²·Var(X)  ;  SD = |a|·SD(X)',688,488,20,col.fg,'left',o3);
+  }
+},
+{
+  t:'5. Phương sai tổng & Quy tắc √n',d:24,
+  s:[
+    [0,'Khác với kỳ vọng, phương sai của tổng chỉ bằng tổng các phương sai khi X và Y ĐỘC LẬP: Var(X + Y) = Var(X) + Var(Y).'],
+    [5.5,'Đặc biệt chú ý: với hai biến độc lập, phương sai của HIỆU cũng cộng lại: Var(X − Y) = Var(X) + Var(Y), vì (−1)² = +1!'],
+    [11.5,'Từ đó với n quan sát i.i.d. (độc lập, cùng phân phối có trung bình μ, độ lệch chuẩn σ), ta có hai kết quả nền tảng:'],
+    [17,'Tổng Sₙ có độ lệch chuẩn tăng theo √n (σ√n); còn trung bình mẫu X̄ₙ = Sₙ/n có độ lệch chuẩn GIẢM theo √n: SD(X̄ₙ) = σ / √n!'],
+    [21,'Muốn giảm một nửa sai số chuẩn của trung bình mẫu, ta phải tăng cỡ mẫu n lên GẤP 4 LẦN.']
+  ],
+  f:t=>{
+    hd('5. Phương sai của tổng (độc lập) và Quy tắc √n');
+
+    const o1=sg(t,1,2.5);
+    RR(85,135,1110,115,12,col.card,o1);RR(85,135,1110,115,12,col.bd,o1,1.5);R(85,148,3.5,89,col.y,o1);
+    T('Khi X, Y ĐỘC LẬP:',115,168,20,col.y,'left',o1);
+    T('Var(X + Y) = Var(X) + Var(Y)     và     Var(X − Y) = Var(X) + Var(Y)',115,214,24,col.fg,'left',o1);
+
+    // 2 cột: Tổng S_n và Trung bình mẫu X_bar_n
+    const o2=sg(t,7,8.5),o3=sg(t,12.5,14);
+    RR(85,280,535,230,12,col.card,o2);RR(85,280,535,230,12,col.bd,o2,1.5);R(85,293,3.5,204,col.b,o2);
+    T('Tổng n quan sát i.i.d.:  Sₙ = X₁ + … + Xₙ',115,318,20,col.b,'left',o2);
+    T('E[Sₙ] = n · μ',115,368,24,col.fg,'left',o2);
+    T('Var(Sₙ) = n · σ²',115,412,24,col.fg,'left',o2);
+    T('SD(Sₙ) = σ · √n   (tăng chậm hơn n)',115,462,22,col.y,'left',o2);
+
+    RR(660,280,535,230,12,col.card,o3);RR(660,280,535,230,12,col.bd,o3,1.5);R(660,293,3.5,204,col.g,o3);
+    T('Trung bình mẫu:  X̄ₙ = Sₙ / n',690,318,20,col.g,'left',o3);
+    T('E[X̄ₙ] = μ   (không lệch!)',690,368,24,col.fg,'left',o3);
+    T('Var(X̄ₙ) = σ² / n',690,412,24,col.fg,'left',o3);
+    T('SD(X̄ₙ) = σ / √n   (giảm theo √n)',690,462,22,col.y,'left',o3);
+  }
+},
+{
+  t:'6. Luật số lớn (LLN) & Chebyshev',d:24,
+  s:[
+    [0,'Vì độ lệch chuẩn của trung bình mẫu là σ / √n tiến về 0 khi n → ∞, trung bình mẫu X̄ₙ sẽ hội tụ về kỳ vọng lý thuyết μ.'],
+    [5.5,'Đây là Luật số lớn (LLN): đồ thị bên trái mô phỏng trung bình số chấm xúc xắc dao động mạnh lúc đầu rồi tiến sát 3,5.'],
+    [11.5,'Công cụ chứng minh tổng quát không cần biết hình dáng phân phối là bất đẳng thức Chebyshev:'],
+    [17,'P(|X − μ| ≥ kσ) ≤ 1 / k² với mọi k > 0. Chẳng hạn tối đa 25% xác suất rơi ngoài ±2σ và tối đa 11,1% ngoài ±3σ.'],
+    [21,'Chebyshev luôn đúng cho MỌI phân phối có phương sai hữu hạn, nhưng cận thường khá lỏng so với phân phối Chuẩn.']
+  ],
+  f:t=>{
+    hd('6. Luật số lớn (LLN) và Bất đẳng thức Chebyshev');
+
+    // Bên trái: Đường hội tụ trung bình xúc xắc về 3,5
+    const m=mp(0,1000,115,630),y=mp(1.5,5.5,485,175);
+    L(105,485,640,485,col.axis,2);L(115,165,115,490,col.axis,1.5);
+    T('Mô phỏng trung bình mẫu X̄ₙ của xúc xắc (μ = 3,5)',372,145,19,col.fg,'center');
+    [0,250,500,750,1000].forEach(v=>T(String(v),m(v),510,15,col.dim,'center'));
+    [2,3.5,5].forEach(v=>T(f(v,1),100,y(v),15,v===3.5?col.y:col.dim,'right'));
+    L(115,y(3.5),630,y(3.5),col.y,1.8,1,[6,5]);
+
+    const maxI=Math.floor(llnPts.length*sg(t,1.5,11));
+    if(maxI>=2){
+      al(.95);X.strokeStyle=col.b;X.lineWidth=2.3;X.beginPath();
+      for(let i=0;i<maxI;i++){
+        const px=m(llnPts[i][0]),py=y(llnPts[i][1]);
+        i===0?X.moveTo(px,py):X.lineTo(px,py);
+      }
+      X.stroke();
+    }
+
+    // Bên phải: Bất đẳng thức Chebyshev
+    const oR=sg(t,10,11.5);
+    RR(680,165,520,335,12,col.card,oR);RR(680,165,520,335,12,col.bd,oR,1.5);R(680,178,3.5,309,col.g,oR);
+    T('Bất đẳng thức Chebyshev (mọi phân phối)',940,205,20,col.g,'center',oR);
+    T('P(|X − μ| ≥ k·σ) ≤ 1 / k²',940,262,26,col.y,'center',sg(t,11.5,13));
+    T('• k = 2:  Ít nhất 75,0% nằm trong μ ± 2σ',715,326,19,col.fg,'left',sg(t,14,15.5));
+    T('• k = 3:  Ít nhất 88,9% nằm trong μ ± 3σ',715,368,19,col.fg,'left',sg(t,15.5,17));
+    T('• Áp cho X̄ₙ: P(|X̄ₙ − μ| ≥ ε) ≤ σ² / (nε²) → 0',715,422,18,col.b,'left',sg(t,17.5,19));
+    T('  ⇒ Chứng minh trực tiếp Luật số lớn!',715,462,18,col.dim,'left',sg(t,18.5,20));
+  }
+},
+{
+  t:'7. Biến liên tục: Hàm mật độ PDF',d:24,
+  s:[
+    [0,'Chuyển sang nửa sau buổi học: biến ngẫu nhiên liên tục (như thời gian chờ, chiều cao, sai số đo) nhận mọi giá trị trên một khoảng.'],
+    [5.5,'Vì có vô hạn không đếm được các điểm, xác suất tại ĐÚNG MỘT ĐIỂM bất kỳ luôn bằng 0: P(X = c) = 0!'],
+    [11,'Thay cho PMF, ta dùng hàm mật độ xác suất f(x) ≥ 0 có tổng diện tích dưới đường cong bằng 1.'],
+    [16.5,'Xác suất X rơi vào đoạn [a, b] chính là DIỆN TÍCH (tích phân) dưới đường cong f(x) từ a đến b.'],
+    [20.5,'Cảnh giác: giá trị f(x) KHÔNG PHẢI xác suất và hoàn toàn có thể lớn hơn 1 — chỉ diện tích mới nằm trong [0, 1]!']
+  ],
+  f:t=>{
+    hd('7. Biến ngẫu nhiên liên tục & Hàm mật độ xác suất (PDF)');
+    T('P(a ≤ X ≤ b) = ∫ₐᵇ f(x) dx = Diện tích dưới đường cong mật độ   |   P(X = c) = 0',80,104,20,col.dim);
+
+    const m=mp(-3.5,3.5,110,730),B=475,y=mp(0,.48,B,175);
+    L(95,B,745,B,col.axis,2);
+    const kFill=sg(t,6,10);
+    const bCur=mx(-.8,1.3,kFill);
+    if(kFill>0)fillCurve(x=>npdf(x,0,1),-.8,bCur,m,y,B,col.b,.35);
+    drawCurve(x=>npdf(x,0,1),-3.3,3.3,m,y,col.fg,3,sg(t,1,2.5));
+    L(m(-.8),y(npdf(-.8)),m(-.8),B,col.y,2,sg(t,5.5,6.5));
+    L(m(bCur),y(npdf(bCur)),m(bCur),B,col.y,2,sg(t,6,7));
+    T('a',m(-.8),B+24,20,col.y,'center',sg(t,5.5,6.5));
+    T('b',m(1.3),B+24,20,col.y,'center',sg(t,9.5,10.5));
+    T('Diện tích = P(a ≤ X ≤ b)',m(.25),B-75,20,col.y,'center',sg(t,10,11.5));
+
+    const pts=[
+      ['1. f(x) ≥ 0, tổng diện tích = 1',col.g,3],
+      ['2. P(X = c) = 0 tại mọi điểm đơn lẻ',col.y,7],
+      ['3. P(a < X < b) = P(a ≤ X ≤ b)',col.b,11],
+      ['4. f(x) có thể > 1 (VD: Uniform(0; 0,5))',col.r,16]
+    ];
+    pts.forEach(([tx,c,st],i)=>{
+      const yy=205+i*74,o=sg(t,st,st+1.2);
+      RR(780,yy-26,435,54,10,col.card,o);RR(780,yy-26,435,54,10,col.bd,o,1.4);R(780,yy-18,3.5,38,c,o);
+      T(tx,804,yy,18,c,'left',o);
+    });
+  }
+},
+{
+  t:'8. Phân phối Đều liên tục Uniform(a, b)',d:22,
+  s:[
+    [0,'Phân phối liên tục đơn giản nhất là Đều liên tục Uniform(a, b): mật độ phẳng hoàn toàn trên đoạn [a, b].'],
+    [5,'Vì tổng diện tích hình chữ nhật phải bằng 1, chiều cao mật độ là f(x) = 1 / (b − a) trên [a, b] và bằng 0 ở ngoài.'],
+    [10.5,'Ví dụ thời gian chờ xe buýt chạy đều mỗi 15 phút tuân theo Uniform(0, 15): xác suất chờ trong đoạn [3, 9] là (9 − 3)/15 = 40%.'],
+    [16.5,'Kỳ vọng nằm đúng trung điểm E[X] = (a + b)/2 = 7,5 phút; phương sai Var(X) = (b − a)² / 12.']
+  ],
+  f:t=>{
+    hd('8. Phân phối Đều liên tục: X ~ Uniform(a, b)');
+    T('Ví dụ thời gian chờ xe buýt Uniform(0, 15): chiều cao mật độ f(x) = 1/15',80,104,20,col.dim);
+
+    const m=mp(-2,17,120,760),B=470,y=mp(0,.1,B,190);
+    L(105,B,775,B,col.axis,2);L(m(0),180,m(0),B+6,col.axis,1.5);
+    const oU=sg(t,1,2.5),oA=sg(t,7,9.5);
+    // Hình chữ nhật Uniform(0, 15)
+    R(m(0),y(1/15),m(15)-m(0),B-y(1/15),col.b,.18*oU);
+    L(m(0),y(1/15),m(15),y(1/15),col.b,3,oU);
+    L(m(15),y(1/15),m(15),B,col.b,2.5,oU,[5,4]);
+    // Tô đoạn [3, 9]
+    const bEnd=mx(3,9,oA);
+    R(m(3),y(1/15),m(bEnd)-m(3),B-y(1/15),col.g,.5*oA);
+    T('0',m(0),B+24,18,col.fg,'center');
+    T('3',m(3),B+24,18,col.g,'center',oA);
+    T('9',m(9),B+24,18,col.g,'center',oA);
+    T('15',m(15),B+24,18,col.fg,'center');
+    T('1/15',m(0)-14,y(1/15),17,col.b,'right',oU);
+    T('P(3 ≤ X ≤ 9) = 6/15 = 40%',m(6),y(1/15)-24,19,col.g,'center',sg(t,9.5,11));
+
+    const oR=sg(t,12,13.5);
+    RR(815,175,390,285,12,col.card,oR);RR(815,175,390,285,12,col.bd,oR,1.5);R(815,188,3.5,259,col.y,oR);
+    T('Thông số Uniform(a, b)',1010,212,21,col.y,'center',oR);
+    T('f(x) = 1 / (b − a)',848,266,21,col.fg,'left',oR);
+    T('E[X] = (a + b) / 2 = 7,5',848,318,21,col.g,'left',oR);
+    T('Var(X) = (b − a)² / 12',848,370,21,col.b,'left',oR);
+    T('SD(X) ≈ 4,33 phút',848,418,19,col.dim,'left',oR);
+  }
+},
+{
+  t:'9. Phân phối Chuẩn & Quy tắc 68–95–99,7',d:26,
+  s:[
+    [0,'Phân phối Chuẩn N(μ, σ²) có đồ thị hình chuông đối xứng qua tâm μ, độ rộng quyết định bởi độ lệch chuẩn σ.'],
+    [5.5,'Quy tắc thực nghiệm 68 – 95 – 99,7 là công cụ ước lượng cực nhanh mọi bài toán phân phối Chuẩn:'],
+    [11,'Khoảng μ ± 1σ chứa khoảng 68,3% xác suất; khoảng μ ± 2σ chứa 95,4%; và khoảng μ ± 3σ bao phủ tới 99,7%!'],
+    [17,'Trong SciPy, cần chú ý lệnh scipy.stats.norm(loc=μ, scale=σ) nhận ĐỘ LỆCH CHUẨN σ, KHÔNG phải phương sai σ²!'],
+    [22,'Nhờ tính đối xứng quanh μ, mọi bài toán Chuẩn đều quy đổi được về phân phối Chuẩn tắc N(0, 1).']
+  ],
+  f:t=>{
+    hd('9. Phân phối Chuẩn N(μ, σ²) và Quy tắc 68 – 95 – 99,7');
+    const m=mp(-4,4,100,1180),B=475,y=mp(0,.44,B,155);
+    L(85,B,1195,B,col.axis,2);
+
+    const o3=sg(t,12,13.5),o2=sg(t,8,9.5),o1=sg(t,4,5.5);
+    if(o3>0)fillCurve(x=>npdf(x),-3,3,m,y,B,col.o,.2*o3);
+    if(o2>0)fillCurve(x=>npdf(x),-2,2,m,y,B,col.g,.24*o2);
+    if(o1>0)fillCurve(x=>npdf(x),-1,1,m,y,B,col.b,.34*o1);
+    drawCurve(x=>npdf(x),-3.8,3.8,m,y,col.fg,3,sg(t,.8,2));
+
+    [-3,-2,-1,0,1,2,3].forEach(k=>{
+      const lb=k===0?'μ':(k>0?`μ+${k}σ`:`μ${k}σ`);
+      L(m(k),y(npdf(k)),m(k),B,col.axis,1.2,.6,[4,4]);
+      T(lb,m(k),B+24,18,k===0?col.y:col.fg,'center');
+    });
+
+    // Thanh chú thích 68%, 95%, 99,7%
+    if(o1>0){L(m(-1),345,m(1),345,col.b,2.5,o1);T('68,3%',m(0),325,22,col.b,'center',o1)}
+    if(o2>0){L(m(-2),250,m(2),250,col.g,2.5,o2);T('95,4%',m(0),230,22,col.g,'center',o2)}
+    if(o3>0){L(m(-3),180,m(3),180,col.o,2.5,o3);T('99,7%',m(0),160,22,col.o,'center',o3)}
+    T('Chú ý SciPy: norm(loc=μ, scale=σ) dùng độ lệch chuẩn σ, không dùng σ²!',640,535,19,col.y,'center',sg(t,16.5,18));
+  }
+},
+{
+  t:'10. Chuẩn hóa Z-score & So sánh thang đo',d:24,
+  s:[
+    [0,'Mọi biến Chuẩn X ~ N(μ, σ²) đều chuẩn hóa được về Chuẩn tắc Z ~ N(0, 1) qua công thức Z = (X − μ) / σ.'],
+    [5.5,'Z-score cho biết một giá trị đứng cách trung bình bao nhiêu độ lệch chuẩn — hoàn toàn không còn phụ thuộc đơn vị đo!'],
+    [11,'Ví dụ kinh điển: so sánh điểm hai bài thi khác thang. Môn A được 82 điểm (μ=75, σ=5); Môn B được 76 điểm (μ=68, σ=4).'],
+    [17,'Quy về Z-score: Z_A = (82−75)/5 = +1,40σ, còn Z_B = (76−68)/4 = +2,00σ. Vậy kết quả ở Môn B nổi trội hơn hẳn!'],
+    [21,'Tương ứng với phân vị 91,9% ở Môn A và 97,7% ở Môn B — sức mạnh thực sự của việc chuẩn hóa.']
+  ],
+  f:t=>{
+    hd('10. Chuẩn hóa Z = (X − μ) / σ và So sánh hai thang đo');
+
+    const o1=sg(t,1.5,3),o2=sg(t,6,7.5);
+    RR(90,140,515,175,12,col.card,o1);RR(90,140,515,175,12,col.bd,o1,1.5);R(90,153,3.5,149,col.b,o1);
+    T('Môn A:  điểm 82   (μ = 75, σ = 5)',347,178,21,col.b,'center',o1);
+    T('Z_A = (82 − 75) / 5 = +1,40',347,232,26,col.fg,'center',sg(t,3.5,5));
+    T('Vượt qua 91,9% thí sinh',347,280,19,col.dim,'center',sg(t,5,6.5));
+
+    RR(675,140,515,175,12,col.card,o2);RR(675,140,515,175,12,col.bd,o2,1.5);R(675,153,3.5,149,col.g,o2);
+    T('Môn B:  điểm 76   (μ = 68, σ = 4)',932,178,21,col.g,'center',o2);
+    T('Z_B = (76 − 68) / 4 = +2,00',932,232,26,col.y,'center',sg(t,8,9.5));
+    T('Vượt qua 97,7% thí sinh  →  Tốt hơn!',932,280,19,col.g,'center',sg(t,9.5,11));
+
+    // Đường cong chuẩn tắc N(0,1) bên dưới đánh dấu Z_A và Z_B
+    const m=mp(-3.5,3.5,140,1140),B=515,y=mp(0,.44,B,345);
+    L(120,B,1160,B,col.axis,2);
+    drawCurve(x=>npdf(x),-3.3,3.3,m,y,col.fg,2.6,sg(t,10,11.5));
+    const oZ=sg(t,12,13.5);
+    L(m(1.4),y(npdf(1.4)),m(1.4),B,col.b,3,oZ);D(m(1.4),y(npdf(1.4)),6,col.b,oZ);
+    T('Z_A = 1,40',m(1.4),y(npdf(1.4))-20,18,col.b,'center',oZ);
+    L(m(2.0),y(npdf(2.0)),m(2.0),B,col.g,3,oZ);D(m(2.0),y(npdf(2.0)),6,col.g,oZ);
+    T('Z_B = 2,00',m(2.0)+12,y(npdf(2.0))-20,18,col.g,'left',oZ);
+    T('0',m(0),B+22,17,col.dim,'center');
+  }
+},
+{
+  t:'11. Phân phối Mũ & Tính không nhớ',d:24,
+  s:[
+    [0,'Nếu số sự kiện trong một khoảng tuân theo Poisson(λ), thì thời gian CHỜ giữa hai sự kiện liên tiếp tuân theo phân phối Mũ Exponential(λ).'],
+    [6,'Hàm mật độ giảm hàm mũ f(x) = λ·e⁻λˣ (x ≥ 0), có kỳ vọng và độ lệch chuẩn đều bằng 1/λ.'],
+    [12,'Ví dụ tổng đài nhận λ = 0,2 cuộc gọi/phút ⇒ thời gian chờ trung bình là 1/0,2 = 5 phút; xác suất chờ quá t phút là e⁻⁰·²ᵗ.'],
+    [17.5,'Đặc trưng kỳ lạ của phân phối Mũ là tính KHÔNG NHỚ: P(X > s + t | X > s) = P(X > t).'],
+    [21,'Đã chờ 10 phút chưa có cuộc gọi thì phân phối thời gian chờ thêm vẫn hệt như mới bắt đầu chờ từ phút 0!']
+  ],
+  f:t=>{
+    hd('11. Phân phối Mũ Exponential(λ) và Tính không nhớ');
+    T('f(x) = λ·e⁻λˣ (x ≥ 0)   |   E[X] = SD(X) = 1/λ   |   P(X > x) = e⁻λˣ',80,104,20,col.dim);
+
+    const m=mp(0,18,110,690),B=480,y=mp(0,.26,B,175);
+    L(95,B,705,B,col.axis,2);L(110,165,110,B+6,col.axis,1.5);
+    const epdf=x=>.2*Math.exp(-.2*x);
+    fillCurve(epdf,5,17.5,m,y,B,col.o,.3*sg(t,5,7));
+    drawCurve(epdf,0,17.5,m,y,col.b,3,sg(t,1,2.5));
+    [0,5,10,15].forEach(v=>T(String(v),m(v),B+24,18,col.fg,'center'));
+    T('λ = 0,2 (E[X] = 5 phút)',m(9.5),210,20,col.b,'center');
+    T('P(X > 5) = e⁻¹ ≈ 36,8%',m(10),390,19,col.o,'center',sg(t,7,8.5));
+
+    const oR=sg(t,12,13.5);
+    RR(745,170,460,315,12,col.card,oR);RR(745,170,460,315,12,col.bd,oR,1.5);R(745,183,3.5,289,col.y,oR);
+    T('Tính không nhớ (Memoryless)',975,210,22,col.y,'center',oR);
+    T('P(X > s + t | X > s) = P(X > t)',975,268,21,col.fg,'center',sg(t,14,15.5));
+    T('• Liên kết chặt với Poisson(λ):',778,330,19,col.g,'left',sg(t,16.5,18));
+    T('  Poisson đếm số lần xảy ra',778,364,18,col.dim,'left',sg(t,16.5,18));
+    T('  Mũ đo thời gian chờ tới lần kế tiếp',778,396,18,col.dim,'left',sg(t,16.5,18));
+    T('• SciPy: expon(scale = 1/λ)',778,446,19,col.b,'left',sg(t,19,20.5));
+  }
+},
+{
+  t:'12. Định lý giới hạn trung tâm (CLT)',d:26,
+  s:[
+    [0,'Bây giờ là định lý quan trọng bậc nhất của xác suất thống kê: Định lý giới hạn trung tâm (CLT).'],
+    [5,'Bắt đầu từ một phân phối gốc RẤT LỆCH như phân phối Mũ (n = 1 ở hình trái): không hề giống hình chuông chút nào!'],
+    [11,'Nhưng khi lấy trung bình của n = 5 quan sát độc lập, phân phối của X̄₅ lập tức bớt lệch và co hẹp lại quanh μ = 1.'],
+    [16.5,'Đến n = 30, phân phối của trung bình mẫu X̄₃₀ đã khớp gần như hoàn hảo với đường cong Chuẩn N(μ, σ²/n)!'],
+    [22,'CLT cho phép ta tính xác suất cho tổng và trung bình mẫu của MỌI phân phối gốc (có σ² hữu hạn) khi n đủ lớn.']
+  ],
+  f:t=>{
+    hd('12. Định lý giới hạn trung tâm (CLT): Từ lệch về Chuông Chuẩn');
+    T('Lấy mẫu từ phân phối Mũ lệch (μ = 1, σ = 1) và vẽ phân phối trung bình mẫu X̄ₙ',80,104,20,col.dim);
+
+    const ns=[1,5,30],B=465,K=250;
+    ns.forEach((n,idx)=>{
+      const x0=85+idx*390,x1=x0+340,o=sg(t,1.5+idx*4.5,3+idx*4.5);
+      L(x0-6,B,x1+6,B,col.axis,2,o);
+      T(`n = ${n}`+(n===1?' (gốc rất lệch)':(n===30?' (≈ Chuẩn!)':' (bớt lệch)')),x0+170,160,21,n===30?col.g:col.y,'center',o);
+      const hist=cltHists[n],bw=(x1-x0)/hist.length;
+      hist.forEach((v,bi)=>{
+        const h=v*K*o;
+        R(x0+bi*bw+1,B-h,bw-2,h,n===30?col.g:col.b,.78*o);
+      });
+      if(n===30){
+        const mm=mp(0,3,x0,x1),yy=mp(0,npdf(1,1,1/Math.sqrt(30)),B,B-K);
+        drawCurve(x=>npdf(x,1,1/Math.sqrt(30)),.1,2.2,mm,yy,col.y,2.8,sg(t,14,15.5));
+      }
+      T('μ = 1',x0+(x1-x0)/3,B+24,17,col.y,'center',o);
+    });
+    T('CLT:  Zₙ = (X̄ₙ − μ) / (σ / √n)  →  N(0, 1)  khi n đủ lớn',640,530,22,col.y,'center',sg(t,17,19));
+  }
+},
+{
+  t:'13. Sai số chuẩn SE & Tỉ lệ mẫu p̂',d:24,
+  s:[
+    [0,'Khi áp dụng CLT cho trung bình mẫu X̄ₙ, độ lệch chuẩn σ / √n mang tên gọi riêng là Sai số chuẩn (Standard Error — SE).'],
+    [5.5,'Nếu biến gốc X chỉ nhận 0 hoặc 1 (Bernoulli(p)), thì trung bình mẫu X̄ₙ chính là TỈ LỆ MẪU p̂ = K / n!'],
+    [11,'Do đó theo CLT, tỉ lệ mẫu p̂ xấp xỉ Chuẩn với tâm p và sai số chuẩn SE(p̂) = √[p(1 − p) / n].'],
+    [16.5,'Ví dụ khảo sát n = 400 sinh viên với tỉ lệ thật p = 0,5: SE(p̂) = √(0,25 / 400) = 0,025 (2,5%).'],
+    [20.5,'Khoảng ±2·SE tương ứng 50% ± 5% sẽ bao phủ khoảng 95% các tỉ lệ mẫu quan sát được!']
+  ],
+  f:t=>{
+    hd('13. Sai số chuẩn SE và Phân phối của Tỉ lệ mẫu p̂');
+
+    const o1=sg(t,1,2.5),o2=sg(t,7,8.5);
+    RR(85,145,535,205,12,col.card,o1);RR(85,145,535,205,12,col.bd,o1,1.5);R(85,158,3.5,179,col.b,o1);
+    T('Trung bình mẫu X̄ₙ',352,182,23,col.b,'center',o1);
+    T('X̄ₙ  ≈  N( μ ,  σ² / n )',352,238,25,col.fg,'center',o1);
+    T('Sai số chuẩn:  SE(X̄ₙ) = σ / √n',352,298,22,col.y,'center',o1);
+
+    RR(660,145,535,205,12,col.card,o2);RR(660,145,535,205,12,col.bd,o2,1.5);R(660,158,3.5,179,col.g,o2);
+    T('Tỉ lệ mẫu  p̂ = K / n  (trường hợp riêng)',927,182,22,col.g,'center',o2);
+    T('p̂  ≈  N( p ,  p(1−p) / n )',927,238,25,col.fg,'center',o2);
+    T('SE(p̂) = √[ p(1 − p) / n ]',927,298,22,col.y,'center',o2);
+
+    const o3=sg(t,13.5,15);
+    RR(120,388,1040,125,12,col.card2,o3);RR(120,388,1040,125,12,col.bd,o3,1.5);R(120,400,3.5,101,col.o,o3);
+    T('VD Khảo sát n = 400 sinh viên (p = 0,50):',640,425,21,col.o,'center',o3);
+    T('SE(p̂) = √(0,5 · 0,5 / 400) = 0,025 (2,5%)  ⇒  95% mẫu rơi vào  50% ± 5%  =  [45% ; 55%]',640,472,21,col.fg,'center',o3);
+  }
+},
+{
+  t:'14. Xấp xỉ Nhị thức bằng Chuẩn (±0,5)',d:26,
+  s:[
+    [0,'Nhị thức Bin(n, p) là tổng n biến Bernoulli, nên khi cả np ≥ 10 và n(1 − p) ≥ 10, ta xấp xỉ tốt bằng Chuẩn N(np, np(1−p)).'],
+    [6,'Tuy nhiên Nhị thức là biến rời rạc (cột rộng 1 đơn vị quanh số nguyên k), còn Chuẩn là đường cong liên tục.'],
+    [12,'Do đó để lấy trọn vẹn khối cột từ a đến b, ta cần HIỆU CHỈNH LIÊN TỤC mở rộng hai đầu thêm 0,5:'],
+    [17.5,'P(X ≤ k) ≈ P(Y ≤ k + 0,5), còn P(X ≥ k) ≈ P(Y ≥ k − 0,5), và P(X = k) ≈ P(k − 0,5 ≤ Y ≤ k + 0,5).'],
+    [22,'Hiệu chỉnh ±0,5 giúp giảm sai số xấp xỉ đi hàng chục lần khi n cỡ vừa (ví dụ n = 20 đến 100)!']
+  ],
+  f:t=>{
+    hd('14. Xấp xỉ Nhị thức bằng Chuẩn & Hiệu chỉnh liên tục ±0,5');
+    T('Ví dụ X ~ Binomial(n = 30, p = 0,5):  μ = 15,  σ = √7,5 ≈ 2,74',80,104,20,col.dim);
+
+    const m=mp(6.5,23.5,100,720),B=475,mu=15,sd=Math.sqrt(7.5),y=mp(0,.17,B,175);
+    L(90,B,730,B,col.axis,2);
+    const corr=sg(t,10,12.5);
+    for(let k=7;k<=23;k++){
+      const pr=binom(k,30,.5),xL=m(k-.5),xR=m(k+.5),h=B-y(pr);
+      const hi=k>=13&&k<=17;
+      R(xL+1,y(pr),xR-xL-2,h,hi?col.g:col.b,.72);
+      if(k%2===1)T(String(k),m(k),B+24,15,hi?col.g:col.dim,'center');
+    }
+    drawCurve(x=>npdf(x,mu,sd),7,23,m,y,col.y,2.8,sg(t,2,3.5));
+    const aL=mx(13,12.5,corr),bR=mx(17,17.5,corr);
+    L(m(aL),180,m(aL),B,col.o,2.4,sg(t,6,7.5),[5,4]);
+    L(m(bR),180,m(bR),B,col.o,2.4,sg(t,6,7.5),[5,4]);
+    T(`[${f(aL,1)} ; ${f(bR,1)}]`,m(15),162,20,col.o,'center',sg(t,7,8.5));
+
+    const oR=sg(t,12.5,14);
+    RR(765,170,445,320,12,col.card,oR);RR(765,170,445,320,12,col.bd,oR,1.5);R(765,183,3.5,294,col.y,oR);
+    T('Quy tắc hiệu chỉnh ±0,5',987,208,21,col.y,'center',oR);
+    T('• Điều kiện: np ≥ 10 và n(1−p) ≥ 10',792,258,18,col.g,'left',oR);
+    T('• P(X ≤ k) ≈ Φ( (k + 0,5 − μ)/σ )',792,306,18,col.fg,'left',sg(t,14.5,16));
+    T('• P(X ≥ k) ≈ 1 − Φ( (k − 0,5 − μ)/σ )',792,354,18,col.fg,'left',sg(t,16,17.5));
+    T('• P(X = k) ≈ Φ(k+0,5) − Φ(k−0,5)',792,402,18,col.fg,'left',sg(t,17.5,19));
+    T('Mở rộng biên 0,5 để ôm trọn khối cột!',792,456,17,col.o,'left',sg(t,19,20.5));
+  }
+},
+{
+  t:'15. Bài toán tổng hợp (Thời gian & Lỗi)',d:24,
+  s:[
+    [0,'Ta kết thúc phần ứng dụng bằng hai bài toán thực tế kết hợp trọn bộ kiến thức Tuần 07.'],
+    [5,'Bài 1: Tổng thời gian di chuyển T gồm đi bộ ~ N(12, 2²) và xe buýt ~ N(25, 4²) độc lập.'],
+    [10.5,'Ta có E[T] = 12 + 25 = 37 phút và SD(T) = √(2² + 4²) = √20 ≈ 4,47 phút (lưu ý cộng phương sai, KHÔNG cộng độ lệch chuẩn 2+4=6!).'],
+    [16.5,'Bài 2: Kiểm tra n = 400 linh kiện độc lập có tỉ lệ lỗi p = 0,05 ⇒ μ = 20, σ = √19 ≈ 4,36.'],
+    [20.5,'Xác suất có từ 28 lỗi trở lên: chuẩn hóa Z = (27,5 − 20)/4,36 ≈ 1,72 ⇒ P(X ≥ 28) ≈ 4,3%.']
+  ],
+  f:t=>{
+    hd('15. Hai bài toán tổng hợp ứng dụng Tuần 07');
+
+    // Bài 1 bên trái
+    const o1=sg(t,1.5,3);
+    RR(85,145,535,355,12,col.card,o1);RR(85,145,535,355,12,col.bd,o1,1.5);R(85,158,3.5,329,col.b,o1);
+    T('Bài 1: Tổng thời gian di chuyển (độc lập)',352,186,21,col.b,'center',o1);
+    T('Đi bộ: X₁ ~ N(12, 2²)  ;  Xe buýt: X₂ ~ N(25, 4²)',115,242,18,col.dim,'left',sg(t,3,4.5));
+    T('E[T] = 12 + 25 = 37 phút',115,296,23,col.fg,'left',sg(t,5,6.5));
+    T('Var(T) = 2² + 4² = 4 + 16 = 20',115,346,23,col.g,'left',sg(t,7,8.5));
+    T('SD(T) = √20 ≈ 4,47 phút',115,396,25,col.y,'left',sg(t,9,10.5));
+    T('✗ Sai lầm hay gặp: cộng thẳng 2 + 4 = 6!',115,456,19,col.r,'left',sg(t,10.5,12));
+
+    // Bài 2 bên phải
+    const o2=sg(t,12.5,14);
+    RR(660,145,535,355,12,col.card,o2);RR(660,145,535,355,12,col.bd,o2,1.5);R(660,158,3.5,329,col.g,o2);
+    T('Bài 2: Kiểm tra n = 400 linh kiện (p = 0,05)',927,186,21,col.g,'center',o2);
+    T('μ = np = 20   ;   σ = √(400·0,05·0,95) ≈ 4,36',690,242,18,col.dim,'left',sg(t,14,15.5));
+    T('Cần tính: P(X ≥ 28)',690,296,23,col.fg,'left',sg(t,15.5,17));
+    T('Hiệu chỉnh liên tục:  28 − 0,5 = 27,5',690,346,21,col.o,'left',sg(t,17,18.5));
+    T('Z = (27,5 − 20) / 4,36 ≈ +1,72',690,396,23,col.fg,'left',sg(t,18.5,20));
+    T('⇒ P(X ≥ 28) ≈ 1 − Φ(1,72) ≈ 4,3%',690,452,24,col.y,'left',sg(t,20,21.5));
+  }
+},
+{
+  t:'16. Tóm tắt & 6 lỗi hay gặp',d:24,
+  s:[
+    [0,'Trước khi sang bảng tổng hợp công thức, hãy rà lại 6 lỗi phổ biến nhất cần tránh ở Tuần 07.'],
+    [4.5,'Một là cộng trực tiếp hai độ lệch chuẩn SD(X + Y) = SD(X) + SD(Y); đúng ra phải cộng PHƯƠNG SAI rồi mới lấy căn!'],
+    [9.5,'Hai là nghĩ Var(X − Y) = Var(X) − Var(Y); ba là nhầm scale trong scipy.stats.norm là phương sai σ² thay vì độ lệch chuẩn σ.'],
+    [14.5,'Bốn là tưởng f(x) của biến liên tục phải luôn ≤ 1 hoặc gán P(X = c) > 0 cho biến liên tục.'],
+    [19,'Năm là dùng CLT khi n quá nhỏ cho phân phối lệch nặng; sáu là quên hiệu chỉnh liên tục ±0,5 khi xấp xỉ Nhị thức cỡ vừa.']
+  ],
+  f:t=>{
+    hd('16. Sáu lỗi hay gặp cần tránh ở Tuần 07');
+    const errs=[
+      ['1. Cộng thẳng SD(X + Y) = SD(X)+SD(Y)','→ Phải cộng Var rồi lấy căn: √(σ₁² + σ₂²)',1.5],
+      ['2. Viết Var(X − Y) = Var(X) − Var(Y)','→ Độc lập thì trừ vẫn CỘNG: Var(X) + Var(Y)',4.5],
+      ['3. Truyền σ² vào norm(scale=...)','→ SciPy nhận độ lệch chuẩn σ (không phải σ²)',7.5],
+      ['4. Coi giá trị mật độ f(x) là xác suất','→ Xác suất là DIỆN TÍCH; f(x) có thể > 1',10.5],
+      ['5. Quên hiệu chỉnh ±0,5 (Bin → Norm)','→ P(X ≤ k) ≈ Φ(k+0,5), P(X ≥ k) ≈ 1−Φ(k−0,5)',13.5],
+      ['6. Dùng E[X²] = (E[X])²','→ Sai! E[X²] = Var(X) + (E[X])²',16.5]
+    ];
+    errs.forEach(([e,fx,st],i)=>{
+      const yy=148+i*62,o=sg(t,st,st+1.2);
+      RR(85,yy-23,1110,48,10,col.card,o);RR(85,yy-23,1110,48,10,col.bd,o,1.4);R(85,yy-15,3.5,32,col.r,o);
+      T('✗  '+e,112,yy,20,col.r,'left',o);
+      T(fx,635,yy,20,col.g,'left',o);
+    });
+  }
+},
+{
+  t:'17. Tổng hợp công thức',d:28,
+  s:[
+    [0,'Cuối cùng, hãy cùng hệ thống lại toàn bộ 8 nhóm công thức cốt lõi của Tuần 07 trên bảng tổng hợp trực quan.'],
+    [4.5,'Cột trái gồm định nghĩa và tính tuyến tính của kỳ vọng, công thức phương sai, quy tắc đổi thang đo và sai số chuẩn σ chia √n.'],
+    [10.5,'Tiếp theo là bất đẳng thức Chebyshev 1 chia k², cùng hai phân phối liên tục Đều Uniform(a, b) và Chuẩn N(μ, σ²).'],
+    [16.5,'Cột phải gồm công thức chuẩn hóa Z-score, phân phối Mũ Exponential(λ) với kỳ vọng 1 chia λ, và công thức chuẩn hóa CLT cho trung bình mẫu.'],
+    [22.5,'Bạn có thể bấm Space để tạm dừng tại bảng công thức này để ôn tập và ghi chép nhé!']
+  ],
+  f:t=>{
+    const pal={gold:'#e5b91a',txt:'#dcdde2',mut:'#989ba5',bg:'#35373d',bd:'#4c4f58'};
+    T('17. Tổng hợp các công thức trọng tâm Tuần 07',80,58,35,pal.gold);
+    const card=(x,y,title,st,draw)=>{
+      const o=sg(t,st,st+1.2);
+      RR(x,y,555,104,10,pal.bg,o);RR(x,y,555,104,10,pal.bd,o,1.4);
+      R(x,y+12,3.5,80,pal.gold,o);
+      T(title,x+18,y+22,16,pal.gold,'left',o);
+      draw(x,y,o);
+    };
+
+    // Cột trái (4 thẻ)
+    card(75,112,'1. Kỳ vọng E[X] & Tính tuyến tính',1,(x,y,o)=>{
+      T('E[X] = ∑ x·p(x)   (liên tục: ∫ x·f(x) dx)',x+22,y+55,19,pal.txt,'left',o);
+      T('E[aX + b] = a·E[X] + b  ;   E[X + Y] = E[X] + E[Y]',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(75,230,'2. Phương sai Var(X) & Độ lệch chuẩn SD(X)',3,(x,y,o)=>{
+      T('Var(X) = E[X²] − (E[X])²  ;   SD(X) = √Var(X)',x+22,y+55,19,pal.txt,'left',o);
+      T('Var(aX + b) = a²·Var(X)  ;   Độc lập: Var(X±Y) = Var(X)+Var(Y)',x+22,y+86,15,pal.mut,'left',o);
+    });
+    card(75,348,'3. Trung bình mẫu X̄ₙ & Sai số chuẩn (i.i.d.)',5.5,(x,y,o)=>{
+      T('E[X̄ₙ] = μ  ;   SE(X̄ₙ) =',x+22,y+64,19,pal.txt,'left',o);
+      FR('σ','√n',x+268,y+64,18,pal.txt,o);
+      T(';  SE(p̂) = √[p(1−p)/n]',x+310,y+64,16,pal.mut,'left',o);
+    });
+    card(75,466,'4. Bất đẳng thức Chebyshev (mọi phân phối)',8,(x,y,o)=>{
+      T('P(|X − μ| ≥ k·σ) ≤',x+22,y+64,20,pal.txt,'left',o);
+      FR('1','k²',x+242,y+64,18,pal.txt,o);
+      T('(với mọi k > 0)',x+285,y+64,16,pal.mut,'left',o);
+    });
+
+    // Cột phải (4 thẻ)
+    card(650,112,'5. Phân phối Đều liên tục Uniform(a, b)',10.5,(x,y,o)=>{
+      T('f(x) =',x+22,y+64,19,pal.txt,'left',o);
+      FR('1','b − a',x+115,y+64,17,pal.txt,o);
+      T(';  E[X] =',x+162,y+64,18,pal.txt,'left',o);
+      FR('a + b','2',x+278,y+64,17,pal.txt,o);
+      T(';  Var =',x+322,y+64,18,pal.txt,'left',o);
+      FR('(b − a)²','12',x+445,y+64,16,pal.txt,o);
+    });
+    card(650,230,'6. Phân phối Chuẩn N(μ, σ²) & Z-score',13,(x,y,o)=>{
+      T('Z =',x+24,y+64,20,pal.txt,'left',o);
+      FR('X − μ','σ',x+102,y+64,18,pal.txt,o);
+      T('~ N(0, 1)   |   Quy tắc 68 – 95 – 99,7%',x+152,y+64,16,pal.mut,'left',o);
+    });
+    card(650,348,'7. Phân phối Mũ Exponential(λ)',15.5,(x,y,o)=>{
+      T('f(x) = λ·e⁻λˣ (x≥0)  ;  E[X] = SD(X) =',x+22,y+64,18,pal.txt,'left',o);
+      FR('1','λ',x+408,y+64,18,pal.txt,o);
+    });
+    card(650,466,'8. Định lý giới hạn trung tâm (CLT)',18,(x,y,o)=>{
+      T('Zₙ =',x+24,y+64,20,pal.txt,'left',o);
+      FR('(X̄ₙ − μ) · √n','σ',x+160,y+64,17,pal.txt,o);
+      T('→ N(0, 1)   (Bin → Norm: ±0,5)',x+245,y+64,16,pal.mut,'left',o);
+    });
+  }
+}
+];
+
+// ===== Điều khiển trình phát tương tác =====
+const ST=[];let TOT=0;sc.forEach(s=>{ST.push(TOT);TOT+=s.d});
+const idx=()=>Math.max(0,ST.findLastIndex(x=>x<=g));
+const $=(q)=>document.querySelector(q);
+const pg=$('#pg'),mn=$('#mn'),ui=$('#ui'),sub=$('#sub'),bp=$('#bp'),bt=$('#bt'),bn=$('#bn'),bc=$('#bc'),bs=$('#bs'),bm=$('#bm'),tm=$('#tm');
+const ic=d=>`<svg viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+const IP=ic('M8 5v14l11-7z'),IA=ic('M6 19h4V5H6zm8-14v14h4V5z');
+bt.innerHTML=ic('M6 6h2v12H6zm3.5 6l8.5 6V6z');
+bn.innerHTML=ic('M6 18l8.5-6L6 6zm10-12v12h2V6z');
+bm.innerHTML=ic('M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z');
+
+sc.forEach((s,i)=>{
+  const e=document.createElement('div');e.className='sg';e.style.flexGrow=s.d;e.innerHTML='<i></i>';pg.appendChild(e);
+  const m=document.createElement('div');m.textContent=s.t;m.onclick=()=>{g=ST[i];mn.classList.remove('o');rd()};mn.appendChild(m);
+});
+const sgs=[...pg.children],mns=[...mn.children];
+
+let g=0,pl=1,cc=1,sp=1,lt=0,ht=0,dr=0;
+const sps=[.75,1,1.25,1.5,2];
+const ft=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+const sh=()=>{ui.classList.remove('h');clearTimeout(ht);if(pl)ht=setTimeout(()=>ui.classList.add('h'),3000)};
+const up=()=>{bp.innerHTML=pl?IA:IP;if(!pl)ui.classList.remove('h');else sh()};
+
+function rs(){
+  const dpr=Math.min(2,devicePixelRatio||1),w=innerWidth,h=innerHeight,r=Math.min(w/W,h/H);
+  C.style.width=W*r+'px';C.style.height=H*r+'px';
+  C.width=Math.round(W*r*dpr);C.height=Math.round(H*r*dpr);
+}
+addEventListener('resize',rs);rs();
+
+let lastSub='';
+function rd(){
+  const k=C.width/W;X.setTransform(k,0,0,k,0,0);X.globalAlpha=1;X.fillStyle='#2c2d31';X.fillRect(0,0,W,H);
+  const i=idx(),t=g-ST[i],s=sc[i];
+  FA=Math.min(cl(t/.4),cl((s.d-t)/.4));
+  s.f(t);
+  X.globalAlpha=1;
+  sgs.forEach((e,j)=>{e.firstChild.style.width=(j<i?100:j>i?0:cl(t/s.d)*100)+'%'});
+  mns.forEach((e,j)=>e.classList.toggle('c',j===i));
+  tm.textContent=`${ft(g)} / ${ft(TOT)} · ${s.t}`;
+  let tx='';
+  if(cc)for(const [a,b] of s.s)if(t>=a)tx=b;
+  if(tx!==lastSub){
+    lastSub=tx;
+    sub.textContent=tx;
+    sub.classList.toggle('e',!tx);
+  }
+}
+
+function lp(n){
+  if(lt&&pl){g+=Math.min(.1,(n-lt)/1000)*sp;if(g>=TOT){g=TOT;pl=0;up()}}
+  lt=n;rd();requestAnimationFrame(lp);
+}
+requestAnimationFrame(lp);up();
+
+const tg=()=>{if(g>=TOT)g=0;pl^=1;up()};
+bp.onclick=tg;
+bt.onclick=()=>{const i=idx();g=ST[g-ST[i]>2?i:Math.max(0,i-1)];sh()};
+bn.onclick=()=>{const i=idx();g=i<sc.length-1?ST[i+1]:TOT;sh()};
+bc.onclick=()=>{cc^=1;bc.classList.toggle('on',!!cc);lastSub='__';rd()};
+bs.onclick=()=>{sp=sps[(sps.indexOf(sp)+1)%sps.length];bs.textContent=sp+'×'};
+bm.onclick=()=>mn.classList.toggle('o');
+C.onclick=()=>{if(mn.classList.contains('o'))mn.classList.remove('o');else tg()};
+
+const sk=e=>{const r=pg.getBoundingClientRect();g=cl((e.clientX-r.left)/r.width)*TOT;rd()};
+pg.onpointerdown=e=>{dr=1;pg.setPointerCapture(e.pointerId);sk(e)};
+pg.onpointermove=e=>{if(dr)sk(e)};
+pg.onpointerup=()=>{dr=0};
+addEventListener('pointermove',sh);
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();tg()}
+  else if(e.key==='ArrowLeft')bt.click();
+  else if(e.key==='ArrowRight')bn.click();
+  else if(e.key==='c'||e.key==='C')bc.click();
+  else if(e.key==='m'||e.key==='M')bm.click();
+});
+</script>
+</body>
+</html>

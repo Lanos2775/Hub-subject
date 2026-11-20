@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tuần 4: Tương quan và hồi quy tuyến tính</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#2c2d31;--fg:#dcdde2;--ac:#e5b91a}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden;user-select:none}
+#st{position:fixed;inset:0;display:grid;place-items:center}
+canvas{display:block}
+/* Cố định phụ đề ở sát mép đáy màn hình, không đổi vị trí khi thanh điều khiển ẩn/hiện */
+#sub{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);
+  max-width:min(980px,94vw);
+  padding:10px 20px;
+  border-radius:10px;
+  background:rgba(36,37,41,.94);
+  border:1px solid #4c4f58;
+  color:#dcdde2;
+  font-size:clamp(14px,1.45vw,19px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:center;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:5;
+}
+#sub.e{opacity:0}
+#ui{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:20px 0 0;
+  background:linear-gradient(transparent,rgba(32,33,37,.92));
+  transition:opacity .3s;
+  z-index:10;
+}
+#ui.h{opacity:0;pointer-events:none}
+#pg{display:flex;gap:2px;height:14px;align-items:flex-end;cursor:pointer;touch-action:none}
+.sg{flex:1;height:4px;background:#ffffff24;border-radius:0;overflow:hidden;transition:height .15s}
+#pg:hover .sg{height:8px}
+.sg i{display:block;height:100%;background:var(--ac)}
+#rw{display:flex;align-items:center;gap:6px;padding:0 18px 8px}
+button{background:none;border:0;color:var(--fg);width:42px;height:42px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font:600 14px inherit;font-family:inherit}
+button:hover{background:#ffffff1a}
+button.on{color:var(--ac)}
+svg{width:24px;height:24px;fill:currentColor}
+#tm{font-size:14px;font-weight:600;margin-left:8px;flex:1;color:#989ba5}
+#mn{position:fixed;top:0;right:0;bottom:0;width:min(340px,86vw);background:#242529f5;border-left:1px solid #4c4f58;padding:18px 8px;overflow:auto;transform:translateX(100%);transition:transform .25s;z-index:20}
+#mn.o{transform:none}
+#mn div{padding:11px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;color:#dcdde2}
+#mn div:hover{background:#ffffff12}
+#mn div.c{color:var(--ac);background:#e5b91a18}
+</style>
+</head>
+<body>
+<div id="st"><canvas id="c"></canvas></div>
+<div id="mn"></div>
+<div id="ui">
+  <div id="rw">
+    <button id="bp" title="Phát/Tạm dừng (Space)"></button>
+    <button id="bt" title="Cảnh trước (←)"></button>
+    <button id="bn" title="Cảnh sau (→)"></button>
+    <span id="tm"></span>
+    <button id="bc" class="on" title="Bật/tắt phụ đề (C)">CC</button>
+    <button id="bs" title="Tốc độ">1×</button>
+    <button id="bm" title="Mục lục (M)"></button>
+  </div>
+  <div id="pg"></div>
+</div>
+<div id="sub"></div>
+
+<script>
+// Thiết lập canvas logic 1280x720 và các hàm vẽ, tiện ích toán học dùng chung
+const W=1280,H=720,C=document.getElementById('c'),X=C.getContext('2d');
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const sm=v=>{v=cl(v);return v*v*(3-2*v)};
+const sg=(t,a,b)=>sm((t-a)/(b-a));
+const mx=(a,b,k)=>a+(b-a)*k;
+const mp=(a,b,p,q)=>v=>p+(q-p)*(v-a)/(b-a);
+const f=(v,d=2)=>v.toFixed(d).replace('.',',');
+const col={fg:'#dcdde2',dim:'#989ba5',b:'#78a9d6',o:'#df9368',g:'#7cc99c',y:'#e5b91a',r:'#d97373',p:'#a996cf',card:'#35373d',card2:'#26272b',bd:'#4c4f58',axis:'#545760'};
+
+let FA=1;
+const al=a=>{X.globalAlpha=cl(a===undefined?1:a)*FA};
+function T(s,x,y,z,c,a,o){al(o);X.fillStyle=c||col.fg;X.font=`${z>=34?800:600} ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;X.textAlign=a||'left';X.textBaseline='middle';X.fillText(s,x,y)}
+function L(a,b,c,d,k,w,o,ds){al(o);X.strokeStyle=k;X.lineWidth=w||2;X.setLineDash(ds||[]);X.beginPath();X.moveTo(a,b);X.lineTo(c,d);X.stroke();X.setLineDash([])}
+function R(x,y,w,h,c,o){al(o);X.fillStyle=c;X.fillRect(x,y,w,h)}
+function RR(x,y,w,h,r,c,o,st){
+  al(o);X.beginPath();X.roundRect(x,y,w,h,r);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+function D(x,y,r,c,o,st){
+  al(o);X.beginPath();X.arc(x,y,r,0,Math.PI*2);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+// Vẽ phân số 2 dòng (tử số trên, gạch ngang, mẫu số dưới), trả về độ rộng khung phân số
+function FR(num,den,x,y,z,c,o){
+  X.font=`600 ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;
+  const w=Math.max(X.measureText(num).width,X.measureText(den).width)+14;
+  T(num,x,y-z*.66,z,c,'center',o);
+  L(x-w/2,y,x+w/2,y,c||col.fg,1.8,o);
+  T(den,x,y+z*.72,z,c,'center',o);
+  return w;
+}
+const hd=s=>T(s,80,58,35,col.y);
+
+// Bộ sinh số giả ngẫu nhiên cố định seed và dữ liệu 51 bang (Graduates, Poverty) từ notebook
+function mkRng(seed){let s=seed>>>0;return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const povData=[
+  [81.1,12.8],[81.0,10.3],[91.1,8.2],[83.1,11.2],[89.1,9.8],[86.9,11.1],[87.4,8.5],[86.0,9.4],[89.6,8.5],[80.4,18.9],
+  [81.5,10.7],[83.4,15.4],[90.5,11.1],[80.9,17.3],[83.3,12.6],[86.1,7.6],[82.3,15.3],[87.2,12.8],[88.2,9.0],[88.7,9.4],
+  [82.5,15.4],[87.6,8.4],[77.8,15.4],[83.2,10.7],[83.1,11.1],[88.0,7.8],[82.9,15.0],[86.6,11.4],[90.3,9.3],[83.9,17.0],
+  [88.3,7.8],[88.9,11.1],[90.5,7.7],[85.0,12.9],[91.7,10.3],[84.9,12.9],[78.5,15.3],[86.6,6.0],[92.0,8.3],[89.0,11.3],
+  [86.3,12.0],[91.1,7.8],[83.0,13.6],[83.8,13.5],[91.1,8.2],[90.0,9.6],[82.7,16.6],[88.1,11.2],[83.9,13.7],[92.2,5.5],[85.0,12.0]
+];
+const povStats=(()=>{
+  const n=povData.length;
+  let sx=0,sy=0;
+  povData.forEach(([x,y])=>{sx+=x;sy+=y});
+  const xb=sx/n,yb=sy/n;
+  let sxx=0,syy=0,sxy=0;
+  povData.forEach(([x,y])=>{sxx+=(x-xb)*(x-xb);syy+=(y-yb)*(y-yb);sxy+=(x-xb)*(y-yb)});
+  const sdX=Math.sqrt(sxx/(n-1)),sdY=Math.sqrt(syy/(n-1));
+  const r=sxy/Math.sqrt(sxx*syy);
+  const b1=sxy/sxx,b0=yb-b1*xb;
+  const b1Rev=sxy/syy,b0Rev=xb-b1Rev*yb;
+  const rnd=mkRng(42);
+  const yShuf=povData.map(p=>p[1]);
+  for(let i=yShuf.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[yShuf[i],yShuf[j]]=[yShuf[j],yShuf[i]]}
+  const shuf=povData.map((p,i)=>[p[0],yShuf[i]]);
+  return {xb,yb,sdX,sdY,r,b1,b0,b1Rev,b0Rev,sxx,syy,shuf};
+})();
+
+// Tạo dữ liệu mô phỏng cho biểu đồ phần dư (Scene 11) và nghịch lý Simpson (Scene 14)
+const residData=(()=>{
+  const rnd=mkRng(404),good=[],curve=[],fan=[];
+  for(let i=0;i<36;i++){
+    const x=i/35;
+    const g=(rnd()+rnd()+rnd()-1.5)*1.4;
+    good.push([x,g]);
+    curve.push([x,(x-.5)*(x-.5)*6-.6+(rnd()-.5)*.45]);
+    fan.push([x,(rnd()+rnd()-1)*(0.2+x*2.4)]);
+  }
+  return {good,curve,fan};
+})();
+
+const simpsonData=(()=>{
+  const rnd=mkRng(414),groups=[];
+  [[2,7,col.b],[5.5,10,col.o],[9,13,col.g]].forEach(([cx,cy,c])=>{
+    const pts=[];
+    for(let i=0;i<14;i++){
+      const x=cx+(i-6.5)*.22+(rnd()-.5)*.25;
+      const y=cy-(x-cx)*1.15+(rnd()-.5)*.9;
+      pts.push([x,y]);
+    }
+    groups.push({pts,c,cx,cy});
+  });
+  return groups;
+})();
+
+// Danh sách 17 cảnh tương tác của Tuần 04
+const sc=[
+{
+  t:'1. Mối liên hệ & Biểu đồ phân tán',d:24,
+  s:[
+    [0,'Chào mừng bạn đến với Tuần 04: Tương quan và hồi quy tuyến tính — cách đo lường và mô hình hóa mối liên hệ giữa các biến số.'],
+    [5,'Xét dữ liệu 51 bang: tỉ lệ tốt nghiệp trung học (Graduates) và tỉ lệ nghèo (Poverty). Bên trái là dữ liệu thật, bên phải đã xáo trộn ngẫu nhiên.'],
+    [11,'Ở dữ liệu thật, khi đi từ trái sang phải, tỉ lệ nghèo có xu hướng giảm rõ rệt; còn khi xáo trộn cặp ghép, đám mây điểm mất hẳn xu hướng.'],
+    [17,'Trước khi tính bất kỳ con số nào, hãy luôn nhìn biểu đồ phân tán và hỏi 4 câu: Hướng, Dạng, Độ mạnh và Ngoại lai!']
+  ],
+  f:t=>{
+    hd('1. Từ biểu đồ phân tán đến mối liên hệ giữa hai biến số');
+    T('UET.MAT1052 — Tuần 04: Dữ liệu 51 bang (Graduates vs Poverty) — Gốc vs Xáo trộn',80,104,20,col.dim);
+
+    // Biểu đồ trái: dữ liệu thật
+    const m1=mp(76,94,115,575),y1=mp(4,21,465,165);
+    L(105,465,585,465,col.axis,2);L(115,155,115,470,col.axis,1.5);
+    T('Dữ liệu gốc (có liên hệ âm)',345,142,20,col.b,'center');
+    T('Tốt nghiệp (%)',345,500,17,col.dim,'center');
+    T('Nghèo (%)',70,315,17,col.dim,'center');
+    const o1=sg(t,1.5,4);
+    povData.forEach(([x,y],i)=>{
+      const k=sg(t,1.2+i*.04,2.2+i*.04);
+      D(m1(x),y1(y),4.8,i===0?col.o:col.b,.88*k);
+    });
+    T('r = −0,747',555,190,21,col.y,'right',sg(t,5,6.5));
+
+    // Biểu đồ phải: dữ liệu xáo trộn
+    const o2=sg(t,6,7.5);
+    const m2=mp(76,94,695,1155);
+    L(685,465,1165,465,col.axis,2,o2);L(695,155,695,470,col.axis,1.5,o2);
+    T('Sau khi xáo trộn Poverty (phá cặp)',925,142,20,col.dim,'center',o2);
+    T('Tốt nghiệp (%)',925,500,17,col.dim,'center',o2);
+    povStats.shuf.forEach(([x,y],i)=>{
+      const k=sg(t,6.5+i*.04,7.5+i*.04);
+      D(m2(x),y1(y),4.8,col.dim,.78*k);
+    });
+    T('r ≈ 0 (mất xu hướng)',1135,190,19,col.dim,'right',sg(t,10,11.5));
+
+    // Thanh 4 câu hỏi
+    const o4=sg(t,15,16.5);
+    RR(105,525,1070,48,10,col.card,o4);RR(105,525,1070,48,10,col.bd,o4,1.4);R(105,533,3.5,32,col.y,o4);
+    T('4 câu hỏi khi đọc scatter plot:   1. Hướng (dương/âm)   ·   2. Dạng (thẳng/cong)   ·   3. Độ mạnh   ·   4. Ngoại lai',640,549,18,col.fg,'center',o4);
+  }
+},
+{
+  t:'2. Hệ số tương quan Pearson r',d:26,
+  s:[
+    [0,'Hệ số tương quan Pearson r đo hướng và độ mạnh của xu hướng TUYẾN TÍNH bằng trung bình tích các giá trị chuẩn hóa zₓ · zᵧ.'],
+    [5.5,'Hai đường z = 0 chia mặt phẳng thành 4 góc phần tư quanh tâm (x̄, ȳ): góc trên-phải và dưới-trái góp tích dương (xanh), hai góc còn lại góp tích âm (đỏ).'],
+    [11.5,'Với 51 bang, phần lớn điểm nằm ở hai góc trái dấu màu đỏ nên tổng tích âm, cho ra r = −0,747.'],
+    [17,'Tính tay với bộ 3 điểm (1,2), (2,4), (3,3): ta có x̄ = 2, ȳ = 3, sₓ = sᵧ = 1, tổng tích zₓ·zᵧ = 1.'],
+    [22,'Chia cho n − 1 = 2, ta được r = 1 / 2 = 0,50 (hoặc dùng công thức gọn Sₓᵧ / √(Sₓₓ · Sᵧᵧ) = 1 / √4 = 0,50).']
+  ],
+  f:t=>{
+    hd('2. Hệ số tương quan Pearson r và phép chuẩn hóa z-score');
+
+    // Biểu đồ z_x vs z_y bên trái
+    const m=mp(-2.6,2.6,120,600),y=mp(-2.6,2.6,495,165);
+    L(110,y(0),610,y(0),col.axis,1.8);L(m(0),155,m(0),505,col.axis,1.8);
+    T('zₓ (Tốt nghiệp chuẩn hóa)',360,522,17,col.dim,'center');
+    T('zᵧ',m(0)+16,162,17,col.dim,'left');
+    T('(+)(+) = +',565,185,16,col.b,'right');
+    T('(−)(+) = −',135,185,16,col.r,'left');
+    T('(−)(−) = +',135,475,16,col.b,'left');
+    T('(+)(−) = −',565,475,16,col.r,'right');
+
+    povData.forEach(([xv,yv],i)=>{
+      const zx=(xv-povStats.xb)/povStats.sdX,zy=(yv-povStats.yb)/povStats.sdY;
+      const k=sg(t,1.5+i*.05,2.5+i*.05);
+      D(m(zx),y(zy),5,zx*zy>0?col.b:col.r,.9*k);
+    });
+
+    // Công thức và tính tay bên phải
+    const o1=sg(t,3,4.5);
+    RR(650,155,550,120,12,col.card,o1);RR(650,155,550,120,12,col.bd,o1,1.5);R(650,168,3.5,94,col.y,o1);
+    T('r =',680,215,24,col.y,'left',o1);
+    FR('1','n − 1',748,215,18,col.fg,o1);
+    T('∑ zₓ,ᵢ · zᵧ,ᵢ  =',792,215,21,col.fg,'left',o1);
+    FR('Sₓᵧ','√(Sₓₓ · Sᵧᵧ)',1045,215,19,col.g,o1);
+
+    // Tính tay 3 điểm
+    const o2=sg(t,12,13.5);
+    RR(650,300,550,215,12,col.card2,o2);RR(650,300,550,215,12,col.bd,o2,1.5);R(650,313,3.5,189,col.b,o2);
+    T('Tính tay 3 điểm: (1,2), (2,4), (3,3)',925,332,20,col.b,'center',o2);
+    T('x̄ = 2, ȳ = 3,  sₓ = 1, sᵧ = 1',925,368,18,col.dim,'center',o2);
+    T('zₓ = (−1, 0, 1)  ·  zᵧ = (−1, 1, 0)',925,408,20,col.fg,'center',sg(t,15,16.5));
+    T('∑ zₓ·zᵧ = (−1)(−1) + 0 + 0 = 1',925,444,19,col.fg,'center',sg(t,17.5,19));
+    T('⇒  r = 1 / (3 − 1) = 0,50',925,484,24,col.y,'center',sg(t,20,21.5));
+  }
+},
+{
+  t:'3. Tính chất của r & Đổi thang đo',d:24,
+  s:[
+    [0,'Nhờ bất đẳng thức tổng bình phương không âm, hệ số tương quan r luôn bị chặn trong đoạn từ −1 đến +1.'],
+    [5.5,'r chỉ bằng +1 hoặc −1 khi mọi điểm nằm khít tuyệt đối trên một đường thẳng dốc lên hoặc dốc xuống.'],
+    [11,'Vì phép chuẩn hóa z-score triệt tiêu cả gốc đo lẫn độ lớn đơn vị, r hoàn toàn KHÔNG CÓ ĐƠN VỊ!'],
+    [16.5,'Thử đổi thang đo x\' = a + b·x (W04-EX01): cộng hằng số a hay nhân b > 0 không đổi r; còn nhân b < 0 sẽ ĐẢO DẤU r.'],
+    [21,'Ví dụ đổi tỉ lệ tốt nghiệp từ phần trăm (0–100) sang tỉ lệ (0–1) thì r vẫn giữ nguyên −0,747!']
+  ],
+  f:t=>{
+    hd('3. Tính chất của r và phép đổi thang đo x\' = a + bx');
+
+    // Thang [-1, +1] ở trên
+    const m=mp(-1,1,150,1130),o1=sg(t,1,2.5);
+    L(150,185,1130,185,col.axis,5,o1);
+    [[-1,'−1 (thẳng âm)',col.r],[-0.75,'−0,75',col.o],[0,'0 (không tuyến tính)',col.dim],[0.75,'+0,75',col.b],[1,'+1 (thẳng dương)',col.g]].forEach(([v,lb,c])=>{
+      D(m(v),185,8,c,o1);
+      T(lb,m(v),150,16,c,'center',o1);
+    });
+    T('−1 ≤ r ≤ 1   |   Không có đơn vị   |   Đối xứng: r(x, y) = r(y, x)',640,228,20,col.y,'center',sg(t,3.5,5));
+
+    // Bảng thử nghiệm W04-EX01 ở dưới
+    const rows=[
+      ['Phép đổi thang đo x\' = a + b·x','Tác động lên zₓ','r(x\', y) mới'],
+      ['x\' = 10 + 1·x   (cộng hằng số)','Không đổi zₓ','−0,747 (không đổi)'],
+      ['x\' = 0,01·x     (% sang tỉ lệ 0–1)','b > 0 → không đổi','−0,747 (không đổi)'],
+      ['x\' = 100 − 1·x  (đảo chiều thang đo)','b < 0 → đổi dấu zₓ','+0,747 (đổi dấu!)'],
+      ['x\' = 20000 + 2000·x','b > 0 → không đổi','−0,747 (không đổi)']
+    ];
+    rows.forEach((r,idx)=>{
+      const yy=292+idx*54,o=sg(t,7+idx*2.4,8.2+idx*2.4);
+      const c=idx===0?col.y:(idx===3?col.o:col.fg);
+      RR(95,yy-21,1090,44,8,idx===0?col.card2:col.card,o);
+      T(r[0],125,yy,19,c,'left',o);
+      T(r[1],620,yy,19,idx===0?col.y:col.dim,'left',o);
+      T(r[2],1155,yy,19,idx===3?col.o:(idx===0?col.y:col.g),'right',o);
+    });
+  }
+},
+{
+  t:'4. Phản ví dụ r = 0 & Điểm đòn bẩy',d:26,
+  s:[
+    [0,'Có hai bẫy chết người khi chỉ nhìn vào con số r mà bỏ qua biểu đồ phân tán!'],
+    [4.5,'Bẫy 1 (W04-CH01): Quan hệ hoàn hảo y = x² trên 5 điểm đối xứng (−2,4)…(2,4) cho ra đúng r = 0, vì nửa trái và nửa phải triệt tiêu nhau.'],
+    [10.5,'Vậy r = 0 chỉ nói không có xu hướng TUYẾN TÍNH, tuyệt đối không có nghĩa là hai biến không liên quan!'],
+    [16,'Bẫy 2 (W04-EX02): 5 điểm đầu nằm gần khít trên một đường thẳng dương với r = +0,995.'],
+    [20.5,'Nhưng chỉ cần thêm ĐÚNG MỘT ĐIỂM đòn bẩy cao ở xa (10, 0), nó kéo xoay cả đường thẳng và đảo dấu tương quan thành r = −0,259!']
+  ],
+  f:t=>{
+    hd('4. Hai bẫy kinh điển: Quan hệ cong (r = 0) & Điểm đòn bẩy cao');
+
+    // Bên trái: Parabol y = x^2
+    const m1=mp(-2.5,2.5,110,565),y1=mp(-0.5,4.8,475,175);
+    L(100,y1(0),575,y1(0),col.axis,1.8);L(m1(0),165,m1(0),485,col.axis,1.5);
+    T('W04-CH01: y = x² (hoàn hảo nhưng r = 0!)',337,142,19,col.b,'center');
+    const oP=sg(t,2,4);
+    al(oP);X.strokeStyle=col.dim;X.lineWidth=2;X.beginPath();
+    for(let i=0;i<=60;i++){const xv=-2.15+4.3*i/60;i===0?X.moveTo(m1(xv),y1(xv*xv)):X.lineTo(m1(xv),y1(xv*xv))}
+    X.stroke();
+    [[-2,4],[-1,1],[0,0],[1,1],[2,4]].forEach(([xv,yv],i)=>{
+      D(m1(xv),y1(yv),7,col.y,sg(t,3+i*.4,4+i*.4));
+    });
+    T('r = 0,000',337,245,26,col.r,'center',sg(t,6,7.5));
+    T('✗ Không tuyến tính ≠ Không liên quan',337,515,18,col.o,'center',sg(t,8,9.5));
+
+    // Bên phải: 5 điểm + 1 điểm đòn bẩy (10, 0)
+    const oR=sg(t,11,12.5);
+    const m2=mp(0,11,680,1180),y2=mp(-1,6.5,475,175);
+    L(670,y2(0),1190,y2(0),col.axis,1.8,oR);L(m2(0),165,m2(0),485,col.axis,1.5,oR);
+    T('W04-EX02: Điểm đòn bẩy cao (10, 0) đảo dấu r',930,142,19,col.g,'center',oR);
+
+    const pts5=[[1,1.2],[2,1.8],[3,3.1],[4,3.9],[5,5.1]];
+    pts5.forEach(([xv,yv])=>D(m2(xv),y2(yv),6.5,col.b,oR));
+    // Đường 5 điểm ban đầu
+    L(m2(.5),y2(.05+.99*.5),m2(6),y2(.05+.99*6),col.b,2.5,oR);
+
+    // Điểm thêm (10, 0) và đường bị kéo xoay
+    const kPull=sg(t,16.5,19.5);
+    if(kPull>0){
+      D(m2(10),y2(0),9,col.r,kPull);
+      T('(10, 0)',m2(10),y2(0)-20,17,col.r,'center',kPull);
+      const b0=mx(.05,3.15,kPull),b1=mx(.99,-.152,kPull);
+      L(m2(.5),y2(b0+b1*.5),m2(10.5),y2(b0+b1*10.5),col.r,2.8,kPull,[7,5]);
+    }
+    T(kPull<.5?'5 điểm đầu: r = +0,995':'6 điểm (thêm 10,0): r = −0,259!',930,515,20,kPull<.5?col.b:col.r,'center',oR);
+  }
+},
+{
+  t:'5. Hồi quy tuyến tính đơn giản',d:24,
+  s:[
+    [0,'Công cụ thứ hai là mô hình hồi quy tuyến tính đơn giản: nén xu hướng dữ liệu thành đường thẳng ŷ = b₀ + b₁·x.'],
+    [5.5,'Ở đây x là biến giải thích, ŷ (y mũ) là giá trị đối chiếu (fitted value), b₀ là hệ số chặn và b₁ là hệ số góc.'],
+    [11,'Với dữ liệu 51 bang, mô hình là: Povertŷ = 64,68 − 0,62 · Graduates.'],
+    [16,'Diễn giải b₁ = −0,62 đầy đủ 4 ý: so sánh hai bang chênh nhau 1 điểm % tốt nghiệp, bang cao hơn có tỉ lệ nghèo dự báo thấp hơn 0,62 điểm % (mối liên hệ, không phải nhân quả).'],
+    [21,'Thử tính (W04-Q02): tại Graduates = 85,1%, giá trị đối chiếu ŷ = 64,68 − 0,62×85,1 ≈ 11,92%.']
+  ],
+  f:t=>{
+    hd('5. Mô hình hồi quy tuyến tính đơn giản: ŷ = b₀ + b₁·x');
+
+    // Biểu đồ đường hồi quy bên trái
+    const m=mp(76,94,115,645),y=mp(4,20,485,165);
+    L(105,485,655,485,col.axis,2);L(115,155,115,490,col.axis,1.5);
+    T('Tỉ lệ tốt nghiệp (%)',380,516,17,col.dim,'center');
+    T('Nghèo (%)',68,325,17,col.dim,'center');
+    povData.forEach(([xv,yv])=>D(m(xv),y(yv),4.5,col.b,.82));
+
+    const kL=sg(t,2.5,5);
+    const xEnd=mx(77,93,kL);
+    L(m(77),y(64.68-.6215*77),m(xEnd),y(64.68-.6215*xEnd),col.y,3.2,kL);
+    T('ŷ = 64,68 − 0,62·x',495,185,21,col.y,'center',sg(t,5,6.5));
+
+    // Điểm đối chiếu W04-Q02 tại x = 85,1
+    const oQ=sg(t,17,18.5);
+    if(oQ>0){
+      const xq=85.1,yq=64.68-.62*85.1;
+      L(m(xq),y(yq),m(xq),485,col.g,1.8,oQ,[5,4]);
+      L(115,y(yq),m(xq),y(yq),col.g,1.8,oQ,[5,4]);
+      D(m(xq),y(yq),7,col.g,oQ);
+      T('(85,1 ; 11,92)',m(xq)+12,y(yq)-16,17,col.g,'left',oQ);
+    }
+
+    // Thẻ diễn giải bên phải
+    const o1=sg(t,6.5,8),o2=sg(t,12,13.5);
+    RR(690,160,520,165,12,col.card,o1);RR(690,160,520,165,12,col.bd,o1,1.5);R(690,173,3.5,139,col.y,o1);
+    T('Diễn giải hệ số góc b₁ = −0,62',718,195,21,col.y,'left',o1);
+    T('• So sánh 2 bang chênh 1 điểm % tốt nghiệp',718,236,18,col.fg,'left',o1);
+    T('• Bang cao hơn có ŷ nghèo thấp hơn 0,62 điểm %',718,268,18,col.fg,'left',o1);
+    T('• Chỉ là mô tả liên hệ, CHƯA phải nhân quả!',718,300,18,col.o,'left',o1);
+
+    RR(690,350,520,145,12,col.card2,o2);RR(690,350,520,145,12,col.bd,o2,1.5);R(690,363,3.5,119,col.g,o2);
+    T('W04-Q02: Giá trị đối chiếu ŷ (fitted)',718,386,20,col.g,'left',o2);
+    T('x = 85,1 ⇒ ŷ = 64,68 − 0,62(85,1) ≈ 11,92%',718,428,19,col.fg,'left',o2);
+    T('Đây là giá trị từ mô hình, không phải số thật.',718,466,17,col.dim,'left',o2);
+  }
+},
+{
+  t:'6. Đơn vị của b₁ & Ý nghĩa hệ số chặn b₀',d:24,
+  s:[
+    [0,'Khác với tương quan r không có đơn vị, hệ số góc b₁ mang đơn vị của (đơn vị y) chia (đơn vị x)!'],
+    [5.5,'Nếu đổi Graduates từ phần trăm sang tỉ lệ 0–1 (chia 100), hệ số góc b₁ phải nhân 100 lần: từ −0,62 thành −62,15!'],
+    [11,'Do đó KHÔNG BAO GIỜ dùng độ lớn tuyệt đối của b₁ để kết luận mối liên hệ mạnh hay yếu nếu bỏ qua đơn vị đo.'],
+    [16.5,'Còn hệ số chặn b₀ = 64,68 là giá trị ŷ khi x = 0: cần thiết về đại số để vẽ đường thẳng, nhưng ở đây vô nghĩa về thực tế!'],
+    [20.5,'Vì không có bang nào tốt nghiệp gần 0% (dữ liệu chỉ nằm trong 78–92%), tin vào con số 64,68% là mắc lỗi ngoại suy.']
+  ],
+  f:t=>{
+    hd('6. Hệ số góc phụ thuộc đơn vị & Cảnh báo diễn giải b₀');
+
+    // Thẻ trái: Đơn vị của b_1
+    const o1=sg(t,1.5,3);
+    RR(85,150,535,340,12,col.card,o1);RR(85,150,535,340,12,col.bd,o1,1.5);R(85,163,3.5,314,col.b,o1);
+    T('Hệ số góc b₁ phụ thuộc đơn vị đo',352,190,22,col.b,'center',o1);
+    T('Đổi x\' = c·x  ⇒  b₁\' = b₁ / c   (còn r không đổi)',352,240,19,col.y,'center',sg(t,3,4.5));
+    T('• Graduates theo % (0–100):',120,295,19,col.dim,'left',sg(t,5,6.5));
+    T('  b₁ = −0,62   |   r = −0,747',120,330,22,col.fg,'left',sg(t,5,6.5));
+    T('• Graduates theo tỉ lệ (0–1):',120,382,19,col.dim,'left',sg(t,8,9.5));
+    T('  b₁ = −62,15  |   r = −0,747',120,418,22,col.o,'left',sg(t,8,9.5));
+    T('✗ Không so |b₁| khi khác đơn vị!',352,462,18,col.r,'center',sg(t,10.5,12));
+
+    // Thẻ phải: Hệ số chặn b_0
+    const o2=sg(t,12.5,14);
+    RR(660,150,535,340,12,col.card,o2);RR(660,150,535,340,12,col.bd,o2,1.5);R(660,163,3.5,314,col.r,o2);
+    T('Hệ số chặn b₀ có luôn có nghĩa?',927,190,22,col.r,'center',o2);
+    T('b₀ = 64,68  (tại Graduates = 0%)',927,242,23,col.fg,'center',sg(t,14,15.5));
+    T('• Phạm vi dữ liệu thật:  77,8% – 92,2%',695,302,19,col.g,'left',sg(t,16,17.5));
+    T('• x = 0% cách rất xa dữ liệu → NGOẠI SUY!',695,348,19,col.o,'left',sg(t,17.5,19));
+    T('• Mô hình không "chứng minh" nhân quả',695,394,19,col.fg,'left',sg(t,19,20.5));
+    T('✓ b₀ chỉ là điểm neo đại số cắt trục tung.',695,448,19,col.y,'left',sg(t,20.5,22));
+  }
+},
+{
+  t:'7. Phần dư & Đổi vai hai biến',d:26,
+  s:[
+    [0,'Mỗi quan sát được tách thành: dữ liệu = giá trị đối chiếu + phần dư, tức eᵢ = yᵢ − ŷᵢ (khoảng cách thẳng đứng đến đường hồi quy).'],
+    [5.5,'Ví dụ Rhode Island (W04-WP01): Graduates = 81, Poverty = 10,3. Mô hình cho ŷ = 14,46, nên phần dư e = 10,3 − 14,46 = −4,16 điểm %.'],
+    [11.5,'Nếu ĐỔI VAI hai biến (dùng Poverty dự báo Graduates), ta được đường mới: Graduateŝ = 96,20 − 0,898 · Poverty.'],
+    [17,'Với California (Poverty = 12,8, Graduates = 81,1): ŷ = 84,70, phần dư e = −3,60 điểm %.'],
+    [21.5,'Lưu ý cực kỳ quan trọng: hai đường hồi quy ngược chiều KHÔNG PHẢI là cùng một đường! Tích hai hệ số góc bằng r², chỉ bằng 1 khi |r| = 1.']
+  ],
+  f:t=>{
+    hd('7. Phần dư eᵢ = yᵢ − ŷᵢ và đổi vai biến phụ thuộc');
+
+    // Bên trái: Rhode Island (Poverty ~ Graduates)
+    const o1=sg(t,1,2.5);
+    RR(85,140,535,345,12,col.card,o1);RR(85,140,535,345,12,col.bd,o1,1.5);R(85,153,3.5,319,col.b,o1);
+    T('Chiều 1: Poverty ~ Graduates',352,178,21,col.b,'center',o1);
+    T('ŷ = 64,68 − 0,62 · Graduates',352,222,22,col.fg,'center',o1);
+    T('VD: Rhode Island (x = 81, y = 10,3)',118,278,19,col.dim,'left',sg(t,4,5.5));
+    T('• ŷ = 64,68 − 0,62(81) = 14,46',118,318,20,col.fg,'left',sg(t,5.5,7));
+    T('• e = y − ŷ = 10,3 − 14,46 = −4,16',118,358,21,col.y,'left',sg(t,7,8.5));
+    T('Thấp hơn đường đối chiếu 4,16 điểm %',118,412,18,col.g,'left',sg(t,8.5,10));
+    T('(e > 0: điểm nằm trên; e < 0: nằm dưới)',118,448,17,col.dim,'left',sg(t,8.5,10));
+
+    // Bên phải: California (Graduates ~ Poverty)
+    const o2=sg(t,11,12.5);
+    RR(660,140,535,345,12,col.card,o2);RR(660,140,535,345,12,col.bd,o2,1.5);R(660,153,3.5,319,col.o,o2);
+    T('Chiều 2: Graduates ~ Poverty',927,178,21,col.o,'center',o2);
+    T('ŷ = 96,20 − 0,898 · Poverty',927,222,22,col.fg,'center',o2);
+    T('VD: California (x = 12,8, y = 81,1)',695,278,19,col.dim,'left',sg(t,13.5,15));
+    T('• ŷ = 96,20 − 0,898(12,8) = 84,70',695,318,20,col.fg,'left',sg(t,15,16.5));
+    T('• e = 81,1 − 84,70 = −3,60 điểm %',695,358,21,col.y,'left',sg(t,16.5,18));
+    T('Không phải đường ngược (1/−0,62 = −1,61)!',695,412,18,col.r,'left',sg(t,19,20.5));
+    T('Tích 2 hệ số góc: (−0,62)(−0,898) = r² ≈ 0,56',695,448,18,col.g,'left',sg(t,20.5,22));
+  }
+},
+{
+  t:'8. Phương pháp bình phương tối thiểu',d:26,
+  s:[
+    [0,'Làm sao chọn ra ĐÚNG MỘT đường thẳng tốt nhất thay vì vẽ bằng mắt? Ta dùng tiêu chuẩn bình phương tối thiểu (OLS).'],
+    [5.5,'OLS chọn cặp (b₀, b₁) sao cho tổng bình phương các phần dư SSE = ∑ eᵢ² = ∑ (yᵢ − b₀ − b₁xᵢ)² đạt GIÁ TRỊ NHỎ NHẤT.'],
+    [11,'Quan sát hình trái khi ta xoay hệ số góc b₁ quanh điểm trung tâm (x̄, ȳ): các đoạn phần dư màu xanh lá co ngắn rồi lại dài ra.'],
+    [17,'Đồ thị bên phải vẽ SSE theo b₁ có dạng parabol mở lên, chạm đáy duy nhất tại b₁ = −0,621 với SSE nhỏ nhất bằng 212,3!'],
+    [22,'Đây là sự mở rộng tự nhiên từ Tuần 02: trung bình mẫu ȳ là mô hình hằng số tối ưu SSE, còn OLS là đường thẳng tối ưu SSE.']
+  ],
+  f:t=>{
+    hd('8. Tiêu chuẩn bình phương tối thiểu (OLS): Tối thiểu hóa SSE');
+
+    // Hoạt ảnh xoay b1 từ -1.05 -> -0.15 -> -0.621
+    const p1=sg(t,2,9),p2=sg(t,10,16);
+    const b1Cur=t<9.5?mx(-1.05,-0.15,p1):mx(-0.15,povStats.b1,p2);
+    const b0Cur=povStats.yb-b1Cur*povStats.xb;
+    let sseCur=0;
+    povData.forEach(([xv,yv])=>{const e=yv-(b0Cur+b1Cur*xv);sseCur+=e*e});
+
+    // Bên trái: Scatter + đoạn phần dư + đường đang xoay
+    const m1=mp(76,94,105,600),y1=mp(4,20,485,165);
+    L(95,485,610,485,col.axis,2);L(105,155,105,490,col.axis,1.5);
+    T(`Đường xoay quanh (x̄, ȳ):  b₁ = ${f(b1Cur,3)}`,352,142,20,col.y,'center');
+    povData.forEach(([xv,yv])=>{
+      const yh=b0Cur+b1Cur*xv;
+      L(m1(xv),y1(yv),m1(xv),y1(yh),col.g,1.5,.65);
+      D(m1(xv),y1(yv),4,col.b,.9);
+    });
+    L(m1(77),y1(b0Cur+b1Cur*77),m1(93),y1(b0Cur+b1Cur*93),col.r,3);
+    D(m1(povStats.xb),y1(povStats.yb),6.5,col.y,1);
+
+    // Bên phải: Đường cong SSE theo b1
+    const m2=mp(-1.15,-0.05,700,1180),y2=mp(180,430,485,175);
+    L(690,485,1190,485,col.axis,2);L(700,165,700,490,col.axis,1.5);
+    T('Tổng bình phương phần dư SSE(b₁)',940,142,20,col.fg,'center');
+    [-1.0,-0.62,-0.2].forEach(v=>T(f(v,2),m2(v),512,16,v===-.62?col.y:col.dim,'center'));
+    al(.95);X.strokeStyle=col.b;X.lineWidth=3;X.beginPath();
+    for(let i=0;i<=80;i++){
+      const bv=-1.1+1.0*i/80,b0v=povStats.yb-bv*povStats.xb;
+      let sv=0;povData.forEach(([xv,yv])=>{const e=yv-(b0v+bv*xv);sv+=e*e});
+      i===0?X.moveTo(m2(bv),y2(sv)):X.lineTo(m2(bv),y2(sv));
+    }
+    X.stroke();
+    D(m2(b1Cur),y2(sseCur),8,col.y,1);
+    T(`SSE = ${f(sseCur,1)}`,m2(b1Cur),y2(sseCur)-22,19,col.y,'center');
+    T('Cực tiểu duy nhất tại b₁ = −0,621 (SSE = 212,3)',940,545,18,col.g,'center',sg(t,16,17.5));
+  }
+},
+{
+  t:'9. Công thức OLS & Hai điều kiện chuẩn',d:24,
+  s:[
+    [0,'Đặt hai đạo hàm riêng của SSE theo b₀ và b₁ bằng 0, ta thu được hai điều kiện chuẩn cực kỳ quan trọng của OLS:'],
+    [5,'Điều kiện 1: Tổng mọi phần dư bằng 0 (∑ eᵢ = 0), suy ra đường hồi quy OLS LUÔN ĐI QUA điểm trung tâm (x̄, ȳ)!'],
+    [10.5,'Điều kiện 2: Tổng tích xᵢ·eᵢ bằng 0 (phần dư không tương quan tuyến tính với biến giải thích x).'],
+    [15.5,'Giải hệ hai phương trình chuẩn cho công thức tường minh: b₁ = Sₓᵧ / Sₓₓ = r · (sᵧ / sₓ), và b₀ = ȳ − b₁·x̄.'],
+    [20.5,'Áp cho bộ 3 điểm (1,2), (2,4), (3,3): Sₓᵧ = 1, Sₓₓ = 2 ⇒ b₁ = 0,5, b₀ = 3 − 0,5(2) = 2, và SSE = 1,5.']
+  ],
+  f:t=>{
+    hd('9. Hai điều kiện chuẩn và công thức ước lượng OLS');
+
+    // Hai điều kiện chuẩn ở trên
+    const o1=sg(t,1.5,3),o2=sg(t,6,7.5);
+    RR(85,135,535,140,12,col.card,o1);RR(85,135,535,140,12,col.bd,o1,1.5);R(85,148,3.5,114,col.b,o1);
+    T('Điều kiện chuẩn 1:  ∑ eᵢ = 0',115,175,22,col.b,'left',o1);
+    T('• Phần dư dương và âm cân bằng nhau',115,216,18,col.fg,'left',o1);
+    T('• Đường OLS LUÔN đi qua (x̄, ȳ)!',115,250,19,col.y,'left',o1);
+
+    RR(660,135,535,140,12,col.card,o2);RR(660,135,535,140,12,col.bd,o2,1.5);R(660,148,3.5,114,col.g,o2);
+    T('Điều kiện chuẩn 2:  ∑ xᵢ · eᵢ = 0',690,175,22,col.g,'left',o2);
+    T('• Phần dư không còn tương quan với x',690,216,18,col.fg,'left',o2);
+    T('• Không còn xu hướng tuyến tính bị bỏ sót',690,250,18,col.dim,'left',o2);
+
+    // Công thức b1, b0 ở dưới trái
+    const o3=sg(t,11,12.5);
+    RR(85,305,535,205,12,col.card,o3);RR(85,305,535,205,12,col.bd,o3,1.5);R(85,318,3.5,179,col.y,o3);
+    T('Công thức ước lượng OLS',115,342,21,col.y,'left',o3);
+    T('b₁ =',115,405,24,col.fg,'left',o3);
+    FR('Sₓᵧ','Sₓₓ',200,405,20,col.fg,o3);
+    T('=  r ·',248,405,22,col.fg,'left',o3);
+    FR('sᵧ','sₓ',330,405,20,col.g,o3);
+    T('b₀ = ȳ − b₁ · x̄',115,475,24,col.b,'left',o3);
+
+    // Tính tay 3 điểm ở dưới phải
+    const o4=sg(t,16.5,18);
+    RR(660,305,535,205,12,col.card2,o4);RR(660,305,535,205,12,col.bd,o4,1.5);R(660,318,3.5,179,col.o,o4);
+    T('Tính tay bộ 3 điểm: (1,2), (2,4), (3,3)',690,342,20,col.o,'left',o4);
+    T('• Sₓₓ = 2,  Sₓᵧ = 1  ⇒  b₁ = 1/2 = 0,5',690,388,19,col.fg,'left',o4);
+    T('• b₀ = 3 − 0,5(2) = 2  ⇒  ŷ = 2 + 0,5x',690,428,19,col.y,'left',o4);
+    T('• e = (−0,5; 1; −0,5)  ⇒  ∑e=0, SSE=1,5',690,468,19,col.g,'left',o4);
+  }
+},
+{
+  t:'10. Hệ số xác định R²',d:24,
+  s:[
+    [0,'Sau khi ước lượng xong đường hồi quy, ta hỏi: mô hình giải thích được bao nhiêu phần trăm độ biến thiên của y?'],
+    [5.5,'Tổng độ biến thiên SST = ∑ (yᵢ − ȳ)² tách thành hai phần: phần mô hình giải thích SSR cộng với phần dư còn lại SSE.'],
+    [11,'Hệ số xác định R² = 1 − SSE / SST đo tỉ lệ phương sai của y được giải thích bởi mô hình tuyến tính.'],
+    [16.5,'Trong hồi quy tuyến tính ĐƠN GIẢN, R² bằng đúng bình phương hệ số tương quan: R² = r²!'],
+    [20.5,'Với bài toán 51 bang: r = −0,747 ⇒ R² = (−0,747)² ≈ 55,8%, nghĩa là 44,2% biến thiên tỉ lệ nghèo vẫn do các yếu tố khác!']
+  ],
+  f:t=>{
+    hd('10. Hệ số xác định R²: Mô hình giải thích được bao nhiêu?');
+
+    // Thanh phân rã SST = SSR + SSE
+    const o1=sg(t,2,3.5),o2=sg(t,7,8.5);
+    T('Phân rã độ biến thiên (51 bang: Poverty ~ Graduates)',640,145,22,col.fg,'center',o1);
+    RR(110,185,1060,64,10,col.card2,o1);
+    const wSSR=1060*.558*sg(t,4,6.5),wSSE=1060*.442*sg(t,6.5,8.5);
+    R(110,185,wSSR,64,col.g,.85);
+    R(110+wSSR,185,wSSE,64,col.r,.82);
+    T('SSR: Giải thích được (55,8%)',110+wSSR/2,217,20,'#1e1f24','center',sg(t,5.5,7));
+    T('SSE: Phần dư (44,2%)',110+wSSR+wSSE/2,217,20,'#1e1f24','center',sg(t,8,9.5));
+    T('SST = SSR + SSE   (480,6 = 268,3 + 212,3)',640,278,20,col.dim,'center',o2);
+
+    // 2 thẻ công thức bên dưới
+    const o3=sg(t,10.5,12),o4=sg(t,16,17.5);
+    RR(105,330,515,175,12,col.card,o3);RR(105,330,515,175,12,col.bd,o3,1.5);R(105,343,3.5,149,col.y,o3);
+    T('Công thức R² (0 ≤ R² ≤ 1)',135,368,21,col.y,'left',o3);
+    T('R² = 1 −',135,435,23,col.fg,'left',o3);
+    FR('SSE','SST',265,435,20,col.fg,o3);
+    T('=',315,435,23,col.fg,'left',o3);
+    FR('SSR','SST',375,435,20,col.g,o3);
+    T('(hồi quy đơn: R² = r²)',135,485,17,col.dim,'left',o3);
+
+    RR(660,330,515,175,12,col.card,o4);RR(660,330,515,175,12,col.bd,o4,1.5);R(660,343,3.5,149,col.o,o4);
+    T('Lưu ý khi đọc R²',690,368,21,col.o,'left',o4);
+    T('• R² cao chưa chắc mô hình đúng dạng thẳng!',690,412,18,col.fg,'left',o4);
+    T('• R² thấp không có nghĩa mô hình vô ích',690,446,18,col.fg,'left',o4);
+    T('• Luôn kiểm tra thêm biểu đồ phần dư!',690,480,18,col.g,'left',o4);
+  }
+},
+{
+  t:'11. Biểu đồ phần dư (Chẩn đoán mô hình)',d:26,
+  s:[
+    [0,'Biểu đồ phần dư (vẽ eᵢ theo ŷᵢ hoặc xᵢ) là "kính lúp" giúp phát hiện những sai sót mà R² che giấu!'],
+    [5.5,'Trường hợp 1 (Tốt): các điểm phần dư rải ngẫu nhiên đều quanh đường e = 0, không có hình dạng rõ rệt → mô hình tuyến tính phù hợp.'],
+    [11.5,'Trường hợp 2 (Phi tuyến): phần dư uốn cong thành hình chữ U hay hình vòm → quan hệ thật bị cong, cần thêm bậc hai hoặc biến đổi log.'],
+    [17.5,'Trường hợp 3 (Phương sai thay đổi): phần dư loe rộng dần hình cái phễu → sai số dự báo ngày càng kém ổn định khi ŷ tăng.'],
+    [22,'Nguyên tắc vàng: một mô hình tuyến tính chỉ đáng tin khi biểu đồ phần dư trông như "nhiễu trắng" không còn quy luật!']
+  ],
+  f:t=>{
+    hd('11. Chẩn đoán mô hình bằng biểu đồ phần dư (eᵢ theo ŷᵢ)');
+    const panels=[
+      ['1. Tốt (Ngẫu nhiên)',residData.good,col.g,'✓ Tuyến tính phù hợp',2],
+      ['2. Phi tuyến (Hình chữ U)',residData.curve,col.o,'✗ Bỏ sót dạng cong!',8.5],
+      ['3. Hình phễu (Loang rộng)',residData.fan,col.r,'✗ Phương sai không đều!',15]
+    ];
+    panels.forEach(([tt,pts,c,nt,st],idx)=>{
+      const x0=85+idx*385,x1=x0+340,o=sg(t,st,st+1.5);
+      RR(x0-10,140,360,360,12,col.card2,o);RR(x0-10,140,360,360,12,col.bd,o,1.4);
+      T(tt,x0+170,172,20,c,'center',o);
+      const mm=mp(0,1,x0+18,x1-18),yy=mp(-2.5,2.5,435,210);
+      L(x0+10,yy(0),x1-10,yy(0),col.y,1.8,o,[6,4]);
+      pts.forEach(([xv,yv])=>D(mm(xv),yy(yv),4.5,c,.85*o));
+      T(nt,x0+170,472,18,c,'center',sg(t,st+2,st+3.5));
+    });
+    T('Nhớ: Nhờ điều kiện chuẩn OLS, trung bình phần dư luôn bằng 0 trên mọi biểu đồ phần dư.',640,536,18,col.dim,'center',sg(t,20,21.5));
+  }
+},
+{
+  t:'12. Hồi quy nhiều biến (Đa biến)',d:26,
+  s:[
+    [0,'Trong thực tế, biến phụ thuộc thường chịu ảnh hưởng của NHIỀU biến giải thích cùng lúc: ŷ = b₀ + b₁x₁ + b₂x₂ + … + bₚxₚ.'],
+    [5.5,'Cách diễn giải quan trọng nhất: bⱼ là mức thay đổi dự báo của ŷ khi xⱼ tăng 1 đơn vị, GIỮ CÁC BIẾN CÒN LẠI CỐ ĐỊNH.'],
+    [11.5,'Xét ví dụ dữ liệu nhà hàng Zagat (NYC): dự báo giá bữa ăn Price theo điểm đồ ăn Food, trang trí Decor và phục vụ Service.'],
+    [17,'Khi chạy riêng Price ~ Service, hệ số dương mạnh. Nhưng khi đưa thêm Food và Decor vào cùng mô hình, hệ số của Service giảm sát về 0!'],
+    [22,'Lý do: các nhà hàng phục vụ tốt thường cũng có đồ ăn và trang trí rất tốt — giữ Food và Decor cố định thì Service ít tạo thêm chênh lệch giá!']
+  ],
+  f:t=>{
+    hd('12. Hồi quy nhiều biến: "Giữ các biến còn lại cố định"');
+    T('Mô hình đa biến:  ŷ = b₀ + b₁x₁ + b₂x₂ + … + bₚxₚ   —   Ví dụ nhà hàng Zagat (New York)',80,104,20,col.dim);
+
+    // Bên trái: Công thức Zagat
+    const o1=sg(t,1.5,3);
+    RR(85,155,540,330,12,col.card,o1);RR(85,155,540,330,12,col.bd,o1,1.5);R(85,168,3.5,304,col.b,o1);
+    T('VD Zagat: Pricê = b₀ + b₁·Food + b₂·Decor + b₃·Service',355,195,18,col.b,'center',o1);
+    T('• b₁ ≈ +1,54 USD / điểm Food',118,255,20,col.g,'left',sg(t,3.5,5));
+    T('  (giữ Decor và Service cố định)',118,286,17,col.dim,'left',sg(t,3.5,5));
+    T('• b₂ ≈ +1,91 USD / điểm Decor',118,335,20,col.y,'left',sg(t,6,7.5));
+    T('  (giữ Food và Service cố định)',118,366,17,col.dim,'left',sg(t,6,7.5));
+    T('• b₃ ≈ −0,003 USD / điểm Service (gần 0!)',118,415,20,col.o,'left',sg(t,11,12.5));
+    T('  (khi đã kiểm soát Food và Decor)',118,446,17,col.dim,'left',sg(t,11,12.5));
+
+    // Bên phải: Biểu đồ so sánh hệ số Service (Đơn biến vs Đa biến)
+    const o2=sg(t,13,14.5);
+    const B=465,K=75;
+    L(690,B,1180,B,col.axis,2,o2);
+    T('Hệ số của Service (USD / điểm)',935,165,20,col.fg,'center',o2);
+    const k1=sg(t,14.5,16.5),k2=sg(t,17.5,19.5);
+    const h1=2.82*K*k1,h2=.05*K*k2;
+    R(780,B-h1,110,h1,col.b,.88*k1);
+    T('+2,82',835,B-h1-18,22,col.b,'center',k1);
+    T('Mô hình đơn',835,B+26,18,col.fg,'center',k1);
+    T('(chỉ Service)',835,B+50,16,col.dim,'center',k1);
+
+    R(990,B-h2-6,110,h2+6,col.o,.88*k2);
+    T('≈ 0,00',1045,B-h2-24,22,col.o,'center',k2);
+    T('Mô hình đa biến',1045,B+26,18,col.fg,'center',k2);
+    T('(+ Food, Decor)',1045,B+50,16,col.dim,'center',k2);
+  }
+},
+{
+  t:'13. Biến chỉ báo (Dummy) & Mức tham chiếu',d:26,
+  s:[
+    [0,'Làm sao đưa một biến PHÂN LOẠI (như vị trí Đông/Tây, hay Nam/Nữ) vào phương trình hồi quy? Ta dùng biến chỉ báo D ∈ {0, 1}.'],
+    [5.5,'Chọn một nhóm làm MỨC THAM CHIẾU (D = 0, ví dụ phía Tây Manhattan), và nhóm còn lại gán D = 1 (phía Đông).'],
+    [11,'Mô hình Pricê = b₀ + b₁·Food + b₂·East tạo ra HAI ĐƯỜNG THẲNG SONG SONG có cùng độ dốc b₁ nhưng cách nhau đúng b₂!'],
+    [16.5,'Cụ thể: với phía Tây (East = 0), hệ số chặn là b₀; với phía Đông (East = 1), hệ số chặn tăng thêm b₂ ≈ +2,07 USD.'],
+    [21.5,'Nếu biến phân loại có k mức (ví dụ 4 khu vực), ta chỉ cần đưa đúng k − 1 biến chỉ báo vào mô hình (1 mức làm chuẩn tham chiếu)!']
+  ],
+  f:t=>{
+    hd('13. Biến chỉ báo (Dummy) và Mức tham chiếu');
+
+    // Biểu đồ 2 đường song song bên trái
+    const m=mp(14,26,110,630),y=mp(15,65,485,165);
+    L(100,485,640,485,col.axis,2);L(110,155,110,490,col.axis,1.5);
+    T('Điểm đồ ăn (Food)',370,518,17,col.dim,'center');
+    T('Giá ($)',68,325,17,col.dim,'center');
+
+    const oW=sg(t,2,4),oE=sg(t,7.5,9.5);
+    const rnd=mkRng(413);
+    for(let i=0;i<20;i++){
+      const x=15+rnd()*10,e=(rnd()-.5)*6;
+      D(m(x),y(-20+2.9*x+e),4.5,col.b,.8*oW);
+      D(m(x),y(-20+2.9*x+5.5+e),4.5,col.o,.85*oE);
+    }
+    L(m(15),y(-20+2.9*15),m(25),y(-20+2.9*25),col.b,3,oW);
+    L(m(15),y(-20+2.9*15+5.5),m(25),y(-20+2.9*25+5.5),col.o,3,oE);
+
+    const oD=sg(t,12,13.5);
+    L(m(21),y(-20+2.9*21),m(21),y(-20+2.9*21+5.5),col.y,3,oD);
+    T('chênh b₂',m(21)+12,y(-20+2.9*21+2.8),19,col.y,'left',oD);
+    T('East = 1 (Đông)',m(24.5),y(58),17,col.o,'right',oE);
+    T('East = 0 (Tây - chuẩn)',m(24.5),y(41),17,col.b,'right',oW);
+
+    // Khung giải thích bên phải
+    const oR=sg(t,4,5.5);
+    RR(680,155,525,335,12,col.card,oR);RR(680,155,525,335,12,col.bd,oR,1.5);R(680,168,3.5,309,col.y,oR);
+    T('Pricê = b₀ + b₁·Food + b₂·East',942,198,22,col.y,'center',oR);
+    T('• East = 0 (mức tham chiếu — Tây):',710,256,19,col.b,'left',sg(t,5.5,7));
+    T('  Pricê = b₀ + b₁·Food',710,290,20,col.fg,'left',sg(t,5.5,7));
+    T('• East = 1 (phía Đông):',710,342,19,col.o,'left',sg(t,9.5,11));
+    T('  Pricê = (b₀ + b₂) + b₁·Food',710,376,20,col.fg,'left',sg(t,9.5,11));
+    T('Quy tắc tổng quát:',710,428,19,col.g,'left',sg(t,17.5,19));
+    T('Biến phân loại có k mức ⇒ dùng k − 1 biến chỉ báo!',710,462,18,col.fg,'left',sg(t,18.5,20));
+  }
+},
+{
+  t:'14. Nghịch lý Simpson trong hồi quy',d:26,
+  s:[
+    [0,'Ở Tuần 03 bạn đã gặp nghịch lý Simpson với bảng tỉ lệ; trong hồi quy tuyến tính, hiện tượng đảo chiều này cũng xảy ra y hệt!'],
+    [5.5,'Quan sát đám mây điểm gộp chung (màu xám): đường hồi quy tổng thể dốc LÊN rất rõ, hệ số góc dương!'],
+    [11.5,'Nhưng khi tô màu tách dữ liệu theo 3 nhóm ẩn (xanh, cam, xanh lá), ta giật mình thấy TRONG TỪNG NHÓM đường hồi quy đều dốc XUỐNG (âm)!'],
+    [17.5,'Nguyên nhân: biến nhóm vừa làm tăng giá trị x, vừa làm tăng mức nền của y, tạo ra ảo giác xu hướng dương khi gộp chung.'],
+    [22,'Giải pháp: đưa biến chỉ báo nhóm vào mô hình đa biến để ước lượng đúng hệ số góc thực sự trong từng nhóm!']
+  ],
+  f:t=>{
+    hd('14. Nghịch lý Simpson: Gộp nhóm làm đảo chiều hệ số góc');
+
+    const m=mp(0,11.5,110,730),y=mp(3,16.5,485,155);
+    L(100,485,740,485,col.axis,2);L(110,145,110,490,col.axis,1.5);
+    const rev=sg(t,8.5,11);
+
+    simpsonData.forEach(g=>{
+      g.pts.forEach(([xv,yv])=>{
+        D(m(xv),y(yv),5.5,rev>.1?g.c:col.dim,.9);
+      });
+      if(rev>.2){
+        L(m(g.cx-1.6),y(g.cy+1.6*1.15),m(g.cx+1.6),y(g.cy-1.6*1.15),g.c,3,rev);
+      }
+    });
+    // Đường gộp chung dốc lên
+    L(m(1),y(6.2),m(10.5),y(14.3),col.r,3,sg(t,2.5,4.5),[8,6]);
+    T('Gộp chung: b₁ > 0 (dốc lên!)',m(5.8),y(14.8),20,col.r,'center',sg(t,3.5,5));
+    T('Trong từng nhóm: b₁ < 0 (dốc xuống!)',m(5.8),y(4.5),20,col.g,'center',sg(t,12,13.5));
+
+    // Khung giải thích bên phải
+    const oR=sg(t,11,12.5);
+    RR(780,165,425,315,12,col.card,oR);RR(780,165,425,315,12,col.bd,oR,1.5);R(780,178,3.5,289,col.y,oR);
+    T('Tại sao bị đảo chiều?',992,205,22,col.y,'center',oR);
+    T('• Khi bỏ qua biến nhóm, đường',810,258,18,col.fg,'left',oR);
+    T('  hồi quy chạy xuyên qua tâm',810,286,18,col.fg,'left',oR);
+    T('  của 3 nhóm → ra dấu DƯƠNG.',810,314,18,col.r,'left',oR);
+    T('• Khi thêm biến chỉ báo nhóm:',810,368,18,col.g,'left',sg(t,16.5,18));
+    T('  ŷ = b₀ + b₁·x + b₂·D₂ + b₃·D₃',810,404,19,col.fg,'left',sg(t,17.5,19));
+    T('  ⇒ Khôi phục đúng b₁ ÂM!',810,444,19,col.y,'left',sg(t,18.5,20));
+  }
+},
+{
+  t:'15. Ngoại suy, Nhân quả & Python',d:24,
+  s:[
+    [0,'Hai giới hạn cuối cùng bắt buộc phải nhớ khi dùng hồi quy là ngoại suy và kết luận nhân quả.'],
+    [4.5,'Ngoại suy (trái): đường thẳng khớp rất đẹp trong miền dữ liệu xanh, nhưng khi kéo dài ra vùng cam nó có thể lệch hoàn toàn khỏi thực tế!'],
+    [10.5,'Tương quan không phải nhân quả (phải): doanh số kem và số ca đuối nước tương quan dương mạnh, nhưng không phải ăn kem gây đuối nước!'],
+    [16.5,'Thủ phạm là biến nhiễu "nhiệt độ mùa hè" làm tăng đồng thời cả hai — hồi quy quan sát tự nó không chứng minh được nhân quả.'],
+    [20.5,'Trong Python, ta dùng df["x"].corr(df["y"]), np.polyfit(x, y, 1) cho hồi quy đơn và statsmodels (ols) cho hồi quy đa biến.']
+  ],
+  f:t=>{
+    hd('15. Ngoại suy, Nhân quả và lệnh Python thực hành');
+
+    // Trái: Minh họa ngoại suy
+    const o1=sg(t,1.5,3);
+    const m=mp(0,10,105,580),y=mp(0,10,465,175);
+    L(95,465,590,465,col.axis,2,o1);L(105,165,105,470,col.axis,1.5,o1);
+    R(m(5.5),175,m(10)-m(5.5),290,col.r,.12*sg(t,5,6.5));
+    T('Miền quan sát',m(2.8),150,18,col.b,'center',o1);
+    T('Vùng NGOẠI SUY',m(7.8),150,18,col.r,'center',sg(t,5,6.5));
+    // Đường cong thật (bão hòa)
+    al(o1);X.strokeStyle=col.g;X.lineWidth=2.6;X.beginPath();
+    for(let i=0;i<=80;i++){const xv=10*i/80,yv=6*(1-Math.exp(-xv/3.2));i===0?X.moveTo(m(xv),y(yv)):X.lineTo(m(xv),y(yv))}
+    X.stroke();
+    // Đường thẳng hồi quy
+    L(m(.5),y(.7),m(9.5),y(9.2),col.y,2.5,sg(t,3.5,5),[7,5]);
+    T('Đường thẳng OLS',m(7.5),y(8.5),16,col.y,'center',sg(t,6,7.5));
+    T('Xu hướng thật',m(8),y(5.1),16,col.g,'center',sg(t,6,7.5));
+
+    // Phải trên: Biến nhiễu (Confounder)
+    const o2=sg(t,9.5,11);
+    RR(645,155,555,155,12,col.card,o2);RR(645,155,555,155,12,col.bd,o2,1.5);R(645,168,3.5,129,col.o,o2);
+    T('Tương quan ≠ Nhân quả (Biến nhiễu)',922,188,20,col.o,'center',o2);
+    T('Nhiệt độ mùa hè (Biến nhiễu)',922,226,18,col.y,'center',o2);
+    L(870,242,785,268,col.y,2,o2);L(975,242,1060,268,col.y,2,o2);
+    T('Doanh số kem',755,286,18,col.fg,'center',o2);
+    T('Số ca đuối nước',1085,286,18,col.fg,'center',o2);
+    T('✗',922,284,19,col.r,'center',o2);
+
+    // Phải dưới: Lệnh Python
+    const o3=sg(t,16.5,18);
+    RR(645,335,555,155,12,col.card2,o3);RR(645,335,555,155,12,col.bd,o3,1.5);R(645,348,3.5,129,col.g,o3);
+    T('Lệnh Python trọng tâm Tuần 04',675,368,19,col.g,'left',o3);
+    T('• df["x"].corr(df["y"])        → tính r',675,405,17,col.fg,'left',o3);
+    T('• b1, b0 = np.polyfit(x, y, 1) → OLS đơn',675,436,17,col.fg,'left',o3);
+    T('• ols("y ~ x1 + C(nhom)", df)  → OLS đa biến',675,467,17,col.fg,'left',o3);
+  }
+},
+{
+  t:'16. Tóm tắt & 6 lỗi hay gặp',d:24,
+  s:[
+    [0,'Trước khi sang bảng tổng hợp công thức, hãy rà lại 6 lỗi phổ biến nhất cần tránh ở Tuần 04.'],
+    [4.5,'Một là tưởng r = 0 nghĩa là hai biến không liên quan; hai là diễn giải hệ số hồi quy b₁ thành tác động nhân quả.'],
+    [9.5,'Ba là tin một đường hồi quy bị kéo lệch bởi 1 điểm đòn bẩy cao mà không vẽ scatter plot hay biểu đồ phần dư.'],
+    [14.5,'Bốn là so sánh độ lớn |b₁| giữa các biến khác đơn vị đo; năm là ngoại suy liều lĩnh tại x = 0 cho hệ số chặn b₀.'],
+    [19,'Sáu là nhầm đường hồi quy y theo x với đường x theo y, hoặc quên điều kiện "giữ các biến còn lại cố định" trong hồi quy đa biến.']
+  ],
+  f:t=>{
+    hd('16. Sáu lỗi hay gặp cần tránh ở Tuần 04');
+    const errs=[
+      ['1. Tưởng r = 0 là không liên quan','→ r chỉ đo tuyến tính; vẽ scatter kiểm tra cong!',1.5],
+      ['2. Đọc hệ số b₁ thành nhân quả','→ Chỉ là mô tả liên hệ (trừ thí nghiệm ngẫu nhiên)',4.5],
+      ['3. Bỏ qua điểm đòn bẩy cao','→ Kiểm tra mô hình có và không có điểm ngoại lai',7.5],
+      ['4. So độ lớn |b₁| bỏ qua đơn vị','→ b₁ đổi theo đơn vị đo; muốn so độ mạnh hãy xem r',10.5],
+      ['5. Ngoại suy ngoài miền dữ liệu','→ Không tin dự báo xa miền quan sát (kể cả b₀)',13.5],
+      ['6. Quên "giữ biến khác cố định"','→ Hệ số đa biến thay đổi khi thêm/bớt biến kiểm soát',16.5]
+    ];
+    errs.forEach(([e,fx,st],i)=>{
+      const yy=148+i*62,o=sg(t,st,st+1.2);
+      RR(85,yy-23,1110,48,10,col.card,o);RR(85,yy-23,1110,48,10,col.bd,o,1.4);R(85,yy-15,3.5,32,col.r,o);
+      T('✗  '+e,112,yy,20,col.r,'left',o);
+      T(fx,625,yy,19,col.g,'left',o);
+    });
+  }
+},
+{
+  t:'17. Tổng hợp công thức',d:28,
+  s:[
+    [0,'Cuối cùng, hãy cùng hệ thống lại toàn bộ 8 nhóm công thức trọng tâm của Tuần 04 trên bảng tổng hợp trực quan.'],
+    [4.5,'Cột trái gồm hệ số tương quan Pearson r, quy tắc đổi thang đo, phương trình hồi quy tuyến tính đơn giản và định nghĩa phần dư.'],
+    [10.5,'Cột phải gồm tiêu chuẩn bình phương tối thiểu SSE cùng hai điều kiện chuẩn, công thức ước lượng b₁ và b₀.'],
+    [16.5,'Tiếp theo là hệ số xác định R² và phương trình hồi quy nhiều biến có biến chỉ báo D ∈ {0, 1}.'],
+    [22.5,'Hãy bấm phím Space để tạm dừng tại bảng công thức này nếu bạn muốn ghi chép và ôn lại trước khi sang Tuần 05!']
+  ],
+  f:t=>{
+    const pal={gold:'#e5b91a',txt:'#dcdde2',mut:'#989ba5',bg:'#35373d',bd:'#4c4f58'};
+    T('17. Tổng hợp các công thức trọng tâm Tuần 04',80,58,35,pal.gold);
+    const card=(x,y,title,st,draw)=>{
+      const o=sg(t,st,st+1.2);
+      RR(x,y,555,104,10,pal.bg,o);RR(x,y,555,104,10,pal.bd,o,1.4);
+      R(x,y+12,3.5,80,pal.gold,o);
+      T(title,x+18,y+22,16,pal.gold,'left',o);
+      draw(x,y,o);
+    };
+
+    // Cột trái (4 thẻ)
+    card(75,112,'1. Hệ số tương quan Pearson (−1 ≤ r ≤ 1)',1,(x,y,o)=>{
+      T('r =',x+22,y+64,20,pal.txt,'left',o);
+      FR('1','n − 1',x+92,y+64,17,pal.txt,o);
+      T('∑ zₓ,ᵢ·zᵧ,ᵢ  =',x+132,y+64,19,pal.txt,'left',o);
+      FR('Sₓᵧ','√(Sₓₓ·Sᵧᵧ)',x+350,y+64,17,pal.txt,o);
+    });
+    card(75,230,'2. Đổi thang đo x\' = a + b·x',3,(x,y,o)=>{
+      T('r(x\', y) = sign(b) · r(x, y)   (không đơn vị)',x+22,y+55,19,pal.txt,'left',o);
+      T('Hệ số góc:  b₁\' = b₁ / b   (phụ thuộc đơn vị)',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(75,348,'3. Mô hình hồi quy tuyến tính đơn giản',5.5,(x,y,o)=>{
+      T('ŷ = b₀ + b₁·x   (ŷ: giá trị đối chiếu)',x+22,y+55,20,pal.txt,'left',o);
+      T('Đổi vai 2 biến:  b₁(y|x) · b₁(x|y) = r²',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(75,466,'4. Phần dư & Bình phương tối thiểu (OLS)',8,(x,y,o)=>{
+      T('eᵢ = yᵢ − ŷᵢ   ;   min SSE = ∑ eᵢ²',x+22,y+55,20,pal.txt,'left',o);
+      T('Hai điều kiện chuẩn:  ∑ eᵢ = 0  và  ∑ xᵢ·eᵢ = 0',x+22,y+86,16,pal.mut,'left',o);
+    });
+
+    // Cột phải (4 thẻ)
+    card(650,112,'5. Công thức ước lượng hệ số OLS',10.5,(x,y,o)=>{
+      T('b₁ =',x+22,y+64,20,pal.txt,'left',o);
+      FR('Sₓᵧ','Sₓₓ',x+92,y+64,18,pal.txt,o);
+      T('= r ·',x+135,y+64,19,pal.txt,'left',o);
+      FR('sᵧ','sₓ',x+205,y+64,18,pal.txt,o);
+      T(';   b₀ = ȳ − b₁·x̄',x+242,y+64,20,pal.txt,'left',o);
+    });
+    card(650,230,'6. Hệ số xác định R² (0 ≤ R² ≤ 1)',13,(x,y,o)=>{
+      T('R² = 1 −',x+22,y+64,20,pal.txt,'left',o);
+      FR('SSE','SST',x+132,y+64,18,pal.txt,o);
+      T('=',x+176,y+64,20,pal.txt,'left',o);
+      FR('SSR','SST',x+224,y+64,18,pal.txt,o);
+      T('(đơn: R² = r²)',x+278,y+64,16,pal.mut,'left',o);
+    });
+    card(650,348,'7. Hồi quy nhiều biến (Đa biến)',15.5,(x,y,o)=>{
+      T('ŷ = b₀ + b₁x₁ + b₂x₂ + … + bₚxₚ',x+22,y+55,20,pal.txt,'left',o);
+      T('bⱼ: đổi của ŷ khi xⱼ tăng 1, giữ biến khác cố định',x+22,y+86,16,pal.mut,'left',o);
+    });
+    card(650,466,'8. Biến chỉ báo (Dummy D ∈ {0, 1})',18,(x,y,o)=>{
+      T('ŷ = b₀ + b₁·x + b₂·D   (D=0: mức tham chiếu)',x+22,y+55,19,pal.txt,'left',o);
+      T('Biến phân loại có k mức ⇒ dùng k − 1 biến chỉ báo',x+22,y+86,16,pal.mut,'left',o);
+    });
+  }
+}
+];
+
+// ===== Điều khiển trình phát tương tác =====
+const ST=[];let TOT=0;sc.forEach(s=>{ST.push(TOT);TOT+=s.d});
+const idx=()=>Math.max(0,ST.findLastIndex(x=>x<=g));
+const $=(q)=>document.querySelector(q);
+const pg=$('#pg'),mn=$('#mn'),ui=$('#ui'),sub=$('#sub'),bp=$('#bp'),bt=$('#bt'),bn=$('#bn'),bc=$('#bc'),bs=$('#bs'),bm=$('#bm'),tm=$('#tm');
+const ic=d=>`<svg viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+const IP=ic('M8 5v14l11-7z'),IA=ic('M6 19h4V5H6zm8-14v14h4V5z');
+bt.innerHTML=ic('M6 6h2v12H6zm3.5 6l8.5 6V6z');
+bn.innerHTML=ic('M6 18l8.5-6L6 6zm10-12v12h2V6z');
+bm.innerHTML=ic('M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z');
+
+sc.forEach((s,i)=>{
+  const e=document.createElement('div');e.className='sg';e.style.flexGrow=s.d;e.innerHTML='<i></i>';pg.appendChild(e);
+  const m=document.createElement('div');m.textContent=s.t;m.onclick=()=>{g=ST[i];mn.classList.remove('o');rd()};mn.appendChild(m);
+});
+const sgs=[...pg.children],mns=[...mn.children];
+
+let g=0,pl=1,cc=1,sp=1,lt=0,ht=0,dr=0;
+const sps=[.75,1,1.25,1.5,2];
+const ft=s=>{s=Math.max(0,Math.floor(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+const sh=()=>{ui.classList.remove('h');clearTimeout(ht);if(pl)ht=setTimeout(()=>ui.classList.add('h'),3000)};
+const up=()=>{bp.innerHTML=pl?IA:IP;if(!pl)ui.classList.remove('h');else sh()};
+
+function rs(){
+  const dpr=Math.min(2,devicePixelRatio||1),w=innerWidth,h=innerHeight,r=Math.min(w/W,h/H);
+  C.style.width=W*r+'px';C.style.height=H*r+'px';
+  C.width=Math.round(W*r*dpr);C.height=Math.round(H*r*dpr);
+}
+addEventListener('resize',rs);rs();
+
+let lastSub='';
+function rd(){
+  const k=C.width/W;X.setTransform(k,0,0,k,0,0);X.globalAlpha=1;X.fillStyle='#2c2d31';X.fillRect(0,0,W,H);
+  const i=idx(),t=g-ST[i],s=sc[i];
+  FA=Math.min(cl(t/.4),cl((s.d-t)/.4));
+  s.f(t);
+  X.globalAlpha=1;
+  sgs.forEach((e,j)=>{e.firstChild.style.width=(j<i?100:j>i?0:cl(t/s.d)*100)+'%'});
+  mns.forEach((e,j)=>e.classList.toggle('c',j===i));
+  tm.textContent=`${ft(g)} / ${ft(TOT)} · ${s.t}`;
+  let tx='';
+  if(cc)for(const [a,b] of s.s)if(t>=a)tx=b;
+  if(tx!==lastSub){
+    lastSub=tx;
+    sub.textContent=tx;
+    sub.classList.toggle('e',!tx);
+  }
+}
+
+function lp(n){
+  if(lt&&pl){g+=Math.min(.1,(n-lt)/1000)*sp;if(g>=TOT){g=TOT;pl=0;up()}}
+  lt=n;rd();requestAnimationFrame(lp);
+}
+requestAnimationFrame(lp);up();
+
+const tg=()=>{if(g>=TOT)g=0;pl^=1;up()};
+bp.onclick=tg;
+bt.onclick=()=>{const i=idx();g=ST[g-ST[i]>2?i:Math.max(0,i-1)];sh()};
+bn.onclick=()=>{const i=idx();g=i<sc.length-1?ST[i+1]:TOT;sh()};
+bc.onclick=()=>{cc^=1;bc.classList.toggle('on',!!cc);lastSub='__';rd()};
+bs.onclick=()=>{sp=sps[(sps.indexOf(sp)+1)%sps.length];bs.textContent=sp+'×'};
+bm.onclick=()=>mn.classList.toggle('o');
+C.onclick=()=>{if(mn.classList.contains('o'))mn.classList.remove('o');else tg()};
+
+const sk=e=>{const r=pg.getBoundingClientRect();g=cl((e.clientX-r.left)/r.width)*TOT;rd()};
+pg.onpointerdown=e=>{dr=1;pg.setPointerCapture(e.pointerId);sk(e)};
+pg.onpointermove=e=>{if(dr)sk(e)};
+pg.onpointerup=()=>{dr=0};
+addEventListener('pointermove',sh);
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();tg()}
+  else if(e.key==='ArrowLeft')bt.click();
+  else if(e.key==='ArrowRight')bn.click();
+  else if(e.key==='c'||e.key==='C')bc.click();
+  else if(e.key==='m'||e.key==='M')bm.click();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tuần 5: Nền tảng và tính toán xác suất</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0d0f13;--fg:#f2f4f8;--ac:#4aa3ff}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden;user-select:none}
+#st{position:fixed;inset:0;display:grid;place-items:center}
+canvas{display:block}
+/* Cố định phụ đề ở sát mép đáy màn hình, không đổi vị trí khi thanh điều khiển ẩn/hiện */
+#sub{
+  position:fixed;
+  left:50%;
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);
+  max-width:min(980px,94vw);
+  padding:10px 20px;
+  border-radius:10px;
+  background:rgba(13,15,19,.88);
+  border:1px solid rgba(255,255,255,.12);
+  color:#f2f4f8;
+  font-size:clamp(14px,1.45vw,19px);
+  font-weight:400;
+  line-height:1.45;
+  text-align:center;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:5;
+}
+#sub.e{opacity:0}
+#ui{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:20px 0 0;
+  background:linear-gradient(transparent,rgba(0,0,0,.86));
+  transition:opacity .3s;
+  z-index:10;
+}
+#ui.h{opacity:0;pointer-events:none}
+#pg{display:flex;gap:2px;height:14px;align-items:flex-end;cursor:pointer;touch-action:none}
+.sg{flex:1;height:4px;background:#ffffff30;border-radius:0;overflow:hidden;transition:height .15s}
+#pg:hover .sg{height:8px}
+.sg i{display:block;height:100%;background:var(--ac)}
+#rw{display:flex;align-items:center;gap:6px;padding:0 18px 8px}
+button{background:none;border:0;color:var(--fg);width:42px;height:42px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font:600 14px inherit;font-family:inherit}
+button:hover{background:#ffffff22}
+button.on{color:var(--ac)}
+svg{width:24px;height:24px;fill:currentColor}
+#tm{font-size:14px;font-weight:600;margin-left:8px;flex:1}
+#mn{position:fixed;top:0;right:0;bottom:0;width:min(340px,86vw);background:#14171df2;padding:18px 8px;overflow:auto;transform:translateX(100%);transition:transform .25s;z-index:20}
+#mn.o{transform:none}
+#mn div{padding:11px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
+#mn div:hover{background:#ffffff18}
+#mn div.c{color:var(--ac)}
+</style>
+</head>
+<body>
+<div id="st"><canvas id="c"></canvas></div>
+<div id="mn"></div>
+<div id="ui">
+  <div id="rw">
+    <button id="bp" title="Phát/Tạm dừng (Space)"></button>
+    <button id="bt" title="Cảnh trước (←)"></button>
+    <button id="bn" title="Cảnh sau (→)"></button>
+    <span id="tm"></span>
+    <button id="bc" class="on" title="Bật/tắt phụ đề (C)">CC</button>
+    <button id="bs" title="Tốc độ">1×</button>
+    <button id="bm" title="Mục lục (M)"></button>
+  </div>
+  <div id="pg"></div>
+</div>
+<div id="sub"></div>
+
+<script>
+// Thiết lập canvas logic 1280x720 và các hàm vẽ, tiện ích toán học dùng chung
+const W=1280,H=720,C=document.getElementById('c'),X=C.getContext('2d');
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const sm=v=>{v=cl(v);return v*v*(3-2*v)};
+const sg=(t,a,b)=>sm((t-a)/(b-a));
+const mx=(a,b,k)=>a+(b-a)*k;
+const mp=(a,b,p,q)=>v=>p+(q-p)*(v-a)/(b-a);
+const f=(v,d=2)=>v.toFixed(d).replace('.',',');
+const col={fg:'#f2f4f8',dim:'#9aa4b5',b:'#4aa3ff',o:'#ff8a5b',g:'#4fd1a1',y:'#ffd166',r:'#ff6b6b',p:'#b794f4'};
+
+let FA=1;
+const al=a=>{X.globalAlpha=cl(a===undefined?1:a)*FA};
+function T(s,x,y,z,c,a,o){al(o);X.fillStyle=c||col.fg;X.font=`${z>=34?800:600} ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;X.textAlign=a||'left';X.textBaseline='middle';X.fillText(s,x,y)}
+function L(a,b,c,d,k,w,o,ds){al(o);X.strokeStyle=k;X.lineWidth=w||2;X.setLineDash(ds||[]);X.beginPath();X.moveTo(a,b);X.lineTo(c,d);X.stroke();X.setLineDash([])}
+function R(x,y,w,h,c,o){al(o);X.fillStyle=c;X.fillRect(x,y,w,h)}
+function RR(x,y,w,h,r,c,o,st){
+  al(o);X.beginPath();X.roundRect(x,y,w,h,r);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+function D(x,y,r,c,o,st){
+  al(o);X.beginPath();X.arc(x,y,r,0,Math.PI*2);
+  if(st){X.strokeStyle=c;X.lineWidth=st;X.stroke()}else{X.fillStyle=c;X.fill()}
+}
+// Vẽ phân số 2 dòng (tử số trên, gạch ngang, mẫu số dưới), trả về độ rộng khung phân số
+function FR(num,den,x,y,z,c,o){
+  X.font=`600 ${z}px 'Be Vietnam Pro',system-ui,sans-serif`;
+  const w=Math.max(X.measureText(num).width,X.measureText(den).width)+14;
+  T(num,x,y-z*.66,z,c,'center',o);
+  L(x-w/2,y,x+w/2,y,c||col.fg,1.8,o);
+  T(den,x,y+z*.72,z,c,'center',o);
+  return w;
+}
+const hd=s=>T(s,80,58,35);
+
+// Bộ sinh số ngẫu nhiên cố định hạt giống để mô phỏng De Méré ổn định
+const rg=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const rDM=rg(4200);
+const DM_STEPS=180,DM_MAX=10000;
+const dmX=Array.from({length:DM_STEPS},(_,i)=>Math.max(1,Math.round(Math.pow(DM_MAX,i/(DM_STEPS-1)))));
+const dmG1=[],dmG2=[];
+{
+  let w1=0,w2=0,idx=0;
+  for(let n=1;n<=DM_MAX;n++){
+    let ok1=false,ok2=false;
+    for(let j=0;j<4;j++)if(Math.floor(rDM()*6)===5)ok1=true;
+    for(let j=0;j<24;j++)if(Math.floor(rDM()*6)===5&&Math.floor(rDM()*6)===5)ok2=true;
+    if(ok1)w1++;if(ok2)w2++;
+    while(idx<DM_STEPS&&n===dmX[idx]){dmG1.push(w1/n);dmG2.push(w2/n);idx++}
+  }
+}
+
+// Dữ liệu 6 lỗi hay gặp ở cảnh cuối (bám sát mục 8 Tuần 05)
+const ER=[
+  ['Coi P(A | B) và P(B | A) là giống nhau','Xác định rõ mẫu số (biến cố sau dấu |) trước khi tính'],
+  ['Coi hai biến cố xung khắc là độc lập','Xung khắc với xác suất dương thì rất phụ thuộc nhau'],
+  ['Nhân xác suất P(A)·P(B) khi chưa kiểm tra độc lập','Luôn viết P(A)·P(B | A); chỉ bỏ điều kiện khi có độc lập'],
+  ['Cộng thẳng xác suất của các biến cố có thể cùng xảy ra','Dùng quy tắc phần bù hoặc quy tắc cộng P(A)+P(B)−P(A∩B)'],
+  ['Dùng |A|/|Ω| khi các kết quả không đồng khả năng','Liệt kê lại ở cấp đồng khả năng (từng vé, từng cặp có thứ tự)'],
+  ['Viết P(A | B̄) = 1 − P(A | B) hoặc trung bình cộng đơn giản','Phần bù chỉ áp cho biến cố trước |; dùng xác suất toàn phần']
+];
+
+// Danh sách 16 cảnh bao phủ toàn bộ giáo trình Tuần 05
+const sc=[
+{
+  h:'Hai trò chơi của De Méré',d:30,ad:18,
+  sub:[
+    [0,5,'Chào các bạn. Tuần 05 mở đầu phần lý thuyết xác suất: làm sao gán một con số cho sự không chắc chắn và cập nhật nó khi có thông tin mới?'],
+    [5,10,'Hãy bắt đầu bằng câu chuyện lịch sử của De Méré thế kỷ 17 với hai trò chơi xúc xắc cân đối và độc lập.'],
+    [10,15,'Trò 1: gieo 1 xúc xắc 4 lần, thắng nếu có ít nhất một mặt 6. Trò 2: gieo 2 xúc xắc 24 lần, thắng nếu có ít nhất một cặp (6, 6).'],
+    [15,20,'De Méré lập luận: trò 1 có xác suất 4 × 1/6 = 2/3, trò 2 có 24 × 1/36 = 2/3, nên hai trò như nhau và đều có lợi!'],
+    [20,25,'Nhưng khi máy tính mô phỏng 50.000 ván: Trò 1 thắng 51,6% (lớn hơn 1/2), còn Trò 2 chỉ thắng 49,1% (nhỏ hơn 1/2)!'],
+    [25,30,'Vì sao lập luận 2/3 lại sai? Bởi các biến cố “ra 6 ở lần thứ i” có thể cùng xảy ra, nên cộng thẳng đã đếm lặp các ván có nhiều mặt 6.']
+  ],
+  f:t=>{
+    hd('1. Nghịch lý De Méré: hai trò chơi xúc xắc');
+    T('Trò 1: gieo 1 xúc xắc 4 lần (ít nhất một mặt 6)   ·   Trò 2: gieo 2 xúc xắc 24 lần (ít nhất một cặp 6-6)',80,112,21,col.dim,'left',sg(t,.3,1.5));
+    // Khung lập luận sai bên trái
+    const oL=sg(t,1.5,3);
+    RR(85,165,430,305,14,'#181d26',oL);RR(85,165,430,305,14,col.r,oL,2);
+    T('Lập luận sai của De Méré',300,205,23,col.r,'center',oL);
+    T('Trò 1:  4 × (1/6) = 2/3 ≈ 66,7%',120,268,22,col.fg,'left',sg(t,3,4.2));
+    T('Trò 2:  24 × (1/36) = 2/3 ≈ 66,7%',120,318,22,col.fg,'left',sg(t,4.2,5.4));
+    T('✗ Cộng thẳng các biến cố có thể',120,382,20,col.y,'left',sg(t,12.5,14));
+    T('  cùng xảy ra → bị đếm lặp!',120,414,20,col.y,'left',sg(t,12.5,14));
+
+    // Biểu đồ mô phỏng 50.000 ván bên phải
+    const B=480,y=mp(0,.75,B,170);
+    L(575,B,1185,B,'#3a4150',2);
+    L(575,y(.5),1185,y(.5),col.y,2,sg(t,6.5,7.5),[8,6]);
+    T('0,50 (hòa vốn)',1185,y(.5)-18,18,col.y,'right',sg(t,6.5,7.5));
+    const bars=[
+      ['Trò 1 (mô phỏng)',.51644,col.b,735,7.5],
+      ['Trò 2 (mô phỏng)',.49092,col.o,995,9.5]
+    ];
+    bars.forEach(([lb,val,c,cx,st])=>{
+      const h=(B-y(val))*sg(t,st,st+2);
+      R(cx-68,B-h,136,h,c,.88);
+      T(f(val*100,2)+'%',cx,B-h-22,23,c,'center',sg(t,st+1.5,st+2.5));
+      T(lb,cx,B+28,20,col.fg,'center',sg(t,6.5,7.5));
+    });
+    // Cột mờ 2/3 để đối chiếu
+    L(575,y(2/3),1185,y(2/3),col.r,1.8,sg(t,5.5,6.5),[4,6]);
+    T('De Méré đoán: 2/3 = 66,7%',1185,y(2/3)-16,17,col.r,'right',sg(t,5.5,6.5));
+    T('Kết quả 50.000 ván mô phỏng: Trò 1 có lợi (> 1/2), Trò 2 bất lợi (< 1/2)',640,582,23,col.y,'center',sg(t,14,15.5));
+  }
+},
+{
+  h:'Không gian mẫu & sơ đồ Venn',d:30,ad:18,
+  sub:[
+    [0,5,'Để tính toán chính xác, ta cần ngôn ngữ tập hợp. Không gian mẫu Ω là tập MỌI kết quả có thể của phép thử; mỗi biến cố là một tập con của Ω.'],
+    [5,10,'Ví dụ gieo một xúc xắc: Ω = {1, 2, 3, 4, 5, 6}. Đặt A = {2, 4, 6} (ra số chẵn) và B = {4, 5, 6} (ra số không nhỏ hơn 4).'],
+    [10,15,'Trên sơ đồ Venn, hình chữ nhật là Ω, hai vòng tròn là A và B, chia Ω thành bốn miền rời nhau chứa các phần tử 2; 4 và 6; 5; 1 và 3.'],
+    [15,20,'A hợp B (A ∪ B) gồm 2, 4, 5, 6 — chữ “hoặc” trong xác suất LUÔN bao gồm cả trường hợp hai biến cố cùng xảy ra.'],
+    [20,25,'A giao B (A ∩ B) là phần chồng lên nhau gồm 4 và 6 (cả hai cùng xảy ra). Phần bù Ā gồm 1, 3, 5; còn A trừ B chỉ còn 2.'],
+    [25,30,'Lưu ý phân biệt tập và số: A ∪ B là phép toán trên tập hợp, P(A) + P(B) là phép cộng hai con số. Không bao giờ viết A + B hay P(A) ∪ P(B)!']
+  ],
+  f:t=>{
+    hd('2. Không gian mẫu Ω, biến cố và sơ đồ Venn');
+    T('Gieo 1 xúc xắc: Ω = {1, 2, 3, 4, 5, 6},  A = {2, 4, 6} (chẵn),  B = {4, 5, 6} (≥ 4)',80,112,22,col.dim,'left',sg(t,.3,1.5));
+    // Sơ đồ Venn bên trái
+    const oV=sg(t,1.5,3);
+    RR(85,165,580,320,14,'#141821',oV);RR(85,165,580,320,14,'#4a5568',oV,2);
+    T('Ω',110,192,24,col.dim,'left',oV);
+    D(295,325,118,col.b,.28*sg(t,2.5,4));D(295,325,118,col.b,sg(t,2.5,4),2.5);
+    D(435,325,118,col.o,.28*sg(t,3.5,5));D(435,325,118,col.o,sg(t,3.5,5),2.5);
+    T('A (chẵn)',235,195,21,col.b,'center',sg(t,2.5,4));
+    T('B (≥ 4)',495,195,21,col.o,'center',sg(t,3.5,5));
+    T('2',240,325,30,col.fg,'center',sg(t,5,6));
+    T('4, 6',365,325,30,col.y,'center',sg(t,6,7));
+    T('5',490,325,30,col.fg,'center',sg(t,5,6));
+    T('1, 3',610,445,26,col.dim,'center',sg(t,6.5,7.5));
+
+    // Các phép toán bên phải
+    const ops=[
+      ['A ∪ B (A hoặc B)','{2, 4, 5, 6}',col.b,8],
+      ['A ∩ B (A và B)','{4, 6}',col.y,9.5],
+      ['Ā = Ω \\ A (không A)','{1, 3, 5}',col.g,11],
+      ['A \\ B (chỉ A)','{2}',col.o,12.5]
+    ];
+    ops.forEach(([nm,vl,c,st],i)=>{
+      const yy=205+i*72,o=sg(t,st,st+1.2);
+      RR(710,yy-26,490,54,10,'#181d26',o);RR(710,yy-26,490,54,10,c,o,1.8);
+      T(nm,732,yy,21,c,'left',o);
+      T(vl,1178,yy,22,col.fg,'right',o);
+    });
+    T('A là TẬP kết quả (dùng ∪, ∩)   ·   P(A) là CON SỐ trong [0, 1] (dùng +, −)',640,582,23,col.y,'center',sg(t,14.5,16));
+  }
+},
+{
+  h:'Xung khắc, đối nhau & De Morgan',d:32,ad:18,
+  sub:[
+    [0,5,'Hai biến cố gọi là xung khắc nếu chúng không thể cùng xảy ra: A ∩ B = ∅. Hai hình tròn trên sơ đồ Venn nằm tách biệt nhau hoàn toàn.'],
+    [5,10.5,'Hai biến cố gọi là đối nhau nếu chúng vừa xung khắc VỪA phủ kín không gian mẫu (B = Ā). Đối nhau thì chắc chắn xung khắc, nhưng ngược lại chưa chắc!'],
+    [10.5,16,'Ví dụ một vé hỗ trợ nhận đúng 1 mức: thấp, trung bình, cao, khẩn cấp. Biến cố “thấp” và “cao” xung khắc nhưng KHÔNG đối nhau vì còn 2 mức nữa.'],
+    [16,21.5,'Định luật De Morgan giúp dịch câu phủ định: phủ định của (A hoặc B) là (không A VÀ không B); phủ định của (A và B) là (không A HOẶC không B).'],
+    [21.5,27,'Hãy phân biệt thật kỹ hai câu nói dễ nhầm: “không bạn nào đi muộn” là Ā ∩ B̄, còn “không đồng thời cả hai đi muộn” là Ā ∪ B̄.'],
+    [27,32,'Câu thứ hai vẫn cho phép ĐÚNG MỘT bạn đi muộn! Mẹo kiểm tra chắc chắn nhất là vẽ sơ đồ Venn và tô vùng ứng với câu nói.']
+  ],
+  f:t=>{
+    hd('3. Xung khắc, đối nhau và định luật De Morgan');
+    // Bên trái: Sơ đồ xung khắc vs đối nhau
+    const o1=sg(t,1,2.5);
+    RR(85,145,515,205,14,'#141821',o1);RR(85,145,515,205,14,'#3a4150',o1,2);
+    T('Xung khắc (A ∩ B = ∅) ≠ Đối nhau',342,175,21,col.b,'center',o1);
+    D(225,260,58,col.b,.28*o1);D(225,260,58,col.b,o1,2.2);T('Thấp',225,260,20,col.fg,'center',o1);
+    D(405,260,58,col.o,.28*o1);D(405,260,58,col.o,o1,2.2);T('Cao',405,260,20,col.fg,'center',o1);
+    T('Trung bình, Khẩn cấp',342,330,17,col.dim,'center',sg(t,3.5,4.8));
+
+    // Bên trái dưới: Định luật De Morgan
+    const o2=sg(t,7,8.5);
+    RR(85,375,515,145,14,'#181d26',o2);RR(85,375,515,145,14,col.y,o2,2);
+    T('Định luật De Morgan (phủ định đổi ∪ ↔ ∩)',342,410,20,col.y,'center',o2);
+    T('¬(A ∪ B) = Ā ∩ B̄     (không A VÀ không B)',115,455,21,col.fg,'left',sg(t,8,9.2));
+    T('¬(A ∩ B) = Ā ∪ B̄     (không A HOẶC không B)',115,492,21,col.fg,'left',sg(t,9.2,10.4));
+
+    // Bên phải: Bảng dịch lời nói -> ký hiệu
+    const rows=[
+      ['Lời nói (A: An muộn, B: Bình muộn)','Ký hiệu'],
+      ['Ít nhất một bạn đi muộn','A ∪ B'],
+      ['Cả hai bạn cùng đi muộn','A ∩ B'],
+      ['Không bạn nào đi muộn','Ā ∩ B̄ = ¬(A ∪ B)'],
+      ['Không đồng thời cả hai muộn','Ā ∪ B̄ = ¬(A ∩ B)'],
+      ['Chỉ An đi muộn','A ∩ B̄ = A \\ B'],
+      ['Đúng một bạn đi muộn','(A ∩ B̄) ∪ (Ā ∩ B)']
+    ];
+    rows.forEach((r,idx)=>{
+      const yy=155+idx*56,o=sg(t,10+idx*.9,11+idx*.9);
+      const c=idx===0?col.y:(idx===3||idx===4?col.g:col.fg);
+      T(r[0],645,yy,19,c,'left',o);
+      T(r[1],1200,yy,19,idx===0?col.y:col.b,'right',o);
+      if(idx===0)L(640,yy+22,1205,yy+22,'#3a4150',1.5,o);
+    });
+    T('“Không đồng thời cả hai” vẫn cho phép đúng một biến cố xảy ra!',640,582,23,col.y,'center',sg(t,15,16.5));
+  }
+},
+{
+  h:'Ba tiên đề và hệ quả',d:28,ad:16,
+  sub:[
+    [0,4.5,'Mọi quy tắc tính xác suất đều suy ra từ đúng ba tiên đề Kolmogorov cực kỳ tự nhiên nếu ta hiểu xác suất như tỉ lệ dài hạn.'],
+    [4.5,9.5,'Tiên đề 1: xác suất không bao giờ âm, P(A) ≥ 0. Tiên đề 2: biến cố chắc chắn có xác suất bằng 1, P(Ω) = 1.'],
+    [9.5,14.5,'Tiên đề 3: nếu các biến cố A₁, A₂,... đôi một xung khắc (không bao giờ cùng xảy ra), xác suất của hợp bằng tổng các xác suất.'],
+    [14.5,19,'Từ ba tiên đề, bằng mẹo cắt biến cố thành các mảnh rời nhau, ta suy ra 5 hệ quả thiết yếu: P(∅) = 0, 0 ≤ P(A) ≤ 1 và tính đơn điệu.'],
+    [19,23.5,'Quan trọng nhất là Quy tắc phần bù: P(Ā) = 1 − P(A), cực kỳ mạnh khi bài toán hỏi “ít nhất một” (vì phần bù chỉ còn 1 trường hợp).'],
+    [23.5,28,'Ví dụ tung đồng xu cân đối 3 lần: xác suất có ít nhất một mặt sấp bằng 1 − P(cả 3 đều ngửa) = 1 − 1/8 = 7/8.']
+  ],
+  f:t=>{
+    hd('4. Ba tiên đề xác suất và các hệ quả cốt lõi');
+    // 3 hộp tiên đề phía trên
+    const ax=[
+      ['Tiên đề 1','P(A) ≥ 0','Xác suất không âm',col.b,1],
+      ['Tiên đề 2','P(Ω) = 1','Toàn bộ bằng 1',col.g,3],
+      ['Tiên đề 3','P(⋃ Aᵢ) = Σ P(Aᵢ)','Nếu Aᵢ đôi một xung khắc',col.o,5]
+    ];
+    ax.forEach(([tt,fm,ds,c,st],i)=>{
+      const x=85+i*385,o=sg(t,st,st+1.4);
+      RR(x,125,355,155,14,'#181d26',o);RR(x,125,355,155,14,c,o,2.4);
+      T(tt,x+177,158,21,c,'center',o);
+      T(fm,x+177,205,27,col.fg,'center',o);
+      T(ds,x+177,250,18,col.dim,'center',o);
+    });
+    // Các hệ quả phía dưới
+    const cor=[
+      ['Quy tắc phần bù:','P(Ā) = 1 − P(A)','VD: tung 3 xu, P(≥1 sấp) = 1 − 1/8 = 7/8',col.y,8],
+      ['Biến cố rỗng & giới hạn:','P(∅) = 0   ·   0 ≤ P(A) ≤ 1','Xác suất không bao giờ vượt quá 1',col.fg,10],
+      ['Tính đơn điệu:','A ⊆ B  ⇒  P(A) ≤ P(B)','VD: P(ra 6) ≤ P(ra số chẵn)',col.fg,11.5],
+      ['Quy tắc hiệu:','P(A \\ B) = P(A) − P(A ∩ B)','Cắt A thành (A ∩ B) và (A \\ B) rời nhau',col.g,13]
+    ];
+    cor.forEach(([nm,fm,ex,c,st],i)=>{
+      const yy=335+i*58,o=sg(t,st,st+1.2);
+      T(nm,90,yy,20,c,'left',o);
+      T(fm,370,yy,22,col.b,'left',o);
+      T(ex,735,yy,19,col.dim,'left',o);
+    });
+    T('Mọi chứng minh đều dùng một mẹo: cắt biến cố thành các mảnh rời nhau rồi áp Tiên đề 3',640,582,22,col.y,'center',sg(t,14.2,15.5));
+  }
+},
+{
+  h:'Đồng khả năng & cấp kết quả',d:30,ad:18,
+  sub:[
+    [0,5,'Khi không gian mẫu Ω hữu hạn và MỌI kết quả đều có cùng xác suất (đồng khả năng), ta mới được dùng công thức đếm P(A) = |A| / |Ω|.'],
+    [5,10,'Điều kiện đồng khả năng là bắt buộc! Cùng một phép thử nhưng nếu chọn sai cấp kết quả để đếm, đáp số sẽ sai hoàn toàn.'],
+    [10,15,'Ví dụ 1: hộp có 5 vé [1, 2, 2, 3, 4]. Năm lá vé đồng khả năng (mỗi vé 1/5), nhưng 4 giá trị KHÔNG đồng khả năng vì số 2 có 2 vé nên xác suất là 2/5.'],
+    [15,20,'Ví dụ 2: đồng xu thiên vị có P(H)=2/3, P(T)=1/3 có thể mô hình bằng hộp 3 vé [H, H, T]. Rút 2 lần có 9 cặp vé đồng khả năng, nhưng HH có xác suất 4/9.'],
+    [20,25,'Ví dụ 3: bánh xe Roulette kiểu Mỹ có 38 ô (18 đỏ, 18 đen, 2 xanh). Các ô đồng khả năng nên P(đỏ) = 18/38 ≈ 47,4%, KHÔNG phải 1/2!'],
+    [25,30,'Nguyên tắc vàng: luôn kiểm tra xem các phần tử trong Ω có thật sự đồng khả năng không trước khi chia |A| / |Ω|.']
+  ],
+  f:t=>{
+    hd('5. Công thức đếm P(A) = |A| / |Ω|: chỉ khi đồng khả năng!');
+    const cards=[
+      ['Hộp 5 vé [1, 2, 2, 3, 4]','5 vé đồng khả năng (1/5)','P(giá trị 2) = 2/5 ≠ 1/4','Phân biệt vé với giá trị',col.b,1.5],
+      ['Đồng xu thiên vị [H, H, T]','3 vé đồng khả năng (1/3)','P(H) = 2/3,  P(HH) = 4/9','Rút 2 lần: 9 cặp vé đều nhau',col.o,5.5],
+      ['Roulette kiểu Mỹ (38 ô)','18 đỏ, 18 đen, 2 xanh','P(đỏ) = 18/38 ≈ 0,474','Không phải 1/2 vì có 2 ô xanh',col.g,9.5]
+    ];
+    cards.forEach(([tt,l1,l2,l3,c,st],i)=>{
+      const x=85+i*385,o=sg(t,st,st+1.5);
+      RR(x,145,355,310,14,'#181d26',o);RR(x,145,355,310,14,c,o,2.5);
+      T(tt,x+177,190,22,c,'center',o);
+      T(l1,x+177,260,21,col.fg,'center',o);
+      T(l2,x+177,325,24,col.y,'center',o);
+      T(l3,x+177,395,18,col.dim,'center',o);
+    });
+    T('Tổng hai xúc xắc: 11 tổng KHÔNG đồng khả năng — phải đếm trên 36 cặp có thứ tự!',640,518,22,col.fg,'center',sg(t,13,14.5));
+    T('Luôn xác định đúng cấp kết quả đồng khả năng trước khi chia |A| / |Ω|',640,578,24,col.y,'center',sg(t,15,16.5));
+  }
+},
+{
+  h:'Quy tắc cộng tổng quát',d:32,ad:18,
+  sub:[
+    [0,5,'Khi hai biến cố A và B có thể cùng xảy ra (không xung khắc), nếu cộng P(A) + P(B) thì phần giao A ∩ B bị tính tới hai lần.'],
+    [5,10.5,'Trừ đi một lần phần chung, ta có Quy tắc cộng tổng quát (bao hàm–loại trừ): P(A ∪ B) = P(A) + P(B) − P(A ∩ B).'],
+    [10.5,16,'Vì P(A ∩ B) ≥ 0, tổng P(A) + P(B) luôn lớn hơn hoặc bằng P(A ∪ B) — nó chỉ là chặn trên. Đây chính là lý do De Méré tính ra 2/3!'],
+    [16,21.5,'Áp dụng cho ví dụ khảo sát 137 hộ gia đình: 86 hộ dùng Internet (I), 107 hộ dùng truyền hình (T), 69 hộ dùng cả hai và 13 hộ không dùng gì.'],
+    [21.5,27,'Theo quy tắc cộng: P(I ∪ T) = (86 + 107 − 69) / 137 = 124 / 137 ≈ 90,51% số hộ dùng ít nhất một dịch vụ.'],
+    [27,32,'Kiểm tra lại bằng quy tắc phần bù: 1 − P(không dùng dịch vụ nào) = 1 − 13/137 = 124/137. Hai cách khớp nhau tuyệt đối!']
+  ],
+  f:t=>{
+    hd('6. Quy tắc cộng tổng quát & khảo sát 137 hộ gia đình');
+    T('P(A ∪ B) = P(A) + P(B) − P(A ∩ B)     ·     Hệ quả: P(A ∪ B) ≤ P(A) + P(B)',80,112,24,col.y,'left',sg(t,.3,1.5));
+    // Sơ đồ Venn đếm lặp bên trái
+    const oV=sg(t,2,3.5);
+    D(245,305,105,col.b,.3*oV);D(245,305,105,col.b,oV,2.5);
+    D(385,305,105,col.o,.3*oV);D(385,305,105,col.o,oV,2.5);
+    T('I: 86 hộ',190,178,21,col.b,'center',oV);
+    T('T: 107 hộ',440,178,21,col.o,'center',oV);
+    T('17',195,305,28,col.fg,'center',sg(t,4,5));
+    T('69',315,305,32,col.y,'center',sg(t,5,6));
+    T('38',435,305,28,col.fg,'center',sg(t,4,5));
+    T('Ngoài: 13 hộ',315,442,20,col.dim,'center',sg(t,6,7));
+    T('Phần giao 69 hộ bị đếm 2 lần nếu chỉ cộng 86 + 107',315,480,19,col.r,'center',sg(t,7,8.2));
+
+    // Bảng 2x2 và phép tính bên phải
+    const oT=sg(t,8.5,10);
+    RR(600,165,595,180,14,'#181d26',oT);RR(600,165,595,180,14,'#3a4150',oT,2);
+    T('Không TV',885,202,19,col.dim,'center',oT);T('Có TV',1015,202,19,col.o,'center',oT);T('Tổng',1135,202,19,col.y,'center',oT);
+    L(620,224,1175,224,'#3a4150',1.5,oT);
+    T('Không Internet',625,256,19,col.dim,'left',oT);T('13',885,256,22,col.fg,'center',oT);T('38',1015,256,22,col.fg,'center',oT);T('51',1135,256,22,col.dim,'center',oT);
+    T('Có Internet',625,308,19,col.b,'left',oT);T('17',885,308,22,col.fg,'center',oT);T('69',1015,308,24,col.y,'center',oT);T('86',1135,308,22,col.b,'center',oT);
+
+    T('Quy tắc cộng:  (86 + 107 − 69) / 137 = 124/137 ≈ 90,51%',600,398,21,col.g,'left',sg(t,11,12.5));
+    T('Kiểm tra bù:   1 − 13/137 = 124/137 ≈ 90,51%',600,446,21,col.b,'left',sg(t,13.5,15));
+    T('Với 3 biến cố: P(A∪B∪C) = ΣP(A) − ΣP(A∩B) + P(A∩B∩C)',640,578,22,col.y,'center',sg(t,15,16.5));
+  }
+},
+{
+  h:'Xác suất có điều kiện',d:30,ad:18,
+  sub:[
+    [0,5,'Khi biết thêm một thông tin B đã xảy ra, nhóm tham chiếu thu hẹp lại chỉ còn B. Đó là xác suất có điều kiện: P(A | B) = P(A ∩ B) / P(B).'],
+    [5,10,'Hãy nhớ quy tắc sống còn: biến cố đứng SAU dấu gạch thẳng “|” luôn là thông tin đã biết và quyết định MẪU SỐ.'],
+    [10,15,'Quay lại bảng 137 hộ: nếu biết hộ có Internet (I), ta chỉ nhìn hàng I gồm 86 hộ, trong đó 69 hộ có TV → P(T | I) = 69/86 ≈ 80,23%.'],
+    [15,20,'Ngược lại, nếu biết hộ có TV (T), mẫu số đổi thành cột T gồm 107 hộ, trong đó 69 hộ có Internet → P(I | T) = 69/107 ≈ 64,49%.'],
+    [20,25,'Hai xác suất P(T | I) và P(I | T) có cùng tử số là 69, nhưng khác mẫu số nên trả lời hai câu hỏi hoàn toàn khác nhau!'],
+    [25,30,'Ngoài ra, P(· | B) cũng là một xác suất hợp lệ: P(Ā | B) = 1 − P(A | B). Lưu ý dấu bù chỉ áp cho biến cố TRƯỚC dấu |, không áp cho điều kiện.']
+  ],
+  f:t=>{
+    hd('7. Xác suất có điều kiện: biết thêm thông tin thì mẫu số đổi');
+    T('Định nghĩa:  P(A | B) = P(A ∩ B) / P(B)   (với P(B) > 0)   —   Mẫu số là biến cố SAU dấu |',80,112,22,col.y,'left',sg(t,.3,1.5));
+    // Hai cột so sánh P(T|I) và P(I|T)
+    const boxes=[
+      ['Biết có Internet: P(T | I)','Mẫu số: 86 hộ có Internet','69 / 86 = 80,23%','(tăng từ 107/137 = 78,1%)',col.b,2.5],
+      ['Biết có TV: P(I | T)','Mẫu số: 107 hộ có TV','69 / 107 = 64,49%','(tăng từ 86/137 = 62,8%)',col.o,7]
+    ];
+    boxes.forEach(([tt,dn,rs,nt,c,st],i)=>{
+      const x=100+i*570,o=sg(t,st,st+1.5);
+      RR(x,175,510,255,14,'#181d26',o);RR(x,175,510,255,14,c,o,2.5);
+      T(tt,x+255,218,24,c,'center',o);
+      T(dn,x+255,268,21,col.dim,'center',o);
+      T(rs,x+255,332,36,col.y,'center',o);
+      T(nt,x+255,388,19,col.fg,'center',o);
+    });
+    T('≠',640,305,46,col.r,'center',sg(t,9.5,10.5));
+    T('Cùng tử số 69 (phần giao), nhưng KHÁC mẫu số (86 vs 107)',640,485,23,col.fg,'center',sg(t,11,12.5));
+    T('P(Ā | B) = 1 − P(A | B)     ·     Nhưng nói chung  P(A | B̄) ≠ 1 − P(A | B)',640,578,22,col.g,'center',sg(t,14,15.5));
+  }
+},
+{
+  h:'Lọc dữ liệu: hai xúc xắc',d:28,ad:16,
+  sub:[
+    [0,4.5,'Xác suất có điều kiện thực chất giống hệt thao tác lọc dữ liệu trong pandas: lọc giữ các hàng thỏa điều kiện B, rồi mới đếm tỉ lệ thỏa A.'],
+    [4.5,9.5,'Xét bài tập W05-BT04: gieo 2 xúc xắc cân đối độc lập. Biết hai mặt KHÁC NHAU (B), tính xác suất có ít nhất một mặt 6 (A).'],
+    [9.5,14.5,'Không gian mẫu Ω gồm 36 cặp có thứ tự từ (1,1) đến (6,6), tất cả đều đồng khả năng.'],
+    [14.5,19,'Bước lọc: vì biết hai mặt khác nhau, ta loại bỏ hoàn toàn 6 cặp nằm trên đường chéo chính từ (1,1) đến (6,6), chỉ còn lại 30 cặp.'],
+    [19,23.5,'Trong 30 cặp còn lại đó, có đúng 10 cặp chứa mặt 6 (gồm 5 cặp hàng 6 và 5 cặp cột 6). Cặp (6,6) đã bị loại!'],
+    [23.5,28,'Vậy P(A | B) = 10 / 30 = 1/3. Nếu quên loại cặp (6,6) mà lấy 11/30 là sai tử số.']
+  ],
+  f:t=>{
+    hd('8. Điều kiện hóa = lọc tập tham chiếu (W05-BT04)');
+    T('Gieo 2 xúc xắc cân đối. Biết hai mặt khác nhau (B), tính P(có ít nhất một mặt 6 | B)',80,112,22,col.dim,'left',sg(t,.3,1.5));
+    // Lưới 6x6 bên trái
+    const x0=125,y0=165,sz=58;
+    for(let r=1;r<=6;r++){
+      T(String(r),x0-24,y0+(r-.5)*sz,20,col.dim,'center');
+      T(String(r),x0+(r-.5)*sz,y0-20,20,col.dim,'center');
+      for(let c=1;c<=6;c++){
+        const diag=r===c,has6=(r===6||c===6)&&!diag;
+        const drop=diag?sg(t,4.5,6):0;
+        const hi=has6?sg(t,8,9.5):0;
+        const cx=x0+(c-1)*sz,cy=y0+(r-1)*sz;
+        const bg=diag?col.r:(hi>.5?col.g:'#1d2432');
+        const op=diag?(.22+.25*(1-drop)):(has6?(.35+.55*hi):.85);
+        RR(cx+3,cy+3,sz-6,sz-6,6,bg,op);
+        T(`${r},${c}`,cx+sz/2,cy+sz/2,16,diag&&drop>.5?col.r:col.fg,'center',diag?(1-.65*drop):1);
+        if(diag&&drop>.2)L(cx+8,cy+8,cx+sz-8,cy+sz-8,col.r,2.2,drop);
+      }
+    }
+    // Giải thích các bước bên phải
+    const steps=[
+      ['Bước 1: Không gian mẫu','|Ω| = 6 × 6 = 36 cặp đồng khả năng',col.b,1.5],
+      ['Bước 2: Lọc theo B (khác nhau)','Loại 6 cặp đường chéo → |B| = 30',col.r,5],
+      ['Bước 3: Đếm A ∩ B (có 6, ≠ nhau)','Còn 10 cặp màu xanh (loại 6,6!)',col.g,8.5],
+      ['Kết quả:','P(A | B) = 10 / 30 = 1/3 ≈ 33,3%',col.y,11.5]
+    ];
+    steps.forEach(([tt,ds,c,st],i)=>{
+      const yy=200+i*85,o=sg(t,st,st+1.3);
+      T(tt,555,yy,23,c,'left',o);
+      T(ds,555,yy+34,21,col.fg,'left',o);
+    });
+    T('Không lấy 11/30 vì cặp (6, 6) không thuộc biến cố điều kiện B!',640,582,23,col.y,'center',sg(t,13.5,15));
+  }
+},
+{
+  h:'Quy tắc nhân: có & không hoàn lại',d:32,ad:18,
+  sub:[
+    [0,5,'Từ định nghĩa xác suất có điều kiện, nhân hai vế với P(A) ta được Quy tắc nhân: P(A ∩ B) = P(A) · P(B | A).'],
+    [5,10.5,'Xác suất cả hai biến cố xảy ra bằng xác suất bước đầu nhân xác suất bước sau KHI BƯỚC ĐẦU ĐÃ XẢY RA.'],
+    [10.5,16,'Xét ví dụ túi có 3 quân xanh và 7 quân khác, rút 2 quân. Nếu rút CÓ hoàn lại, túi không đổi nên P(2 xanh) = (3/10) × (3/10) = 0,09.'],
+    [16,21.5,'Nếu rút KHÔNG hoàn lại: sau khi lần 1 ra xanh, túi chỉ còn 2 xanh trong 9 quân! Do đó P(2 xanh) = (3/10) × (2/9) = 1/15 ≈ 0,0667.'],
+    [21.5,27,'Một kết quả rất thú vị: khi rút không hoàn lại nhưng CHƯA BIẾT lần 1 ra gì, xác suất lần 2 ra xanh vẫn đúng bằng 3/10!'],
+    [27,32,'Bởi ta chia hai trường hợp lần 1 xanh hoặc không xanh: (3/10)(2/9) + (7/10)(3/9) = 27/90 = 3/10. Thứ tự rút chỉ quan trọng khi đã biết thông tin.']
+  ],
+  f:t=>{
+    hd('9. Quy tắc nhân: có hoàn lại vs không hoàn lại');
+    T('P(A ∩ B) = P(A) · P(B | A)     ·     Túi có 3 quân xanh và 7 quân khác, rút 2 quân',80,112,23,col.dim,'left',sg(t,.3,1.5));
+    // Khung có hoàn lại
+    const o1=sg(t,2,3.5);
+    RR(90,165,515,245,14,'#181d26',o1);RR(90,165,515,245,14,col.b,o1,2.4);
+    T('Rút CÓ hoàn lại (độc lập)',347,205,24,col.b,'center',o1);
+    T('Thành phần túi không đổi sau lần 1',347,248,19,col.dim,'center',o1);
+    T('P(2 xanh) = (3/10) × (3/10)',347,305,24,col.fg,'center',sg(t,3.5,4.8));
+    T('= 9/100 = 0,0900',347,358,30,col.y,'center',sg(t,4.8,6));
+
+    // Khung không hoàn lại
+    const o2=sg(t,6.5,8);
+    RR(675,165,515,245,14,'#181d26',o2);RR(675,165,515,245,14,col.o,o2,2.4);
+    T('Rút KHÔNG hoàn lại (phụ thuộc)',932,205,24,col.o,'center',o2);
+    T('Lần 1 xanh → còn 2 xanh trong 9 quân',932,248,19,col.dim,'center',o2);
+    T('P(2 xanh) = (3/10) × (2/9)',932,305,24,col.fg,'center',sg(t,8,9.2));
+    T('= 1/15 ≈ 0,0667',932,358,30,col.y,'center',sg(t,9.2,10.5));
+
+    // Ghi chú P(lần 2 xanh)
+    const o3=sg(t,12,13.5);
+    RR(140,445,1000,90,12,'#141923',o3);RR(140,445,1000,90,12,col.g,o3,1.8);
+    T('Rút không hoàn lại nhưng CHƯA BIẾT lần 1 ra gì:',640,472,20,col.g,'center',o3);
+    T('P(lần 2 xanh) = (3/10)·(2/9) + (7/10)·(3/9) = 27/90 = 3/10',640,510,22,col.fg,'center',o3);
+    T('Với 3 biến cố: P(A ∩ B ∩ C) = P(A) · P(B | A) · P(C | A ∩ B)',640,582,22,col.y,'center',sg(t,15,16.5));
+  }
+},
+{
+  h:'Độc lập vs xung khắc',d:32,ad:18,
+  sub:[
+    [0,5,'Hai biến cố A và B gọi là độc lập khi P(A ∩ B) = P(A)·P(B), tương đương P(A | B) = P(A): biết B xảy ra không làm đổi khả năng của A.'],
+    [5,10.5,'Ví dụ bảng 126 sinh viên: tỉ lệ đăng ký phụ đạo chung là 42/126 = 1/3; riêng Nhóm 1 là 18/54 = 1/3, Nhóm 2 là 24/72 = 1/3. Vậy độc lập!'],
+    [10.5,16,'Ngược lại, gieo 2 xúc xắc: E là “tổng bằng 6” (P=5/36), F là “mặt 1 bằng 4”. Biết F thì chỉ còn cặp (4,2) có tổng 6 → P(E|F)=1/6 ≠ 5/36: phụ thuộc!'],
+    [16,21.5,'Bẫy tư duy lớn nhất của sinh viên là đánh đồng “xung khắc” với “độc lập”. Sự thật là chúng HOÀN TOÀN TRÁI NGƯỢC nhau!'],
+    [21.5,27,'Nếu A và B xung khắc (A ∩ B = ∅) với xác suất dương, thì P(A ∩ B) = 0 trong khi P(A)·P(B) > 0, nên chúng PHỤ THUỘC cực mạnh!'],
+    [27,32,'Trực giác rất rõ: gieo 1 xúc xắc, biết ra mặt 1 là biết chắc KHÔNG thể ra mặt 6 (xác suất giảm từ 1/6 xuống 0). Xung khắc nhìn trên Venn, độc lập phải kiểm tra bằng số.']
+  ],
+  f:t=>{
+    hd('10. Độc lập vs xung khắc: đừng bao giờ đánh đồng!');
+    T('Độc lập:  P(A ∩ B) = P(A) · P(B)   ⇔   P(A | B) = P(A)   (khi P(B) > 0)',80,112,23,col.g,'left',sg(t,.3,1.5));
+    // Bảng 126 sinh viên bên trái
+    const o1=sg(t,2,3.5);
+    RR(85,155,515,210,14,'#181d26',o1);RR(85,155,515,210,14,col.g,o1,2);
+    T('VD độc lập: 126 sinh viên đăng ký phụ đạo',342,190,20,col.g,'center',o1);
+    T('Nhóm 1:  18 / 54  =  1/3  (33,3%)',130,245,21,col.fg,'left',sg(t,3.5,4.8));
+    T('Nhóm 2:  24 / 72  =  1/3  (33,3%)',130,285,21,col.fg,'left',sg(t,4.5,5.8));
+    T('Chung:   42 / 126 =  1/3  → P(A|B) = P(A)',130,330,20,col.y,'left',sg(t,5.8,7));
+
+    // So sánh Xung khắc vs Độc lập bên phải
+    const o2=sg(t,8.5,10);
+    RR(640,155,565,335,14,'#181d26',o2);RR(640,155,565,335,14,col.r,o2,2.4);
+    T('Xung khắc (P > 0) ⇒ KHÔNG độc lập!',922,195,23,col.r,'center',o2);
+    T('• Xung khắc: tính chất của TẬP hợp (A ∩ B = ∅)',670,252,19,col.fg,'left',sg(t,10,11.2));
+    T('  Thấy ngay trên sơ đồ Venn (2 hình tách rời)',670,284,18,col.dim,'left',sg(t,10,11.2));
+    T('• Độc lập: tính chất của XÁC SUẤT',670,336,19,col.fg,'left',sg(t,11.5,12.8));
+    T('  Phải tính và so sánh P(A∩B) với P(A)P(B)',670,368,18,col.dim,'left',sg(t,11.5,12.8));
+    T('• VD: mặt 1 và mặt 6 của 1 xúc xắc:',670,420,19,col.y,'left',sg(t,13.5,14.8));
+    T('  P(1 ∩ 6) = 0 ≠ (1/6)(1/6) → Rất phụ thuộc!',670,452,19,col.o,'left',sg(t,13.5,14.8));
+
+    // Ghi chú phần bù độc lập
+    T('Nếu A, B độc lập thì (A, B̄), (Ā, B) và (Ā, B̄) cũng độc lập',85,435,20,col.b,'left',sg(t,14.5,16));
+    T('Xung khắc = không thể cùng xảy ra   ·   Độc lập = không ảnh hưởng xác suất nhau',640,582,22,col.y,'center',sg(t,15.5,16.8));
+  }
+},
+{
+  h:'Hai lỗi trong vụ Sally Clark',d:32,ad:18,
+  sub:[
+    [0,5,'Tại sao hiểu sai độc lập và xác suất có điều kiện lại nguy hiểm? Hãy xem vụ án lịch sử Sally Clark năm 1999 tại Anh.'],
+    [5,10.5,'Hai con nhỏ của bà đều đột tử. Một nhân chứng lấy tỉ lệ đột tử 1/8.543 rồi bình phương lên thành 1/73 triệu để kết luận bà có tội.'],
+    [10.5,16,'Lập luận này mắc LỖI 1 (giả định độc lập): hai trẻ cùng gia đình chia sẻ di truyền và môi trường, nên P(S₂ | S₁) có thể cao hơn P(S₂) nhiều lần!'],
+    [16,21.5,'Trên biểu đồ độ nhạy: chỉ cần P(S₂ | S₁) cao gấp 5 hay 10 lần mức 1/8.543, xác suất đồng thời P(S₁ ∩ S₂) lập tức tăng gấp 5 hay 10 lần.'],
+    [21.5,27,'LỖI 2 (ngụy biện công tố viên — đảo chiều điều kiện): kể cả con số 1/73 triệu có đúng thì đó là P(bằng chứng | vô tội), KHÔNG phải P(vô tội | bằng chứng)!'],
+    [27,32,'Giống ví dụ DNA trùng ngẫu nhiên 1/1 triệu trong thành phố 5 triệu dân: có tới ~5 người vô tội trùng mẫu, nên P(thủ phạm | trùng mẫu) chỉ khoảng 1/6!']
+  ],
+  f:t=>{
+    hd('11. Vụ án Sally Clark: hai lỗi lập luận xác suất kinh điển');
+    T('Nhân chứng bình phương (1/8.543)² ≈ 1 / 73 triệu để kết tội — sai ở cả quy tắc nhân lẫn chiều điều kiện!',80,112,21,col.dim,'left',sg(t,.3,1.5));
+    // Lỗi 1: Biểu đồ độ nhạy bên trái
+    const o1=sg(t,1.5,3);
+    T('Lỗi 1: Giả định độc lập P(S₁∩S₂) = P(S₁)P(S₂)',345,162,22,col.r,'center',o1);
+    T('Đúng phải là: P(S₁∩S₂) = P(S₁) · P(S₂ | S₁)',345,198,20,col.g,'center',o1);
+    const mults=[1,2,5,10],B=465,m=mp(-0.5,3.5,120,570);
+    L(95,B,595,B,'#3a4150',2,o1);
+    mults.forEach((k,i)=>{
+      const h=(k/10)*200*sg(t,4+i*.8,5.8+i*.8),px=m(i);
+      R(px-32,B-h,64,h,i===0?col.dim:col.o,.88);
+      T('×'+k,px,B+26,20,col.fg,'center',o1);
+      T(f(k*1.37,1)+'e-8',px,B-h-18,17,col.y,'center',sg(t,5.2+i*.8,6.2+i*.8));
+    });
+    T('Hệ số tăng của P(S₂ | S₁) so với 1/8.543',345,512,18,col.dim,'center',o1);
+
+    // Lỗi 2: Đảo chiều điều kiện bên phải
+    const o2=sg(t,9.5,11);
+    RR(645,155,555,345,14,'#181d26',o2);RR(645,155,555,345,14,col.y,o2,2.4);
+    T('Lỗi 2: Đảo chiều điều kiện (Ngụy biện công tố)',922,196,21,col.y,'center',o2);
+    T('P(bằng chứng | vô tội)  ≠  P(vô tội | bằng chứng)',922,250,21,col.r,'center',sg(t,10.5,11.8));
+    T('Ví dụ DNA (thành phố 5 triệu dân):',675,308,20,col.b,'left',sg(t,12,13.2));
+    T('• Xác suất trùng ngẫu nhiên: 1 / 1.000.000',675,346,19,col.fg,'left',sg(t,12.5,13.8));
+    T('• Số người vô tội trùng mẫu ≈ 5 người (+ 1 thủ phạm)',675,384,19,col.fg,'left',sg(t,13.2,14.5));
+    T('• Không có bằng chứng khác: P(thủ phạm | trùng) ≈ 1/6!',675,428,20,col.g,'left',sg(t,14.2,15.5));
+    T('Muốn đảo chiều điều kiện, phải dùng Định lý Bayes!',640,582,23,col.y,'center',sg(t,15.5,16.8));
+  }
+},
+{
+  h:'Lời giải De Méré & hệ thống n mô-đun',d:34,ad:20,
+  sub:[
+    [0,5.5,'Bây giờ ta có đủ phần bù và quy tắc nhân độc lập để giải trọn vẹn nghịch lý De Méré!'],
+    [5.5,11,'Trò 1: thua nghĩa là cả 4 lần đều không ra 6, xác suất (5/6)⁴. Vậy P(thắng) = 1 − (5/6)⁴ ≈ 0,5177 — lớn hơn 1/2!'],
+    [11,16.5,'Trò 2: thua nghĩa là cả 24 lần đều không ra cặp (6,6), xác suất (35/36)²⁴. Vậy P(thắng) = 1 − (35/36)²⁴ ≈ 0,4914 — nhỏ hơn 1/2!'],
+    [16.5,22,'Đồ thị bên trái cho thấy tần suất thắng tích lũy theo thang log: dao động mạnh ở các ván đầu rồi tiến sát hai đường lý thuyết khi số ván tăng.'],
+    [22,28,'Áp dụng cùng công thức cho bài toán kỹ thuật W05-CH01: hệ thống n mô-đun độc lập, mỗi cái lỗi với xác suất p = 0,02 → P(ít nhất 1 lỗi) = 1 − 0,98ⁿ.'],
+    [28,34,'Tìm n nhỏ nhất để vượt 0,5: 0,98ⁿ < 0,5 ⇒ n ≥ 35 mô-đun. Còn đường thẳng np (nét đứt đỏ) đếm lặp nên vượt quá 1 khi n > 50!']
+  ],
+  f:t=>{
+    hd('12. Lời giải De Méré & công thức 1 − (1 − p)ⁿ');
+    // Bên trái: Tần suất tích lũy De Méré (thang log 1 -> 10.000)
+    const m1=mp(0,Math.log10(DM_MAX),110,595),y1=mp(0,1,470,175);
+    L(100,470,605,470,'#3a4150',2);L(110,165,110,475,'#3a4150',1.5);
+    T('Tần suất thắng tích lũy (De Méré)',355,142,21,col.fg,'center',sg(t,.5,1.5));
+    [1,10,100,1000,10000].forEach(v=>T(v===10000?'10k':String(v),m1(Math.log10(v)),495,16,col.dim,'center'));
+    const p1=1-Math.pow(5/6,4),p2=1-Math.pow(35/36,24);
+    L(110,y1(p1),595,y1(p1),col.b,1.8,sg(t,1,2),[6,5]);
+    L(110,y1(p2),595,y1(p2),col.o,1.8,sg(t,1,2),[6,5]);
+    const lim=Math.max(2,Math.floor(DM_STEPS*sg(t,2,10)));
+    al(1);X.strokeStyle=col.b;X.lineWidth=2.4;X.beginPath();
+    for(let i=0;i<lim;i++){const px=m1(Math.log10(dmX[i])),py=y1(dmG1[i]);i?X.lineTo(px,py):X.moveTo(px,py)}X.stroke();
+    X.strokeStyle=col.o;X.lineWidth=2.4;X.beginPath();
+    for(let i=0;i<lim;i++){const px=m1(Math.log10(dmX[i])),py=y1(dmG2[i]);i?X.lineTo(px,py):X.moveTo(px,py)}X.stroke();
+    T('Trò 1: 1 − (5/6)⁴ = 0,5177',595,y1(p1)-22,18,col.b,'right',sg(t,3,4.5));
+    T('Trò 2: 1 − (35/36)²⁴ = 0,4914',595,y1(p2)+24,18,col.o,'right',sg(t,4.5,6));
+
+    // Bên phải: 1 - (1-p)^n vs np (p = 0.02, n = 1..80)
+    const oR=sg(t,10,11.5);
+    const m2=mp(0,80,695,1190),y2=mp(0,1.6,470,175);
+    L(685,470,1200,470,'#3a4150',2,oR);L(695,165,695,475,'#3a4150',1.5,oR);
+    T('W05-CH01: n mô-đun độc lập (p = 0,02)',945,142,21,col.fg,'center',oR);
+    [0,20,35,50,80].forEach(v=>T(String(v),m2(v),495,16,v===35?col.y:col.dim,'center',oR));
+    L(695,y2(1),1190,y2(1),'#5a6578',1.5,oR,[5,5]);T('1,0',685,y2(1),16,col.dim,'right',oR);
+    L(695,y2(.5),1190,y2(.5),col.y,1.5,.6*oR,[4,4]);T('0,5',685,y2(.5),16,col.y,'right',oR);
+    const nMax=Math.round(80*sg(t,11,16));
+    al(oR);X.strokeStyle=col.g;X.lineWidth=3;X.beginPath();
+    for(let n=0;n<=nMax;n++){const px=m2(n),py=y2(1-Math.pow(.98,n));n?X.lineTo(px,py):X.moveTo(px,py)}X.stroke();
+    X.strokeStyle=col.r;X.lineWidth=2.5;X.setLineDash([7,5]);X.beginPath();
+    for(let n=0;n<=nMax;n++){const px=m2(n),py=y2(n*.02);n?X.lineTo(px,py):X.moveTo(px,py)}X.stroke();X.setLineDash([]);
+    if(nMax>=35){D(m2(35),y2(1-Math.pow(.98,35)),6,col.y,oR);T('n=35 (>0,5)',m2(35)+10,y2(.5)+20,17,col.y,'left',oR)}
+    T('1 − (1 − p)ⁿ (chính xác)',1185,y2(.78)+26,18,col.g,'right',sg(t,14,15.5));
+    T('np (vượt 1 khi n > 50!)',1185,y2(1.48),18,col.r,'right',sg(t,14,15.5));
+    T('Muốn trò 2 có lợi cần n ≥ 25 lần gieo   ·   1 − (1 − p)ⁿ luôn nằm trong [0, 1]',640,582,22,col.y,'center',sg(t,16.5,18));
+  }
+},
+{
+  h:'Xác suất toàn phần & Bayes',d:34,ad:20,
+  sub:[
+    [0,5.5,'Khi không gian mẫu được chia thành các nhóm rời nhau phủ kín Ω (gọi là một phân hoạch A₁,...,Aₖ), ta tính xác suất của B bằng Công thức xác suất toàn phần.'],
+    [5.5,11,'Ví dụ nhà máy có 2 dây chuyền: A làm 60% sản phẩm (lỗi 2%), B làm 40% sản phẩm (lỗi 5%). Tỉ lệ lỗi chung KHÔNG phải trung bình cộng 3,5%!'],
+    [11,17,'Phải lấy trung bình có trọng số: P(lỗi) = 0,60·0,02 + 0,40·0,05 = 0,012 + 0,020 = 0,032 (3,2%).'],
+    [17,22.5,'Đảo chiều câu hỏi: biết sản phẩm ĐÃ LỖI, xác suất nó đến từ dây chuyền B là bao nhiêu? Áp dụng Định lý Bayes: 0,020 / 0,032 = 62,5%.'],
+    [22.5,28,'Xem thêm ví dụ 3 tài khoản thư rác (W05-BT08) bên phải: ban đầu tài khoản 1 chiếm 70% thư (rác 1%), tài khoản 3 chỉ 10% (rác 5%).'],
+    [28,34,'Khi biết thư là rác, tỉ trọng của tài khoản 3 vọt từ 10% lên 31,25%, nhưng tài khoản 1 (43,75%) vẫn là nguồn khả dĩ nhất vì nhận quá nhiều thư!']
+  ],
+  f:t=>{
+    hd('13. Xác suất toàn phần và Định lý Bayes');
+    T('Toàn phần: P(B) = Σ P(B|Aᵢ)P(Aᵢ)     ·     Bayes: P(Aⱼ|B) = P(B|Aⱼ)P(Aⱼ) / P(B)',80,112,22,col.y,'left',sg(t,.3,1.5));
+    // Bên trái: Ví dụ 2 dây chuyền A, B
+    const o1=sg(t,1.5,3);
+    RR(85,155,500,340,14,'#181d26',o1);RR(85,155,500,340,14,col.b,o1,2);
+    T('VD: 2 dây chuyền A (60%) & B (40%)',335,192,21,col.b,'center',o1);
+    T('A: 0,60 × 0,02 = 0,012',125,248,21,col.fg,'left',sg(t,3,4.5));
+    T('B: 0,40 × 0,05 = 0,020',125,290,21,col.o,'left',sg(t,4.5,6));
+    L(125,318,540,318,'#3a4150',1.5,sg(t,6,7));
+    T('P(lỗi) = 0,012 + 0,020 = 0,032 (3,2%)',125,352,21,col.y,'left',sg(t,6.5,8));
+    T('Đảo chiều (Bayes):',125,404,20,col.g,'left',sg(t,9,10.5));
+    T('P(B | lỗi) = 0,020 / 0,032 = 62,5%',125,446,24,col.g,'left',sg(t,9.5,11));
+
+    // Bên phải: Biểu đồ 3 tài khoản thư rác (ban đầu vs sau khi biết rác)
+    const o2=sg(t,11.5,13);
+    const m=mp(-0.5,2.5,680,1150),B=470,K=360;
+    L(640,B,1190,B,'#3a4150',2,o2);
+    T('W05-BT08: Tỉ trọng 3 tài khoản (Trước vs Sau)',915,165,20,col.fg,'center',o2);
+    const pr=[.70,.20,.10],po=[.4375,.25,.3125];
+    [0,1,2].forEach(i=>{
+      const px=m(i),h1=pr[i]*K*sg(t,12.5,14.5),h2=po[i]*K*sg(t,14.5,16.5);
+      R(px-38,B-h1,34,h1,col.b,.85*o2);
+      R(px+4,B-h2,34,h2,col.o,.88*o2);
+      T(f(pr[i]*100,0)+'%',px-21,B-h1-16,15,col.b,'center',sg(t,13.5,15));
+      T(f(po[i]*100,1)+'%',px+21,B-h2-16,15,col.o,'center',sg(t,15.5,17));
+      T('TK '+(i+1),px,B+26,19,col.fg,'center',o2);
+    });
+    R(700,198,16,16,col.b,o2);T('Ban đầu (toàn bộ thư)',724,206,17,col.b,'left',o2);
+    R(950,198,16,16,col.o,o2);T('Sau khi biết rác',974,206,17,col.o,'left',o2);
+    T('Định lý Bayes chỉ là cập nhật tỉ trọng khi thu hẹp mẫu số theo thông tin mới',640,582,22,col.y,'center',sg(t,17,18.5));
+  }
+},
+{
+  h:'Mô hình SIR & sơ đồ cây',d:34,ad:20,
+  sub:[
+    [0,5.5,'Sơ đồ cây là công cụ trực quan nhất để giải các bài toán toàn phần và Bayes: nhân dọc theo nhánh, cộng các lá cùng loại, rồi chia lá cần tìm cho tổng.'],
+    [5.5,11,'Xét bài tập W05-EX05 (mô hình SIR): quần thể có 60% cảm nhiễm S, 10% đang nhiễm I và 30% đã hồi phục R.'],
+    [11,17,'Xét nghiệm dương tính đúng ở 99% nhóm I; âm tính đúng ở 95% S (tức dương tính giả 5%) và âm tính đúng ở 65% R (tức dương tính 35%).'],
+    [17,22.5,'Nhân dọc 3 nhánh dẫn đến dương tính (+): S và + là 0,030; I và + là 0,099; R và + là 0,105.'],
+    [22.5,28,'Cộng 3 lá dương tính lại ta được xác suất toàn phần P(+) = 0,030 + 0,099 + 0,105 = 0,234 (2.340 người trong 10.000 người).'],
+    [28,34,'Áp dụng Bayes: P(I | +) = 0,099 / 0,234 ≈ 42,31%! Thấp hơn 99% rất nhiều vì nhóm S và R quá đông tạo ra nhiều ca dương tính.']
+  ],
+  f:t=>{
+    hd('14. Sơ đồ cây cho mô hình SIR (W05-EX05)');
+    T('Nhân dọc nhánh (quy tắc nhân) · Cộng các lá “+” (toàn phần) · Chia lá I cho tổng (Bayes)',80,112,21,col.dim,'left',sg(t,.3,1.5));
+    // Vẽ sơ đồ cây 2 tầng
+    const rx=125,ry=330;
+    RR(65,ry-24,115,48,10,'#252c3a',sg(t,.8,1.8));T('Chọn 1 người',122,ry,16,col.fg,'center',sg(t,.8,1.8));
+    const nodes=[
+      ['S (cảm nhiễm)',.60,.05,195,col.b],
+      ['I (đang nhiễm)',.10,.99,330,col.y],
+      ['R (hồi phục)',.30,.35,465,col.o]
+    ];
+    nodes.forEach(([nm,pg,pp,ny,c],i)=>{
+      const k1=sg(t,2+i*1.2,3.8+i*1.2);
+      L(180,ry,mx(180,385,k1),mx(ry,ny,k1),c,2.6,sg(t,1.8,2.2));
+      T(f(pg,2),275,(ry+ny)/2-14,19,c,'center',k1);
+      RR(385,ny-22,195,44,10,'#181d26',k1);RR(385,ny-22,195,44,10,c,k1,2);
+      T(nm,482,ny,18,c,'center',k1);
+
+      // Nhánh + (lên trên) và nhánh - (xuống dưới)
+      const k2=sg(t,6+i*1.2,7.8+i*1.2);
+      const yP=ny-28,yM=ny+28;
+      L(580,ny,mx(580,780,k2),mx(ny,yP,k2),col.g,2.6,k2);
+      L(580,ny,mx(580,780,k2),mx(ny,yM,k2),'#4a5568',1.6,.6*k2);
+      T('+ ('+f(pp,2)+')',680,ny-28,17,col.g,'center',k2);
+      T('− ('+f(1-pp,2)+')',680,ny+28,15,col.dim,'center',k2);
+
+      // Lá kết quả +
+      const oL=sg(t,9+i*1.1,10.5+i*1.1);
+      RR(785,yP-20,395,40,8,i===1?col.y:col.g,i===1?.24*oL:.12*oL);
+      RR(785,yP-20,395,40,8,i===1?col.y:col.g,oL,i===1?2.2:1.4);
+      T(`P(${nm[0]} ∩ +) = ${f(pg,2)} × ${f(pp,2)} = ${f(pg*pp,3)}`,982,yP,18,i===1?col.y:col.fg,'center',oL);
+    });
+    T('Tổng P(+) = 0,030 + 0,099 + 0,105 = 0,234',640,540,22,col.g,'center',sg(t,13.5,15));
+    T('P(I | +) = 0,099 / 0,234 = 11/26 ≈ 42,31%   (không phải 99%!)',640,584,24,col.y,'center',sg(t,15.5,17));
+  }
+},
+{
+  h:'Tỉ lệ nền & bài toán lô linh kiện',d:34,ad:20,
+  sub:[
+    [0,5.5,'Một bài học cực kỳ sâu sắc từ định lý Bayes là hiệu ứng tỉ lệ nền: xác suất sau cập nhật phụ thuộc rất mạnh vào tỉ lệ ban đầu P(I).'],
+    [5.5,11,'Quan sát biểu đồ SIR bên trái khi P(I) thay đổi từ 1% lên 10% rồi 30%: dù xét nghiệm nhạy 99%, nếu bệnh hiếm (1%) thì P(I | +) chỉ còn 6,3%!'],
+    [11,17,'Khi bệnh phổ biến hơn (30%), cũng chính xét nghiệm đó cho P(I | +) lên tới 73,5%. Đừng bao giờ đánh giá xét nghiệm mà bỏ qua tỉ lệ nền.'],
+    [17,22.5,'Cuối cùng xét bài toán tổng hợp W05-TH03 bên phải: lô 10 linh kiện có 50% lô 0 lỗi, 30% lô 1 lỗi và 20% lô 2 lỗi. Rút 2 linh kiện không hoàn lại.'],
+    [22.5,28,'Nếu cả 2 đều tốt: xác suất lô 0 lỗi chỉ nhích nhẹ từ 50% lên 57,8% — hai mẫu tốt chưa đủ bảo đảm cả lô hoàn toàn sạch lỗi!'],
+    [28,34,'Nhưng nếu thấy đúng 1 linh kiện lỗi: lô 0 lỗi bị loại hoàn toàn về 0%, còn lô 2 lỗi vọt từ 20% lên 54,2%, trở thành khả năng cao nhất.']
+  ],
+  f:t=>{
+    hd('15. Hiệu ứng tỉ lệ nền & bài toán truy loại lô (W05-TH03)');
+    // Bên trái: Hoạt ảnh đổi P(I) trong SIR: 0.01 -> 0.10 -> 0.30
+    const pIs=[.01,.10,.30],u=cl((t-1)/8)*2,idx=Math.min(1,Math.floor(u)),fr=sm(u-idx);
+    const pI=mx(pIs[idx],pIs[idx+1],fr);
+    const pS=(1-pI)*2/3,pR=(1-pI)/3;
+    const jS=pS*.05,jI=pI*.99,jR=pR*.35,totP=jS+jI+jR;
+    const post=[jS/totP,jI/totP,jR/totP],lbs=['S','I','R'],cs=[col.b,col.y,col.o];
+    const m1=mp(-0.5,2.5,115,545),B=470,K=300;
+    L(90,B,570,B,'#3a4150',2);
+    T('SIR: P(nhóm | +) khi P(I) = '+f(pI*100,1)+'%',330,145,22,col.y,'center',sg(t,.5,1.5));
+    post.forEach((v,i)=>{
+      const px=m1(i),h=v*K;
+      R(px-44,B-h,88,h,cs[i],.86);
+      T(f(v*100,1)+'%',px,B-h-18,19,cs[i],'center');
+      T(lbs[i],px,B+26,22,col.fg,'center');
+    });
+    T('Bệnh càng hiếm, dương tính giả càng chiếm ưu thế',330,530,18,col.dim,'center',sg(t,2,3));
+
+    // Bên phải: W05-TH03 (lô 0, 1, 2 lỗi: Ban đầu vs Sau 2 tốt vs Sau 1 lỗi)
+    const oR=sg(t,9.5,11);
+    const m2=mp(-0.5,2.5,695,1150);
+    L(655,B,1195,B,'#3a4150',2,oR);
+    T('W05-TH03: Lô 10 linh kiện (rút 2 không hoàn lại)',925,145,20,col.fg,'center',oR);
+    const l0=[.50,.30,.20],l2g=[225/389,108/389,56/389],l1b=[0,27/59,32/59];
+    [0,1,2].forEach(i=>{
+      const px=m2(i);
+      const h0=l0[i]*K*sg(t,10.5,12),h1=l2g[i]*K*sg(t,12.5,14),h2=l1b[i]*K*sg(t,14.5,16);
+      R(px-45,B-h0,28,h0,col.dim,.75*oR);
+      R(px-14,B-h1,28,h1,col.g,.88*oR);
+      R(px+17,B-h2,28,h2,col.r,.88*oR);
+      T(i+' lỗi',px,B+26,19,col.fg,'center',oR);
+    });
+    R(675,180,14,14,col.dim,oR);T('Ban đầu',696,187,16,col.dim,'left',oR);
+    R(815,180,14,14,col.g,oR);T('Sau 2 tốt',836,187,16,col.g,'left',oR);
+    R(975,180,14,14,col.r,oR);T('Sau 1 lỗi',996,187,16,col.r,'left',oR);
+    T('Sau 2 tốt: 57,8% lô 0 lỗi · Sau 1 lỗi: 54,2% lô 2 lỗi',925,530,18,col.g,'center',sg(t,15,16.5));
+    T('Kết luận xác suất phụ thuộc cả dữ kiện ban đầu lẫn bằng chứng mới quan sát',640,584,22,col.y,'center',sg(t,16.5,18));
+  }
+},
+{
+  h:'Lỗi hay gặp',d:36,ad:22,
+  sub:[
+    [0,6,'Để khép lại Tuần 05, hãy rà soát 6 lỗi sai hay gặp nhất khi tính toán xác suất biến cố.'],
+    [6,12,'Lỗi 1 và 2: tuyệt đối không đánh đồng P(A | B) với P(B | A) vì mẫu số khác nhau, và không bao giờ nhầm xung khắc thành độc lập.'],
+    [12,18,'Lỗi 3 và 4: luôn viết quy tắc nhân dạng P(A)·P(B | A) trước khi kiểm tra độc lập; không cộng thẳng các biến cố có thể cùng xảy ra như De Méré.'],
+    [18,24,'Lỗi 5: chỉ dùng tỉ số đếm |A| / |Ω| khi các kết quả đồng khả năng; nếu không, hãy liệt kê lại ở cấp đồng khả năng (như từng vé hay từng cặp).'],
+    [24,30,'Lỗi 6: quy tắc phần bù chỉ áp cho biến cố trước dấu |, không viết P(A | B̄) = 1 − P(A | B); và luôn dùng trung bình có trọng số (toàn phần).'],
+    [30,36,'Cuối cùng, hãy chuyển sang bảng tổng hợp đầy đủ các công thức trọng tâm của Tuần 05 để tiện ôn tập và tra cứu nhanh.']
+  ],
+  f:t=>{
+    hd('16. Những lỗi hay gặp cần tránh ở Tuần 05');
+    ER.forEach(([w,r],i)=>{
+      const y=126+i*81,s=1+i*3,o=sg(t,s,s+.6);
+      T('✗  '+w,80,y,23,col.r,'left',o);
+      X.font="600 23px 'Be Vietnam Pro',system-ui";
+      const l=X.measureText('✗  '+w).width;
+      L(80,y,80+l*sg(t,s+.8,s+1.4),y,col.r,2.2,o);
+      T('✓  '+r,80,y+33,23,col.g,'left',sg(t,s+1.3,s+2));
+    });
+  }
+},
+{
+  h:'Tổng hợp công thức',d:34,ad:20,
+  sub:[
+    [0,5.5,'Đây là bảng tổng hợp toàn bộ 8 nhóm công thức cốt lõi của Tuần 05 để bạn ôn tập nhanh trước khi làm bài tập và kiểm tra.'],
+    [5.5,11,'Cột trái mở đầu với ba tiên đề, quy tắc phần bù P(Ā) = 1 − P(A), và công thức đếm đồng khả năng P(A) = |A| trên |Ω|.'],
+    [11,16.5,'Tiếp theo là quy tắc cộng tổng quát, định luật De Morgan, quy tắc nhân P(A)·P(B | A) và điều kiện độc lập P(A ∩ B) = P(A)·P(B).'],
+    [16.5,22,'Cột phải gồm định nghĩa xác suất có điều kiện P(A ∩ B) trên P(B) và công thức phần bù cho n phép thử độc lập 1 − (1 − p)ⁿ.'],
+    [22,28,'Cuối cùng là cặp công thức xác suất toàn phần và Định lý Bayes — công cụ trung tâm để đảo chiều điều kiện khi có thông tin mới.'],
+    [28,34,'Luôn kiểm tra kỹ điều kiện áp dụng (đồng khả năng, xung khắc hay độc lập) trước khi thay số. Chúc các bạn học tốt Tuần 05!']
+  ],
+  f:t=>{
+    hd('17. Tổng hợp các công thức trọng tâm Tuần 05');
+    const card=(x,y,title,c,st,draw)=>{
+      const o=sg(t,st,st+1.2);
+      RR(x,y,555,104,12,'#161b24',o);RR(x,y,555,104,12,c,o,1.8);
+      T(title,x+18,y+22,16,c,'left',o);
+      draw(x,y,o);
+    };
+    // Cột trái
+    card(75,106,'1. Tiên đề, phần bù & hiệu',col.b,.8,(x,y,o)=>{
+      T('P(A) ≥ 0   ·   P(Ω) = 1   ·   P(Ā) = 1 − P(A)',x+18,y+54,18,col.fg,'left',o);
+      T('P(A \\ B) = P(A) − P(A ∩ B)',x+18,y+84,18,col.dim,'left',o);
+    });
+    card(75,224,'2. Công thức đếm (khi mọi ω ∈ Ω đồng khả năng)',col.g,2.8,(x,y,o)=>{
+      T('P(A)  =',x+22,y+64,20,col.fg,'left',o);
+      FR('|A|','|Ω|',x+132,y+64,19,col.y,o);
+      T('(liệt kê đúng cấp đồng khả năng)',x+185,y+64,17,col.dim,'left',o);
+    });
+    card(75,342,'3. Quy tắc cộng & Định luật De Morgan',col.o,4.8,(x,y,o)=>{
+      T('P(A ∪ B) = P(A) + P(B) − P(A ∩ B)',x+18,y+54,19,col.fg,'left',o);
+      T('¬(A ∪ B) = Ā ∩ B̄     ·     ¬(A ∩ B) = Ā ∪ B̄',x+18,y+84,17,col.dim,'left',o);
+    });
+    card(75,460,'4. Quy tắc nhân & Biến cố độc lập',col.p,6.8,(x,y,o)=>{
+      T('P(A ∩ B) = P(A) · P(B | A)',x+18,y+54,19,col.fg,'left',o);
+      T('Độc lập:  P(A ∩ B) = P(A) · P(B)  ⇔  P(A | B) = P(A)',x+18,y+84,17,col.g,'left',o);
+    });
+
+    // Cột phải
+    card(650,106,'5. Xác suất có điều kiện (với P(B) > 0)',col.y,8.8,(x,y,o)=>{
+      T('P(A | B)  =',x+22,y+64,20,col.fg,'left',o);
+      FR('P(A ∩ B)','P(B)',x+186,y+64,18,col.y,o);
+      T('·   P(Ā | B) = 1 − P(A | B)',x+262,y+64,18,col.dim,'left',o);
+    });
+    card(650,224,'6. Ít nhất 1 lần (n phép thử độc lập, xác suất p)',col.g,10.8,(x,y,o)=>{
+      T('P(ít nhất 1 lần)  =  1 − (1 − p)ⁿ',x+22,y+62,21,col.y,'left',o);
+      T('Dùng phần bù để tránh đếm lặp',x+22,y+88,16,col.dim,'left',o);
+    });
+    card(650,342,'7. Công thức xác suất toàn phần (phân hoạch {Aᵢ})',col.b,12.8,(x,y,o)=>{
+      T('P(B)  =  Σ P(B | Aᵢ) · P(Aᵢ)',x+22,y+60,21,col.fg,'left',o);
+      T('Trung bình có trọng số theo xác suất từng nhóm P(Aᵢ)',x+22,y+88,16,col.dim,'left',o);
+    });
+    card(650,460,'8. Định lý Bayes (đảo chiều điều kiện)',col.r,14.8,(x,y,o)=>{
+      T('P(Aⱼ | B)  =',x+22,y+64,20,col.fg,'left',o);
+      FR('P(B | Aⱼ) · P(Aⱼ)','Σ P(B | Aᵢ) · P(Aᵢ)',x+245,y+64,17,col.y,o);
+      T('=',x+372,y+64,20,col.fg,'center',o);
+      FR('P(B | Aⱼ) · P(Aⱼ)','P(B)',x+468,y+64,17,col.g,o);
+    });
+    T('Kiểm tra kỹ điều kiện: đồng khả năng · xung khắc · độc lập · mẫu số sau dấu “|”',640,594,21,col.y,'center',sg(t,16.5,18));
+  }
+}
+];
+
+// Quản lý dòng thời gian, thanh tiến trình và điều khiển phát
+const ST=[];let tot=0;sc.forEach(s=>{ST.push(tot);tot+=s.d});
+let g=0,pl=true,sp=1,showSub=true,last=performance.now(),hid=0;
+const idx=()=>{let i=0;while(i<sc.length-1&&g>=ST[i+1])i++;return i};
+const ic=p=>`<svg viewBox="0 0 24 24"><path d="${p}"/></svg>`,P1='M7 4v16l13-8z',P2='M6 4h4v16H6zM14 4h4v16h-4z';
+const $=id=>document.getElementById(id),pg=$('pg'),mn=$('mn'),ui=$('ui'),bp=$('bp'),subEl=$('sub'),bc=$('bc');
+$('bt').innerHTML=ic('M6 5h2v14H6zM20 5v14L9 12z');
+$('bn').innerHTML=ic('M16 5h2v14h-2zM4 5v14l11-7z');
+$('bm').innerHTML=ic('M4 6h16v2H4zM4 11h16v2H4zM4 16h16v2H4z');
+const sy=()=>bp.innerHTML=ic(pl?P2:P1);sy();
+const segs=sc.map(s=>{const d=document.createElement('div');d.className='sg';d.style.flex=s.d;d.innerHTML='<i></i>';pg.appendChild(d);return d.firstChild});
+mn.innerHTML=sc.map((s,i)=>`<div data-i="${i}">${i+1}. ${s.h}</div>`).join('');
+
+const tg=()=>{if(!pl&&g>=tot-.01)g=0;pl=!pl;sy()};
+const pv=()=>{const i=idx();g=(g-ST[i]>2||!i)?ST[i]:ST[i-1]};
+const nx=()=>{const i=idx();g=i<sc.length-1?ST[i+1]:tot-.01};
+const tgSub=()=>{showSub=!showSub;bc.classList.toggle('on',showSub)};
+bp.onclick=tg;$('bt').onclick=pv;$('bn').onclick=nx;bc.onclick=tgSub;
+$('bs').onclick=e=>{sp=sp==1?1.5:sp==1.5?2:sp==2?.75:1;e.currentTarget.textContent=String(sp).replace('.',',')+'×'};
+$('bm').onclick=()=>mn.classList.toggle('o');
+mn.onclick=e=>{const i=e.target.dataset.i;if(i!==undefined){g=ST[+i];mn.classList.remove('o')}};
+const sk=e=>{const r=pg.getBoundingClientRect();g=cl((e.clientX-r.left)/r.width)*tot};
+pg.onpointerdown=e=>{pg.setPointerCapture(e.pointerId);sk(e);pg.onpointermove=sk};
+pg.onpointerup=()=>pg.onpointermove=null;
+C.onclick=()=>{if(mn.classList.contains('o'))mn.classList.remove('o');else tg()};
+const wk=()=>{ui.classList.remove('h');hid=performance.now()};
+addEventListener('pointermove',wk);addEventListener('pointerdown',wk);
+addEventListener('keydown',e=>{
+  wk();
+  if(e.code=='Space'||e.key=='k'){e.preventDefault();tg()}
+  else if(e.key=='ArrowRight')nx();
+  else if(e.key=='ArrowLeft')pv();
+  else if(e.key=='m'||e.key=='M')mn.classList.toggle('o');
+  else if(e.key=='c'||e.key=='C')tgSub();
+});
+
+const mm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+function rs(){
+  const w=Math.min(innerWidth,innerHeight*16/9),dp=devicePixelRatio||1;
+  C.style.width=w+'px';C.style.height=w*9/16+'px';
+  C.width=Math.round(w*dp);C.height=Math.round(w*9/16*dp);
+}
+addEventListener('resize',rs);rs();
+
+let lastSub='';
+function rd(){
+  const k=C.width/W;X.setTransform(k,0,0,k,0,0);X.globalAlpha=1;X.fillStyle='#0d0f13';X.fillRect(0,0,W,H);
+  const i=idx(),t=g-ST[i],s=sc[i];
+  FA=cl(Math.min(t/.45,i==sc.length-1?1:(s.d-t)/.35));
+  const tAnim=t*(s.ad/s.d);
+  s.f(tAnim);
+  FA=1;
+  segs.forEach((e,j)=>e.style.width=cl((g-ST[j])/sc[j].d)*100+'%');
+  $('tm').textContent=mm(g)+' / '+mm(tot);
+  [...mn.children].forEach((c,j)=>c.classList.toggle('c',j==i));
+  let curSub='';
+  if(showSub&&s.sub){
+    for(const [a,b,txt] of s.sub){if(t>=a&&t<b){curSub=txt;break}}
+  }
+  if(curSub!==lastSub){
+    lastSub=curSub;
+    subEl.textContent=curSub;
+    subEl.classList.toggle('e',!curSub);
+  }
+}
+function lp(n){
+  const d=Math.min(.1,(n-last)/1000);last=n;
+  if(pl){g+=d*sp;if(g>=tot){g=tot-.001;pl=false;sy()}if(n-hid>2800)ui.classList.add('h')}
+  rd();requestAnimationFrame(lp);
+}
+window.onload=function(){
+  document.fonts.load("800 20px 'Be Vietnam Pro'").then(()=>document.fonts.load("600 20px 'Be Vietnam Pro'")).finally(()=>{hid=performance.now();requestAnimationFrame(lp)});
+};
+</script>
+</body>
+</html>
