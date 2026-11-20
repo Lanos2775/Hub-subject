@@ -247,7 +247,7 @@ const LABS = [];
    - Chế độ "Chuỗi N nguyên tử": Trường sóng 2D thực tế trên chuỗi N = 2..10 nguyên tử
    ========================================================================== */
 LABS.push({
-  id: 'overlap', name: 'Chồng lấn 2 Nguyên tử', no: '1.1', secs: [1],
+  id: 'overlap', name: 'Chồng lấn', no: '1', secs: [1],
   S: { view: 'trio', dist: 2.35, N: 6, nodes: 2, breathe: true },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -257,8 +257,7 @@ LABS.push({
       { k: 'view', seg: [['trio', '3 khung so sánh'], ['bond', 'Liên kết (+)'], ['anti', 'Phản liên kết (−)'], ['chain', 'Chuỗi N nguyên tử']] },
       { k: 'dist', l: 'Khoảng cách d', min: 1.7, max: 5.2, step: 0.05, f: v => v.toFixed(2) + ' Å' },
       { k: 'N', l: 'Số nguyên tử N', min: 2, max: 10, step: 1, f: v => 'N=' + v },
-      { k: 'nodes', l: 'Số nút', min: 0, max: 5, step: 1, dynRange: S => [0, Math.max(0, S.N - 1)], f: v => v + ' nút' },
-      { btn: 'Si thật (2.35 Å)', fn: p => { p.S.dist = 2.35; p.syncCtrls(); queueReact(p.tab, 'dist'); } }
+      { k: 'nodes', l: 'Số nút', min: 0, max: 5, step: 1, dynRange: S => [0, Math.max(0, S.N - 1)], f: v => v + ' nút' }
     ],
     draw(p, ctx, W, H, t, dt) {
       const S = p.S;
@@ -400,18 +399,16 @@ LABS.push({
    - Chế độ "Sóng đứng Bragg (k = π/a)": Đặt cạnh nhau ψ₊ (nằm trên ion → E₋) & ψ₋ (giữa 2 ion → E₊)
    ========================================================================== */
 LABS.push({
-  id: 'bloch', name: 'Sóng Bloch 2D & Bragg', no: '1.2–1.5', secs: [],
+  id: 'bloch', name: 'Sóng Bloch & Bragg', no: '2', secs: [],
   S: { view: 'trio', kFrac: 0.50, P: 12.0, a: 5.0 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
     title: 'Kính hiển vi Sóng Bloch ψ_k(r) = e^{ikx}·u_k(r) trên mạng 6×6 & Sóng đứng Bragg',
     area: 'a', anim: true,
     ctrls: [
-      { k: 'view', seg: [['trio', '3 mẫu Bloch (6×6)'], ['live', 'Sóng chạy Bloch'], ['bragg', 'Sóng đứng Bragg (k=π/a)']] },
+      { k: 'view', seg: [['trio', '3 mẫu Bloch'], ['live', 'Sóng chạy Bloch'], ['bragg', 'Sóng đứng Bragg (k=π/a)']] },
       { k: 'kFrac', l: 'Số sóng k', min: 0, max: 1.0, step: 0.05, f: v => v === 0 ? '0' : v.toFixed(2) + 'π/a' },
-      { k: 'P', l: "Liên kết P'", min: 0, max: 16, step: 0.5, f: v => v.toFixed(1) },
-      { btn: "Câu 1,2 (P'=12)", fn: p => { p.S.P = 12; p.S.a = 5.0; p.syncCtrls(); queueReact(p.tab, 'P'); } },
-      { btn: 'Bragg (k=π/a)', fn: p => { p.S.view = 'bragg'; p.S.kFrac = 1.0; p.syncCtrls(); queueReact(p.tab, 'kFrac'); } }
+      { k: 'P', l: "Liên kết P'", min: 0, max: 16, step: 0.5, f: v => v.toFixed(1) }
     ],
     draw(p, ctx, W, H, t, dt) {
       const S = p.S;
@@ -528,7 +525,7 @@ LABS.push({
      1.29m₀): 2 gói sóng 2D đồng mức cùng xuất phát dưới 1 điện trường E!
    ========================================================================== */
 LABS.push({
-  id: 'crystal', name: 'Bloch, Trôi & Đua m*', no: '2.1–2.4', secs: [2],
+  id: 'crystal', name: 'Bloch', no: '3', secs: [2],
   S: { mode: 'bloch', Efield: 10, tau: 0.20 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -773,7 +770,7 @@ LABS.push({
      electron liên kết nhảy ngược chiều E đẩy Lỗ trống (+e) chạy CÙNG CHIỀU E!
    ========================================================================== */
 LABS.push({
-  id: 'hole', name: 'Mạng Si & Lỗ trống', no: '2.3', secs: [],
+  id: 'hole', name: 'Lỗ trống', no: '4', secs: [],
   S: { fill: 'oneHole', Edir: 'right' },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -927,7 +924,7 @@ LABS.push({
    - hν ≥ E_g trên Si → Cần sóng rung Phonon mới hấp thụ & chủ yếu tỏa nhiệt!
    ========================================================================== */
 LABS.push({
-  id: 'optical', name: 'Laser: GaAs vs Si', no: '2.5', secs: [],
+  id: 'optical', name: 'Laser', no: '5', secs: [],
   S: { semi: 'gaas', wl: 780 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
@@ -1104,7 +1101,7 @@ LABS.push({
      1 hạt/ô ở FD) vs ngưng tụ Bose (tụ đám đông ở ngăn đáy BE)!
    ========================================================================== */
 LABS.push({
-  id: 'fermi', name: 'Lò nhiệt & Hộp Pauli', no: '3.1–3.2', secs: [3],
+  id: 'fermi', name: 'Lò nhiệt & Hộp Pauli', no: '6', secs: [3],
   S: { mode: 'furnace', T: 300 },
   cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
