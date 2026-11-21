@@ -4,10 +4,12 @@ XSTK
 data/
 data
 theme/
+skill/
 
 # Internal rules (do not push to git)
-mon/ban-dan/Rule.md
-mon/ban-dan/Rule-lab.md
+mon/ban-dan/Skill/Rule.md
+mon/ban-dan/Skill/Rule-lab.md
+mon/ban-dan/Skill/lab-b9-notes.md
 Rule.md
 Rule-lab.md
 

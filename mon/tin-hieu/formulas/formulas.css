@@ -1,0 +1,51 @@
+/* ===== BẢNG TRA CÔNG THỨC FOURIER (phím H) ===== */
+#fPop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(10, 14, 20, .75);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+#fPop.open { display: flex; }
+
+.fpop-box {
+  width: 80vw;
+  height: 80vh;
+  background: var(--bg);
+  border: 1px solid var(--g);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .6);
+}
+.fpop-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 20px; }
+.fpop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+@media (max-width: 1100px) { .fpop-grid { grid-template-columns: 1fr; } }
+
+.fpop-col-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 6px 10px;
+  background: var(--sub-alt);
+  border-left: 3px solid var(--main);
+  border-radius: 4px;
+  margin: 0 0 10px;
+  letter-spacing: .02em;
+}
+.fpop-card { background: var(--sub-alt); border: 1px solid var(--g); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 12px; }
+.fpop-card:last-child { margin-bottom: 0; }
+.fpop-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--g); padding-bottom: 4px; margin-bottom: 7px; }
+.fpop-title { font-size: 13px; font-weight: 700; color: var(--main); }
+.fpop-sub { font-size: 11.5px; color: var(--mut); font-weight: 500; }
+.fpop-eq { background: var(--bg); border: 1px solid var(--g); border-radius: 4px; padding: 5px 9px; margin: 0 0 9px; font-size: 13px; text-align: center; overflow-x: auto; }
+.fpop-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; line-height: 1.5; }
+.fpop-tbl th { background: var(--bg); color: var(--main); font-weight: 700; padding: 5px 7px; text-align: left; border-bottom: 1px solid var(--g); font-size: 11.5px; }
+.fpop-tbl td { padding: 4px 7px; border-bottom: 1px solid var(--g); vertical-align: middle; }
+.fpop-tbl tr:last-child td { border-bottom: 0; }
+.fpop-tbl td:first-child { white-space: nowrap; }
+.fpop-card > .fpop-eq:last-child { margin-bottom: 0; }
