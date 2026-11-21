@@ -786,6 +786,9 @@ function loadLesson(lessonId) {
   } else if (lessonId === '9') {
     mainEl.innerHTML = $('tpl-buoi-9').innerHTML;
     if (window.LabB9) LabB9.mark(mainEl);
+  } else if (lessonId === '10') {
+    mainEl.innerHTML = $('tpl-buoi-10').innerHTML;
+    if (window.LabB10) LabB10.mark(mainEl);
   } else {
     const tpl = $('tpl-buoi-pending');
     mainEl.innerHTML = tpl.innerHTML;
@@ -815,7 +818,8 @@ const BAN_DAN_LESSONS = [
   { id: '6', title: 'Buổi 6: Bán dẫn pha tạp & Bán dẫn suy biến' },
   { id: '7', title: 'Buổi 7: Vận chuyển hạt tải (Trôi & Khuếch tán)' },
   { id: '8', title: 'Buổi 8: Hạt tải dư (Sinh, tái hợp & vận chuyển lưỡng cực)' },
-  { id: '9', title: 'Buổi 9: Tiếp giáp p-n' }
+  { id: '9', title: 'Buổi 9: Tiếp giáp p-n' },
+  { id: '10', title: 'Buổi 10: Tiếp xúc kim loại–bán dẫn & Dị tiếp giáp' }
 ];
 function renderLS(curId) {
   const lsEl = $('ls');
@@ -1088,7 +1092,7 @@ function renderLS(curId) {
     $('tb-title').textContent = l.title.replace(/^Buổi\s*\d+\s*:\s*/, '');
     $('tb-prev').disabled = i <= 0;
     $('tb-next').disabled = i >= BAN_DAN_LESSONS.length - 1;
-    $('tb-lab').hidden = !(['1', '2', '3', '4', '5', '6', '7', '8'].includes(String(id)) || (String(id) === '9' && !!window.LabB9));
+    $('tb-lab').hidden = !(['1', '2', '3', '4', '5', '6', '7', '8'].includes(String(id)) || (String(id) === '9' && !!window.LabB9) || (String(id) === '10' && !!window.LabB10));
     if (String(id) !== '1' && window.LabB1) LabB1.close();
     if (String(id) !== '2' && window.LabB2) LabB2.close();
     if (String(id) !== '3' && window.LabB3) LabB3.close();
@@ -1098,6 +1102,7 @@ function renderLS(curId) {
     if (String(id) !== '7' && window.LabB7) LabB7.close();
     if (String(id) !== '8' && window.LabB8) LabB8.close();
     if (String(id) !== '9' && window.LabB9) LabB9.close();
+    if (String(id) !== '10' && window.LabB10) LabB10.close();
   };
   const go = d => {
     const l = BAN_DAN_LESSONS[idx() + d];
@@ -1116,6 +1121,7 @@ function renderLS(curId) {
             : bd === 'Buổi 4' ? window.LabB4
             : bd === 'Buổi 8' ? window.LabB8
             : bd === 'Buổi 9' ? window.LabB9
+            : bd === 'Buổi 10' ? window.LabB10
             : bd === 'Buổi 5' ? window.LabB5
             : bd === 'Buổi 6' ? window.LabB6
             : window.LabB7;
@@ -1127,6 +1133,7 @@ function renderLS(curId) {
       : L === window.LabB4 ? 'lab4'
       : L === window.LabB8 ? 'lab8'
       : L === window.LabB9 ? 'lab9'
+      : L === window.LabB10 ? 'lab10'
       : L === window.LabB5 ? 'lab5'
       : L === window.LabB6 ? 'lab6'
       : 'lab'

@@ -5794,6 +5794,615 @@ window.MathJax = {
   </section>
 </template>
 
+<template id="tpl-buoi-10">
+  <header>
+    <span class="k b3">HỌC PHẦN ENP2209 · BUỔI 10</span>
+    <h1>Tiếp Xúc Kim Loại–Bán Dẫn và Dị Tiếp Giáp: Schottky, Ohmic, Quy Tắc Anderson và Khí Điện Tử 2 Chiều</h1>
+    <p class="mut">Slide Chương 9 (Neamen, <i>Metal–semiconductor junctions and heterojunctions</i>). Điốt Schottky, tiếp xúc ohmic, dị tiếp giáp bán dẫn, khí điện tử hai chiều (2-DEG) và transistor HEMT.</p>
+    <div class="roadmap"><p><b>Bản đồ Buổi 10: từ "bán dẫn chạm kim loại" đến "bán dẫn chạm bán dẫn khác"</b></p><ol>
+      <li><b>Mục 1:</b> Kim loại chạm bán dẫn loại n: công thoát, ái lực điện tử, hình thành hàng rào Schottky.</li>
+      <li><b>Mục 2:</b> Phân cực thuận và ngược, vùng nghèo, điện trường và điện dung của tiếp xúc Schottky.</li>
+      <li><b>Mục 3:</b> Hàng rào có đúng như lý thuyết không? Lực ảnh (hiệu ứng Schottky) và ghim mức Fermi.</li>
+      <li><b>Mục 4:</b> Dòng điện qua điốt Schottky: phát xạ nhiệt điện tử.</li>
+      <li><b>Mục 5:</b> So sánh điốt Schottky với điốt p-n: điện áp mở, tốc độ chuyển mạch.</li>
+      <li><b>Mục 6:</b> Tiếp xúc ohmic: không chỉnh lưu và xuyên hầm.</li>
+      <li><b>Mục 7:</b> Dị tiếp giáp: quy tắc Anderson, dị tiếp giáp nP và nN, đặc tuyến.</li>
+      <li><b>Mục 8:</b> Khí điện tử 2 chiều và HEMT.</li>
+      <li><b>Mục 9:</b> Cẩm nang công thức. Cuối bài là tổng kết.</li></ol>
+      <p><b>Sau buổi này em làm được:</b> tính chiều cao hàng rào Schottky, vùng nghèo và điện dung; viết phương trình dòng Schottky và so sánh với điốt p-n; nói khi nào tiếp xúc là ohmic; tính độ lệch vùng $\Delta E_c$, $\Delta E_v$ của dị tiếp giáp; mô tả vì sao giếng tam giác tạo ra 2-DEG.</p></div>
+  </header>
+
+  <section>
+    <h2>Mở đầu: Từ "hai bán dẫn chạm nhau" đến "chạm bất cứ vật liệu nào"</h2>
+    <p>Chào em! Buổi 9 ta ghép hai miền của <i>cùng một</i> bán dẫn (p với n). Nhưng mọi linh kiện đều phải nối ra dây kim loại, và nhiều linh kiện tốc độ cao ghép hai bán dẫn <i>khác loại vật liệu</i>. Buổi này trả lời ba câu hỏi: (1) chạm kim loại vào bán dẫn thì có "chỉnh lưu" như điốt không? (2) làm sao để chỗ chạm đó <i>không</i> chỉnh lưu, chỉ là một dây dẫn tốt? (3) ghép hai bán dẫn khác $E_g$, khác $\chi$ thì vùng năng lượng xếp ra sao?</p>
+    <div class="box analogy">
+      <b>Ví dụ ẩn dụ: bậc thềm giữa hai phòng</b><br>
+      Ở Buổi 9, hai phòng p và n cùng sàn, chỉ có cánh cửa dựng điện trường. Ở buổi này, kim loại và bán dẫn là hai phòng <i>có sàn cao thấp khác nhau</i> (công thoát khác nhau). Electron muốn sang phòng bên kia phải leo một bậc thềm: bậc đó gọi là hàng rào. Làm bậc thềm thấp, hoặc mỏng đến mức electron "chui qua", ta được tiếp xúc ohmic. Để bậc thềm cao thì ta có điốt Schottky.
+    </div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Điốt Schottky dùng trong mạch chỉnh lưu nhanh, kẹp điện áp, RF. Tiếp xúc ohmic có ở <i>mọi</i> linh kiện (chân ra dây). Dị tiếp giáp và 2-DEG là nền của transistor HEMT trong radar, vệ tinh và mạng 5G/6G.</div>
+    <div class="tw"><table><tr><th>Buổi trước</th><th>Dùng ở Buổi 10 để làm gì</th></tr>
+      <tr><td>Buổi 5, 6: $E_F$, $E_c$, $E_v$, $N_c$, $\phi_n=(E_c-E_F)/e$</td><td>Tính $\phi_n$ và vị trí $E_F$ của bán dẫn loại n</td></tr>
+      <tr><td>Buổi 9: vùng nghèo, $V_{bi}$, $W$, $C'$, đo $C$-$V$</td><td>Cùng công thức cho tiếp giáp một phía, thay phía $p^+$ bằng kim loại</td></tr>
+      <tr><td>Buổi 4: giếng thế lượng tử</td><td>Hiểu mức năng lượng rời rạc $E_0,E_1$ trong giếng tam giác ở 2-DEG</td></tr></table></div>
+  </section>
+
+  <section>
+    <h2>1. Tiếp Xúc Schottky: Hình Thành Hàng Rào</h2>
+    <div class="bridge"><b>Nối từ phần mở đầu:</b> Ta bắt đầu từ trường hợp cơ bản nhất: một khối kim loại áp vào bán dẫn loại n.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Chiều cao hàng rào $\phi_{B0}$ quyết định dòng điện ở Mục 4 theo hàm mũ, nên một sai số nhỏ ở đây thành sai số lớn ở dòng.</div>
+
+    <h3>1.1. Điốt Schottky là gì</h3>
+    <p>Theo slide trang 5, <b>điốt Schottky</b> là một tiếp xúc <b>chỉnh lưu</b> giữa kim loại và bán dẫn:</p>
+    <ul>
+      <li>thường chế tạo trên bán dẫn <b>loại n</b>;</li>
+      <li>là linh kiện <b>hạt đa số</b> (chỉ electron tham gia, không có lỗ trống thiểu số đóng vai trò chính);</li>
+      <li>hoạt động <b>không cần tiếp giáp p-n</b>.</li>
+    </ul>
+    <p>Thời kỳ đầu, người ta ép một mũi kim loại lên bề mặt bán dẫn (tiếp xúc điểm). Ngày nay công nghệ bán dẫn cho phép chế tạo tiếp xúc Schottky lặp lại tốt và ổn định.</p>
+
+    <h3>1.2. Công thoát và ái lực điện tử</h3>
+    <p>Ta dùng <b>mức chân không</b> $E_{\text{vac}}$ (năng lượng của electron vừa thoát khỏi vật liệu) làm mốc chung (slide trang 6):</p>
+    <div class="f key">$$q\phi_m=E_{\text{vac}}-E_{Fm},\qquad q\chi=E_{\text{vac}}-E_C,\qquad q\phi_s=E_{\text{vac}}-E_F$$
+      $$\text{Bán dẫn loại n:}\quad \phi_s=\chi+\phi_n,\qquad q\phi_n=E_C-E_F$$
+      <small>$\phi_m$ (V, hay eV khi nhân $e$): <b>công thoát</b> của kim loại. $\chi$ (V): <b>ái lực điện tử</b> của bán dẫn. $\phi_s$: công thoát của bán dẫn. $\phi_n$: khoảng cách từ đáy vùng dẫn đến mức Fermi.</small></div>
+    <p>Giá trị điển hình (slide trang 7, Bảng 9.1 và 9.2):</p>
+    <div class="tw"><table><tr><th>Kim loại</th><th>$\phi_m$ (V)</th><th>Kim loại</th><th>$\phi_m$ (V)</th><th>Bán dẫn</th><th>$\chi$ (V)</th></tr>
+      <tr><td>Ag</td><td>4.26</td><td>Ni</td><td>5.15</td><td>Ge</td><td>4.13</td></tr>
+      <tr><td>Al</td><td>4.28</td><td>Pd</td><td>5.12</td><td>Si</td><td>4.01</td></tr>
+      <tr><td>Au</td><td>5.1</td><td>Pt</td><td>5.65</td><td>GaAs</td><td>4.07</td></tr>
+      <tr><td>Cr</td><td>4.5</td><td>Ti</td><td>4.33</td><td>AlAs</td><td>3.5</td></tr>
+      <tr><td>Mo</td><td>4.6</td><td>W</td><td>4.55</td><td colspan="2"></td></tr></table></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>Công thoát phụ thuộc <b>kim loại</b>; ái lực điện tử là tính chất <b>riêng của bán dẫn</b>.</li>
+      <li>Hai đại lượng này cùng quyết định chiều cao hàng rào Schottky <i>lý tưởng</i>.</li></ul></div>
+
+    <h3>1.3. Trước và sau khi tiếp xúc</h3>
+    <p><b>Trước khi tiếp xúc</b> (slide trang 8): xét kim loại và bán dẫn loại n với $\phi_m>\phi_s$.</p>
+    <ul>
+      <li>Hai vật liệu có mức Fermi khác nhau; mức Fermi của bán dẫn <b>cao hơn</b> mức Fermi của kim loại.</li>
+      <li>Chưa có trao đổi điện tích; vùng năng lượng của bán dẫn còn <b>phẳng</b>.</li>
+      <li>Dùng mức chân không làm mốc chung.</li>
+    </ul>
+    <p><b>Sau khi tiếp xúc</b> (slide trang 9), electron từ bán dẫn chuyển sang kim loại (nơi còn "chỗ" ở mức Fermi thấp hơn):</p>
+    <ol>
+      <li>Ion donor dương bị bỏ lại trong bán dẫn, tạo <b>vùng điện tích không gian</b> (vùng nghèo) rộng $x_n=W$.</li>
+      <li>Trên bề mặt kim loại xuất hiện điện tích âm (rất mỏng).</li>
+      <li>Vùng năng lượng của bán dẫn <b>uốn lên</b> khi tiến về mặt tiếp xúc.</li>
+      <li>Ở cân bằng nhiệt, mức Fermi <b>phẳng</b> trên toàn hệ.</li>
+    </ol>
+
+    <h3>1.4. Mô hình tương tác: Hình thành hàng rào Schottky: công thoát, ái lực điện tử và uốn vùng</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hàng rào hình thành khi hai mức Fermi cân bằng; nhìn hai giản đồ "trước" và "sau" cạnh nhau giúp hiểu vùng uốn từ đâu ra.</li><li><b>Dùng để làm gì:</b> Thấy $\phi_{B0}=\phi_m-\chi$ chỉ phụ thuộc kim loại và bán dẫn, còn $V_{bi}$ thì phụ thuộc thêm pha tạp qua $\phi_n$; biết khi nào $\phi_m\lt\phi_s$ (không còn hàng rào).</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Chọn kim loại (hoặc kéo $\phi_m$), chọn bán dẫn, kéo $N_d$; so sánh giản đồ trước và sau khi tiếp xúc, đọc $\phi_{B0}$, $\phi_n$, $V_{bi}$.</li></ul></div>
+
+    <h3>1.5. Chiều cao hàng rào và thế tiếp xúc</h3>
+    <p>Từ giản đồ sau tiếp xúc (slide trang 10) có hai hàng rào khác nhau:</p>
+    <div class="f key">$$\phi_{B0}=\phi_m-\chi\qquad\text{(lý tưởng)},\qquad V_{bi}=\phi_{B0}-\phi_n$$
+      <small>$\phi_{B0}$: hàng rào cho electron đi <b>từ kim loại vào bán dẫn</b>. $V_{bi}$: hàng rào cho electron đi <b>từ bán dẫn vào kim loại</b>. $\phi_n=\dfrac{kT}{e}\ln\dfrac{N_c}{N_d}$ (Buổi 5, 6).</small></div>
+    <div class="box legend"><b>Phân biệt hai hàng rào</b><ul>
+      <li>$\phi_{B0}$ lý tưởng <b>không phụ thuộc nồng độ pha tạp</b>.</li>
+      <li>$V_{bi}$ <b>có phụ thuộc pha tạp</b> thông qua $\phi_n$.</li>
+      <li>Khác với p-n: hàng rào từ phía kim loại ($\phi_{B0}$) <b>không đổi</b> theo điện áp, còn hàng rào từ phía bán dẫn thì đổi (Mục 2).</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 1.1 (bổ sung, theo công thức slide trang 7 và 10).</b> Vàng (Au) trên Si loại n, $N_d=10^{16}\text{ cm}^{-3}$, $300\text{ K}$, $N_c=2.8\times10^{19}\text{ cm}^{-3}$. Tìm $\phi_{B0}$, $\phi_n$, $V_{bi}$.
+      <div class="step">
+        <span class="cmt">// Hàng rào lý tưởng, Au: $\phi_m=5.1\text{ V}$, Si: $\chi=4.01\text{ V}$:</span>
+        $$\phi_{B0}=5.1-4.01=\mathbf{1.09\text{ V}}$$
+        <span class="cmt">// Khoảng cách $E_C-E_F$:</span>
+        $$\phi_n=0.0259\ln\frac{2.8\times10^{19}}{10^{16}}=0.0259\times7.94=\mathbf{0.206\text{ V}}$$
+        <span class="cmt">// Thế tiếp xúc:</span>
+        $$V_{bi}=\phi_{B0}-\phi_n=1.09-0.206=\mathbf{0.884\text{ V}}$$
+      </div>
+      <b>Nhận xét:</b> Nếu thay Au bằng Al ($\phi_m=4.28$) thì $\phi_{B0}=0.27\text{ V}$, rất thấp; hàng rào thấp là lý do chọn kim loại có công thoát lớn khi cần điốt Schottky. Kết quả này là hàng rào <b>lý tưởng</b>; hàng rào đo được lệch đi do Mục 3.</div>
+
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul>
+      <li>$\phi_m=(E_{\text{vac}}-E_{Fm})/e$, $\chi=(E_{\text{vac}}-E_C)/e$; bán dẫn loại n: $\phi_s=\chi+\phi_n$.</li>
+      <li>Với $\phi_m>\phi_s$ (loại n): electron chuyển từ bán dẫn sang kim loại, hình thành vùng nghèo và uốn vùng lên.</li>
+      <li>$\phi_{B0}=\phi_m-\chi$ (không phụ thuộc pha tạp); $V_{bi}=\phi_{B0}-\phi_n$ (phụ thuộc pha tạp).</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 2 đặt điện áp lên tiếp xúc và tính vùng nghèo, điện trường, điện dung.</div>
+  </section>
+
+  <section>
+    <h2>2. Phân Cực, Vùng Nghèo Và Điện Dung Của Tiếp Xúc Schottky</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Ta đã có hàng rào cân bằng. Bây giờ đặt điện áp và hỏi: hàng rào, vùng nghèo, điện dung thay đổi thế nào?</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Đây là phiên bản "một phía" của Buổi 9: công thức quen thuộc dùng lại, chỉ khác là kim loại đóng vai phía pha tạp rất nặng.</div>
+
+    <h3>2.1. Phân cực ngược</h3>
+    <p>Với tiếp xúc kim loại/bán dẫn loại n (slide trang 11), đặt <b>thế dương lên bán dẫn</b> so với kim loại. Hàng rào nhìn từ bán dẫn tăng:</p>
+    <div class="f key">$$V_{\text{barrier}}=V_{bi}+V_R$$</div>
+    <ul>
+      <li>Vùng nghèo <b>rộng ra</b>, điện trường cực đại <b>tăng</b>.</li>
+      <li>Electron trong bán dẫn khó vượt hàng rào hơn.</li>
+      <li>Dòng ngược rất nhỏ khi chưa đánh thủng. Hàng rào $\phi_{B0}$ nhìn từ kim loại <b>không đổi</b>.</li>
+    </ul>
+
+    <h3>2.2. Phân cực thuận</h3>
+    <p>Đặt <b>thế dương lên kim loại</b> (slide trang 12). Hàng rào nhìn từ bán dẫn giảm:</p>
+    <div class="f key">$$V_{\text{barrier}}=V_{bi}-V_a$$</div>
+    <ul>
+      <li>Electron đa số dễ dàng vượt hàng rào đã hạ thấp, đi từ bán dẫn sang kim loại.</li>
+      <li>Dòng điện quy ước chạy từ kim loại sang bán dẫn.</li>
+      <li>Dòng thuận tăng <b>theo hàm mũ</b> với điện áp đặt vào.</li>
+    </ul>
+
+    <h3>2.3. Mô hình tương tác: Phân cực thuận và ngược: hàng rào, vùng nghèo và dòng electron</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Phân cực chỉ làm đổi hàng rào bên phía bán dẫn; hàng rào bên phía kim loại đứng yên. Hình động làm rõ điều này.</li><li><b>Dùng để làm gì:</b> Thấy $V_{bi}\mp V$ thay đổi, vùng nghèo hẹp lại khi thuận và rộng ra khi ngược, và số electron vượt hàng rào theo từng chiều.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo điện áp từ ngược sang thuận; quan sát $eV_{\text{barrier}}$, $W$, và mũi tên dòng $J_{s\to m}$, $J_{m\to s}$.</li></ul></div>
+
+    <h3>2.4. Phương trình Poisson, điện trường và bề rộng vùng nghèo</h3>
+    <p>Trong vùng nghèo của bán dẫn loại n (slide trang 13):</p>
+    <div class="f">$$\rho(x)=eN_d,\qquad \frac{dE}{dx}=\frac{\rho(x)}{\epsilon_s}\ \Rightarrow\ E=-\frac{eN_d}{\epsilon_s}(x_n-x)$$</div>
+    <p>Điện trường <b>tuyến tính</b>, bằng $0$ tại $x=x_n$ và <b>lớn nhất</b> tại mặt tiếp xúc $x=0$. Giải như Buổi 9 nhưng chỉ có một phía (slide trang 14):</p>
+    <div class="f key">$$W=x_n=\left[\frac{2\epsilon_s(V_{bi}+V_R)}{eN_d}\right]^{1/2},\qquad |E_{\max}|=\frac{eN_dW}{\epsilon_s}$$
+      <small>$W$ (cm) khi $\epsilon_s$ ($\text{F/cm}$), $N_d$ ($\text{cm}^{-3}$), $V$ (V), $e=1.6\times10^{-19}\text{ C}$. Khi phân cực thuận thay $V_R$ bằng $-V_a$.</small></div>
+    <div class="box legend"><b>Nhận xét (slide trang 14)</b><ul>
+      <li>$W$ tăng khi $V_R$ tăng; $W$ giảm khi $N_d$ tăng.</li>
+      <li>Giống tiếp giáp một phía $p^+n$ ở Buổi 9: gần như toàn bộ vùng điện tích không gian nằm trong bán dẫn.</li></ul></div>
+
+    <h3>2.5. Điện dung tiếp xúc Schottky</h3>
+    <p>Điện dung trên một đơn vị diện tích (slide trang 15) là $C'=\epsilon_s/W$, tức:</p>
+    <div class="f key">$$C'=\sqrt{\frac{e\epsilon_sN_d}{2(V_{bi}+V_R)}},\qquad \frac{1}{(C')^2}=\frac{2(V_{bi}+V_R)}{e\epsilon_sN_d}$$
+      <small>$C'$ ($\text{F/cm}^2$). Nhân $C'$ với diện tích $A$ ($\text{cm}^2$) được $C$ (F).</small></div>
+    <p>Từ đồ thị $1/C^2$ theo $V_R$ (đường thẳng, slide trang 15):</p>
+    <ul>
+      <li><b>Điểm cắt trục điện áp</b> cho $V_{bi}$ (điểm cắt ở $-V_{bi}$).</li>
+      <li><b>Độ dốc</b> $\dfrac{2}{e\epsilon_sN_d}$ cho $N_d$.</li>
+      <li>Sau khi biết $V_{bi}$ và $\phi_n$, tính hàng rào: $\phi_{Bn}=V_{bi}+\phi_n$.</li>
+    </ul>
+    <div class="box warn"><b>Lưu ý đo $C$-$V$</b> Hình trong slide có hai đường thẳng cho W–Si và W–GaAs, cùng kim loại W nhưng bán dẫn khác. Điểm cắt nằm lệch về âm, gần $-0.4\text{ V}$ đến $-0.7\text{ V}$, và hai bán dẫn có độ dốc khác nhau vì $N_d$ khác nhau.</div>
+
+    <h3>2.6. Mô hình tương tác: Đo $C$-$V$ tiếp xúc Schottky: tìm $V_{bi}$, $N_d$ và chiều cao hàng rào</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> $C$-$V$ là cách thực nghiệm chính để suy ra $N_d$ và $\phi_{Bn}$ mà không cần biết trước.</li><li><b>Dùng để làm gì:</b> Biết đọc điểm cắt và độ dốc của đường $1/C^2$–$V_R$, rồi suy $V_{bi}$, $N_d$, $\phi_n$, $\phi_{Bn}$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Chọn kim loại và bán dẫn, chỉnh $N_d$; ghi điểm đo hoặc quét tự động, so sánh kết quả khớp với giá trị thật.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 2.1 (bổ sung).</b> Tiếp xúc Au/Si loại n ở Ví dụ 1.1 ($N_d=10^{16}$, $V_{bi}=0.884\text{ V}$). Tìm $W$, $|E_{\max}|$ và $C'$ khi $V_R=0$ và $V_R=5\text{ V}$.
+      <div class="step">
+        <span class="cmt">// $V_R=0$, $\epsilon_s=1.035\times10^{-12}\text{ F/cm}$:</span>
+        $$W=\left[\frac{2(1.035\times10^{-12})(0.884)}{(1.6\times10^{-19})(10^{16})}\right]^{1/2}=3.38\times10^{-5}\text{ cm}=\mathbf{0.338\ \mu m},\quad |E_{\max}|=5.23\times10^{4}\text{ V/cm}$$
+        <span class="cmt">// $V_R=5\text{ V}$, $V_{bi}+V_R=5.884\text{ V}$:</span>
+        $$W=\mathbf{0.873\ \mu m},\qquad |E_{\max}|=\frac{eN_dW}{\epsilon_s}=\mathbf{1.35\times10^{5}\text{ V/cm}},\qquad C'=\frac{\epsilon_s}{W}=\mathbf{11.9\text{ nF/cm}^2}$$
+      </div>
+      <b>Nhận xét:</b> $V_R$ tăng từ $0$ lên $5\text{ V}$ thì $W$ gấp $2.6$ lần, $C'$ giảm còn $39\%$. Đúng quy luật $W\propto\sqrt{V_{bi}+V_R}$.</div>
+
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul>
+      <li>Ngược: $V_{\text{barrier}}=V_{bi}+V_R$, vùng nghèo rộng, $E_{\max}$ tăng. Thuận: $V_{\text{barrier}}=V_{bi}-V_a$.</li>
+      <li>$W=\left[\dfrac{2\epsilon_s(V_{bi}+V_R)}{eN_d}\right]^{1/2}$, $|E_{\max}|=\dfrac{eN_dW}{\epsilon_s}$, $C'=\epsilon_s/W$.</li>
+      <li>Đồ thị $1/C'^2$ theo $V_R$ thẳng: cắt trục tại $-V_{bi}$, độ dốc $\dfrac{2}{e\epsilon_sN_d}$; $\phi_{Bn}=V_{bi}+\phi_n$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 3 xét hai lý do khiến hàng rào đo được khác công thức lý tưởng $\phi_m-\chi$.</div>
+  </section>
+
+  <section>
+    <h2>3. Hiệu Ứng Phi Lý Tưởng Lên Chiều Cao Hàng Rào</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Công thức $\phi_{B0}=\phi_m-\chi$ chỉ đúng với mặt tiếp xúc hoàn hảo. Thực tế có hai hiệu ứng làm lệch hàng rào.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Giải thích vì sao dòng ngược của điốt Schottky tăng theo điện áp ngược, và vì sao đổi kim loại đôi khi gần như không đổi hàng rào.</div>
+
+    <h3>3.1. Hạ thấp hàng rào do lực ảnh (hiệu ứng Schottky)</h3>
+    <p>Một electron ở gần bề mặt kim loại chịu lực hút như thể có một <b>điện tích ảnh</b> dương đặt đối xứng bên kia mặt kim loại (slide trang 16). Ở khoảng cách $x$ đến mặt kim loại, hai điện tích cách nhau $2x$:</p>
+    <div class="f">$$F=\frac{-e^2}{4\pi\epsilon_s(2x)^2}=-eE,\qquad -\phi(x)=\int_x^\infty E\,dx'=\frac{-e}{16\pi\epsilon_s x}$$</div>
+    <p>Cộng thế năng ảnh với thế năng do điện trường ngoài $E$ trong vùng nghèo, đỉnh hàng rào bị <b>hạ thấp</b> và <b>dịch</b> vào gần mặt tiếp xúc:</p>
+    <div class="f key">$$x_m=\sqrt{\frac{e}{16\pi\epsilon_sE}},\qquad \Delta\phi=\sqrt{\frac{eE}{4\pi\epsilon_s}}=2Ex_m,\qquad \phi_{Bn}=\phi_{B0}-\Delta\phi$$
+      <small>$x_m$: vị trí đỉnh hàng rào. $\Delta\phi$: độ hạ thấp (V). $E$ lấy ở mặt tiếp xúc, $E=|E_{\max}|$.</small></div>
+    <div class="box legend"><b>Hệ quả</b><ul>
+      <li>$|E_{\max}|$ tăng theo $V_R$ ⇒ $\Delta\phi$ tăng ⇒ hàng rào thấp đi ⇒ <b>dòng ngược tăng theo điện áp ngược</b> (Mục 4).</li>
+      <li>$\Delta\phi\propto\sqrt{E}$ nên chỉ cỡ vài chục mV với $E\sim10^5\text{ V/cm}$ nhưng cho thay đổi dòng nhiều lần vì dòng phụ thuộc mũ.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 3.1 (bổ sung).</b> Si, $\epsilon_s=1.035\times10^{-12}\text{ F/cm}$, điện trường tại mặt tiếp xúc $E=10^5\text{ V/cm}$. Tìm $x_m$ và $\Delta\phi$.
+      <div class="step">
+        <span class="cmt">// Vị trí đỉnh hàng rào:</span>
+        $$x_m=\sqrt{\frac{1.6\times10^{-19}}{16\pi(1.035\times10^{-12})(10^5)}}=1.75\times10^{-7}\text{ cm}=\mathbf{1.75\text{ nm}}$$
+        <span class="cmt">// Độ hạ thấp hàng rào:</span>
+        $$\Delta\phi=\sqrt{\frac{(1.6\times10^{-19})(10^5)}{4\pi(1.035\times10^{-12})}}=\mathbf{0.035\text{ V}}=2Ex_m\ \checkmark$$
+      </div>
+      <b>Nhận xét:</b> Khi $E$ tăng $10$ lần ($10^6\text{ V/cm}$), $\Delta\phi$ tăng $\sqrt{10}$ lần lên $0.111\text{ V}$ và $x_m$ giảm còn $0.55\text{ nm}$.</div>
+
+    <h3>3.2. Mô hình tương tác: Hạ thấp hàng rào do lực ảnh (hiệu ứng Schottky)</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Đỉnh hàng rào là tổng của hai thế năng nhỏ dần và trơn dần; chỉ khi chồng chúng lên mới thấy đỉnh bị cắt xuống.</li><li><b>Dùng để làm gì:</b> Thấy thế năng ảnh, thế năng do điện trường, tổng của chúng, vị trí $x_m$ và độ hạ $\Delta\phi$ thay đổi theo $E$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo điện trường $E$ (hoặc điện áp ngược); quan sát đỉnh hàng rào dịch vào gần mặt kim loại và thấp xuống; đối chiếu với Ví dụ 3.1.</li></ul></div>
+
+    <h3>3.3. Trạng thái bề mặt và ghim mức Fermi</h3>
+    <p>Thí nghiệm cho thấy hàng rào <b>không</b> thay đổi đúng theo $\phi_{Bn}=\phi_m-\chi$ (slide trang 17). Nguyên nhân:</p>
+    <ul>
+      <li>có một <b>lớp điện môi/oxit rất mỏng</b> ở mặt tiếp xúc;</li>
+      <li>có các <b>trạng thái bề mặt</b> kiểu donor và kiểu acceptor ở mặt phân cách;</li>
+      <li>các trạng thái này <b>tích điện</b> và làm thay đổi độ uốn vùng;</li>
+      <li>hàng rào phụ thuộc <b>cả</b> công thoát kim loại <b>lẫn</b> các trạng thái bề mặt.</li>
+    </ul>
+    <p>Hai trường hợp giới hạn theo mật độ trạng thái bề mặt $D_{it}$ (slide trang 17):</p>
+    <div class="f key">$$D_{it}\to0:\ \ \phi_{Bn}=\phi_m-\chi\ \text{(lý tưởng)}\qquad\qquad D_{it}\ \text{rất lớn (ghim mức Fermi):}\ \ \phi_{Bn}=\frac{1}{e}\big(E_g-e\phi_0\big)$$
+      <small>$e\phi_0$: vị trí mức trung hòa của trạng thái bề mặt, đo từ đỉnh vùng hóa trị. Khi bị ghim, $\phi_{Bn}$ gần như <b>không phụ thuộc kim loại</b>.</small></div>
+    <div class="box legend"><b>Hệ quả thực tế</b><ul>
+      <li>Với nhiều bán dẫn (như GaAs) $D_{it}$ rất lớn nên đổi kim loại hầu như không đổi hàng rào.</li>
+      <li>Do đó hàng rào Schottky dùng để làm ohmic không thể chỉ chọn kim loại công thoát nhỏ; cần giải pháp khác (Mục 6.4).</li></ul></div>
+
+    <h3>3.4. Mô hình tương tác: Ghim mức Fermi: hàng rào theo công thoát kim loại và mật độ trạng thái bề mặt</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hai công thức giới hạn trông khác hẳn nhau; đặt chúng cạnh nhau trên cùng một trục làm rõ vì sao có lúc "chọn kim loại" vô tác dụng.</li><li><b>Dùng để làm gì:</b> Thấy $\phi_{Bn}$ chạy từ đường dốc $\phi_m-\chi$ (khi $D_{it}\to0$) đến đường nằm ngang (khi $D_{it}$ lớn).</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo mức độ ghim (đại diện cho $D_{it}$) và đổi kim loại; xem $\phi_{Bn}$ theo $\phi_m$ nhạy hay chai.</li></ul></div>
+
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul>
+      <li>Lực ảnh hạ hàng rào: $\Delta\phi=\sqrt{eE/(4\pi\epsilon_s)}$, đỉnh ở $x_m=\sqrt{e/(16\pi\epsilon_sE)}$.</li>
+      <li>$E_{\max}$ tăng theo $V_R$ ⇒ hàng rào giảm khi ngược mạnh.</li>
+      <li>Trạng thái bề mặt, $D_{it}$ lớn ghim mức Fermi: $\phi_{Bn}=(E_g-e\phi_0)/e$, không phụ thuộc kim loại.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 4 tính dòng điện, nơi $\phi_{Bn}$ xuất hiện trong hàm mũ.</div>
+  </section>
+
+  <section>
+    <h2>4. Dòng Điện Qua Điốt Schottky</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Biết hàng rào hiệu dụng $\phi_{Bn}$, ta tính dòng: bao nhiêu electron đủ nóng để vượt hàng rào?</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Có phương trình dòng thì mới so sánh được với điốt p-n (Mục 5) và hiểu vì sao Schottky mở ở điện áp thấp hơn.</div>
+
+    <h3>4.1. Cơ chế phát xạ nhiệt điện tử</h3>
+    <p>Dòng trong điốt Schottky chủ yếu là các electron đa số có <b>năng lượng nhiệt đủ lớn để vượt hàng rào</b> (slide trang 18). Có hai thành phần electron và dòng tổng quy ước là hiệu của chúng:</p>
+    <div class="f key">$$J=J_{s\to m}-J_{m\to s}$$
+      <small>$J_{s\to m}$: electron từ bán dẫn sang kim loại; $J_{m\to s}$: từ kim loại sang bán dẫn. Cơ chế này gọi là <b>phát xạ nhiệt điện tử</b>.</small></div>
+    <p>Ở cân bằng hai thành phần bằng nhau. Phân cực thuận $V_a$ hạ hàng rào bên bán dẫn và tăng $J_{s\to m}$; hàng rào bên kim loại không đổi nên $J_{m\to s}$ không đổi.</p>
+
+    <h3>4.2. Phương trình dòng Schottky</h3>
+    <p>Kết quả (slide trang 19):</p>
+    <div class="f key">$$J=\Big[A^{*}T^2\exp\!\Big(\frac{-e\phi_{Bn}}{kT}\Big)\Big]\Big[\exp\!\Big(\frac{eV_a}{kT}\Big)-1\Big]=J_{sT}\Big[\exp\!\Big(\frac{eV_a}{kT}\Big)-1\Big]$$
+      $$A^{*}=\frac{4\pi em_n^{*}k^2}{h^3},\qquad J_{sT}=A^{*}T^2\exp\!\Big(\frac{-e\phi_{Bn}}{kT}\Big)$$
+      <small>$A^*$: hằng số Richardson hiệu dụng ($\text{A/cm}^2\text{K}^2$), $\approx120\,(m_n^*/m_0)$. $J_{sT}$: mật độ dòng bão hòa ngược.</small></div>
+    <p>Vì $\phi_{Bn}=\phi_{B0}-\Delta\phi$ nên:</p>
+    <div class="f">$$J_{sT}=A^*T^2\exp\!\Big(\frac{-e\phi_{B0}}{kT}\Big)\exp\!\Big(\frac{e\Delta\phi}{kT}\Big)$$</div>
+    <div class="box legend"><b>Hệ quả</b><ul>
+      <li>Có dạng phương trình điốt: dòng thuận tăng theo $e^{eV_a/kT}$, dòng ngược tiến về $-J_{sT}$.</li>
+      <li>Do $\Delta\phi$ tăng theo $V_R$, <b>dòng ngược tăng theo điện áp ngược</b> (slide trang 19, đồ thị thực nghiệm: đường dốc nhẹ trước khi đánh thủng).</li>
+      <li>$J_{sT}$ phụ thuộc <b>mũ</b> vào $\phi_{Bn}$: hàng rào cao hơn $0.1\text{ V}$ thì dòng bão hòa nhỏ đi khoảng $e^{0.1/0.0259}\approx48$ lần.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 4.1 (bổ sung).</b> Tiếp xúc Schottky có $\phi_{Bn}=0.8\text{ V}$, $T=300\text{ K}$, $A^*=120\text{ A/cm}^2\text{K}^2$ (khối lượng hiệu dụng bằng $m_0$). Tìm $J_{sT}$ và điện áp thuận để $J=10\text{ A/cm}^2$.
+      <div class="step">
+        <span class="cmt">// Dòng bão hòa ngược:</span>
+        $$J_{sT}=120(300)^2\exp\!\Big(\frac{-0.8}{0.0259}\Big)=(1.08\times10^{7})(3.85\times10^{-14})=\mathbf{4.2\times10^{-7}\text{ A/cm}^2}$$
+        <span class="cmt">// Điện áp thuận cho $J=10\text{ A/cm}^2$ (bỏ số $-1$):</span>
+        $$V_a=0.0259\ln\frac{10}{4.2\times10^{-7}}=\mathbf{0.44\text{ V}}$$
+      </div>
+      <b>Nhận xét:</b> Với $\phi_{Bn}=0.7\text{ V}$ thay vì $0.8\text{ V}$, $J_{sT}$ tăng lên $1.98\times10^{-5}\text{ A/cm}^2$ (gấp $48$ lần), điện áp thuận giảm xuống $0.34\text{ V}$.</div>
+
+    <h3>4.3. Mô hình tương tác: Đặc tuyến $I$-$V$ điốt Schottky: phát xạ nhiệt điện tử, $\phi_{Bn}$ và nhiệt độ</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Phương trình dòng có hai thông số mũ (hàng rào, nhiệt độ); nhìn đường cong dịch chuyển giúp nhớ độ nhạy của chúng.</li><li><b>Dùng để làm gì:</b> Thấy đường $\ln J$–$V$ thẳng ở vùng thuận, $J_{sT}$ dịch lên/xuống theo $\phi_{Bn}$ và $T$, và dòng ngược tăng nhẹ vì $\Delta\phi$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $\phi_{Bn}$ (hoặc chọn kim loại), nhiệt độ, $A^*$; bật/tắt hiệu ứng hạ thấp hàng rào; đọc $J_{sT}$ và điện áp mở.</li></ul></div>
+
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul>
+      <li>Dòng chủ yếu do electron đa số phát xạ nhiệt qua hàng rào $\phi_{Bn}$.</li>
+      <li>$J=J_{sT}[e^{eV_a/kT}-1]$, $J_{sT}=A^*T^2e^{-e\phi_{Bn}/kT}$, $A^*=4\pi em^*k^2/h^3$.</li>
+      <li>Dòng ngược tăng theo điện áp ngược vì $\phi_{Bn}=\phi_{B0}-\Delta\phi$ giảm.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 5 đặt điốt Schottky cạnh điốt p-n.</div>
+  </section>
+
+  <section>
+    <h2>5. So Sánh Điốt Schottky Và Điốt p-n</h2>
+    <div class="bridge"><b>Nối từ Mục 4:</b> Hai điốt đều có đặc tuyến dạng mũ, nhưng cơ chế dòng khác nhau, nên hệ số khác nhau nhiều bậc.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Biết khi nào chọn Schottky (điện áp mở thấp, chuyển mạch nhanh) và khi nào chọn p-n (dòng ngược nhỏ).</div>
+
+    <h3>5.1. Cơ chế và dòng bão hòa</h3>
+    <div class="tw"><table><tr><th>Điốt Schottky</th><th>Điốt tiếp giáp p-n</th></tr>
+      <tr><td>Dòng hạt <b>đa số</b></td><td>Dòng hạt <b>thiểu số</b></td></tr>
+      <tr><td>Phát xạ nhiệt điện tử</td><td>Khuếch tán và tái hợp hạt tải</td></tr>
+      <tr><td>Dòng bão hòa ngược <b>lớn</b></td><td>Dòng bão hòa ngược <b>nhỏ</b></td></tr>
+      <tr><td>Không tích trữ điện tích hạt thiểu số</td><td>Có tích trữ điện tích hạt thiểu số</td></tr>
+      <tr><td>Chuyển mạch <b>nhanh</b> (cỡ ps)</td><td>Chuyển mạch <b>chậm hơn</b> (cỡ ns)</td></tr></table></div>
+    <div class="f key">$$J_s^{(pn)}=\frac{eD_nn_{p0}}{L_n}+\frac{eD_pp_{n0}}{L_p},\qquad J_{sT}^{(\text{Schottky})}=A^*T^2e^{-e\phi_{Bn}/kT}\ \gg\ J_s^{(pn)}$$
+      <small>Dòng bão hòa ngược của Schottky lớn hơn p-n nhiều bậc độ lớn (slide trang 20).</small></div>
+
+    <h3>5.2. Điện áp mở thuận</h3>
+    <p>Ở cùng mật độ dòng $J$ (bỏ số $-1$), điện áp thuận cần thiết (slide trang 21):</p>
+    <div class="f key">$$V_a=V_t\ln\!\Big(\frac{J}{J_s}\Big),\qquad J_{sT}^{\text{Schottky}}\gg J_s^{pn}\ \Rightarrow\ V_{a}^{\text{Schottky}}\lt V_a^{pn}$$</div>
+    <div class="box tip"><b>Ví dụ 5.1 (slide trang 21).</b> Với $J=10\text{ A/cm}^2$ slide cho $V_a\approx0.312\text{ V}$ (Schottky) và $V_a\approx0.682\text{ V}$ (p-n). Tìm hai dòng bão hòa tương ứng và hiệu hai điện áp.
+      <div class="step">
+        <span class="cmt">// Đảo công thức $V_a=V_t\ln(J/J_s)$ thành $J_s=Je^{-V_a/V_t}$:</span>
+        $$J_{sT}^{\text{Schottky}}=10\,e^{-0.312/0.0259}=\mathbf{5.9\times10^{-5}\text{ A/cm}^2},\qquad J_s^{pn}=10\,e^{-0.682/0.0259}=\mathbf{3.7\times10^{-11}\text{ A/cm}^2}$$
+        <span class="cmt">// Hiệu hai điện áp mở:</span>
+        $$V_a^{pn}-V_a^{\text{Sch}}=V_t\ln\frac{J_{sT}}{J_s^{pn}}=0.0259\ln(1.6\times10^{6})=\mathbf{0.37\text{ V}}$$
+      </div>
+      <b>Nhận xét:</b> Dòng bão hòa lệch nhau khoảng sáu bậc độ lớn, nhưng điện áp mở chỉ lệch $0.37\text{ V}$ vì quan hệ là logarit.</div>
+
+    <h3>5.3. Tốc độ chuyển mạch</h3>
+    <p>Schottky là linh kiện hạt đa số (slide trang 22): hầu như không có hạt thiểu số bị bơm vào bán dẫn nên:</p>
+    <ul>
+      <li>không có điện tích hạt thiểu số tích trữ;</li>
+      <li>không có điện dung khuếch tán đáng kể;</li>
+      <li>không có <b>thời gian phục hồi ngược</b> khi chuyển từ thuận sang ngược;</li>
+      <li>thời gian chuyển mạch: Schottky cỡ <b>picô giây</b>, p-n cỡ <b>nanô giây</b>.</li>
+    </ul>
+    <p>Ứng dụng: chỉnh lưu tốc độ cao, điốt kẹp, mạch chuyển mạch RF.</p>
+
+    <h3>5.4. Mô hình tương tác: So sánh $I$-$V$ điốt Schottky và điốt p-n: điện áp mở thuận</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hai đặc tuyến cùng dạng mũ nhưng tịnh tiến theo trục điện áp; đặt chồng lên nhau mới thấy khoảng cách.</li><li><b>Dùng để làm gì:</b> Thấy hai đường $I$-$V$, hai dòng bão hòa $J_{sT}$ và $J_s$, và điện áp mở khác nhau ở cùng mật độ dòng.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $\phi_{Bn}$, nồng độ pha tạp p-n, mật độ dòng $J$ để đọc hai điện áp; đối chiếu Ví dụ 5.1 ($0.312\text{ V}$ và $0.682\text{ V}$ ở $10\text{ A/cm}^2$).</li></ul></div>
+
+    <h3>5.5. Mô hình tương tác: Chuyển mạch: điện tích thiểu số tích trữ và thời gian phục hồi ngược</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Tốc độ chuyển mạch là ưu điểm chính của Schottky, và nó đến từ việc không có điện tích tích trữ.</li><li><b>Dùng để làm gì:</b> Thấy ở điốt p-n, hạt thiểu số tích trữ phải rút hết trước khi điốt tắt; ở Schottky không có bước đó.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Đổi từ thuận sang ngược; so sánh dòng theo thời gian và lượng điện tích hạt thiểu số của hai điốt (mô hình định tính).</li></ul></div>
+
+    <div class="box key"><b>Mục 5 — Nhớ</b><ul>
+      <li>Schottky: hạt đa số, phát xạ nhiệt, $J_{sT}$ lớn; p-n: hạt thiểu số, khuếch tán, $J_s$ nhỏ.</li>
+      <li>$V_a=V_t\ln(J/J_s)$ ⇒ $V_a^{\text{Schottky}}\lt V_a^{pn}$ ở cùng $J$.</li>
+      <li>Schottky không tích điện tích thiểu số ⇒ chuyển mạch cỡ ps (p-n cỡ ns).</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 6 xét trường hợp ngược lại: muốn tiếp xúc kim loại/bán dẫn <i>không</i> chỉnh lưu.</div>
+  </section>
+
+  <section>
+    <h2>6. Tiếp Xúc Ohmic Kim Loại–Bán Dẫn</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> Mọi linh kiện đều phải nối dây. Chỗ nối cần là điện trở nhỏ, không phải một điốt.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Tiếp xúc ohmic tồi làm sụt áp và nóng lên ở chân linh kiện, nên thiết kế ohmic quan trọng ngang thiết kế linh kiện.</div>
+
+    <h3>6.1. Đặc điểm của tiếp xúc ohmic</h3>
+    <p>Theo slide trang 23, tiếp xúc <b>ohmic</b>:</p>
+    <ul>
+      <li>có điện trở tiếp xúc <b>rất nhỏ</b>, sụt áp không đáng kể;</li>
+      <li>dẫn dòng theo <b>cả hai chiều</b>, không chỉnh lưu;</li>
+      <li>có quan hệ $I$-$V$ gần <b>tuyến tính</b> quanh $V=0$.</li>
+    </ul>
+    <p>Có hai loại sẽ xét: hàng rào <b>không chỉnh lưu lý tưởng</b> và hàng rào <b>xuyên hầm</b>.</p>
+
+    <h3>6.2. Tiếp xúc không chỉnh lưu lý tưởng</h3>
+    <p><b>Bán dẫn loại n</b> (slide trang 24), điều kiện $\phi_m\lt\phi_s$. Khi tiếp xúc:</p>
+    <ul>
+      <li>electron từ <b>kim loại sang bán dẫn</b>;</li>
+      <li>bề mặt bán dẫn <b>giàu electron</b>: hình thành lớp <b>tích lũy electron</b>;</li>
+      <li>không có vùng nghèo đáng kể; electron qua mặt tiếp xúc dễ dàng theo cả hai chiều.</li>
+    </ul>
+    <p><b>Bán dẫn loại p</b> (slide trang 25), điều kiện lý tưởng $\phi_m>\phi_s$. Khi tiếp xúc, electron đi từ bán dẫn sang kim loại; mật độ lỗ trống ở bề mặt tăng, tạo lớp <b>tích lũy lỗ trống</b>; lỗ trống qua mặt tiếp xúc dễ dàng theo cả hai chiều.</p>
+    <div class="box legend"><b>So với Schottky</b><ul>
+      <li>Loại n, $\phi_m>\phi_s$: vùng nghèo, hàng rào ⇒ <b>Schottky</b>. $\phi_m\lt\phi_s$: tích lũy ⇒ <b>ohmic</b>.</li>
+      <li>Loại p đảo lại: $\phi_m>\phi_s$ là ohmic, $\phi_m\lt\phi_s$ là Schottky.</li>
+      <li>Phân cực ngoài chỉ làm uốn vùng thêm lên hay xuống; không tạo hàng rào ngăn dòng (slide trang 24, Hình 9.12).</li></ul></div>
+
+    <h3>6.3. Mô hình tương tác: Tiếp xúc ohmic lý tưởng: lớp tích lũy và so sánh với Schottky</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Chỉ cần đổi dấu $\phi_m-\phi_s$ là từ Schottky sang ohmic; nhìn hai giản đồ uốn vùng ngược chiều làm rõ.</li><li><b>Dùng để làm gì:</b> Thấy vùng uốn xuống (tích lũy) khác uốn lên (nghèo), và dòng hai chiều so với một chiều.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Đổi loại bán dẫn (n hoặc p), kéo $\phi_m$ qua $\phi_s$ và đặt điện áp hai chiều; quan sát khi nào lớp tích lũy xuất hiện.</li></ul></div>
+
+    <h3>6.4. Tiếp xúc ohmic xuyên hầm</h3>
+    <p>Do ghim mức Fermi (Mục 3.3), thường vẫn có hàng rào $\phi_{Bn}$ dù chọn kim loại nào (slide trang 26). <b>Giải pháp:</b> pha tạp <b>rất nặng</b> ($n^+$) lớp bán dẫn ở bề mặt để có xuyên hầm lượng tử:</p>
+    <ul>
+      <li>$W\propto1/\sqrt{N_d}$, nên pha tạp cực nặng làm $W$ chỉ còn <b>vài nm</b> (cỡ vài chục Å);</li>
+      <li>electron <b>không cần năng lượng nhiệt</b> để leo qua đỉnh; chúng <b>xuyên hầm</b> thẳng qua hàng rào mỏng;</li>
+      <li>điện trở tiếp xúc riêng $R_c$ giảm hàng triệu lần.</li>
+    </ul>
+    <div class="f key">$$J_t\propto\exp\!\Big(\frac{-e\phi_{Bn}}{E_{00}}\Big),\qquad E_{00}=\frac{e\hbar}{2}\sqrt{\frac{N_d}{\epsilon_sm_n^*}},\qquad R_c\propto\exp\!\Big(\frac{2\sqrt{\epsilon_sm_n^*}}{\hbar}\cdot\frac{\phi_{Bn}}{\sqrt{N_d}}\Big)$$
+      <small>$E_{00}$ (J, đơn vị SI cho $\epsilon_s$, $m_n^*$, $N_d$): năng lượng đặc trưng của xuyên hầm. $N_d$ tăng ⇒ $E_{00}$ tăng ⇒ $J_t$ tăng, $R_c$ giảm theo hàm mũ.</small></div>
+    <div class="box tip"><b>Ví dụ 6.1 (bổ sung).</b> Hàng rào $\phi_{Bn}=0.8\text{ V}$ trên Si ($m_n^*=0.26\,m_0$). So sánh $N_d=10^{17}$ và $10^{19}\text{ cm}^{-3}$: bề rộng vùng nghèo $W$ (lấy $V_{bi}\approx\phi_{Bn}$ cho đơn giản), $E_{00}$ và tỉ số $e\phi_{Bn}/E_{00}$.
+      <div class="step">
+        <span class="cmt">// $W=[2\epsilon_s\phi_{Bn}/(eN_d)]^{1/2}$; $E_{00}$ tính bằng SI:</span>
+        $$N_d=10^{17}:\ W=\mathbf{102\text{ nm}},\ E_{00}=3.4\text{ meV},\ \frac{e\phi_{Bn}}{E_{00}}=238$$
+        $$N_d=10^{19}:\ W=\mathbf{10\text{ nm}},\ E_{00}=34\text{ meV},\ \frac{e\phi_{Bn}}{E_{00}}=24$$
+      </div>
+      <b>Nhận xét:</b> $N_d$ tăng $100$ lần ⇒ $W$ giảm $10$ lần (đúng $1/\sqrt{N_d}$) và $E_{00}$ tăng $10$ lần. Số mũ trong $R_c$ giảm từ $238$ xuống $24$: $R_c$ giảm theo hàm mũ rất mạnh (mô hình chỉ cho xu hướng, bỏ qua hệ số trước hàm mũ). Công thức xuyên hầm chỉ chính xác khi $E_{00}$ cỡ $kT$ trở lên ($kT=26\text{ meV}$ nên $N_d=10^{19}$ là hợp lý, còn $10^{17}$ vẫn thuộc vùng phát xạ nhiệt). $10\text{ nm}=100\text{ Å}$ khớp vùng "$10$ đến $100\text{ Å}$" trong slide trang 26.</div>
+
+    <h3>6.5. Mô hình tương tác: Ohmic xuyên hầm: bề rộng vùng nghèo, hầm lượng tử và điện trở tiếp xúc theo $N_d$</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Cùng một hàng rào cao, chỉ đổi pha tạp mà từ "chặn" thành "trong suốt"; điều đó phải thấy được mới tin.</li><li><b>Dùng để làm gì:</b> Thấy hàng rào hẹp lại khi $N_d$ tăng, electron xuyên hầm thay vì leo qua, $E_{00}$ và $R_c$ thay đổi theo hàm mũ.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $N_d$ (thang log) và $\phi_{Bn}$; đối chiếu với Ví dụ 6.1 ($W=10\text{ nm}$ ở $N_d=10^{19}$).</li></ul></div>
+
+    <div class="box key"><b>Mục 6 — Nhớ</b><ul>
+      <li>Ohmic: $R_c$ nhỏ, dẫn hai chiều, $I$-$V$ tuyến tính quanh $0$.</li>
+      <li>Loại n: $\phi_m\lt\phi_s$ ⇒ tích lũy electron; loại p: $\phi_m>\phi_s$ ⇒ tích lũy lỗ trống.</li>
+      <li>Pha tạp cực nặng ⇒ $W\propto1/\sqrt{N_d}$ chỉ còn vài nm ⇒ xuyên hầm, $R_c$ giảm hàng triệu lần.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 7 ghép hai bán dẫn khác vật liệu thay cho kim loại.</div>
+  </section>
+
+  <section>
+    <h2>7. Dị Tiếp Giáp Bán Dẫn</h2>
+    <div class="bridge"><b>Nối từ Mục 6:</b> Từ kim loại sang bán dẫn thứ hai: vẫn là hai vật liệu có mức chân không chung và mức Fermi cân bằng, nhưng bây giờ cả hai đều có vùng năng lượng.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Chọn hai vật liệu có $\chi$, $E_g$ khác nhau cho ta "thiết kế" được hàng rào $\Delta E_c$, $\Delta E_v$ theo ý muốn, nền cho laser, LED và HEMT.</div>
+
+    <h3>7.1. Định nghĩa và phân loại</h3>
+    <p>Một <b>dị tiếp giáp</b> (heterojunction) hình thành khi ghép sát hai bán dẫn <b>khác vật liệu</b> (slide trang 27).</p>
+    <ul>
+      <li><b>Đẳng loại</b> (isotype): cùng kiểu dẫn, ví dụ n-N hoặc p-P.</li>
+      <li><b>Dị loại</b> (anisotype): khác kiểu dẫn, ví dụ n-P hoặc N-p.</li>
+    </ul>
+    <p>Quy ước: chữ nhỏ cho vật liệu có $E_g$ hẹp, chữ HOA cho vật liệu có $E_g$ rộng. Tùy vị trí tương đối của các cạnh vùng, hai vật liệu có thể (Hình 9.16):</p>
+    <div class="tw"><table><tr><th>Kiểu (Hình 9.16)</th><th>Vị trí cạnh vùng của vật liệu 2 so với vật liệu 1</th></tr>
+      <tr><td>(a) Straddling (bao trùm)</td><td>$E_{c2}$ cao hơn $E_{c1}$, $E_{v2}$ thấp hơn $E_{v1}$: vùng cấm hẹp nằm gọn trong vùng cấm rộng</td></tr>
+      <tr><td>(b) Staggered (so le)</td><td>Cả hai cạnh vùng của vật liệu 2 thấp hơn của vật liệu 1; hai vùng cấm chồng lấn một phần</td></tr>
+      <tr><td>(c) Broken gap (vùng cấm gãy)</td><td>Hai vùng cấm không chồng lấn: $E_{c2}$ thấp hơn $E_{v1}$</td></tr></table></div>
+
+    <h3>7.2. Quy tắc Anderson và độ lệch vùng năng lượng</h3>
+    <p>Khác với đồng tiếp giáp p-n, ở dị tiếp giáp sự chênh lệch ái lực điện tử $\chi$ và độ rộng vùng cấm $E_g$ gây ra các <b>bậc gián đoạn</b> $\Delta E_c$ và $\Delta E_v$ tại mặt phân cách $x=0$ (slide trang 28). <b>Quy tắc Anderson</b>: lấy mức chân không làm mốc chung, khi chưa cân bằng điện tích thì $E_c=E_{\text{vac}}-e\chi$ nên</p>
+    <div class="f key">$$\Delta E_c=e\,|\chi_1-\chi_2|,\qquad \Delta E_c+\Delta E_v=|E_{g2}-E_{g1}|=\Delta E_g\ \ \Rightarrow\ \ \Delta E_v=\Delta E_g-\Delta E_c$$
+      <small>Cho trường hợp ở slide (n-Ge hẹp, P-GaAs rộng): $\Delta E_c=e(\chi_n-\chi_P)$ và $\Delta E_c+\Delta E_v=E_{gP}-E_{gn}$. Tổng quát: $\Delta E_v=\big|(e\chi_1+E_{g1})-(e\chi_2+E_{g2})\big|$. Công thức $\Delta E_v=\Delta E_g-\Delta E_c$ đúng cho kiểu straddling.</small></div>
+    <div class="box tip"><b>Ví dụ 7.1 (bổ sung, số liệu bảng 9.2 trang 7 và $E_g$ ở Buổi 5).</b> Ge ($\chi=4.13\text{ V}$, $E_g=0.66\text{ eV}$) và GaAs ($\chi=4.07\text{ V}$, $E_g=1.42\text{ eV}$). Tìm $\Delta E_c$, $\Delta E_v$.
+      <div class="step">
+        <span class="cmt">// Chênh lệch ái lực điện tử:</span>
+        $$\Delta E_c=e(4.13-4.07)=\mathbf{0.06\text{ eV}}$$
+        <span class="cmt">// Chênh lệch vùng cấm, rồi phần còn lại thuộc vùng hóa trị:</span>
+        $$\Delta E_g=1.42-0.66=0.76\text{ eV}\ \Rightarrow\ \Delta E_v=0.76-0.06=\mathbf{0.70\text{ eV}}$$
+      </div>
+      <b>Nhận xét:</b> Gần như toàn bộ độ chênh vùng cấm rơi vào vùng hóa trị ($92\%$). Còn AlAs ($\chi=3.5$, $E_g=2.16\text{ eV}$) so với GaAs thì $\Delta E_c=0.57\text{ eV}$ và $\Delta E_v=0.17\text{ eV}$ theo quy tắc Anderson (kết quả thực nghiệm có thể khác vì $\chi$ lấy từ bảng lý tưởng).</div>
+
+    <h3>7.3. Mô hình tương tác: Quy tắc Anderson: ghép hai bán dẫn, $\Delta E_c$, $\Delta E_v$ và kiểu dị tiếp giáp</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> $\Delta E_c$, $\Delta E_v$ chỉ là hiệu của hai cặp số; xếp hai giản đồ vùng cạnh nhau theo mức chân không làm rõ ai cao hơn ai.</li><li><b>Dùng để làm gì:</b> Thấy hai bậc, kiểu straddling/staggered/broken gap, và tổng $\Delta E_c+\Delta E_v=\Delta E_g$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Chọn hai vật liệu (Ge, Si, GaAs, AlAs) hoặc kéo $\chi$, $E_g$; đọc $\Delta E_c$, $\Delta E_v$ và kiểu dị tiếp giáp; đối chiếu Ví dụ 7.1.</li></ul></div>
+
+    <h3>7.4. Dị tiếp giáp nP lý tưởng ở cân bằng</h3>
+    <p>Ghép n-Ge (hẹp) với P-GaAs (rộng) (slide trang 29). Ở cân bằng nhiệt:</p>
+    <ul>
+      <li><b>Mức Fermi $E_F$</b> nằm ngang, liên tục qua toàn hệ.</li>
+      <li><b>Uốn cong dải:</b> vùng nghèo $x_n$ và $x_P$ hình thành do electron khuếch tán từ n sang P, lỗ trống từ P sang n.</li>
+      <li><b>Mặt phân cách $x=0$:</b> xuất hiện đỉnh (spike) và khe (notch) do các bậc gián đoạn $\Delta E_c$, $\Delta E_v$.</li>
+      <li><b>Thế tiếp xúc tổng:</b> $V_{bi}=V_{bin}+V_{biP}$ là độ uốn tổng cộng để cân bằng mức Fermi; nó bằng hiệu công thoát của hai bán dẫn $\phi_{sP}-\phi_{sn}$.</li>
+    </ul>
+
+    <h3>7.5. Phương trình Poisson và bề rộng vùng nghèo</h3>
+    <p>Phương trình Poisson áp dụng cho hai phía $x=0$ (slide trang 32), nhưng <b>hằng số điện môi hai vật liệu khác nhau</b>: $\epsilon_{sn}\ne\epsilon_{sP}$. Điều liên tục qua $x=0$ là <b>độ điện dịch</b> $D=\epsilon_sE$, không phải $E$ (điện trường có bước nhảy). Vì điện tích âm và dương trong vùng nghèo vẫn phải cân bằng nên:</p>
+    <div class="f key">$$N_dx_n=N_ax_P\qquad\text{(trung hòa điện)}$$
+      $$x_n=\left[\frac{2\epsilon_{sn}\epsilon_{sP}N_aV_{bi}}{eN_d(\epsilon_{sn}N_d+\epsilon_{sP}N_a)}\right]^{1/2},\qquad x_P=\left[\frac{2\epsilon_{sn}\epsilon_{sP}N_dV_{bi}}{eN_a(\epsilon_{sn}N_d+\epsilon_{sP}N_a)}\right]^{1/2}$$
+      $$V_{bi}=V_{bin}+V_{biP}=\frac{eN_dx_n^2}{2\epsilon_{sn}}+\frac{eN_ax_P^2}{2\epsilon_{sP}}$$</div>
+    <div class="box warn"><b>Chỗ cần cẩn thận ở slide trang 32</b> Slide ghi hệ thức $\epsilon_{sn}N_dx_n=\epsilon_{sP}N_ax_P$. Hệ thức đó không khớp với hai công thức $x_n$, $x_P$ ở ngay bên cạnh: thay $N_dx_n=N_ax_P$ vào $V_{bi}=\dfrac{eN_dx_n^2}{2\epsilon_{sn}}+\dfrac{eN_ax_P^2}{2\epsilon_{sP}}$ mới ra đúng hai công thức đó. Vì vậy hệ thức đúng để dùng là <b>$N_dx_n=N_ax_P$</b>; còn $\epsilon_sE$ liên tục thì chính là điều dẫn tới hệ thức này.</div>
+    <div class="box legend"><b>Khi $\epsilon_{sn}=\epsilon_{sP}$</b><ul>
+      <li>Công thức trở về đúng Buổi 9: $x_n=\left[\dfrac{2\epsilon_sN_aV_{bi}}{eN_d(N_a+N_d)}\right]^{1/2}$.</li></ul></div>
+    <div class="box tip"><b>Ví dụ 7.2 (bổ sung).</b> n-Ge/P-GaAs, $N_d=N_a=10^{16}\text{ cm}^{-3}$, $\epsilon_{sn}=16\epsilon_0$, $\epsilon_{sP}=13.1\epsilon_0$; $V_{bi}=1.010\text{ V}$ (tính từ hiệu công thoát với $\chi$, $E_g$ như Ví dụ 7.1, $N_c^{Ge}=1.04\times10^{19}$, $N_v^{GaAs}=7\times10^{18}$). Tìm $x_n$, $x_P$, $V_{bin}$, $V_{biP}$.
+      <div class="step">
+        <span class="cmt">// $N_d=N_a$ nên $x_n=x_P$; thay số ($\epsilon_0=8.85\times10^{-14}\text{ F/cm}$):</span>
+        $$x_n=x_P=\mathbf{0.284\ \mu m}$$
+        <span class="cmt">// Chia thế tiếp xúc theo từng phía (phía có $\epsilon$ nhỏ chịu thế lớn hơn):</span>
+        $$V_{bin}=\frac{eN_dx_n^2}{2\epsilon_{sn}}=\mathbf{0.455\text{ V}},\qquad V_{biP}=\frac{eN_ax_P^2}{2\epsilon_{sP}}=\mathbf{0.556\text{ V}},\quad V_{bin}+V_{biP}=1.010\text{ V}\ \checkmark$$
+      </div>
+      <b>Nhận xét:</b> Phía GaAs có $\epsilon_s$ nhỏ hơn nên chịu phần thế lớn hơn ($0.556\text{ V}$ so với $0.455\text{ V}$).</div>
+
+    <h3>7.6. Mô hình tương tác: Dị tiếp giáp nP: vùng nghèo, $V_{bi}$ và các bậc $\Delta E_c$, $\Delta E_v$</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hình trong slide có nhiều nhãn; kéo thanh trượt cho thấy từng nhãn ứng với đại lượng nào và ai thay đổi theo gì.</li><li><b>Dùng để làm gì:</b> Thấy $E_F$ phẳng, uốn cong hai phía, bậc $\Delta E_c$, $\Delta E_v$ ở $x=0$, $V_{bin}$ và $V_{biP}$, $x_n$ và $x_P$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $N_d$, $N_a$ và chọn cặp vật liệu; quan sát vùng nghèo lấn về phía pha tạp nhẹ, $\epsilon_s$ khác nhau làm hai phía uốn khác nhau; đối chiếu Ví dụ 7.2.</li></ul></div>
+
+    <h3>7.7. Dị tiếp giáp đẳng loại n-N</h3>
+    <p>Xét N-AlGaAs (rộng) ghép với n-GaAs (hẹp) (slide trang 30):</p>
+    <ol>
+      <li><b>Chênh lệch năng lượng:</b> N-AlGaAs ban đầu có mức Fermi cao hơn n-GaAs.</li>
+      <li><b>Chuyển electron:</b> electron tràn từ N-AlGaAs sang n-GaAs để cân bằng mức Fermi.</li>
+      <li><b>Uốn vùng mạnh tại mặt phân cách:</b> ở $x=0$, vùng dẫn $E_c$ của GaAs cong xuống <b>thấp hơn $E_F$</b>.</li>
+      <li><b>Kết quả:</b> tạo một "khe" thế năng <b>hình tam giác</b> ở vùng dẫn, giam electron trong một lớp không gian cực mỏng.</li>
+    </ol>
+
+    <h3>7.8. Mô hình tương tác: Dị tiếp giáp n-N: electron tràn qua và khe thế tam giác ở mặt phân cách</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Khe tam giác là nền của 2-DEG ở Mục 8; cần thấy nó hình thành từ chuyển electron và uốn vùng, chưa cần lượng tử hóa.</li><li><b>Dùng để làm gì:</b> Thấy $E_c$ phía GaAs cong xuống dưới $E_F$ tại $x=0$ và electron dồn vào khe.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo pha tạp phía N, độ lệch $\Delta E_c$; quan sát độ sâu khe và số electron bị giam.</li></ul></div>
+
+    <h3>7.9. Đặc tuyến $I$-$V$ của dị tiếp giáp</h3>
+    <p>Theo slide trang 34:</p>
+    <ul>
+      <li>Khác với đồng tiếp giáp p-n (dòng do <b>khuếch tán</b>), dòng ở dị tiếp giáp chủ yếu do <b>phát xạ nhiệt điện tử</b> qua các bậc hàng rào ở mặt phân cách.</li>
+      <li>Electron từ bán dẫn hẹp vượt hàng rào $\Delta E_c$ sang bán dẫn rộng.</li>
+      <li>Đường $I$-$V$ vẫn giữ tính chỉnh lưu; các thông số hàng rào có thể <b>thiết kế</b> bằng cách chọn vật liệu ($\chi$, $E_g$).</li>
+    </ul>
+
+    <div class="box key"><b>Mục 7 — Nhớ</b><ul>
+      <li>Dị tiếp giáp: hai bán dẫn khác vật liệu; đẳng loại (n-N, p-P) hay dị loại (n-P, N-p).</li>
+      <li>Anderson: $\Delta E_c=e|\chi_1-\chi_2|$, $\Delta E_c+\Delta E_v=\Delta E_g$.</li>
+      <li>Vùng nghèo: $N_dx_n=N_ax_P$; $x_n$, $x_P$ có cả $\epsilon_{sn}$, $\epsilon_{sP}$; $V_{bi}=V_{bin}+V_{biP}$.</li>
+      <li>n-N: khe thế tam giác ở vùng dẫn bên GaAs. Dòng dị tiếp giáp là phát xạ nhiệt điện tử.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 8 để electron trong khe tam giác chịu lượng tử hóa: 2-DEG và HEMT.</div>
+  </section>
+
+  <section>
+    <h2>8. Khí Điện Tử Hai Chiều (2-DEG) Và Transistor HEMT</h2>
+    <div class="bridge"><b>Nối từ Mục 7:</b> Khe tam giác ở mặt phân cách rất mỏng: cỡ vài chục nm. Ở kích thước đó, Buổi 3 và 4 (giếng thế lượng tử) bắt đầu có hiệu lực.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> 2-DEG cho độ linh động electron rất cao, là nguyên lý của HEMT trong radar, vệ tinh và mạng 5G/6G.</div>
+
+    <h3>8.1. Giếng thế tam giác và các mức rời rạc</h3>
+    <p>Theo slide trang 31, khe tam giác ở mặt phân cách hẹp đến mức xảy ra <b>giam giữ lượng tử</b>:</p>
+    <ul>
+      <li>chuyển động <b>vuông góc</b> với mặt phân cách (hướng $z$) bị <b>lượng tử hóa</b> thành các miền con năng lượng rời rạc $E_0$, $E_1$, ...;</li>
+      <li>electron vẫn chuyển động <b>hoàn toàn tự do</b> trong mặt phẳng $(x,y)$ song song mặt phân cách;</li>
+      <li>hệ electron này là một <b>khí điện tử hai chiều (2-DEG)</b> có độ linh động cao.</li>
+    </ul>
+    <p>Với giếng tam giác $V(z)=eFz$ ($F$: điện trường ở khe), các mức được xấp xỉ theo (bổ sung, xấp xỉ WKB; slide chỉ vẽ định tính $E_0$, $E_1$):</p>
+    <div class="f">$$E_n\approx\left(\frac{\hbar^2}{2m^*}\right)^{1/3}\left[\frac{3\pi}{2}\,eF\left(n+\frac34\right)\right]^{2/3},\qquad n=0,1,2,\dots$$</div>
+    <div class="box tip"><b>Ví dụ 8.1 (bổ sung).</b> GaAs, $m^*=0.067\,m_0$, $F=10^5\text{ V/cm}$ $(=10^7\text{ V/m})$. Tìm $E_0$ và $E_1$ so với đáy giếng.
+      <div class="step">
+        $$E_0\approx\mathbf{89\text{ meV}},\qquad E_1\approx\mathbf{157\text{ meV}}$$
+      </div>
+      <b>Nhận xét:</b> Hai mức cách nhau $68\text{ meV}$, lớn hơn $kT=26\text{ meV}$ ở $300\text{ K}$, nên electron chủ yếu nằm ở mức $E_0$. $E_n\propto F^{2/3}$: điện trường mạnh hơn thì khe hẹp hơn, mức cao hơn.</div>
+
+    <h3>8.2. Mô hình tương tác: Giếng tam giác ở mặt phân cách: mức $E_0$, $E_1$, $E_F$ và chuyển động 2 chiều</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Mức rời rạc và "tự do trong mặt phẳng" khó hình dung bằng công thức; cần thấy hàm sóng bị nhốt theo $z$ và electron trượt theo $x,y$.</li><li><b>Dùng để làm gì:</b> Thấy $E_0$, $E_1$ nằm ở đâu so với $E_F$ và $E_c$, điều chỉnh điện trường thấy mức dâng lên theo $F^{2/3}$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo điện trường $F$ và $m^*$; xem số mức nằm dưới $E_F$, bề rộng khe và mật độ electron; đối chiếu Ví dụ 8.1.</li></ul></div>
+
+    <h3>8.3. Transistor HEMT</h3>
+    <p>Slide trang 35 tổng hợp các ý của buổi:</p>
+    <ul>
+      <li>Vật liệu (Mục 7.1) tạo chênh lệch dải năng lượng lý tưởng (AlGaAs/GaAs).</li>
+      <li>Quy tắc Anderson (Mục 7.2) cho độ cong dải tại mặt phân cách.</li>
+      <li>Tĩnh điện học (Mục 7.5) tạo giếng thế lượng tử.</li>
+      <li>Khí điện tử 2-DEG lấp đầy giếng này, <b>tách electron khỏi ion tạp chất</b>.</li>
+      <li>Kết quả: transistor <b>HEMT</b> (high electron mobility transistor) với độ linh động rất cao và nhiễu thấp.</li>
+    </ul>
+    <p>Cấu trúc: trên cùng là ba điện cực Source, Gate, Drain; lớp <b>N-AlGaAs (lớp cung cấp)</b> chứa donor; lớp <b>GaAs không pha tạp (lớp dẫn)</b> bên dưới. Electron từ donor ở AlGaAs rơi xuống GaAs và dồn vào khe tam giác ở mặt phân cách: đó là <b>kênh 2-DEG</b>. Vì kênh nằm trong GaAs không pha tạp nên electron không bị tán xạ bởi ion donor, độ linh động cao.</p>
+    <div class="box legend"><b>Điều khiển bằng cổng (mô hình tụ đơn giản, bổ sung)</b><ul>
+      <li>Cổng và kênh 2-DEG tạo thành tụ phẳng có khe $d$ (bề dày lớp N-AlGaAs bên dưới cổng).</li>
+      <li>Mật độ mặt electron $n_s\approx\dfrac{\epsilon_s(V_G-V_{\text{off}})}{ed}$: điện áp cổng càng ngược thì kênh càng cạn, đến $V_{\text{off}}$ thì kênh tắt.</li></ul></div>
+
+    <h3>8.4. Mô hình tương tác: Cấu trúc HEMT: lớp cung cấp N-AlGaAs, kênh 2-DEG và điều khiển bằng cổng</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> HEMT gom lại mọi kiến thức của buổi; nhìn mặt cắt kèm giản đồ vùng ở cùng một chỗ giúp thấy mối liên hệ.</li><li><b>Dùng để làm gì:</b> Thấy electron đi từ donor xuống kênh, kênh dày hay mỏng theo điện áp cổng, và dòng Source–Drain bật hoặc tắt.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo điện áp cổng $V_G$ và bề dày lớp cung cấp; quan sát mật độ 2-DEG và dòng giữa Source và Drain.</li></ul></div>
+
+    <div class="box key"><b>Mục 8 — Nhớ</b><ul>
+      <li>Giếng tam giác hẹp ⇒ lượng tử hóa theo $z$ ($E_0$, $E_1$,...), tự do trong mặt phẳng ⇒ 2-DEG.</li>
+      <li>HEMT: N-AlGaAs cung cấp electron, kênh 2-DEG trong GaAs không pha tạp ⇒ độ linh động cao, nhiễu thấp.</li>
+      <li>Cổng điều khiển mật độ 2-DEG (mô hình tụ: $n_s\approx\epsilon_s(V_G-V_{\text{off}})/ed$).</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 9 gom công thức để ôn tập.</div>
+  </section>
+
+  <section>
+    <h2>9. Cẩm Nang Công Thức Trọng Tâm Buổi 10</h2>
+    <p class="mut">Mỗi thẻ có giải nghĩa ký hiệu, khi nào dùng, và lưu ý.</p>
+
+    <div class="formula-card">
+      <h3>Công thức 1: Hàng rào Schottky lý tưởng</h3>
+      <div class="f key">
+        $$\phi_{B0}=\phi_m-\chi\ \Big|\ V_{bi}=\phi_{B0}-\phi_n\ \Big|\ \phi_n=\frac{kT}{e}\ln\frac{N_c}{N_d}\ \Big|\ \phi_{Bn}=V_{bi}+\phi_n$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $\phi_m$ công thoát kim loại (V); $\chi$ ái lực điện tử (V); $\phi_n$ ($E_C-E_F$ chia $e$); $N_c$, $N_d$ ($\text{cm}^{-3}$).</div>
+        <div><b>2. Khi nào dùng:</b> Dự đoán hàng rào kim loại/bán dẫn loại n; tìm $\phi_{Bn}$ khi đã có $V_{bi}$ từ đo $C$-$V$.</div>
+        <div><b>3. Lưu ý:</b> Hàng rào lý tưởng không phụ thuộc $N_d$, còn $V_{bi}$ thì có. Điều kiện chỉnh lưu loại n: $\phi_m>\phi_s$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 2: Vùng nghèo và điện dung Schottky</h3>
+      <div class="f key">
+        $$W=\left[\frac{2\epsilon_s(V_{bi}+V_R)}{eN_d}\right]^{1/2}\ \Big|\ |E_{\max}|=\frac{eN_dW}{\epsilon_s}\ \Big|\ \frac{1}{C'^2}=\frac{2(V_{bi}+V_R)}{e\epsilon_sN_d}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $W$ (cm); $E$ ($\text{V/cm}$); $C'$ ($\text{F/cm}^2$); $\epsilon_s=11.7\times8.85\times10^{-14}\text{ F/cm}$ (Si).</div>
+        <div><b>2. Khi nào dùng:</b> Tính $W$, $E_{\max}$, $C$ ở một $V_R$; hoặc từ đồ thị $1/C'^2$–$V_R$ (cắt $-V_{bi}$, dốc $\tfrac{2}{e\epsilon_sN_d}$) tìm $N_d$ và $\phi_{Bn}$.</div>
+        <div><b>3. Lưu ý:</b> Phân cực thuận thay $V_R\to-V_a$. Dùng $C'=C/A$ trước khi áp dụng.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 3: Hạ thấp hàng rào do lực ảnh</h3>
+      <div class="f key">
+        $$x_m=\sqrt{\frac{e}{16\pi\epsilon_sE}}\ \Big|\ \Delta\phi=\sqrt{\frac{eE}{4\pi\epsilon_s}}=2Ex_m\ \Big|\ \phi_{Bn}=\phi_{B0}-\Delta\phi$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $E$ ($\text{V/cm}$, điện trường tại mặt tiếp xúc); $x_m$ (cm); $\Delta\phi$ (V).</div>
+        <div><b>2. Khi nào dùng:</b> Giải thích dòng ngược tăng theo $V_R$; ước lượng độ hạ hàng rào.</div>
+        <div><b>3. Lưu ý:</b> Với trạng thái bề mặt lớn thì hàng rào bị ghim: $\phi_{Bn}=(E_g-e\phi_0)/e$, không phụ thuộc kim loại.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 4: Dòng Schottky và so sánh với p-n</h3>
+      <div class="f key">
+        $$J=J_{sT}\Big[e^{eV_a/kT}-1\Big]\ \Big|\ J_{sT}=A^*T^2e^{-e\phi_{Bn}/kT}\ \Big|\ A^*=\frac{4\pi em_n^*k^2}{h^3}\ \Big|\ V_a=V_t\ln\frac{J}{J_s}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $J$ ($\text{A/cm}^2$); $A^*\approx120(m_n^*/m_0)\ \text{A/cm}^2\text{K}^2$; $V_a$ (V).</div>
+        <div><b>2. Khi nào dùng:</b> Tính $J_{sT}$, dòng thuận hoặc điện áp mở; so điện áp mở Schottky và p-n ở cùng $J$.</div>
+        <div><b>3. Lưu ý:</b> $J_{sT}$ phụ thuộc mũ vào $\phi_{Bn}$; $J_{sT}^{\text{Sch}}\gg J_s^{pn}$ nên $V_a^{\text{Sch}}\lt V_a^{pn}$. Chuyển mạch Schottky nhanh vì không tích điện tích thiểu số.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 5: Tiếp xúc ohmic</h3>
+      <div class="f key">
+        $$n:\ \phi_m\lt\phi_s,\quad p:\ \phi_m>\phi_s\ \Big|\ W\propto\frac1{\sqrt{N_d}}\ \Big|\ E_{00}=\frac{e\hbar}{2}\sqrt{\frac{N_d}{\epsilon_sm_n^*}}\ \Big|\ R_c\propto\exp\!\Big(\frac{2\sqrt{\epsilon_sm_n^*}}{\hbar}\frac{\phi_{Bn}}{\sqrt{N_d}}\Big)$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $E_{00}$ (J, đơn vị SI); $R_c$ điện trở tiếp xúc riêng ($\Omega\,\text{cm}^2$).</div>
+        <div><b>2. Khi nào dùng:</b> Chọn điều kiện ohmic lý tưởng; ước lượng $R_c$ giảm khi tăng $N_d$ bề mặt.</div>
+        <div><b>3. Lưu ý:</b> Đơn vị SI khi tính $E_{00}$. Do ghim mức Fermi, ohmic thực tế thường dùng pha tạp cực nặng (xuyên hầm) chứ không dựa $\phi_m\lt\phi_s$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 6: Dị tiếp giáp và giếng tam giác</h3>
+      <div class="f key">
+        $$\Delta E_c=e|\chi_1-\chi_2|\ \Big|\ \Delta E_v=\Delta E_g-\Delta E_c\ \Big|\ N_dx_n=N_ax_P\ \Big|\ x_n=\left[\frac{2\epsilon_{sn}\epsilon_{sP}N_aV_{bi}}{eN_d(\epsilon_{sn}N_d+\epsilon_{sP}N_a)}\right]^{1/2}\ \Big|\ E_n\propto F^{2/3}\Big(n+\tfrac34\Big)^{2/3}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $\Delta E_c$, $\Delta E_v$ (eV); $\epsilon_{sn}$, $\epsilon_{sP}$ ($\text{F/cm}$); $F$ điện trường ở khe.</div>
+        <div><b>2. Khi nào dùng:</b> Tìm bậc vùng của cặp vật liệu; vùng nghèo của dị tiếp giáp nP; mức năng lượng trong giếng tam giác.</div>
+        <div><b>3. Lưu ý:</b> Quy tắc Anderson dùng $\chi$ lý tưởng nên chỉ gần đúng; $\Delta E_v=\Delta E_g-\Delta E_c$ cho kiểu straddling.</div>
+      </div>
+    </div>
+
+    <div class="box warn"><b>Ba lỗi hay gặp</b><ul>
+      <li>Nhầm hai hàng rào: $\phi_{B0}$ (từ kim loại) không đổi theo điện áp, còn $V_{bi}\mp V$ (từ bán dẫn) đổi.</li>
+      <li>Nhầm điều kiện chỉnh lưu: loại n cần $\phi_m>\phi_s$ (Schottky), $\phi_m\lt\phi_s$ là ohmic; loại p thì ngược lại.</li>
+      <li>Ở dị tiếp giáp: dùng sai hệ thức $\epsilon_{sn}N_dx_n=\epsilon_{sP}N_ax_P$; phải là $N_dx_n=N_ax_P$, và mỗi phía dùng $\epsilon_s$ của chính nó.</li></ul></div>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Buổi 10: Những Điểm Cốt Lõi Cần Nằm Lòng</h2>
+    <ul>
+      <li><b>Hàng rào Schottky:</b> $\phi_{B0}=\phi_m-\chi$, $V_{bi}=\phi_{B0}-\phi_n$; chỉnh lưu khi loại n có $\phi_m>\phi_s$.</li>
+      <li><b>Vùng nghèo:</b> $W=\left[\dfrac{2\epsilon_s(V_{bi}+V_R)}{eN_d}\right]^{1/2}$; đồ thị $1/C'^2$–$V_R$ thẳng, cắt $-V_{bi}$, dốc cho $N_d$.</li>
+      <li><b>Phi lý tưởng:</b> lực ảnh hạ hàng rào $\Delta\phi=\sqrt{eE/(4\pi\epsilon_s)}$; trạng thái bề mặt ghim mức Fermi.</li>
+      <li><b>Dòng:</b> $J=J_{sT}[e^{eV_a/kT}-1]$, $J_{sT}=A^*T^2e^{-e\phi_{Bn}/kT}$; Schottky có $J_s$ lớn hơn p-n nhiều bậc nên mở ở điện áp thấp hơn và chuyển mạch cỡ ps.</li>
+      <li><b>Ohmic:</b> $R_c$ nhỏ, tuyến tính; lý tưởng khi tích lũy hạt đa số, thực tế dùng pha tạp cực nặng để xuyên hầm.</li>
+      <li><b>Dị tiếp giáp:</b> Anderson cho $\Delta E_c$, $\Delta E_v$; $N_dx_n=N_ax_P$; $V_{bi}=V_{bin}+V_{biP}$; n-N tạo khe tam giác.</li>
+      <li><b>2-DEG và HEMT:</b> khe tam giác lượng tử hóa theo $z$, tự do trong mặt phẳng; electron tách khỏi ion donor ⇒ độ linh động cao.</li>
+    </ul>
+    <div class="next"><b>Tiếp theo trong môn học:</b> Ta đã có các loại tiếp xúc và tiếp giáp. Các buổi sau dùng chúng để xây dựng transistor và các linh kiện hoạt động trên điện áp cổng.</div>
+  </section>
+</template>
+
 <template id="tpl-buoi-pending">
   <header>
     <span class="k b3" id="pending-badge">ĐANG CHỜ NỐI TIẾP</span>
@@ -5818,5 +6427,7 @@ window.MathJax = {
 <script src="lab-b6.js"></script>
 <script src="lab-b7.js"></script>
 <script src="lab-b8.js"></script>
+<script src="lab-b9.js"></script>
+<script src="lab-b10.js"></script>
 
 </body></html>

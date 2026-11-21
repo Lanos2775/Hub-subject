@@ -4944,27 +4944,64 @@ $$x(t) = \cos(200\pi t + \pi/4) + 2\cos(400\pi t + \pi/4)$$
 
 [H2] Bài 11. Biến đổi Laplace — Mở rộng Fourier cho mọi tín hiệu
 
+[BOX] **Lộ trình bài này**:
+- **A.** Vì sao cần Laplace (Fourier bó tay ở đâu) → **B.** Định nghĩa và hàm truyền → **C.** Vùng hội tụ ROC
+- **D.** Điểm cực, điểm không → **E.** Quy luật của ROC → **F.** Bảng cặp biến đổi → **G.** Tính chất
+- **H.** Biến đổi ngược → **I.** Hàm truyền, nhân quả, ổn định → **J.** Một phía và mạch điện → **K.** Quay về Fourier
+- **L.** Cẩm nang công thức (tra nhanh trước khi làm bài tập)
+
+[P] Mỗi phần theo một nhịp: **ý niệm → công thức → ví dụ số → nhớ → nối sang phần sau**. Mọi con số trong ví dụ tính tay đã được kiểm tra bằng máy tính.
+
 ---
 
 ## Phần A. Động cơ — Hạn chế của biến đổi Fourier
 
-[BRIDGE] Fourier phân tích tín hiệu thành các sóng $e^{j\omega t}$ và dựa trên tính chất: đưa $e^{j\omega t}$ vào hệ LTI thì ra $H(j\omega)e^{j\omega t}$. Nhưng công thức này **chỉ tồn tại** khi tín hiệu thỏa điều kiện Dirichlet.
+[BOX: analogy] **Ẩn dụ**: Fourier chỉ có những "dây đàn" rung đều mãi. Laplace thêm một núm chỉnh để dây có thể **tắt dần hoặc rung mạnh dần** — nên mô tả được cả tín hiệu "bùng nổ" mà Fourier bó tay. $\sigma$ là độ tắt/bùng, $\omega$ là tần số.
+
+[BRIDGE] **Nối từ mục trước**: các bài 7–10 dùng Fourier để phân tích tín hiệu và hệ LTI qua đáp ứng tần số $H(j\omega)$. Bài này mở rộng chính công cụ đó cho những tín hiệu mà Fourier không xử lý được.
+
+[BOX] **Học phần này để làm gì?** Để biết **khi nào** Fourier không tồn tại và **vì sao** chỉ cần thêm một thừa số mũ là cứu được. Mọi phần sau (ROC, cực/không, hàm truyền) đều xuất phát từ ý này.
+
+[P] Fourier dựa trên tính chất: đưa $e^{j\omega t}$ vào hệ LTI thì ra $H(j\omega)e^{j\omega t}$. Nhưng công thức Fourier **chỉ tồn tại** khi tín hiệu khả tích tuyệt đối (điều kiện Dirichlet):
 
 [FORMULA: key]
 $$X(j\omega)=\int_{-\infty}^{+\infty}x(t)e^{-j\omega t}dt,\qquad x(t)=\frac1{2\pi}\int_{-\infty}^{+\infty}X(j\omega)e^{j\omega t}d\omega,\qquad \int_{-\infty}^{+\infty}|x(t)|dt<+\infty$$
 [/FORMULA]
 
-[P] **Vấn đề**: nhiều tín hiệu quen thuộc (hàm mũ tăng $e^{t}u(t)$, bậc thang $u(t)$...) **không khả tích tuyệt đối**, nên không có $X(j\omega)$. Làm sao vẫn phân tích được chúng?
+[BOX] **Đọc công thức**: $X(j\omega)$ là phổ (biên độ và pha theo tần số $\omega$ [rad/s]); điều kiện cuối nói diện tích dưới $|x(t)|$ phải hữu hạn. Hàm mũ tăng $e^{t}u(t)$ hay bậc thang $u(t)$ **vi phạm** điều kiện này nên không có $X(j\omega)$.
 
-[P] **Giải pháp**: ta viết $e^{j\omega t}=e^{0\cdot t}e^{j\omega t}$ — sóng có **biên độ không đổi** (phần thực của mũ bằng 0). Hãy cho phần thực khác 0:
+[P] **Giải pháp**: viết $e^{j\omega t}=e^{0\cdot t}e^{j\omega t}$ — sóng có phần thực của mũ **bằng 0** nên biên độ không đổi. Cho phần thực khác 0:
 $$e^{st}=e^{\sigma t}e^{j\omega t},\qquad s=\sigma+j\omega$$
 [FIG: L.1] Sóng $e^{\sigma t}\sin\omega t$ với $\sigma>0$: dao động có biên độ tăng theo hàm mũ. Thừa số $e^{\sigma t}$ chính là "công cụ" kéo tín hiệu về dạng khả tích.
 
-[BOX: analogy] **Ẩn dụ**: Fourier dùng các "dây đàn" dao động đều mãi. Laplace dùng cả những dây **tắt dần hoặc rung mạnh dần** — nên mô tả được cả tín hiệu "bùng nổ" mà Fourier bó tay. $\sigma$ là độ tắt/bùng, $\omega$ là tần số.
+[BOX] **Ví dụ tính tay**: $x(t)=e^{t}u(t)$ không có Fourier vì $\int_0^\infty e^{t}dt=\infty$. Nhân thêm thừa số $e^{-\sigma t}$ với $\sigma=2$ rồi tính lại.
+
+[STEPS]
+1. Nhân: $x(t)e^{-2t}=e^{t}e^{-2t}u(t)=e^{-t}u(t)$.
+// thừa số $e^{-2t}$ "đè" được sự tăng của $e^{t}$
+2. Tích phân: $\int_0^\infty e^{-t}dt=1$ — **hữu hạn**.
+// nhân với $e^{-\sigma t}$ rồi mới lấy Fourier chính là phép biến đổi Laplace tại $s=\sigma+j\omega$
+3. Với $\sigma=2$: $X(s)=\dfrac1{s-1}$ tại $s=2$ cho $\dfrac1{2-1}=1$, khớp bước 2.
+[/STEPS]
+
+[BOX] **Nhận xét**: $\sigma=2$ thành công vì $2>1$ (số mũ của tín hiệu). Chọn $\sigma\le1$ thì tích phân vẫn phân kỳ — đó là mầm của khái niệm **ROC** ở Phần C.
+
+[BOX] **Phần A — Nhớ**:
+- Fourier cần $\int|x|dt<\infty$; $u(t)$, $e^{t}u(t)$ không đạt.
+- Laplace thay $j\omega$ bằng $s=\sigma+j\omega$, thêm thừa số $e^{\sigma t}$ để "kéo" tín hiệu về dạng khả tích.
+- Fourier là trường hợp $\sigma=0$ của Laplace.
+
+[BRIDGE] **Tiếp theo**: viết chính xác phép biến đổi này (hai phía, một phía) và chứng minh $H(s)$ là hàm truyền.
 
 ---
 
 ## Phần B. Định nghĩa
+
+[BOX: analogy] **Ẩn dụ**: Laplace là "kính lúp có độ tắt dần": chọn $\sigma$ thích hợp thì tín hiệu bùng nổ cũng hiện rõ thành các sóng quen thuộc.
+
+[BRIDGE] **Nối từ mục trước**: Phần A cho ý tưởng nhân $e^{-\sigma t}$ rồi lấy Fourier; ở đây ta gói ý đó thành một công thức duy nhất theo biến phức $s$.
+
+[BOX] **Học phần này để làm gì?** Có định nghĩa chuẩn để tính $X(s)$ từ $x(t)$, hiểu Laplace là Fourier mở rộng, và có sẵn khái niệm **hàm truyền** $H(s)$ dùng ở Phần I.
 
 ### B.1. Biến đổi Laplace hai phía và một phía
 
@@ -4976,9 +5013,13 @@ $$X(s)=\mathcal L\{x(t)\}=\int_{-\infty}^{\infty}x(t)e^{-st}dt,\qquad s=\sigma+j
 [FORMULA: key]
 $$X_I(s)=\int_{0^-}^{\infty}x(t)e^{-st}dt$$
 [/FORMULA]
+[BOX] **Đọc công thức**: $s$ là tần số phức ($\sigma$ [1/s] là độ tắt/bùng, $\omega$ [rad/s] là tần số); $x(t)e^{-st}$ là tín hiệu "đã nhân hệ số tắt dần" rồi lấy tích phân.
+
 [P] Hai dạng **tương đương** khi $x(t)=0$ với $t<0$. Dùng $0^-$ để cận tích phân **bao trọn** các xung $\delta(t)$ và đạo hàm của chúng tại $t=0$.
 
 ### B.2. Ý nghĩa: Fourier thêm "hệ số tắt dần" [LAB:11.1]
+
+[BOX] **Hướng dẫn phần này**: bấm biểu tượng bình thí nghiệm cạnh tiêu đề này để mở mô phỏng của mục B.2. *Vì sao có*: để nhìn thấy bằng mắt việc thêm $e^{\sigma t}$ làm sóng tắt hay bùng. *Dùng để làm gì*: phân biệt vai trò $\sigma$ và $\omega$. *Cách dùng*: đối chiếu với lý thuyết bên dưới — sóng tắt dần khi $\sigma<0$, biên độ đều khi $\sigma=0$ (đúng là Fourier), bùng nổ khi $\sigma>0$.
 
 [P] Phân tích Laplace biểu diễn $x(t)$ là tổng các sóng $A_ke^{\sigma t}\cos(\omega_kt+\phi_k)$ với $A_k=|X(\sigma+j\omega_k)|$ và $\phi_k=\angle X(\sigma+j\omega_k)$; còn Fourier là tổng sóng cos biên độ không đổi $A_k\cos(\omega_kt+\phi_k)$. Fourier là **lát cắt** của Laplace dọc trục $j\omega$ (mặt phẳng $s$).
 
@@ -4991,16 +5032,43 @@ $$H(s)=\int_{-\infty}^{\infty}h(\tau)e^{-s\tau}d\tau\quad\Rightarrow\quad y(t)=\
 [/FORMULA]
 [P] $H(s)$ là **hàm truyền**; $e^{st}$ là "hàm riêng" của mọi hệ LTI. Fourier là trường hợp $e^{j\omega t}$; Laplace tổng quát thành $e^{st}=e^{\sigma t}e^{j\omega t}$.
 
+[BOX] **Ví dụ tính tay**: hệ có $h(t)=e^{-t}u(t)$, đưa vào $x(t)=e^{t}$ (tức $s=1$). Tìm $y(t)$.
+
+[STEPS]
+1. Tính $H(1)=\int_0^\infty e^{-\tau}e^{-1\cdot\tau}d\tau=\int_0^\infty e^{-2\tau}d\tau=\dfrac12$.
+// khớp công thức $H(s)=\dfrac1{s+1}$ tại $s=1$
+2. Kết luận: $y(t)=H(1)e^{t}=\dfrac12e^{t}$.
+[/STEPS]
+
+[BOX] **Nhận xét**: lối vào là hàm mũ thì lối ra **vẫn là hàm mũ cùng dạng**, chỉ nhân một hằng số $H(s)$ — đó là ý nghĩa "hàm riêng". Hệ số $\frac12<1$ hợp lý vì hệ $e^{-t}u(t)$ là bộ làm mượt.
+
+[BOX] **Phần B — Nhớ**:
+- $X(s)=\int x(t)e^{-st}dt$ (hai phía); một phía cận dưới là $0^-$.
+- Laplace biểu diễn tín hiệu bằng sóng $e^{\sigma t}\cos(\cdot)$; Fourier là lát cắt $\sigma=0$.
+- $e^{st}$ qua hệ LTI ra $H(s)e^{st}$, với $H(s)=\int h(\tau)e^{-s\tau}d\tau$.
+
+[BRIDGE] **Tiếp theo**: tích phân Laplace chỉ hội tụ với một số $s$ nhất định — tập đó là **vùng hội tụ ROC**.
+
 ---
 
 ## Phần C. Vùng hội tụ (ROC)
 
+[BOX: analogy] **Ẩn dụ**: ROC giống "vùng phủ sóng": chỉ khi $s$ nằm trong vùng đó thì tích phân Laplace mới có nghĩa; ra ngoài vùng là mất tín hiệu, dù công thức nhìn vẫn "đẹp".
+
+[BRIDGE] **Nối từ mục trước**: Phần B định nghĩa $X(s)$ bằng một tích phân; tích phân này không hội tụ với mọi $s$, nên phải đi kèm vùng $s$ cho phép.
+
+[BOX] **Học phần này để làm gì?** ROC quyết định $X(s)$ ứng với **tín hiệu nào** (cùng biểu thức nhưng ROC khác ⇒ tín hiệu khác), và quyết định có thế $s=j\omega$ để về Fourier được hay không.
+
 ### C.1. Khái niệm [LAB:11.2]
+
+[BOX] **Hướng dẫn phần này**: bấm biểu tượng bình thí nghiệm cạnh tiêu đề này để mở mô phỏng của mục C. *Vì sao có*: ROC là khái niệm trừu tượng nhất bài, nhìn hình dễ hiểu hơn. *Dùng để làm gì*: thấy ROC là một **dải thẳng đứng** trên mặt phẳng $s$ và liên hệ nó với vị trí điểm cực. *Cách dùng*: đối chiếu với ví dụ $e^{-at}u(t)$ ở mục C.2 (ROC ở bên phải cực $s=-a$).
 
 [P] Thay $s=\sigma+j\omega$: $X(s)=\int x(t)e^{-\sigma t}e^{-j\omega t}dt=\mathrm{FT}[x(t)e^{-\sigma t}]$. Tức Laplace **bằng** Fourier của $x(t)e^{-\sigma t}$. Tập các $s$ làm tích phân hội tụ gọi là **vùng hội tụ ROC**:
 [FORMULA: key]
 $$\int_{-\infty}^{+\infty}|x(t)e^{-\sigma t}|dt<+\infty\ \Longrightarrow\ \sigma_a<\mathrm{Re}[s]<\sigma_b$$
 [/FORMULA]
+[BOX] **Đọc công thức**: điều kiện là Dirichlet áp cho tín hiệu **đã nhân** $e^{-\sigma t}$; $\sigma_a,\sigma_b$ là hai biên của dải (có thể là $\mp\infty$).
+
 [P] ROC luôn là **dải thẳng đứng** (chỉ phụ thuộc $\sigma$) — một dải, nửa mặt phẳng phải, nửa mặt phẳng trái, hoặc toàn mặt phẳng.
 
 ### C.2. Ví dụ gốc: $e^{-at}u(t)$ (a thực) [LAB:11.2]
@@ -5020,15 +5088,40 @@ $$-e^{-at}u(-t)\ \overset{\mathcal L}{\longleftrightarrow}\ \frac1{s+a},\qquad \
 [/FORMULA]
 [BOX: warn] **Cùng biểu thức $\frac1{s+a}$ nhưng ROC khác ⇒ tín hiệu khác.** Một hàm $X(s)$ chỉ xác định duy nhất $x(t)$ khi **kèm ROC**. Đây là lý do ROC không thể bỏ qua với Laplace hai phía.
 
+[BOX] **Ví dụ tính tay**: $x(t)=e^{-2t}u(t)$, tìm $X(s)$, ROC và giá trị Fourier tại $\omega=2$ rad/s.
+
+[STEPS]
+1. Theo C.2 với $a=2$: $X(s)=\dfrac1{s+2}$, ROC $\mathrm{Re}[s]>-2$.
+// cực tại $s=-2$ nằm ngoài ROC
+2. ROC chứa trục $j\omega$ (vì $0>-2$) nên được thế $s=j\omega$: $X(j2)=\dfrac1{2+2j}=\dfrac{2-2j}{8}=0{,}25-0{,}25j$.
+3. Biên độ $|X(j2)|=\dfrac1{\sqrt8}\approx0{,}354$; pha $\angle X(j2)=-45^\circ$.
+// kiểm tra bằng tích phân số $\int_0^\infty e^{-2t}e^{-j2t}dt$ cho cùng kết quả $0{,}25-0{,}25j$
+[/STEPS]
+
+[BOX] **Nhận xét**: pha $-45^\circ$ hợp lý vì phần thực và phần ảo của mẫu bằng nhau ($2+2j$). Biên độ nhỏ hơn $X(0)=\frac12$ vì tín hiệu tắt dần đóng vai trò bộ lọc thông thấp.
+
 ### C.3. Quan hệ với biến đổi Fourier
 
 - $X(\sigma+j\omega)=\mathrm{FT}[x(t)e^{-\sigma t}]$: Laplace hai phía giống Fourier của $x(t)e^{-\sigma t}$.
 - Fourier là Laplace thay $s=j\omega$ — **với điều kiện** $j\omega\in$ ROC. Khi đó $|X(j\omega)|\le\int|x(t)|dt<\infty$ (do $\sigma=0$).
 - Chứng minh: $|X(s)|\le\int|x(t)||e^{-\sigma t}||e^{-j\omega t}|dt=\int|x(t)|e^{-\sigma t}dt<\infty$.
 
+[BOX] **Phần C — Nhớ**:
+- ROC là tập $s$ làm $\int|x(t)e^{-\sigma t}|dt$ hữu hạn; luôn là **dải thẳng đứng**.
+- $e^{-at}u(t)\leftrightarrow\frac1{s+a}$ ($\mathrm{Re}>-a$); $-e^{-at}u(-t)\leftrightarrow\frac1{s+a}$ ($\mathrm{Re}<-a$).
+- Chỉ thế $s=j\omega$ khi trục $j\omega$ **nằm trong** ROC.
+
+[BRIDGE] **Tiếp theo**: ROC bị chặn bởi các điểm cực — ta cần biết điểm cực và điểm không là gì.
+
 ---
 
 ## Phần D. Điểm cực và điểm không
+
+[BOX: analogy] **Ẩn dụ**: nhìn $|X(s)|$ như một tấm vải căng: **điểm cực** là cây cột chống lên vô hạn (đỉnh nhọn), **điểm không** là cái lỗ ghim tấm vải xuống 0.
+
+[BRIDGE] **Nối từ mục trước**: ROC "dừng" ở các điểm cực, nên phải xác định chúng từ biểu thức $X(s)$.
+
+[BOX] **Học phần này để làm gì?** $X(s)$ hữu tỉ hầu như **chỉ do vị trí cực và không** quyết định; đọc được chúng là đọc được ROC, dạng nghiệm $x(t)$ và tính ổn định (Phần I).
 
 [P] Với $X(s)$ hữu tỉ ($a_k,b_k$ thực, $m,n$ nguyên dương):
 $$X(s)=\frac{a_0s^m+\dots+a_m}{b_0s^n+\dots+b_n}=\frac{a_0}{b_0}\frac{(s-z_1)\cdots(s-z_m)}{(s-p_1)\cdots(s-p_n)}$$
@@ -5038,6 +5131,8 @@ $$X(s)=\frac{a_0s^m+\dots+a_m}{b_0s^n+\dots+b_n}=\frac{a_0}{b_0}\frac{(s-z_1)\cd
 
 ### D.1. Ví dụ [LAB:11.3]
 
+[BOX] **Hướng dẫn phần này**: bấm biểu tượng bình thí nghiệm cạnh tiêu đề này để mở mô phỏng của mục D.1. *Vì sao có*: nhìn $|X(s)|$ như bề mặt giúp "thấy" cực và không. *Dùng để làm gì*: gắn vị trí ×, ○ với đỉnh nhọn và chỗ lõm của đồ thị. *Cách dùng*: đối chiếu với hai ví dụ bên dưới (cực $-1,-2$, không $1$).
+
 [P] $x(t)=3e^{-2t}u(t)-2e^{-t}u(t)$, ROC $\mathrm{Re}[s]>-1$:
 $$X(s)=\frac{s-1}{s^2+3s+2}=\frac{s-1}{(s+1)(s+2)}$$
 Điểm không $s=1$; điểm cực $s=-1$ và $s=-2$. ROC $=\{\mathrm{Re}\,s>-1\}\cap\{\mathrm{Re}\,s>-2\}$. Đồ thị $|X(s)|$ có "đỉnh nhọn" vô hạn tại điểm cực và "lõm xuống 0" tại điểm không.
@@ -5046,9 +5141,33 @@ $$X(s)=\frac{s-1}{s^2+3s+2}=\frac{s-1}{(s+1)(s+2)}$$
 $$X(s)=\frac1{s+2}+\frac{s+1}{(s+1)^2+9}=\frac{2s^2+5s+12}{(s^2+2s+10)(s+2)}$$
 **Điểm cực**: $s=-2$ và $s^2+2s+10=0\Rightarrow s=-1\pm3j$. **Điểm không**: $2s^2+5s+12=0\Rightarrow s=\frac{-5\pm j\sqrt{71}}4$.
 
+[BOX] **Ví dụ tính tay**: với $X(s)=\dfrac{s-1}{(s+1)(s+2)}$ ở trên, tính $X(0)$, $|X(j)|$ và độ lớn khi $s$ sát điểm cực.
+
+[STEPS]
+1. $X(0)=\dfrac{-1}{1\cdot2}=-0{,}5$; kiểm tra bằng dạng tổng $\dfrac3{0+2}-\dfrac2{0+1}=1{,}5-2=-0{,}5$.
+2. $|X(j)|=\dfrac{|j-1|}{|j+1||j+2|}=\dfrac{\sqrt2}{\sqrt2\cdot\sqrt5}=\dfrac1{\sqrt5}\approx0{,}447$.
+3. Gần cực $s=-1$: lấy $s=-1+0{,}1j$ thì $|X|=\dfrac{|-2+0{,}1j|}{|0{,}1j||1+0{,}1j|}\approx19{,}9$.
+// càng sát điểm cực, $|X|$ càng lớn, đúng hình "đỉnh nhọn"
+[/STEPS]
+
+[BOX] **Nhận xét**: $|X|$ đi từ $0{,}447$ (cách xa cực) lên $\approx19{,}9$ (sát cực) — chênh gần 45 lần chỉ nhờ dịch $0{,}1$ đơn vị; tại chính cực sẽ là $\infty$.
+
+[BOX] **Phần D — Nhớ**:
+- Không = nghiệm tử (○); cực = nghiệm mẫu (×).
+- Cực **không** thuộc ROC; không có thể thuộc hoặc không.
+- $X(s)$ hữu tỉ xác định bởi cực, không và hằng số $a_0/b_0$.
+
+[BRIDGE] **Tiếp theo**: biết các cực, ta suy ra **mọi dạng ROC có thể có** và tín hiệu tương ứng.
+
 ---
 
 ## Phần E. Tính chất của ROC
+
+[BOX: analogy] **Ẩn dụ**: các cực như những cột mốc trên một con đường ngang; ROC là đoạn đường **giữa hai cột mốc liên tiếp** (hoặc kéo dài vô tận về một phía), không bao giờ đè lên cột mốc.
+
+[BRIDGE] **Nối từ mục trước**: Phần D cho vị trí các cực; ở đây ta biết ROC phải đặt thế nào so với chúng theo từng loại tín hiệu.
+
+[BOX] **Học phần này để làm gì?** Từ ROC biết ngay tín hiệu là phía phải, phía trái hay hai phía, tức biết **nhân quả hay không** — dùng liên tục ở Phần H và I.
 
 [STEPS]
 1. **ROC không chứa điểm cực.**
@@ -5060,8 +5179,8 @@ $$X(s)=\frac1{s+2}+\frac{s+1}{(s+1)^2+9}=\frac{2s^2+5s+12}{(s^2+2s+10)(s+2)}$$
 
 ### E.1. Vì sao ROC có dạng như vậy?
 
-- **Phía phải** : nếu $\sigma_0+j\omega\in$ ROC thì với $\sigma_1>\sigma_0$ ta có $e^{-\sigma_1t}<e^{-\sigma_0t}$ khi $t>0$, nên $|x e^{-\sigma_1t}|<|x e^{-\sigma_0t}|$ và tích phân vẫn hữu hạn. ROC là nửa mặt phẳng **phải** của $\sigma_0$.
-- **Phía trái**: với $\sigma_1<\sigma_0$ thì $e^{-\sigma_1t}<e^{-\sigma_0t}$ khi $t<0$, ROC là nửa mặt phẳng **trái**.
+- **Phía phải**: nếu $\sigma_0+j\omega\in$ ROC thì với $\sigma_1>\sigma_0$ ta có $e^{-\sigma_1t}\lt e^{-\sigma_0t}$ khi $t>0$, nên $|x e^{-\sigma_1t}|<|x e^{-\sigma_0t}|$ và tích phân vẫn hữu hạn. ROC là nửa mặt phẳng **phải** của $\sigma_0$.
+- **Phía trái**: với $\sigma_1<\sigma_0$ thì $e^{-\sigma_1t}\lt e^{-\sigma_0t}$ khi $t<0$, ROC là nửa mặt phẳng **trái**.
 - **Hai phía**: tách $x=x_L+x_R$; $\mathcal L[x_R]$ tồn tại khi $\sigma>\sigma_R$, $\mathcal L[x_L]$ tồn tại khi $\sigma<\sigma_L$; ROC là **giao** $\sigma_R<\sigma<\sigma_L$ (rỗng nếu $\sigma_R\ge\sigma_L$).
 
 ### E.2. Với $X(s)$ hữu tỉ — ROC bị chặn bởi các cực
@@ -5070,9 +5189,36 @@ $$X(s)=\frac1{s+2}+\frac{s+1}{(s+1)^2+9}=\frac{2s^2+5s+12}{(s^2+2s+10)(s+2)}$$
 
 [BOX: analogy] **Nhớ nhanh**: ROC "dừng" ở điểm cực gần nhất. Cực phải nhất ⇒ ROC mở sang phải (nhân quả); cực trái nhất ⇒ ROC mở sang trái (phản nhân quả); kẹp giữa hai cực ⇒ hai phía.
 
+[BOX] **Ví dụ tính tay**: cùng $X(s)=\dfrac{s-1}{(s+1)(s+2)}$, tìm $x(t)$ cho **ROC 2** ($-2<\mathrm{Re}\,s<-1$) và so với ROC 3.
+
+[STEPS]
+1. Khai triển: $X(s)=\dfrac{-2}{s+1}+\dfrac{3}{s+2}$ (hệ số $-2$ và $3$ là thặng dư tại $s=-1$ và $s=-2$).
+2. Cực $-2$ nằm **bên trái** ROC 2 ⇒ phần $\dfrac3{s+2}$ là phía phải: $3e^{-2t}u(t)$.
+3. Cực $-1$ nằm **bên phải** ROC 2 ⇒ phần $\dfrac{-2}{s+1}$ là phía trái: $+2e^{-t}u(-t)$.
+// vì $-e^{-t}u(-t)\leftrightarrow\frac1{s+1}$ nên nhân với $-2$ cho $+2e^{-t}u(-t)$
+4. Vậy ROC 2: $x(t)=3e^{-2t}u(t)+2e^{-t}u(-t)$ (hai phía). Còn ROC 3: $x(t)=3e^{-2t}u(t)-2e^{-t}u(t)$ (nhân quả).
+[/STEPS]
+
+[BOX] **Nhận xét**: cùng một $X(s)$ cho **ba** tín hiệu khác nhau tùy ROC. Chỉ ROC 3 chứa trục $j\omega$ (vì $0>-1$) nên chỉ tín hiệu nhân quả có Fourier.
+
+[BOX] **Phần E — Nhớ**:
+- ROC không chứa cực; phía phải ⇒ $\mathrm{Re}>\sigma_{\max}$; phía trái ⇒ $\mathrm{Re}<\sigma_{\min}$; hai phía ⇒ dải.
+- Thời gian hữu hạn ⇒ ROC là cả mặt phẳng.
+- $n$ cực có phần thực khác nhau chia mặt phẳng thành $n+1$ vùng ROC có thể.
+
+[BRIDGE] **Tiếp theo**: tổng hợp các cặp biến đổi thông dụng để tra, không phải tính tích phân mỗi lần.
+
 ---
 
 ## Phần F. Bảng cặp biến đổi thông dụng
+
+[BOX: analogy] **Ẩn dụ**: như bảng cửu chương — thuộc một số cặp cơ bản rồi ghép lại, thay vì cộng tay từng lần.
+
+[BRIDGE] **Nối từ mục trước**: Phần C–E dạy cách tính $X(s)$ và ROC từ định nghĩa; từ đây ta **tra** bảng cho các tín hiệu hay gặp.
+
+[BOX] **Học phần này để làm gì?** Biến bài toán tích phân thành tra bảng + ghép tính chất (Phần G); đồng thời là "từ điển" cho biến đổi ngược ở Phần H.
+
+[P] Bảng các cặp hay gặp (cột cuối là ROC; $a,\omega_0$ là hằng số):
 
 | $x(t)$ | $X(s)$ | ROC |
 |---|---|---|
@@ -5092,9 +5238,37 @@ $$X(s)=\frac1{s+2}+\frac{s+1}{(s+1)^2+9}=\frac{2s^2+5s+12}{(s^2+2s+10)(s+2)}$$
 
 [P] Tổng quát: $\frac{t^{n-1}}{(n-1)!}e^{-at}u(t)\leftrightarrow\frac1{(s+a)^n}$ với $\mathrm{Re}[s]>-a$, và $\frac{-t^{n-1}}{(n-1)!}e^{-at}u(-t)\leftrightarrow\frac1{(s+a)^n}$ với $\mathrm{Re}[s]<-a$.
 
+[BOX] **Ví dụ tính tay**: $x(t)=3e^{-2t}u(t)+4\sin(3t)u(t)$. Tìm $X(s)$, ROC và giá trị $X(1)$.
+
+[STEPS]
+1. Tra bảng: $3e^{-2t}u(t)\leftrightarrow\dfrac3{s+2}$ ($\mathrm{Re}>-2$); $4\sin3t\,u(t)\leftrightarrow\dfrac{4\cdot3}{s^2+9}=\dfrac{12}{s^2+9}$ ($\mathrm{Re}>0$).
+2. Cộng: $X(s)=\dfrac3{s+2}+\dfrac{12}{s^2+9}$, ROC là giao $\mathrm{Re}>-2$ và $\mathrm{Re}>0$, tức $\mathrm{Re}[s]>0$.
+3. Tại $s=1$ (nằm trong ROC): $X(1)=\dfrac33+\dfrac{12}{10}=1+1{,}2=2{,}2$.
+// kiểm tra bằng tích phân số $\int_0^\infty(3e^{-2t}+4\sin3t)e^{-t}dt\approx2{,}2$
+[/STEPS]
+
+[BOX] **Nhận xét**: ROC lấy theo cực **phải nhất** ($\pm3j$ nằm trên trục ảo, phần thực $0$), nên dải rộng của số hạng đầu bị thu hẹp thành $\mathrm{Re}>0$. Cực trên trục ảo làm trục $j\omega$ **không** nằm trong ROC.
+
+[BOX] **Phần F — Nhớ**:
+- $e^{-at}u(t)\leftrightarrow\frac1{s+a}$ là "viên gạch" của mọi cặp khác.
+- Cùng $X(s)$, hai ROC (phải/trái) cho hai tín hiệu đối nhau về phía.
+- ROC của tổng là **giao** các ROC (ít nhất).
+
+[BRIDGE] **Tiếp theo**: ghép các cặp cơ bản thành tín hiệu phức tạp bằng các tính chất của Laplace.
+
 ---
 
 ## Phần G. Tính chất của biến đổi Laplace [LAB:11.5]
+
+[BOX: analogy] **Ẩn dụ**: như quy tắc đổi đơn vị — "dịch thời gian" thành "nhân $e^{-st_0}$", "đạo hàm" thành "nhân $s$": phép toán rắc rối ở miền $t$ trở thành phép nhân đơn giản ở miền $s$.
+
+[BRIDGE] **Nối từ mục trước**: bảng cặp ở Phần F chỉ có tín hiệu cơ bản; tính chất cho phép suy ra cặp của tín hiệu đã dịch, nhân mũ, đạo hàm, tích chập.
+
+[BOX] **Học phần này để làm gì?** Tính nhanh $X(s)$ khỏi tích phân, và biến phương trình vi phân/tích chập thành phương trình đại số (nền cho hàm truyền ở Phần I).
+
+[BOX] **Hướng dẫn phần này**: bấm biểu tượng bình thí nghiệm cạnh tiêu đề này để mở mô phỏng của Phần G. *Vì sao có*: nhìn thấy tác động của từng tính chất lên $x(t)$ và $X(s)$ cùng lúc. *Dùng để làm gì*: kiểm tra dự đoán về **ROC** (dịch ROC, co/giãn ROC). *Cách dùng*: đối chiếu với bảng và ví dụ bên dưới.
+
+[P] Bảng tính chất (cột cuối là ROC của biến đổi mới):
 
 | Tính chất | Tín hiệu | Biến đổi | ROC |
 |---|---|---|---|
@@ -5108,46 +5282,126 @@ $$X(s)=\frac1{s+2}+\frac{s+1}{(s+1)^2+9}=\frac{2s^2+5s+12}{(s^2+2s+10)(s+2)}$$
 | Tích phân | $\int_{-\infty}^tx(\tau)d\tau$ | $\frac1sX(s)$ | $R'\supset R\cap\{\mathrm{Re}\,s>0\}$ |
 | Tích chập | $x_1*x_2$ | $X_1(s)X_2(s)$ | $R'\supset R_1\cap R_2$ |
 
-[P] **Ví dụ 4 (tuyến tính, ROC giao)**: $x_1=e^{-t}u(t)\leftrightarrow\frac1{s+1}$ ($\mathrm{Re}>-1$), $x_2=e^{-2t}u(t)\leftrightarrow\frac1{s+2}$ ($\mathrm{Re}>-2$). Thì $x_1-x_2\leftrightarrow\frac1{s+1}-\frac1{s+2}=\frac1{(s+1)(s+2)}$, ROC $R_1\cap R_2=\{\mathrm{Re}>-1\}$. Nếu có **triệt tiêu cực–không** thì ROC có thể **rộng hơn** giao (ký hiệu $R'\supset R_1\cap R_2$).
+[P] Chữ $R$ là ROC của $X(s)$, $R'$ là ROC của biến đổi mới. Dấu $\supset$ nghĩa là ROC mới **ít nhất** bằng giao; có **triệt tiêu cực–không** thì ROC có thể **rộng hơn** giao.
+
+[BOX] **Ví dụ tính tay**: $x(t)=e^{-t}u(t)$, $X(s)=\dfrac1{s+1}$ ($\mathrm{Re}>-1$). Áp dụng ba tính chất.
+
+[STEPS]
+1. **Dịch thời gian** $x(t-2)$: $\dfrac{e^{-2s}}{s+1}$, ROC vẫn $\mathrm{Re}>-1$. Tại $s=1$: $\dfrac{e^{-2}}2\approx0{,}0677$.
+// kiểm tra bằng tích phân $\int_2^\infty e^{-(t-2)}e^{-t}dt=\dfrac{e^{-2}}2$
+2. **Dịch theo $s$**: $e^{3t}x(t)=e^{2t}u(t)\leftrightarrow X(s-3)=\dfrac1{s-2}$; ROC dịch từ $\mathrm{Re}>-1$ sang $\mathrm{Re}>-1+3=2$.
+3. **Đạo hàm**: $\dfrac{dx}{dt}=\delta(t)-e^{-t}u(t)\leftrightarrow sX(s)=\dfrac s{s+1}=1-\dfrac1{s+1}$.
+// số hạng $\delta(t)$ ứng với hằng số $1$, đúng với $\mathcal L[\delta]=1$
+[/STEPS]
+
+[BOX] **Nhận xét**: ở bước 2 tín hiệu từ tắt dần thành $e^{2t}u(t)$ (bùng nổ) và ROC **mất** trục $j\omega$; điều này khớp với kết luận ở C.2 cho $a<0$.
+
+[BOX] **Phần G — Nhớ**:
+- Dịch $t$ ⇒ nhân $e^{-st_0}$ (ROC giữ nguyên); nhân $e^{s_0t}$ ⇒ dịch $s$ (ROC dịch theo $\mathrm{Re}\,s_0$).
+- Đạo hàm theo $t$ ⇔ nhân $s$; tích chập ⇔ nhân hai biến đổi.
+- ROC của kết quả là giao các ROC, có thể rộng hơn nếu cực–không triệt tiêu.
+
+[BRIDGE] **Tiếp theo**: dùng bảng + tính chất theo chiều ngược — từ $X(s)$ và ROC tìm lại $x(t)$.
 
 ---
 
 ## Phần H. Biến đổi Laplace ngược
 
+[BOX: analogy] **Ẩn dụ**: như tách một cốc nước trái cây hỗn hợp về từng loại quả: khai triển phân thức tách $X(s)$ thành các "viên gạch" $\frac1{s-p}$, mỗi viên tra bảng được ngay.
+
+[BRIDGE] **Nối từ mục trước**: Phần F–G đi từ $x(t)$ sang $X(s)$; ở đây đi chiều ngược, và **ROC** quyết định chọn nhánh phía phải hay phía trái.
+
+[BOX] **Học phần này để làm gì?** Giải phương trình vi phân và tìm đáp ứng xung $h(t)$ từ $H(s)$; kỹ năng cốt lõi của các ví dụ 5–7 ở phần bài tập.
+
 [FORMULA: key]
 $$x(t)=\mathcal L^{-1}\{X(s)\}=\frac1{2\pi j}\int_{\sigma-j\infty}^{\sigma+j\infty}X(s)e^{st}ds\ (\ne\textstyle\int x(t)e^{-st}dt)$$
 [/FORMULA]
-[P] Tích phân biến phức rất phức tạp; đường tích phân là đường thẳng đứng nằm **trong ROC**. Có 2 cách: (1) **tích phân đường bao** cho $X(s)$ bất kỳ; (2) **khai triển phân thức hữu tỉ** cho $X(s)$ hữu tỉ — cách ta dùng. Ý tưởng: tách $X(s)=X_1+\dots+X_n$ rồi dùng bảng cặp thông dụng + tính chất để được $x(t)=x_1+\dots+x_n$.
+[BOX] **Đọc công thức**: tích phân dọc đường thẳng đứng $\mathrm{Re}\,s=\sigma$ **nằm trong ROC**; kết quả là $x(t)$ với $t$ [s].
 
-### H.1. Khi $m<n$ (bậc tử < bậc mẫu)
+[P] Tích phân biến phức rất phức tạp; có 2 cách: (1) **tích phân đường bao** cho $X(s)$ bất kỳ; (2) **khai triển phân thức hữu tỉ** cho $X(s)$ hữu tỉ — cách ta dùng. Ý tưởng: tách $X(s)=X_1+\dots+X_n$ rồi dùng bảng cặp thông dụng + tính chất để được $x(t)=x_1+\dots+x_n$.
+
+### H.1. Khi $m\lt n$ (bậc tử < bậc mẫu)
 
 [P] **Cực đơn**: $X(s)=\frac{c_1}{s-p_1}+\dots+\frac{c_n}{s-p_n}$, $c_k=(s-p_k)X(s)\big|_{s=p_k}$.
 
 [P] **Cực kép bội $r$** tại $p_i$:
 $$X(s)=\frac{\lambda_1}{s-p_i}+\frac{\lambda_2}{(s-p_i)^2}+\dots+\frac{\lambda_r}{(s-p_i)^r},\qquad \lambda_{r-k}=\frac1{k!}\frac{d^k}{ds^k}\Big[(s-p_i)^rX(s)\Big]_{s=p_i}$$
 
+[BOX] **Ví dụ tính tay**: $X(s)=\dfrac{s+5}{(s+1)(s+3)}$, ROC $\mathrm{Re}\,s>-1$. Tìm $x(t)$.
+
+[STEPS]
+1. $c_1=(s+1)X\big|_{s=-1}=\dfrac{-1+5}{-1+3}=2$.
+2. $c_2=(s+3)X\big|_{s=-3}=\dfrac{-3+5}{-3+1}=-1$.
+3. $X(s)=\dfrac2{s+1}-\dfrac1{s+3}$; ROC phía phải ⇒ $x(t)=\left(2e^{-t}-e^{-3t}\right)u(t)$.
+// kiểm tra $x(0^+)=2-1=1$, trùng $\lim_{s\to\infty}sX(s)=1$ (định lý giá trị đầu); $x(1)=2e^{-1}-e^{-3}\approx0{,}686$
+[/STEPS]
+
+[BOX] **Nhận xét**: nghiệm gồm các mũ tắt dần (cực $-1$ và $-3$ đều âm) và $x(0^+)=1$ khớp phép kiểm tra ở bước 3 — đây là cách rà soát nhanh sai dấu.
+
 ### H.2. Khi $m\ge n$
 
-[P] Chia đa thức: $X(s)=\frac{N(s)}{D(s)}=Q(s)+\frac{R(s)}{D(s)}$. Phần $\frac{R(s)}{D(s)}$ xử lý như $m<n$; phần đa thức $Q(s)$ dùng $\frac{d^k\delta(t)}{dt^k}\leftrightarrow s^k$ ($k=1,2,3,\dots$).
+[P] Chia đa thức: $X(s)=\frac{N(s)}{D(s)}=Q(s)+\frac{R(s)}{D(s)}$. Phần $\frac{R(s)}{D(s)}$ xử lý như $m\lt n$; phần đa thức $Q(s)$ dùng $\frac{d^k\delta(t)}{dt^k}\leftrightarrow s^k$ ($k=1,2,3,\dots$).
+
+[P] Ví dụ ngắn: $\dfrac{s^2+3s+3}{s^2+3s+2}=1+\dfrac1{s+1}-\dfrac1{s+2}$ cho $x(t)=\delta(t)+\left(e^{-t}-e^{-2t}\right)u(t)$ (ROC $\mathrm{Re}>-1$). Số hạng $1$ chính là xung $\delta(t)$.
 
 ### H.3. Cực phức liên hợp
 
 $$\frac{B_1s+B_2}{(s-\alpha)^2+\omega_o^2}=\frac{C_1(s-\alpha)}{(s-\alpha)^2+\omega_o^2}+\frac{C_2\omega_o}{(s-\alpha)^2+\omega_o^2}$$
 $$C_1e^{\alpha t}\cos(\omega_ot)u(t)\leftrightarrow\frac{C_1(s-\alpha)}{(s-\alpha)^2+\omega_o^2},\qquad C_2e^{\alpha t}\sin(\omega_ot)u(t)\leftrightarrow\frac{C_2\omega_o}{(s-\alpha)^2+\omega_o^2}$$
 
+[P] Ví dụ: $\dfrac{s+4}{s^2+2s+5}=\dfrac{(s+1)+3}{(s+1)^2+4}$ có $\alpha=-1$, $\omega_o=2$ nên $C_1=1$, $C_2\cdot2=3\Rightarrow C_2=1{,}5$: $x(t)=e^{-t}\left[\cos2t+1{,}5\sin2t\right]u(t)$ (ROC $\mathrm{Re}>-1$).
+
 ### H.4. Chọn nghiệm theo ROC [LAB:11.4]
 
-[P] Với mỗi phân thức $\frac{b_i}{s-p_i}$: nếu $\mathrm{Re}[s]>p_i$ thì $b_ie^{p_it}u(t)$; nếu $\mathrm{Re}[s]<p_i$ thì $-b_ie^{p_it}u(-t)$. **ROC quyết định** chọn nhánh nào cho từng cực.
+[BOX] **Hướng dẫn phần này**: bấm biểu tượng bình thí nghiệm cạnh tiêu đề này để mở mô phỏng của mục H.4. *Vì sao có*: để thấy cùng một $X(s)$ cho các $x(t)$ khác nhau khi đổi ROC. *Dùng để làm gì*: luyện chọn nhánh phía phải/phía trái cho từng cực. *Cách dùng*: đối chiếu với ví dụ bên dưới và Ví dụ 5 ở phần bài tập.
+
+[P] Với mỗi phân thức $\frac{b_i}{s-p_i}$: nếu $\mathrm{Re}[s]>p_i$ thì $b_ie^{p_it}u(t)$; nếu $\mathrm{Re}[s]\lt p_i$ thì $-b_ie^{p_it}u(-t)$. **ROC quyết định** chọn nhánh nào cho từng cực.
+
+[BOX] **Ví dụ tính tay**: vẫn $X(s)=\dfrac2{s+1}-\dfrac1{s+3}$ nhưng ROC là $-3<\mathrm{Re}\,s<-1$.
+
+[STEPS]
+1. Số hạng $\dfrac2{s+1}$: $\mathrm{Re}\,s<-1$ (ROC nằm **bên trái** cực $-1$) ⇒ $-2e^{-t}u(-t)$.
+2. Số hạng $\dfrac{-1}{s+3}$: $\mathrm{Re}\,s>-3$ (ROC nằm **bên phải** cực $-3$) ⇒ $-e^{-3t}u(t)$.
+3. Kết quả: $x(t)=-2e^{-t}u(-t)-e^{-3t}u(t)$ — tín hiệu **hai phía**.
+[/STEPS]
+
+[BOX] **Nhận xét**: ROC kẹp giữa hai cực nên mỗi cực "tặng" một phía. ROC này **không chứa** trục $j\omega$ nên $x(t)$ không có Fourier: quả thật $e^{-t}u(-t)$ bùng nổ khi $t\to-\infty$; chỉ khi nhân thêm $e^{-\sigma t}$ với $-3<\sigma<-1$ thì mới tắt, đúng với định nghĩa ROC.
+
+[BOX] **Phần H — Nhớ**:
+- $m\lt n$: khai triển phân thức; cực đơn dùng $c_k=(s-p_k)X\big|_{p_k}$, cực kép dùng đạo hàm.
+- $m\ge n$: chia đa thức trước; phần dư là $\delta$ và đạo hàm của $\delta$.
+- ROC quyết định nhánh $e^{pt}u(t)$ hay $-e^{pt}u(-t)$ cho từng cực.
+
+[BRIDGE] **Tiếp theo**: áp công cụ này vào hệ LTI — hàm truyền $H(s)$, nhân quả và ổn định.
 
 ---
 
 ## Phần I. Hàm truyền của hệ LTI và phân loại hệ thống
 
+[BOX: analogy] **Ẩn dụ**: $H(s)$ là "chứng minh thư" của hệ: nhìn vị trí các cực là biết hệ sẽ **tắt êm** hay **bùng nổ** khi bị kích thích.
+
+[BRIDGE] **Nối từ mục trước**: Phần B.3 cho $H(s)=\int h\,e^{-s\tau}d\tau$; Phần E, H cho cách đọc ROC và tìm $h(t)$. Giờ ghép lại để phân loại hệ.
+
+[BOX] **Học phần này để làm gì?** Từ phương trình vi phân lấy được $H(s)$ ngay, rồi đọc **nhân quả** và **ổn định** từ ROC và các cực mà không cần tính $h(t)$.
+
 ### I.1. Hàm truyền [LAB:11.6]
+
+[BOX] **Hướng dẫn phần này**: bấm biểu tượng bình thí nghiệm cạnh tiêu đề này để mở mô phỏng của Phần I.1 và I.3. *Vì sao có*: nhìn vị trí cực và đáp ứng của hệ cùng lúc. *Dùng để làm gì*: gắn vị trí cực với dạng đáp ứng và tính ổn định. *Cách dùng*: đối chiếu với ví dụ ở I.3 và I.4 (cực phần thực âm ⇒ tắt dần).
 
 [FORMULA: key]
 $$\sum_{k=0}^Na_ks^kY(s)=\sum_{k=0}^Mb_ks^kX(s),\quad y=x*h\Rightarrow Y(s)=X(s)H(s)\Rightarrow H(s)=\frac{Y(s)}{X(s)}=\frac{\sum_{k=0}^Mb_ks^k}{\sum_{k=0}^Na_ks^k}$$
 [/FORMULA]
+[BOX] **Đọc công thức**: $a_k,b_k$ là hệ số của phương trình vi phân (đạo hàm bậc $k$ ứng với $s^k$, điều kiện đầu bằng 0); $H(s)$ là tỉ số hai đa thức theo $s$.
+
+[BOX] **Ví dụ tính tay**: hệ $y'(t)+2y(t)=x(t)$ (điều kiện đầu 0). Tìm $H(s)$, $h(t)$ nhân quả và $H(j\omega)$ tại $\omega=1$.
+
+[STEPS]
+1. Biến đổi hai vế: $sY+2Y=X\Rightarrow H(s)=\dfrac Y X=\dfrac1{s+2}$.
+2. Cực $s=-2$; nhân quả ⇒ ROC $\mathrm{Re}>-2$ ⇒ $h(t)=e^{-2t}u(t)$.
+3. Trục $j\omega$ nằm trong ROC nên $H(j1)=\dfrac1{2+j}=\dfrac{2-j}5=0{,}4-0{,}2j$, $|H|=\dfrac1{\sqrt5}\approx0{,}447$.
+[/STEPS]
+
+[BOX] **Nhận xét**: một hệ bậc nhất có đúng một cực, ở $-2$ (đơn vị 1/s); hằng số thời gian $\tau=\frac12$ s. Biên độ $0{,}447\lt H(0)=0{,}5$ cho thấy hệ giảm tần số cao.
 
 ### I.2. Tính nhân quả
 
@@ -5159,13 +5413,15 @@ $$\sum_{k=0}^Na_ks^kY(s)=\sum_{k=0}^Mb_ks^kX(s),\quad y=x*h\Rightarrow Y(s)=X(s)
 [FORMULA: key]
 $$\text{Ổn định}\iff\text{ROC của }H(s)\text{ chứa trục }j\omega,\qquad H(j\omega)=H(s)\big|_{s=j\omega}$$
 [/FORMULA]
-[P] Ví dụ 8: $H(s)=\frac{s-1}{(s+1)(s-2)}=\frac{2/3}{s+1}+\frac{1/3}{s-2}$ có điểm không $s=1$, cực $-1$ và $2$.
+[P] Ví dụ: $H(s)=\frac{s-1}{(s+1)(s-2)}=\frac{2/3}{s+1}+\frac{1/3}{s-2}$ có điểm không $s=1$, cực $-1$ và $2$.
 
 | ROC | $h(t)$ | Kết luận |
 |---|---|---|
 | $\mathrm{Re}\,s>2$ | $\left(\frac23e^{-t}+\frac13e^{2t}\right)u(t)$ | Nhân quả, **không** ổn định |
 | $\mathrm{Re}\,s<-1$ | $-\left(\frac23e^{-t}+\frac13e^{2t}\right)u(-t)$ | Phản nhân quả, **không** ổn định |
 | $-1<\mathrm{Re}\,s<2$ | $\frac23e^{-t}u(t)-\frac13e^{2t}u(-t)$ | Phi nhân quả, **ổn định** |
+
+[BOX] **Nhận xét**: cùng một $H(s)$ có đủ ba kết luận; chỉ ROC kẹp giữa $-1$ và $2$ chứa trục $j\omega$ nên ổn định, nhưng khi đó hệ **không nhân quả**. Một hệ thật vừa nhân quả vừa ổn định cần mọi cực ở nửa trái (xem I.4).
 
 ### I.4. Nhân quả + ổn định (hữu tỉ)
 
@@ -5175,14 +5431,40 @@ $$\text{Ổn định}\iff\text{ROC của }H(s)\text{ chứa trục }j\omega,\qqu
 
 ### I.5. Ghép nối hệ thống [LAB:11.7]
 
+[BOX] **Hướng dẫn phần này**: bấm biểu tượng bình thí nghiệm cạnh tiêu đề này để mở mô phỏng của mục I.5. *Vì sao có*: xem cực dịch chuyển thế nào khi nối hệ. *Dùng để làm gì*: kiểm tra công thức nối tiếp, song song, phản hồi. *Cách dùng*: đối chiếu với ví dụ phản hồi bên dưới (cực từ $-1$ dịch sang $-3$).
+
 [FORMULA: key]
 $$\text{Nối tiếp: }H=H_1H_2\ (h=h_1*h_2);\quad \text{Song song: }H=H_1+H_2\ (h=h_1+h_2);\quad \text{Phản hồi: }H=\frac{H_1}{1+H_1H_2}$$
 [/FORMULA]
 [P] Phản hồi: từ $[\delta-z_s]*h_1=h$ và $z_s=h*h_2$ suy ra công thức trên.
 
+[BOX] **Ví dụ tính tay**: $H_1(s)=\dfrac1{s+1}$ và $H_2(s)=\dfrac1{s+2}$. Tìm $H$ khi nối tiếp, song song; và khi $H_1$ có phản hồi qua hằng số $H_2=2$.
+
+[STEPS]
+1. Nối tiếp: $H=\dfrac1{(s+1)(s+2)}$.
+2. Song song: $H=\dfrac{(s+2)+(s+1)}{(s+1)(s+2)}=\dfrac{2s+3}{(s+1)(s+2)}$.
+3. Phản hồi với $H_2=2$: $H=\dfrac{\frac1{s+1}}{1+\frac2{s+1}}=\dfrac1{s+3}$.
+// cực dịch từ $-1$ sang $-3$: phản hồi âm làm hệ **nhanh hơn** (hằng số thời gian từ $1$ s xuống $\frac13$ s)
+[/STEPS]
+
+[BOX] **Nhận xét**: nối tiếp thì cực của hai hệ gộp lại; phản hồi thì cực bị **dịch** — đây là cách thiết kế điều khiển thay đổi tính chất động của hệ.
+
+[BOX] **Phần I — Nhớ**:
+- $H(s)=\dfrac{Y(s)}{X(s)}$; nhân quả ⇔ ROC mở sang phải từ cực phải nhất (hữu tỉ).
+- Ổn định ⇔ ROC chứa trục $j\omega$; nhân quả + ổn định ⇔ mọi cực có $\mathrm{Re}<0$.
+- Nối tiếp nhân, song song cộng, phản hồi $\frac{H_1}{1+H_1H_2}$.
+
+[BRIDGE] **Tiếp theo**: khi bài toán có **điều kiện đầu** khác 0, Laplace hai phía không đủ — cần dạng một phía.
+
 ---
 
 ## Phần J. Biến đổi Laplace một phía
+
+[BOX: analogy] **Ẩn dụ**: hai phía là "xem cả cuốn phim"; một phía là "bấm quay từ lúc $0^-$" và **ghi sẵn cảnh đầu tiên** (điều kiện đầu) vào công thức.
+
+[BRIDGE] **Nối từ mục trước**: ở Phần I ta đặt điều kiện đầu bằng 0; thực tế mạch và hệ thường bắt đầu với năng lượng tích sẵn, nên cần dạng một phía.
+
+[BOX] **Học phần này để làm gì?** Giải trực tiếp phương trình vi phân **có điều kiện đầu**, và phân tích mạch điện RLC trong miền $s$.
 
 [P] $X_I(s)=\int_{0^-}^\infty x(t)e^{-st}dt$. Vì tín hiệu nhân quả nên **không có nhầm lẫn** như hai phía và có thể **bỏ qua ROC** (ROC luôn $\mathrm{Re}(s)>\sigma_{\max}$). Ví dụ $e^{at}u(t)\leftrightarrow\frac1{s-a}$ ($\mathrm{Re}>a$).
 
@@ -5194,7 +5476,23 @@ $$\int_{0^-}^tx(\tau)d\tau\leftrightarrow\frac1sX_I(s),\qquad \int_{-\infty}^tx(
 [/FORMULA]
 [P] Đạo hàm một phía **tự mang điều kiện đầu** $x^{(r)}(0^-)=\frac{d^rx}{dt^r}\Big|_{t=0^-}$ — nên giải trực tiếp phương trình vi phân có điều kiện đầu.
 
+[BOX] **Ví dụ tính tay**: giải $y'(t)+2y(t)=4u(t)$ với $y(0^-)=1$.
+
+[STEPS]
+1. Biến đổi một phía: $sY-y(0^-)+2Y=\dfrac4s\Rightarrow(s+2)Y=1+\dfrac4s$.
+2. $Y(s)=\dfrac{s+4}{s(s+2)}=\dfrac2s-\dfrac1{s+2}$.
+// thặng dư tại $s=0$: $\frac{4}{2}=2$; tại $s=-2$: $\frac{2}{-2}=-1$
+3. Nhân quả: $y(t)=\left(2-e^{-2t}\right)u(t)$.
+// kiểm tra: $y(0)=2-1=1=y(0^-)$ ✓; $y(\infty)=2$; $y(1)=2-e^{-2}\approx1{,}865$
+[/STEPS]
+
+[BOX] **Nhận xét**: nghiệm tiến về $2$, đúng bằng trạng thái xác lập của $y'+2y=4$ (khi $y'=0$ thì $y=2$); điều kiện đầu chỉ ảnh hưởng đoạn quá độ.
+
 ### J.2. Mạch điện trong miền $s$ [LAB:11.8]
+
+[BOX] **Hướng dẫn phần này**: bấm biểu tượng bình thí nghiệm cạnh tiêu đề này để mở mô phỏng của mục J.2. *Vì sao có*: mạch điện là ứng dụng quen thuộc nhất của Laplace. *Dùng để làm gì*: kiểm tra đáp ứng mạch khi có điều kiện đầu. *Cách dùng*: đối chiếu với ví dụ mạch RC bên dưới (hằng số thời gian $RC$).
+
+[P] Quy đổi từng phần tử mạch sang miền $s$:
 
 | Phần tử | Miền $t$ | Miền $s$ |
 |---|---|---|
@@ -5203,6 +5501,17 @@ $$\int_{0^-}^tx(\tau)d\tau\leftrightarrow\frac1sX_I(s),\qquad \int_{-\infty}^tx(
 | Điện dung | $i=C\frac{dv}{dt}$ | $V=\frac1{sC}I+\frac1sv(0^-)$ (nguồn nối tiếp $\frac{v(0^-)}s$) |
 
 [P] Trở kháng: $R$, $sL$, $\frac1{sC}$ — dùng định luật Ohm/Kirchhoff trên các biểu thức $s$, điều kiện đầu thành các **nguồn phụ**.
+
+[BOX] **Ví dụ tính tay**: mạch RC nối tiếp, $R=1\ \mathrm{k\Omega}$, $C=1\ \mu\mathrm{F}$, nguồn bậc thang $5$ V ($V_{in}=\frac5s$), tụ ban đầu rỗng $v_C(0^-)=0$. Tìm $v_C(t)$.
+
+[STEPS]
+1. Chia áp trong miền $s$: $V_C=V_{in}\dfrac{1/(sC)}{R+1/(sC)}=\dfrac5s\cdot\dfrac1{1+sRC}$.
+2. Với $RC=10^3\cdot10^{-6}=10^{-3}$ s: $V_C=\dfrac{5}{s(1+0{,}001s)}=\dfrac5s-\dfrac5{s+1000}$.
+3. $v_C(t)=5\left(1-e^{-1000t}\right)u(t)$ [V].
+// kiểm tra: tại $t=\tau=1$ ms, $v_C=5(1-e^{-1})\approx3{,}16$ V; tại $t=5$ ms, $v_C\approx4{,}97$ V
+[/STEPS]
+
+[BOX] **Nhận xét**: điện áp tiến về $5$ V (tụ nạp đầy, đúng nguồn), đạt $63\%$ sau $1$ hằng số thời gian $\tau=RC=1$ ms và gần như xong sau $5\tau$. Đơn vị: $RC$ [s] nên cực $-1000$ [1/s] hợp lý.
 
 ### J.3. So sánh một phía – hai phía
 
@@ -5217,15 +5526,181 @@ $$\int_{0^-}^tx(\tau)d\tau\leftrightarrow\frac1sX_I(s),\qquad \int_{-\infty}^tx(
 | $\frac{dx}{dt}$ | $sX-x(0^-)$ | $sX$ | ít nhất $R_x$ |
 | $\int_{-\infty}^tx$ | $\frac1s\int_{-\infty}^{0^-}x+\frac Xs$ | $\frac Xs$ | ít nhất $R_x\cap\{\mathrm{Re}\,s>0\}$ |
 
+[BOX] **Phần J — Nhớ**:
+- Một phía lấy cận $0^-$, bỏ qua ROC, dùng cho tín hiệu nhân quả.
+- $\frac{dx}{dt}\leftrightarrow sX-x(0^-)$: điều kiện đầu **tự có mặt** trong biến đổi.
+- Mạch: $R$, $sL$, $\frac1{sC}$ cộng nguồn phụ cho điều kiện đầu.
+
+[BRIDGE] **Tiếp theo**: tóm lại mối quan hệ giữa Laplace và Fourier.
+
 ---
 
 ## Phần K. Liên hệ giữa Fourier và Laplace
+
+[BOX: analogy] **Ẩn dụ**: Fourier là một **lát cắt** của "khối bánh" Laplace dọc theo trục $j\omega$; chỉ khi lát cắt này nằm trong khối (trong ROC) thì mới có miếng bánh để ăn.
+
+[BRIDGE] **Nối từ mục trước**: các phần trước dùng $s$ phức; giờ khép vòng về Fourier ở Phần A.
+
+[BOX] **Học phần này để làm gì?** Biết **khi nào** được đổi $s\to j\omega$ để lấy phổ, và khi nào không (cực trên trục ảo cho thêm xung $\delta$).
 
 [P] $X(\omega)=\int x e^{-j\omega t}dt$ và $X(s)=\int xe^{-st}dt$ ⇒ $X(s)\big|_{s=j\omega}=\mathcal F\{x(t)\}$. Laplace là **dạng tổng quát** của Fourier với tần số phức $s=\sigma+j\omega$: $X(\sigma+j\omega)=\mathcal F\{x(t)e^{-\sigma t}\}$. Fourier suy ra từ Laplace bằng $s=j\omega$ **nếu $x(t)$ khả tích tuyệt đối** ($\int|x|dt<\infty$).
 
 [P] **Ví dụ 1** — $x=e^{-at}u(t)$, $a>0$: $X(s)=\frac1{s+a}$ ($\mathrm{Re}>-a$); $X(\omega)=\int_0^\infty e^{-(a+j\omega)t}dt=\frac1{a+j\omega}=X(s)\big|_{s=j\omega}$.
 
 [P] **Ví dụ 2** — $u(t)$ (không khả tích tuyệt đối): $\mathcal L\{u\}=\frac1s$ ($\mathrm{Re}>0$), nhưng $\mathcal F\{u\}=\pi\delta(\omega)+\frac1{j\omega}$. Do ROC $\mathrm{Re}(s)>0$ **không chứa** trục $j\omega$, **không** thế $s=j\omega$ được. Xung $\pi\delta(\omega)$ là phần Laplace không có.
+
+[BOX] **Ví dụ tính tay**: $x(t)=e^{-3t}u(t)$, tìm phổ Fourier tại $\omega=4$ rad/s từ Laplace.
+
+[STEPS]
+1. $X(s)=\dfrac1{s+3}$, ROC $\mathrm{Re}>-3$ chứa trục $j\omega$ ⇒ được thế $s=j\omega$.
+2. $X(j4)=\dfrac1{3+4j}=\dfrac{3-4j}{25}=0{,}12-0{,}16j$.
+3. $|X(j4)|=\dfrac1{\sqrt{3^2+4^2}}=\dfrac15=0{,}2$; $\angle X(j4)=-\arctan\dfrac43\approx-53{,}13^\circ$.
+[/STEPS]
+
+[BOX] **Nhận xét**: mẫu $3+4j$ có độ dài đúng $5$ (bộ ba $3,4,5$) nên $|X|=0{,}2$ tròn số; so với $|X(0)|=\frac13\approx0{,}333$ phổ giảm theo tần số, đúng với tín hiệu tắt dần.
+
+[BOX] **Phần K — Nhớ**:
+- $X(j\omega)=X(s)\big|_{s=j\omega}$ **chỉ khi** trục $j\omega$ nằm trong ROC.
+- Tín hiệu không khả tích tuyệt đối (như $u(t)$) có Laplace nhưng Fourier cần thêm xung $\delta$.
+- $X(\sigma+j\omega)=\mathcal F\{x(t)e^{-\sigma t}\}$ — định nghĩa gốc của Laplace.
+
+[BRIDGE] **Tiếp theo**: gom toàn bộ công thức cốt lõi vào một cẩm nang để tra nhanh trước khi làm bài tập.
+
+---
+
+[H2] Phần L. Cẩm Nang Công Thức Trọng Tâm Bài 11
+
+[BRIDGE] **Nối từ mục trước**: mười một phần trên đã dạy đủ ý niệm; đây là bản **tra nhanh** — mỗi công thức một thẻ gồm giải nghĩa ký hiệu, khi nào dùng và lưu ý. Cột "Dùng ở" chỉ ví dụ ở phần bài tập tiếp theo.
+
+| Tình huống | Công thức | Học ở | Dùng ở |
+|---|---|---|---|
+| Tính $X(s)$ từ $x(t)$ | $\int x(t)e^{-st}dt$ | Phần B | Ví dụ 1–3 |
+| Xác định ROC | $\int\lvert x(t)e^{-\sigma t}\rvert dt<\infty$ | Phần C | Ví dụ 2, 3 |
+| Cặp gốc | $e^{-at}u(t)\leftrightarrow\frac1{s+a}$ | Phần C, F | Ví dụ 1, 3 |
+| Đoán dạng ROC | cực phải nhất / trái nhất / kẹp giữa | Phần E | Ví dụ 5 |
+| Ghép tín hiệu | tuyến tính, dịch, đạo hàm | Phần G | Ví dụ 4 |
+| Ngược, cực đơn/kép | $c_k$, $\lambda_{r-k}$ | Phần H | Ví dụ 5, 6 |
+| Ngược, $m\ge n$ | $Q(s)+\frac{R(s)}{D(s)}$ | Phần H | Ví dụ 7 |
+| Hàm truyền | $H=\frac YX$ | Phần I | Ví dụ 8 |
+| Nhân quả, ổn định | ROC và trục $j\omega$ | Phần I | — |
+| Ghép nối hệ | nối tiếp, song song, phản hồi | Phần I | — |
+| Điều kiện đầu | $sX-x(0^-)$ | Phần J | — |
+| Về Fourier | $s=j\omega$ | Phần K | — |
+
+### Công thức 1: Biến đổi Laplace hai phía / một phía
+
+[FORMULA: key]
+$$X(s)=\int_{-\infty}^{\infty}x(t)e^{-st}dt,\qquad X_I(s)=\int_{0^-}^{\infty}x(t)e^{-st}dt$$
+[/FORMULA]
+1. **Giải nghĩa**: $s=\sigma+j\omega$ [1/s]; $x(t)$ theo thời gian $t$ [s].
+2. **Khi nào dùng**: hai phía cho tín hiệu bất kỳ (kèm ROC); một phía cho tín hiệu nhân quả/có điều kiện đầu.
+3. **Lưu ý**: một phía lấy cận $0^-$ để không mất xung $\delta(t)$ tại $0$.
+
+### Công thức 2: Vùng hội tụ ROC
+
+[FORMULA: key]
+$$\int_{-\infty}^{+\infty}|x(t)e^{-\sigma t}|dt<+\infty\ \Longrightarrow\ \sigma_a<\mathrm{Re}[s]<\sigma_b,\qquad X(\sigma+j\omega)=\mathrm{FT}[x(t)e^{-\sigma t}]$$
+[/FORMULA]
+1. **Giải nghĩa**: $\sigma_a,\sigma_b$ là hai biên của dải ROC (có thể $\mp\infty$).
+2. **Khi nào dùng**: mọi bài hai phía; ROC kèm theo mỗi $X(s)$.
+3. **Lưu ý**: ROC luôn là dải **thẳng đứng** và **không chứa cực**.
+
+### Công thức 3: Cặp gốc nhân quả và phản nhân quả
+
+[FORMULA: key]
+$$e^{-at}u(t)\leftrightarrow\frac1{s+a}\ (\mathrm{Re}>-a),\qquad -e^{-at}u(-t)\leftrightarrow\frac1{s+a}\ (\mathrm{Re}<-a)$$
+[/FORMULA]
+1. **Giải nghĩa**: $a$ là hằng số [1/s]; cực tại $s=-a$.
+2. **Khi nào dùng**: "viên gạch" của mọi bài biến đổi và biến đổi ngược.
+3. **Lưu ý**: cùng $\frac1{s+a}$, **ROC quyết định** phía của tín hiệu.
+
+### Công thức 4: Quy tắc ROC theo loại tín hiệu
+
+[FORMULA: key]
+$$\text{phía phải: }\mathrm{Re}(s)>\sigma_{\max};\qquad \text{phía trái: }\mathrm{Re}(s)<\sigma_{\min};\qquad \text{hai phía: }\sigma_1<\mathrm{Re}(s)<\sigma_2$$
+[/FORMULA]
+1. **Giải nghĩa**: $\sigma_{\max},\sigma_{\min}$ là phần thực lớn nhất / nhỏ nhất của các cực.
+2. **Khi nào dùng**: đoán ROC và loại tín hiệu từ vị trí cực.
+3. **Lưu ý**: thời gian hữu hạn ⇒ ROC là cả mặt phẳng.
+
+### Công thức 5: Tính chất tuyến tính, dịch, đạo hàm, tích chập
+
+[FORMULA: key]
+$$a_1x_1+a_2x_2\leftrightarrow a_1X_1+a_2X_2,\quad x(t-t_0)\leftrightarrow e^{-st_0}X,\quad \frac{dx}{dt}\leftrightarrow sX,\quad x_1*x_2\leftrightarrow X_1X_2$$
+[/FORMULA]
+1. **Giải nghĩa**: $t_0$ [s] là độ trễ; mỗi đạo hàm tương ứng một lần nhân $s$.
+2. **Khi nào dùng**: tính nhanh $X(s)$ của tín hiệu ghép, biến phương trình vi phân thành đại số.
+3. **Lưu ý**: ROC của tổng/tích chập là **giao** (có thể rộng hơn nếu cực–không triệt tiêu).
+
+### Công thức 6: Khai triển phân thức (cực đơn và cực kép)
+
+[FORMULA: key]
+$$c_k=(s-p_k)X(s)\big|_{s=p_k},\qquad \lambda_{r-k}=\frac1{k!}\frac{d^k}{ds^k}\Big[(s-p_i)^rX(s)\Big]_{s=p_i}$$
+[/FORMULA]
+1. **Giải nghĩa**: $p_k$ là cực; $r$ là bội của cực $p_i$; $c_k,\lambda_j$ là hệ số khai triển.
+2. **Khi nào dùng**: biến đổi ngược $X(s)$ hữu tỉ với $m\lt n$.
+3. **Lưu ý**: cực kép thiếu đạo hàm sẽ mất hệ số $\lambda_1$; kiểm tra bằng $x(0^+)=\lim_{s\to\infty}sX(s)$.
+
+### Công thức 7: Biến đổi ngược khi $m\ge n$
+
+[FORMULA: key]
+$$X(s)=Q(s)+\frac{R(s)}{D(s)},\qquad \frac{d^k\delta(t)}{dt^k}\leftrightarrow s^k$$
+[/FORMULA]
+1. **Giải nghĩa**: $Q(s)$ là thương, $R(s)$ là dư (bậc nhỏ hơn $D(s)$).
+2. **Khi nào dùng**: bậc tử $\ge$ bậc mẫu.
+3. **Lưu ý**: quên chia đa thức là mất các số hạng $\delta(t)$, $\delta'(t)$.
+
+### Công thức 8: Hàm truyền
+
+[FORMULA: key]
+$$H(s)=\frac{Y(s)}{X(s)}=\frac{\sum_{k=0}^Mb_ks^k}{\sum_{k=0}^Na_ks^k}$$
+[/FORMULA]
+1. **Giải nghĩa**: $a_k,b_k$ là hệ số phương trình vi phân; điều kiện đầu bằng 0.
+2. **Khi nào dùng**: tìm $h(t)$, đáp ứng tần số $H(j\omega)$, phân loại hệ.
+3. **Lưu ý**: phải ghi kèm ROC mới xác định duy nhất $h(t)$.
+
+### Công thức 9: Điều kiện nhân quả và ổn định
+
+[FORMULA: key]
+$$\text{Ổn định}\iff j\omega\in\mathrm{ROC};\qquad \text{Nhân quả + ổn định (hữu tỉ)}\iff\mathrm{Re}(p_i)<0\ \ \forall i$$
+[/FORMULA]
+1. **Giải nghĩa**: $p_i$ là các cực của $H(s)$.
+2. **Khi nào dùng**: kết luận về hệ mà không cần tính $h(t)$.
+3. **Lưu ý**: cực trên trục ảo là ổn định biên, **không** ổn định BIBO.
+
+### Công thức 10: Ghép nối hệ thống
+
+[FORMULA: key]
+$$H_{nt}=H_1H_2,\qquad H_{ss}=H_1+H_2,\qquad H_{ph}=\frac{H_1}{1+H_1H_2}$$
+[/FORMULA]
+1. **Giải nghĩa**: $H_1$ là nhánh thuận, $H_2$ là nhánh hồi tiếp.
+2. **Khi nào dùng**: hệ ghép từ nhiều khối.
+3. **Lưu ý**: phản hồi làm cực **dịch chỗ**; kiểm tra lại ổn định sau ghép.
+
+### Công thức 11: Đạo hàm một phía mang điều kiện đầu
+
+[FORMULA: key]
+$$\frac{dx}{dt}\leftrightarrow sX_I(s)-x(0^-),\qquad \frac{d^2x}{dt^2}\leftrightarrow s^2X_I(s)-sx(0^-)-x'(0^-)$$
+[/FORMULA]
+1. **Giải nghĩa**: $x(0^-),x'(0^-)$ là giá trị đầu ngay trước $t=0$.
+2. **Khi nào dùng**: giải phương trình vi phân và mạch có điều kiện đầu.
+3. **Lưu ý**: dùng $0^-$ chứ không phải $0$, kẻo mất xung tại $t=0$.
+
+### Công thức 12: Về Fourier
+
+[FORMULA: key]
+$$X(j\omega)=X(s)\big|_{s=j\omega}\ \ \text{nếu }j\omega\in\mathrm{ROC},\qquad X(\sigma+j\omega)=\mathcal F\{x(t)e^{-\sigma t}\}$$
+[/FORMULA]
+1. **Giải nghĩa**: $\omega$ [rad/s] là tần số Fourier.
+2. **Khi nào dùng**: lấy phổ của tín hiệu đã biết $X(s)$.
+3. **Lưu ý**: $u(t)$ có ROC $\mathrm{Re}>0$ không chứa trục ảo nên $\mathcal F\{u\}=\pi\delta(\omega)+\frac1{j\omega}$, không phải $\frac1{j\omega}$.
+
+[BOX: warn] **Ba lỗi hay gặp**:
+1. **Quên ROC**: cùng $X(s)$ nhưng ROC khác ⇒ $x(t)$ khác.
+2. **Thế $s=j\omega$ khi $j\omega\notin$ ROC** (ví dụ $u(t)$, $e^{2t}u(t)$).
+3. **Nhầm dấu cực**: $e^{-at}\leftrightarrow\frac1{s+a}$ có cực tại $-a$, **không phải** $+a$.
+
+[BRIDGE] **Tiếp theo**: sang phần bài tập — tám ví dụ giải chi tiết, mỗi ví dụ theo thứ tự biến đổi → ROC → cực/không → kiểm tra.
 
 [SECTION: bai11-exercises]
 
