@@ -789,6 +789,12 @@ function loadLesson(lessonId) {
   } else if (lessonId === '10') {
     mainEl.innerHTML = $('tpl-buoi-10').innerHTML;
     if (window.LabB10) LabB10.mark(mainEl);
+  } else if (lessonId === '11') {
+    mainEl.innerHTML = $('tpl-buoi-11').innerHTML;
+    if (window.LabB11) LabB11.mark(mainEl);
+  } else if (lessonId === '12') {
+    mainEl.innerHTML = $('tpl-buoi-12').innerHTML;
+    if (window.LabB12) LabB12.mark(mainEl);
   } else {
     const tpl = $('tpl-buoi-pending');
     mainEl.innerHTML = tpl.innerHTML;
@@ -819,7 +825,9 @@ const BAN_DAN_LESSONS = [
   { id: '7', title: 'Buổi 7: Vận chuyển hạt tải (Trôi & Khuếch tán)' },
   { id: '8', title: 'Buổi 8: Hạt tải dư (Sinh, tái hợp & vận chuyển lưỡng cực)' },
   { id: '9', title: 'Buổi 9: Tiếp giáp p-n' },
-  { id: '10', title: 'Buổi 10: Tiếp xúc kim loại–bán dẫn & Dị tiếp giáp' }
+  { id: '10', title: 'Buổi 10: Tiếp xúc kim loại–bán dẫn & Dị tiếp giáp' },
+  { id: '11', title: 'Buổi 11: Transistor hiệu ứng trường MOSFET' },
+  { id: '12', title: 'Buổi 12: Transistor lưỡng cực BJT' }
 ];
 function renderLS(curId) {
   const lsEl = $('ls');
@@ -1092,7 +1100,7 @@ function renderLS(curId) {
     $('tb-title').textContent = l.title.replace(/^Buổi\s*\d+\s*:\s*/, '');
     $('tb-prev').disabled = i <= 0;
     $('tb-next').disabled = i >= BAN_DAN_LESSONS.length - 1;
-    $('tb-lab').hidden = !(['1', '2', '3', '4', '5', '6', '7', '8'].includes(String(id)) || (String(id) === '9' && !!window.LabB9) || (String(id) === '10' && !!window.LabB10));
+    $('tb-lab').hidden = !(['1', '2', '3', '4', '5', '6', '7', '8'].includes(String(id)) || (String(id) === '9' && !!window.LabB9) || (String(id) === '10' && !!window.LabB10) || (String(id) === '11' && !!window.LabB11) || (String(id) === '12' && !!window.LabB12));
     if (String(id) !== '1' && window.LabB1) LabB1.close();
     if (String(id) !== '2' && window.LabB2) LabB2.close();
     if (String(id) !== '3' && window.LabB3) LabB3.close();
@@ -1103,6 +1111,8 @@ function renderLS(curId) {
     if (String(id) !== '8' && window.LabB8) LabB8.close();
     if (String(id) !== '9' && window.LabB9) LabB9.close();
     if (String(id) !== '10' && window.LabB10) LabB10.close();
+    if (String(id) !== '11' && window.LabB11) LabB11.close();
+    if (String(id) !== '12' && window.LabB12) LabB12.close();
   };
   const go = d => {
     const l = BAN_DAN_LESSONS[idx() + d];
@@ -1122,6 +1132,8 @@ function renderLS(curId) {
             : bd === 'Buổi 8' ? window.LabB8
             : bd === 'Buổi 9' ? window.LabB9
             : bd === 'Buổi 10' ? window.LabB10
+            : bd === 'Buổi 11' ? window.LabB11
+            : bd === 'Buổi 12' ? window.LabB12
             : bd === 'Buổi 5' ? window.LabB5
             : bd === 'Buổi 6' ? window.LabB6
             : window.LabB7;
@@ -1134,6 +1146,8 @@ function renderLS(curId) {
       : L === window.LabB8 ? 'lab8'
       : L === window.LabB9 ? 'lab9'
       : L === window.LabB10 ? 'lab10'
+      : L === window.LabB11 ? 'lab11'
+      : L === window.LabB12 ? 'lab12'
       : L === window.LabB5 ? 'lab5'
       : L === window.LabB6 ? 'lab6'
       : 'lab'

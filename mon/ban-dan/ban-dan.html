@@ -6403,6 +6403,894 @@ window.MathJax = {
   </section>
 </template>
 
+<template id="tpl-buoi-11">
+  <header>
+    <span class="k b3">HỌC PHẦN ENP2209 · BUỔI 11</span>
+    <h1>Transistor Hiệu Ứng Trường MOSFET: Cấu Trúc MOS, Đặc Tuyến C-V, Dòng I-V, Tần Số Cắt và Hiệu Ứng Phi Lý Tưởng</h1>
+    <p class="mut">Slide Chương 14 (Neamen, <i>Fundamentals of the Metal–Oxide–Semiconductor Field-Effect Transistor</i>). Tụ MOS hai cực, điện áp dải phẳng và điện áp ngưỡng, đặc tuyến $C$-$V$, dòng $I$-$V$ của MOSFET, tần số cắt và năm hiệu ứng phi lý tưởng.</p>
+    <div class="roadmap"><p><b>Bản đồ Buổi 11: từ "tụ điện MOS" đến "transistor MOSFET đã thu nhỏ"</b></p><ol>
+      <li><b>Mục 1:</b> Cấu trúc MOS hai cực: tích lũy, nghèo, đảo ngược và giản đồ vùng năng lượng.</li>
+      <li><b>Mục 2:</b> Vùng nghèo cực đại, điện tích bề mặt, hiệu số công thoát, điện áp dải phẳng $V_{FB}$ và điện áp ngưỡng $V_T$.</li>
+      <li><b>Mục 3:</b> Đặc tuyến $C$-$V$ của tụ MOS và ảnh hưởng của tần số đo.</li>
+      <li><b>Mục 4:</b> MOSFET kênh n: điện dẫn kênh, vùng không bão hòa và bão hòa, họ đặc tuyến.</li>
+      <li><b>Mục 5:</b> Mạch tương đương tín hiệu nhỏ, hiệu ứng Miller và tần số cắt $f_T$.</li>
+      <li><b>Mục 6:</b> Năm hiệu ứng phi lý tưởng: dòng dưới ngưỡng, điều biến độ dài kênh, thay đổi độ linh động, bão hòa vận tốc, vận chuyển đạn đạo.</li>
+      <li><b>Mục 7:</b> Cẩm nang công thức. Cuối bài là tổng kết.</li></ol>
+      <p><b>Sau buổi này em làm được:</b> vẽ giản đồ vùng của tụ MOS ở ba chế độ; tính $x_{dT}$, $V_{FB}$, $V_T$; phác đồ thị $C$-$V$ và giải thích vì sao đo ở tần số cao khác tần số thấp; viết dòng $I_D$ ở hai vùng làm việc; ước lượng $f_T$ và hiểu vì sao điện dung Miller hạn chế tốc độ; nêu năm sai lệch so với lý thuyết lý tưởng.</p></div>
+  </header>
+
+  <section>
+    <h2>Mở đầu: Từ "tiếp giáp" đến "cổng điều khiển bằng điện trường"</h2>
+    <p>Chào em! Ở Buổi 9 và 10, ta đã biết dòng điện qua tiếp giáp bị <i>hàng rào</i> điều khiển. Buổi này ta gặp linh kiện quan trọng nhất của vi điện tử: <b>MOSFET</b>. Ý tưởng chỉ có một câu: đặt điện áp lên một điện cực (cổng) cách điện với bán dẫn, điện trường xuyên qua lớp oxit <b>kéo hoặc đẩy electron</b> ở sát bề mặt, từ đó điều khiển dòng điện chạy giữa hai đầu còn lại (nguồn và máng).</p>
+    <div class="box analogy">
+      <b>Ví dụ ẩn dụ: van nước không chạm vào nước</b><br>
+      Hình dung một con kênh khô cạn nối bể nguồn với bể máng. Tấm ván phía trên (cổng) không chạm vào kênh, chỉ dùng "lực hút" để mời nước lên mặt kênh. Lực hút còn yếu thì kênh trống (tắt). Vượt một mức nào đó (điện áp ngưỡng), nước dâng thành một lớp mỏng nối hai bể (kênh dẫn), kéo mạnh hơn nữa thì lớp nước dày lên và dòng chảy mạnh hơn. Vì ván không chạm nước nên gần như không có dòng chạy vào cổng.
+    </div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Mỗi vi xử lý có hàng tỉ MOSFET. Hiểu $V_T$, $I_D$, $f_T$ và các hiệu ứng phi lý tưởng là hiểu vì sao chip nhanh lên, nóng lên và vì sao khi thu nhỏ $L$ các công thức "sách giáo khoa" bắt đầu sai.</div>
+    <div class="tw"><table><tr><th>Buổi trước</th><th>Dùng ở Buổi 11 để làm gì</th></tr>
+      <tr><td>Buổi 5, 6: $n_i$, $E_{Fi}$, $E_F$, $N_a$, $\phi_{fp}$</td><td>Tính thế Fermi $\phi_{fp}$ và điều kiện đảo ngược $\phi_s=2\phi_{fp}$</td></tr>
+      <tr><td>Buổi 9: vùng nghèo một phía, $W$, $C'$</td><td>Vùng nghèo dưới oxit có công thức giống tiếp giáp $p^+n$; tụ nghèo nối tiếp tụ oxit</td></tr>
+      <tr><td>Buổi 10: công thoát, ái lực điện tử, uốn vùng</td><td>Hiệu số công thoát $\phi_{ms}$ giữa cổng và bán dẫn</td></tr>
+      <tr><td>Buổi 3, 4: trôi, độ linh động, vận tốc bão hòa</td><td>$g_d=(W/L)\mu_n|Q'_n|$, $\tau_t=L/v_{sat}$, mục phi lý tưởng</td></tr></table></div>
+  </section>
+
+  <section>
+    <h2>1. Cấu Trúc MOS Hai Cực Và Giản Đồ Vùng Năng Lượng</h2>
+    <div class="bridge"><b>Nối từ phần mở đầu:</b> Trái tim của MOSFET là <b>tụ MOS</b>: kim loại (cổng) / oxit / bán dẫn. Hiểu tụ MOS là hiểu một nửa MOSFET.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Ba chế độ tích lũy, nghèo, đảo ngược là ngôn ngữ chung cho mọi phần sau: $V_T$ là điểm chuyển sang đảo ngược, $C$-$V$ là tín hiệu để nhận biết ba chế độ.</div>
+
+    <h3>1.1. Cấu trúc tụ MOS</h3>
+    <p>Theo slide:</p>
+    <ul>
+      <li>Lõi của MOSFET là <b>tụ MOS</b>: cổng kim loại, lớp oxit cách điện (SiO$_2$), đế bán dẫn.</li>
+      <li>"Kim loại" có thể là nhôm hoặc kim loại khác, nhưng nhiều trường hợp thực tế là <b>silic đa tinh thể dẫn tốt</b> phủ lên oxit; người ta vẫn gọi chung là kim loại.</li>
+      <li>Cấu trúc giống tụ phẳng: điện áp cổng $V_G$ tạo điện trường qua oxit, nên điện tích trên cổng và điện tích cảm ứng trong bán dẫn trái dấu nhau.</li>
+    </ul>
+
+    <h3>1.2. Ba chế độ của tụ MOS đế loại p</h3>
+    <p>Slide xét đế loại $p$ và tăng dần $V_G$. Ở cân bằng nhiệt, mức Fermi $E_F$ là một đường <b>nằm ngang</b> trong bán dẫn vì không có dòng qua oxit.</p>
+    <div class="tw"><table><tr><th>Điện áp cổng</th><th>Điều gì xảy ra ở mặt phân cách</th><th>Chế độ</th></tr>
+      <tr><td>$V_G\lt0$ (âm)</td><td>Vùng hóa trị cong <b>lên</b> gần $E_F$: lỗ trống tụ về sát bề mặt, bề mặt "p hơn" lõi</td><td><b>Tích lũy</b></td></tr>
+      <tr><td>$V_G=V_{FB}$</td><td>Vùng năng lượng <b>phẳng</b>, không có điện tích thực trong bán dẫn</td><td><b>Dải phẳng</b></td></tr>
+      <tr><td>$V_G\gt0$ nhỏ</td><td>Vùng cong <b>xuống</b>; lỗ trống bị đẩy đi, lộ ra ion acceptor âm: <b>vùng nghèo</b> như tiếp giáp p-n</td><td><b>Nghèo</b></td></tr>
+      <tr><td>$V_G$ đủ dương</td><td>$E_{Fi}$ ở bề mặt xuống dưới $E_F$: bề mặt có $n\gt p$, hình thành <b>lớp electron</b> (lớp đảo)</td><td><b>Đảo ngược</b></td></tr></table></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>Điện áp dương lớn hơn ⇒ điện trường lớn hơn ⇒ điện tích hai bên oxit lớn hơn ⇒ <b>vùng nghèo rộng hơn và vùng cong nhiều hơn</b>.</li>
+      <li>Khi đủ dương, bề mặt bán dẫn đổi từ loại $p$ sang loại $n$: đây là <b>lớp đảo ngược electron</b> mà kênh MOSFET dựa vào.</li></ul></div>
+
+    <h3>1.3. Đế loại n</h3>
+    <p>Với đế loại $n$ mọi dấu đảo ngược: $V_G\gt0$ gây <b>tích lũy electron</b>; $V_G\lt0$ gây <b>nghèo</b>; $V_G$ âm hơn nữa gây <b>đảo ngược thành lớp lỗ trống</b> (kênh p).</p>
+
+    <h3>1.4. Mô hình tương tác: Giản đồ vùng của tụ MOS ở tích lũy, nghèo và đảo ngược</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Ba chế độ chỉ khác nhau ở độ uốn vùng; nhìn $E_c$, $E_v$, $E_{Fi}$ cong khi $V_G$ đổi giúp nhớ ngay.</li><li><b>Dùng để làm gì:</b> Thấy $E_{Fi}$ đi xuống qua $E_F$ khi đảo ngược, thấy lớp lỗ trống (tích lũy) và lớp electron (đảo) nằm sát oxit, đếm điện tích trên cổng và trong bán dẫn.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Chọn đế p hoặc n, kéo $V_G$ từ âm đến dương, quan sát vùng uốn và vùng nghèo.</li></ul></div>
+
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul>
+      <li>MOS = cổng / oxit / bán dẫn; điện áp cổng điều khiển điện tích bề mặt qua điện trường.</li>
+      <li>Đế p: $V_G$ âm ⇒ tích lũy lỗ; $V_G$ dương nhỏ ⇒ nghèo; $V_G$ đủ dương ⇒ đảo ngược electron.</li>
+      <li>Đế n: mọi dấu ngược lại; ở cân bằng, $E_F$ luôn phẳng.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 2 hỏi "đủ dương" là bao nhiêu: tính điểm ngưỡng đảo và điện áp cổng tương ứng.</div>
+  </section>
+
+  <section>
+    <h2>2. Vùng Nghèo, Điện Tích Bề Mặt, $V_{FB}$ Và $V_T$</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Ta biết bề mặt đảo ngược khi vùng cong đủ nhiều. Bây giờ biến "đủ nhiều" thành con số.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> $V_T$ là thông số thiết kế số một của MOSFET: nó cho biết cổng cần bao nhiêu volt để bật kênh, và phụ thuộc $N_a$, $t_{ox}$, điện tích oxit, vật liệu cổng.</div>
+
+    <h3>2.1. Thế Fermi và thế bề mặt</h3>
+    <p>Slide định nghĩa hai thế (đều tính bằng V):</p>
+    <div class="f key">$$\phi_{fp}=\frac{kT}{e}\ln\frac{N_a}{n_i}$$
+      <small>$\phi_{fp}$: hiệu giữa $E_{Fi}$ và $E_F$ trong lõi đế $p$ (dương). $\phi_s$: <b>thế bề mặt</b> (độ lệch của $E_{Fi}$ ở bề mặt so với $E_{Fi}$ trong lõi, đo bằng V), tăng dần khi $V_G$ tăng. Đế n: dùng $\phi_{fn}=\dfrac{kT}{e}\ln\dfrac{N_d}{n_i}$.</small></div>
+
+    <h3>2.2. Bề rộng vùng nghèo và điểm ngưỡng đảo</h3>
+    <p>Với gần đúng nghèo đột ngột bề rộng vùng điện tích không gian có dạng của tiếp giáp một phía:</p>
+    <div class="f key">$$x_d=\left(\frac{2\epsilon_s\phi_s}{eN_a}\right)^{1/2}$$
+      <small>$\epsilon_s$: hằng số điện môi của bán dẫn (F/cm). $x_d$ tăng theo $\phi_s$.</small></div>
+    <p><b>Điểm ngưỡng đảo ngược</b> được định nghĩa là lúc nồng độ electron ở bề mặt bằng nồng độ lỗ trống trong lõi, tức là:</p>
+    <div class="f key">$$\phi_s=2\phi_{fp}\ \ (\text{đế p}),\qquad \phi_s=2\phi_{fn}\ \ (\text{đế n})$$
+      $$x_{dT}=\left(\frac{4\epsilon_s\phi_{fp}}{eN_a}\right)^{1/2},\qquad |Q'_{SD}(\max)|=eN_ax_{dT}$$
+      <small>$x_{dT}$: <b>bề rộng vùng nghèo cực đại</b> (cm). $Q'_{SD}$: điện tích vùng nghèo trên một đơn vị diện tích ($\text{C/cm}^2$).</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>Vượt điểm ngưỡng, vùng nghèo <b>không rộng thêm</b>; điện tích tăng thêm của cổng được cân bằng bởi <b>electron của lớp đảo</b>.</li>
+      <li>Nồng độ electron bề mặt tại ngưỡng: $n_{st}=n_i\exp(\phi_{fp}/V_t)$ với $V_t=kT/e$; khi thế bề mặt tăng thêm $\Delta\phi_s$ thì $n_s=n_{st}\exp(\Delta\phi_s/V_t)$ (chỉ cần tăng thêm vài chục mV là electron tăng gấp bội).</li></ul></div>
+
+    <h3>2.3. Mô hình tương tác: Uốn vùng, vùng nghèo cực đại và mật độ electron bề mặt</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Công thức $x_d$, $x_{dT}$, $n_s$ chứa căn và hàm mũ; kéo $\phi_s$ và $N_a$ cho thấy rõ vì sao vùng nghèo "chạm trần" còn electron thì tăng vọt.</li><li><b>Dùng để làm gì:</b> Đọc $x_d$, $|Q'_{SD}|$ theo $\phi_s$; thấy $x_d$ dừng ở $x_{dT}$ khi $\phi_s=2\phi_{fp}$; thấy $n_s$ tăng theo hàm mũ sau điểm đó.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $N_a$ (thang log) và $\phi_s$ từ 0 đến quá $2\phi_{fp}$, quan sát $x_d$, $Q'_{SD}$, $n_s$.</li></ul></div>
+
+    <h3>2.4. Hiệu số công thoát cổng và bán dẫn</h3>
+    <p>Cổng và bán dẫn có công thoát khác nhau, nên ngay cả khi $V_G=0$ đã có điện trường trong oxit:</p>
+    <div class="f key">$$\phi_{ms}=\phi'_m-\left(\chi'+\frac{E_g}{2e}+\phi_{fp}\right)\ \ (\text{đế p}),\qquad \phi_{ms}=\phi'_m-\left(\chi'+\frac{E_g}{2e}-\phi_{fn}\right)\ \ (\text{đế n})$$
+      <small>$\phi'_m$: công thoát cổng đối với oxit; $\chi'$: ái lực điện tử của bán dẫn đối với oxit. Số hạng trong ngoặc là công thoát của bán dẫn $\phi'_s$.</small></div>
+
+    <h3>2.5. Điện áp dải phẳng</h3>
+    <p>Điện áp cổng cần để vùng năng lượng phẳng (không uốn), tức $\phi_s=0$, gọi là <b>điện áp dải phẳng</b>. Có hai nguồn lệch: hiệu công thoát $\phi_{ms}$ và điện tích oxit cố định (thường dương), ký hiệu $Q'_{ss}$ ($\text{C/cm}^2$), coi như nằm sát mặt phân cách oxit–bán dẫn.</p>
+    <p>Điện áp cổng gồm ba phần: rơi trên oxit, thế bề mặt, và hiệu số công thoát:</p>
+    <div class="f key">$$V_G=V_{ox}+\phi_s+\phi_{ms}$$
+      $$V_{FB}=\phi_{ms}-\frac{Q'_{ss}}{C_{ox}},\qquad C_{ox}=\frac{\epsilon_{ox}}{t_{ox}}$$
+      <small>Dải phẳng có $\phi_s=0$ và không có điện tích thực trong bán dẫn, nên điện áp oxit chỉ do $Q'_{ss}$ gây ra: $V_{ox}=-Q'_{ss}/C_{ox}$. $C_{ox}$: điện dung oxit trên một đơn vị diện tích ($\text{F/cm}^2$).</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>$Q'_{ss}$ dương làm $V_{FB}$ <b>âm hơn</b> (cần kéo cổng xuống để triệt điện trường của điện tích dương).</li>
+      <li>Oxit mỏng ($C_{ox}$ lớn) làm ảnh hưởng của $Q'_{ss}$ nhỏ đi.</li></ul></div>
+
+    <h3>2.6. Điện áp ngưỡng</h3>
+    <p>Điện áp ngưỡng là điện áp cổng đưa bề mặt tới điểm ngưỡng đảo. Tại đó $\phi_s=2\phi_{fp}$ và vùng nghèo đạt cực đại, nên điện tích bán dẫn là $-|Q'_{SD}(\max)|$. Cổng phải mang điện tích đối ứng cộng thêm lượng bù $Q'_{ss}$, điện áp qua oxit là $V_{oxT}=(|Q'_{SD}(\max)|-Q'_{ss})/C_{ox}$:</p>
+    <div class="f key">$$V_{TN}=V_{oxT}+2\phi_{fp}+\phi_{ms}=\frac{|Q'_{SD}(\max)|}{C_{ox}}+V_{FB}+2\phi_{fp}$$
+      $$V_{TN}=\left(|Q'_{SD}(\max)|-Q'_{ss}\right)\frac{t_{ox}}{\epsilon_{ox}}+\phi_{ms}+2\phi_{fp}$$
+      <small>Đế $p$, kênh n (n-MOSFET). Nếu tính ra $V_{TN}\lt0$ thì linh kiện là <b>loại nghèo (depletion mode)</b>: phải đặt điện áp âm vào cổng mới triệt được lớp đảo; còn $V_{TN}\gt0$ là <b>loại giàu (enhancement mode)</b>.</small></div>
+    <p>Với đế loại $n$ (kênh p), $x_{dT}=\left(\dfrac{4\epsilon_s\phi_{fn}}{eN_d}\right)^{1/2}$ và:</p>
+    <div class="f key">$$V_{TP}=\left(-|Q'_{SD}(\max)|-Q'_{ss}\right)\frac{t_{ox}}{\epsilon_{ox}}+\phi_{ms}-2\phi_{fn},\qquad \phi_{ms}=\phi'_m-\left(\chi'+\frac{E_g}{2e}-\phi_{fn}\right)$$
+      <small>Thông thường $V_{TP}\lt0$ ở loại giàu: phải đặt cổng âm để tạo lớp đảo lỗ trống.</small></div>
+    <div class="box why"><b>Đọc công thức $V_{TN}$ theo từng số hạng.</b>
+      <ul><li>$|Q'_{SD}(\max)|t_{ox}/\epsilon_{ox}$: phần cần để "đào" vùng nghèo sâu $x_{dT}$; tăng với $N_a$ và $t_{ox}$.</li>
+      <li>$2\phi_{fp}$: phần uốn vùng cần thiết; tăng chậm (logarit) theo $N_a$.</li>
+      <li>$\phi_{ms}-Q'_{ss}t_{ox}/\epsilon_{ox}$: hai số hạng "lệch" do vật liệu cổng và điện tích oxit; tinh chỉnh bằng chọn cổng và quy trình chế tạo.</li></ul></div>
+
+    <h3>2.7. Mô hình tương tác: Điện áp ngưỡng theo $N_a$, $t_{ox}$ và điện tích oxit</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> $V_T$ phụ thuộc đồng thời năm thông số; kéo từng thông số giúp thấy cái nào ảnh hưởng mạnh.</li><li><b>Dùng để làm gì:</b> Đọc $\phi_{fp}$, $x_{dT}$, $C_{ox}$, $\phi_{ms}$, $V_{FB}$, $V_{TN}$; thấy $V_T$ tăng theo $N_a$ và $t_{ox}$, giảm khi $Q'_{ss}$ tăng.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $N_a$, $t_{ox}$, $Q'_{ss}$, chọn vật liệu cổng, theo dõi $V_{TN}$ và đường $V_{TN}$ theo $N_a$.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 2.1 (bổ sung; điều kiện của Ví dụ 10.4, slide trang 30, tính theo công thức của slide).</b> Tụ MOS cổng nhôm, đế Si loại $p$ có $N_a=10^{15}\text{ cm}^{-3}$, $Q'_{ss}=10^{10}\text{ cm}^{-2}$ (tức $1.6\times10^{-9}\text{ C/cm}^2$), $t_{ox}=12\text{ nm}$. Tìm $\phi_{fp}$, $x_{dT}$, $V_{FB}$, $V_{TN}$. <i>Giả thiết bổ sung (không có trong slide):</i> $T=300\text{ K}$, $V_t=0.0259\text{ V}$, $n_i=1.5\times10^{10}\text{ cm}^{-3}$, $\epsilon_s=11.7\epsilon_0$, $\epsilon_{ox}=3.9\epsilon_0$, $\epsilon_0=8.85\times10^{-14}\text{ F/cm}$, $\phi'_m=4.28\text{ V}$ (Al), $\chi'=3.25\text{ V}$, $E_g=1.12\text{ eV}$.
+      <div class="step">
+        <span class="cmt">// Thế Fermi:</span>
+        $$\phi_{fp}=0.0259\ln\frac{10^{15}}{1.5\times10^{10}}=\mathbf{0.288\text{ V}}$$
+        <span class="cmt">// Vùng nghèo cực đại và điện tích tương ứng:</span>
+        $$x_{dT}=\left(\frac{4\times11.7\times8.85\times10^{-14}\times0.288}{1.6\times10^{-19}\times10^{15}}\right)^{1/2}=\mathbf{0.863\ \mu m},\quad |Q'_{SD}(\max)|=eN_ax_{dT}=\mathbf{1.38\times10^{-8}\text{ C/cm}^2}$$
+        <span class="cmt">// Điện dung oxit:</span>
+        $$C_{ox}=\frac{3.9\times8.85\times10^{-14}}{12\times10^{-7}}=\mathbf{2.88\times10^{-7}\text{ F/cm}^2}$$
+        <span class="cmt">// Hiệu số công thoát và điện áp dải phẳng:</span>
+        $$\phi_{ms}=4.28-\left(3.25+0.56+0.288\right)=\mathbf{0.182\text{ V}},\qquad V_{FB}=0.182-\frac{1.6\times10^{-9}}{2.88\times10^{-7}}=\mathbf{0.177\text{ V}}$$
+        <span class="cmt">// Điện áp ngưỡng:</span>
+        $$V_{TN}=\frac{1.38\times10^{-8}}{2.88\times10^{-7}}+0.177+2(0.288)=0.048+0.177+0.575\approx\mathbf{0.80\text{ V}}$$
+      </div>
+      <b>Nhận xét:</b> Phần "đào vùng nghèo" chỉ đóng góp $0.048\text{ V}$ vì oxit rất mỏng; phần uốn vùng $2\phi_{fp}=0.575\text{ V}$ là lớn nhất. Đây là kết quả của các giả thiết bổ sung trên (đề gốc trong slide chỉ cho điều kiện bài toán).</div>
+
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul>
+      <li>$\phi_{fp}=V_t\ln(N_a/n_i)$; ngưỡng đảo khi $\phi_s=2\phi_{fp}$; $x_{dT}=\left(4\epsilon_s\phi_{fp}/(eN_a)\right)^{1/2}$.</li>
+      <li>$V_G=V_{ox}+\phi_s+\phi_{ms}$; $V_{FB}=\phi_{ms}-Q'_{ss}/C_{ox}$.</li>
+      <li>$V_{TN}=|Q'_{SD}(\max)|/C_{ox}+V_{FB}+2\phi_{fp}$; kênh p: dấu của $Q'_{SD}$ và $2\phi_{fn}$ đổi.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 3 chỉ cách <i>đo</i> các chế độ này bằng điện dung, và vì sao kết quả đo phụ thuộc tần số.</div>
+  </section>
+
+  <section>
+    <h2>3. Đặc Tuyến Điện Dung–Điện Áp ($C$-$V$) Của Tụ MOS</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Điện áp ngưỡng và điện tích oxit không đo trực tiếp được; ta đo điện dung và suy ra.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Đường $C$-$V$ cho biết $t_{ox}$, $N_a$, $V_{FB}$, $V_T$ và mật độ điện tích oxit; đây là phép đo tiêu chuẩn trong nhà máy chế tạo chip.</div>
+
+    <h3>3.1. Điện dung ở ba chế độ</h3>
+    <p>Điện dung tín hiệu nhỏ $C'=dQ'/dV$ (trên một đơn vị diện tích) đo bằng cách chồng một điện áp xoay chiều nhỏ lên điện áp cổng một chiều rồi quét điện áp một chiều. Ban đầu giả thiết không có điện tích trong oxit hay ở mặt phân cách.</p>
+    <ul>
+      <li><b>Tích lũy</b> (đế p, $V_G$ âm): thay đổi nhỏ của điện áp chỉ làm đổi điện tích cổng và lớp lỗ trống sát oxit, nên chỉ còn tụ oxit: $C'(\text{acc})=C_{ox}$.</li>
+      <li><b>Nghèo</b>: tụ oxit nối tiếp với tụ vùng nghèo. Thay đổi điện áp làm vùng nghèo rộng/hẹp đi.</li>
+      <li><b>Đảo ngược, tần số thấp</b>: lớp electron theo kịp tín hiệu, vùng nghèo không đổi, điện dung quay về $C_{ox}$.</li>
+    </ul>
+    <div class="f key">$$C'(\text{depl})=\frac{C_{ox}C'_{SD}}{C_{ox}+C'_{SD}}=\frac{\epsilon_{ox}}{t_{ox}+\dfrac{\epsilon_{ox}}{\epsilon_s}x_d}$$
+      $$C'_{\min}=\frac{\epsilon_{ox}}{t_{ox}+\dfrac{\epsilon_{ox}}{\epsilon_s}x_{dT}}\qquad(\text{tại điểm ngưỡng, }x_d=x_{dT})$$
+      $$C'_{FB}=\frac{\epsilon_{ox}}{t_{ox}+\dfrac{\epsilon_{ox}}{\epsilon_s}\sqrt{\dfrac{kT}{e}\dfrac{\epsilon_s}{eN_a}}}$$
+      <small>$C'_{SD}=\epsilon_s/x_d$: điện dung vùng nghèo. $C'_{\min}$: điện dung cực tiểu (vùng nghèo rộng nhất). $C'_{FB}$: điện dung tại dải phẳng (nằm giữa tích lũy và nghèo, độ dày Debye thay cho $x_d$).</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>$C'$ giảm khi $V_G$ tăng từ $C_{ox}$ xuống $C'_{\min}$ vì vùng nghèo rộng ra (hai tụ nối tiếp, tụ nhỏ nhất quyết định).</li>
+      <li>Vùng chuyển tiếp giữa nghèo hoàn toàn và đảo ngược hoàn toàn gọi là <b>đảo ngược trung bình</b>: cả điện tích nghèo lẫn điện tích đảo cùng thay đổi.</li></ul></div>
+
+    <h3>3.2. Mô hình tương tác: Đặc tuyến $C$-$V$ lý tưởng của tụ MOS</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Đường $C$-$V$ là bản "chữ ký" của tụ MOS; kéo $t_{ox}$, $N_a$ cho thấy vì sao độ sâu của "võng" và vị trí của nó thay đổi.</li><li><b>Dùng để làm gì:</b> Đọc $C_{ox}$, $C'_{\min}$, $C'_{FB}$, $V_{FB}$, $V_T$ trên đồ thị; nhận ra chế độ nào ứng với đoạn nào.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $t_{ox}$, $N_a$, $Q'_{ss}$; di con trỏ $V_G$ dọc đường cong và xem giản đồ vùng tương ứng.</li></ul></div>
+
+    <h3>3.3. Vì sao $C$-$V$ phụ thuộc tần số</h3>
+    <p>Khi đế p bị đảo ngược, electron của lớp đảo phải đến từ đâu đó. Có hai nguồn:</p>
+    <ol>
+      <li><b>Khuếch tán</b> electron thiểu số từ đế p qua vùng nghèo: cùng cơ chế với dòng bão hòa ngược của tiếp giáp p-n.</li>
+      <li><b>Phát sinh nhiệt</b> cặp electron–lỗ trống trong vùng điện tích không gian: cùng cơ chế với dòng phát sinh ngược.</li>
+    </ol>
+    <p>Cả hai xảy ra với tốc độ <b>hữu hạn</b>, nên nếu điện áp xoay chiều đổi quá nhanh, lớp đảo không theo kịp và đường $C$-$V$ trở thành hàm của tần số.</p>
+    <div class="tw"><table><tr><th>Tần số đo</th><th>Lớp đảo</th><th>Điện dung trong đảo ngược</th></tr>
+      <tr><td><b>Thấp</b> ($\sim5$ đến $100\text{ Hz}$)</td><td>Theo kịp tín hiệu</td><td>Tăng trở lại về $C_{ox}$</td></tr>
+      <tr><td><b>Cao</b> ($\sim1\text{ MHz}$, điều kiện đo thông dụng)</td><td>Không phản ứng; thay đổi điện tích chỉ xảy ra ở cổng và mép vùng nghèo</td><td>Giữ <b>phẳng ở $C'_{\min}$</b></td></tr></table></div>
+    <div class="box warn"><b>Chú ý:</b> Tần số cao hay thấp ở đây là so với tốc độ phát sinh/khuếch tán electron thiểu số, không phải một con số tuyệt đối. Slide chỉ cho hai mốc điển hình ($5$ đến $100\text{ Hz}$ và $1\text{ MHz}$). Phần ảnh hưởng của điện tích oxit và trạng thái mặt phân cách lên $C$-$V$ được slide yêu cầu sinh viên tự đọc trong giáo trình.</div>
+
+    <h3>3.4. Mô hình tương tác: $C$-$V$ ở tần số thấp và tần số cao: lớp đảo có theo kịp tín hiệu không</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Tần số là biến số mà giản đồ tĩnh không thể hiện; ở đây em thấy lớp electron "đuổi theo" hoặc "bỏ lại" tín hiệu.</li><li><b>Dùng để làm gì:</b> Hiểu vì sao hai đường cong tách nhau chỉ trong vùng đảo ngược, và vì sao phép đo công nghiệp chọn $1\text{ MHz}$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo tần số từ thấp đến cao và quan sát điện dung trong vùng đảo ngược nhảy từ $C_{ox}$ xuống $C'_{\min}$.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 3.1 (bổ sung, nối tiếp Ví dụ 2.1).</b> Với cùng tụ MOS, tính $C'_{\min}$ và $C'_{FB}$.
+      <div class="step">
+        <span class="cmt">// Tại ngưỡng: $x_{dT}=0.863\ \mu m$, $\epsilon_{ox}/\epsilon_s=3.9/11.7=1/3$:</span>
+        $$C'_{\min}=\frac{3.9\times8.85\times10^{-14}}{12\times10^{-7}+\tfrac13\times8.63\times10^{-5}}=\mathbf{1.15\times10^{-8}\text{ F/cm}^2}\approx0.04\,C_{ox}$$
+        <span class="cmt">// Tại dải phẳng: $x=\sqrt{(kT/e)\epsilon_s/(eN_a)}=0.129\ \mu m$:</span>
+        $$C'_{FB}=\frac{3.45\times10^{-13}}{12\times10^{-7}+\tfrac13\times1.29\times10^{-5}}=\mathbf{6.26\times10^{-8}\text{ F/cm}^2}\approx0.22\,C_{ox}$$
+      </div>
+      <b>Nhận xét:</b> Oxit chỉ $12\text{ nm}$ nhưng vùng nghèo cực đại tới $0.86\ \mu m$, nên $C'_{\min}$ chỉ bằng khoảng $4\%$ của $C_{ox}$; đường $C$-$V$ "võng" rất sâu.</div>
+
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul>
+      <li>Tích lũy: $C'=C_{ox}$; nghèo: $C'=\epsilon_{ox}/(t_{ox}+(\epsilon_{ox}/\epsilon_s)x_d)$; cực tiểu $C'_{\min}$ tại $x_{dT}$.</li>
+      <li>Tần số thấp: đảo ngược ⇒ $C'$ quay về $C_{ox}$; tần số cao ($\sim1\text{ MHz}$): $C'$ phẳng ở $C'_{\min}$.</li>
+      <li>Nguyên nhân: electron lớp đảo đến từ khuếch tán hoặc phát sinh nhiệt, đều cần thời gian.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 4 dùng lớp đảo làm <i>kênh dẫn</i> giữa nguồn và máng, tức là MOSFET.</div>
+  </section>
+
+  <section>
+    <h2>4. Hoạt Động Cơ Bản Của MOSFET: Quan Hệ $I$-$V$</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Thêm hai vùng $n^+$ (nguồn và máng) hai bên tụ MOS. Khi $V_{GS}\gt V_T$, lớp đảo electron nối hai vùng, tạo kênh dẫn cho dòng $I_D$.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Hai công thức $I_D$ ở vùng không bão hòa và bão hòa là cơ sở của mọi tính toán mạch dùng MOSFET.</div>
+
+    <h3>4.1. Kênh như một điện trở</h3>
+    <p>Với $V_{DS}$ nhỏ, kênh hoạt động như điện trở. Điện dẫn kênh:</p>
+    <div class="f key">$$g_d=\frac{\partial I_D}{\partial V_{DS}}\Big|_{V_{DS}\to0}=\frac{W}{L}\mu_n|Q'_n|$$
+      <small>$W$, $L$: bề rộng và độ dài kênh; $\mu_n$: độ linh động electron trong lớp đảo; $|Q'_n|$: độ lớn điện tích lớp đảo trên một đơn vị diện tích, $|Q'_n|=C_{ox}(V_{GS}-V_T)$.</small></div>
+    <ul>
+      <li>$V_{GS}\le V_T$: không có lớp đảo, $I_D=0$ (lý tưởng).</li>
+      <li>$V_{GS}\gt V_T$: $|Q'_n|$ tăng, $g_d$ tăng, nên <b>độ dốc ban đầu</b> của $I_D$–$V_{DS}$ tăng.</li>
+    </ul>
+
+    <h3>4.2. Mô hình tương tác: Kênh dẫn khi $V_{DS}$ tăng dần: từ điện trở đến kênh thắt</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Điện áp dọc kênh làm điện áp qua oxit giảm dần từ nguồn về máng; nhìn bề dày kênh thay đổi giúp hiểu vì sao dòng bão hòa.</li><li><b>Dùng để làm gì:</b> Thấy lớp đảo mỏng dần phía máng, bằng không tại $V_{DS}=V_{DS}(\text{sat})=V_{GS}-V_T$ ("kênh thắt"), và hiểu vì sao $I_D$ không tăng thêm.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_{GS}$, $V_{DS}$, quan sát hình dạng kênh, mật độ điện tích và điểm đặt trên đặc tuyến.</li></ul></div>
+
+    <h3>4.3. Kênh thắt và bão hòa</h3>
+    <p>Khi $V_{DS}$ tăng đến mức điện áp qua oxit tại đầu máng bằng $V_T$, mật độ điện tích đảo tại máng bằng không. Điện dẫn vi phân tại máng bằng không nên độ dốc đường $I_D$–$V_{DS}$ bằng không:</p>
+    <div class="f key">$$V_{DS}(\text{sat})=V_{GS}-V_T$$
+      <small>$V_{DS}(\text{sat})$ phụ thuộc $V_{GS}$; $V_{GS}$ lớn hơn ⇒ bão hòa ở $V_{DS}$ lớn hơn và dòng bão hòa lớn hơn. Đó là cách ra họ đặc tuyến của MOSFET kênh n loại giàu.</small></div>
+
+    <h3>4.4. Phương trình dòng lý tưởng</h3>
+    <p>Slide cho hai vùng:</p>
+    <div class="f key">$$\textbf{Không bão hòa } (V_{DS}\lt V_{DS}(\text{sat})):\quad I_D=\frac{W\mu_nC_{ox}}{2L}\left[2(V_{GS}-V_T)V_{DS}-V_{DS}^2\right]=\frac{k'_n}{2}\frac{W}{L}\left[2(V_{GS}-V_T)V_{DS}-V_{DS}^2\right]=K_n\left[\ldots\right]$$
+      $$\textbf{Bão hòa } (V_{DS}\ge V_{DS}(\text{sat})):\quad I_D=\frac{W\mu_nC_{ox}}{2L}(V_{GS}-V_T)^2=\frac{k'_n}{2}\frac{W}{L}(V_{GS}-V_T)^2=K_n(V_{GS}-V_T)^2$$
+      <small>$k'_n=\mu_nC_{ox}$ ($\text{A/V}^2$): <b>tham số độ dẫn của quá trình</b>. $K_n=\dfrac{W\mu_nC_{ox}}{2L}$ ($\text{A/V}^2$): <b>tham số độ dẫn của linh kiện</b>. Hai vùng nối liền tại $V_{DS}=V_{GS}-V_T$.</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>Vùng không bão hòa: với $V_{DS}$ nhỏ, số hạng $V_{DS}^2$ bỏ qua được, $I_D\approx g_dV_{DS}$ (điện trở điều khiển bằng cổng).</li>
+      <li>Vùng bão hòa: $I_D$ <b>không phụ thuộc $V_{DS}$</b> (lý tưởng) và tỉ lệ với <b>bình phương</b> $V_{GS}-V_T$: luật bình phương.</li>
+      <li>Tăng $W/L$ hoặc $\mu_n$ hoặc $C_{ox}$ ⇒ dòng lớn hơn; đó là vì sao MOSFET công suất có $W/L$ rất lớn và $t_{ox}$ mỏng.</li></ul></div>
+    <div class="box tip"><b>Ví dụ 4.1 (bổ sung, nối tiếp Ví dụ 2.1).</b> n-MOSFET dùng tụ MOS ở Ví dụ 2.1 ($C_{ox}=2.88\times10^{-7}\text{ F/cm}^2$, $V_T=0.80\text{ V}$), với giả thiết thêm $\mu_n=400\text{ cm}^2/\text{V·s}$, $W/L=10$, $V_{GS}=2.0\text{ V}$. Tính $V_{DS}(\text{sat})$, $I_D(\text{sat})$ và $g_{ms}$.
+      <div class="step">
+        <span class="cmt">// Tham số độ dẫn của quá trình:</span>
+        $$k'_n=\mu_nC_{ox}=400\times2.88\times10^{-7}=\mathbf{1.15\times10^{-4}\text{ A/V}^2}$$
+        <span class="cmt">// Điểm bão hòa và dòng bão hòa:</span>
+        $$V_{DS}(\text{sat})=2.0-0.80=\mathbf{1.2\text{ V}},\qquad I_D(\text{sat})=\frac{1.15\times10^{-4}}{2}\times10\times(1.2)^2=\mathbf{8.3\times10^{-4}\text{ A}}$$
+        <span class="cmt">// Độ truyền dẫn trong bão hòa (đạo hàm của $I_D$ theo $V_{GS}$):</span>
+        $$g_{ms}=\frac{W\mu_nC_{ox}}{L}(V_{GS}-V_T)=1.15\times10^{-4}\times10\times1.2=\mathbf{1.4\times10^{-3}\text{ S}}$$
+      </div>
+      <b>Nhận xét:</b> $g_{ms}=2I_D(\text{sat})/(V_{GS}-V_T)$; cứ tăng gấp đôi $V_{GS}-V_T$ thì $I_D$ tăng gấp bốn còn $g_{ms}$ tăng gấp đôi.</div>
+
+    <h3>4.5. Mô hình tương tác: Họ đặc tuyến $I_D$–$V_{DS}$ và đặc tuyến truyền đạt $I_D$–$V_{GS}$</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hai công thức ở 4.4 chỉ trở nên "sống" khi thấy chúng vẽ thành đường cong và nối liền ở biên bão hòa.</li><li><b>Dùng để làm gì:</b> Đọc $I_D$ và $g_m$ tại điểm làm việc; thấy parabol biên $V_{DS}=V_{GS}-V_T$ chia vùng; thấy luật bình phương trong đặc tuyến truyền đạt.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_T$, $W/L$, $\mu_n$, $t_{ox}$ và di con trỏ điểm làm việc.</li></ul></div>
+
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul>
+      <li>$g_d=(W/L)\mu_n|Q'_n|$ với $V_{DS}$ nhỏ; lớp đảo mất ở máng khi $V_{DS}=V_{GS}-V_T$.</li>
+      <li>Không bão hòa: $I_D=K_n[2(V_{GS}-V_T)V_{DS}-V_{DS}^2]$; bão hòa: $I_D=K_n(V_{GS}-V_T)^2$, $K_n=W\mu_nC_{ox}/(2L)$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 5 hỏi MOSFET làm việc nhanh tới mức nào khi tín hiệu xoay chiều.</div>
+  </section>
+
+  <section>
+    <h2>5. Giới Hạn Tần Số: Mạch Tương Đương, Hiệu Ứng Miller Và Tần Số Cắt</h2>
+    <div class="bridge"><b>Nối từ Mục 4:</b> $I_D=K_n(V_{GS}-V_T)^2$ là kết quả một chiều. Với tín hiệu xoay chiều, các điện dung ký sinh sẽ giới hạn tốc độ.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> $f_T$ cho biết dải tần mà MOSFET còn khuếch đại; hiệu ứng Miller giải thích vì sao tụ rất nhỏ giữa cổng và máng vẫn là thủ phạm chính.</div>
+
+    <h3>5.1. Mạch tương đương tín hiệu nhỏ</h3>
+    <p>Để phân tích mạch người ta cần mạch tương đương tín hiệu nhỏ của MOSFET kênh n mắc nguồn chung. Mạch chứa các điện dung và điện trở đưa hiệu ứng tần số vào. Dòng tín hiệu nhỏ ở máng:</p>
+    <div class="f key">$$I_d=g_mV_{gs}',\qquad g_m'=\frac{g_m}{1+g_mr_s}$$
+      <small>$g_m$: độ truyền dẫn; $r_s$: điện trở nối tiếp ở nguồn; $V'_{gs}$: điện áp cổng–nguồn bên trong. Điện trở nguồn làm <b>giảm</b> độ truyền dẫn hiệu dụng.</small></div>
+
+    <h3>5.2. Hai nhân tố giới hạn tần số</h3>
+    <p>Có hai nhân tố cơ bản:</p>
+    <ol>
+      <li><b>Thời gian bay qua kênh</b> $\tau_t=L/v_{sat}$: thời gian hạt tải qua kênh ở vận tốc bão hòa.</li>
+      <li><b>Thời gian nạp/xả điện dung cổng</b> qua trở kháng vào: <b>đây là nhân tố giới hạn thực sự</b>.</li>
+    </ol>
+    <div class="f key">$$\tau_t=\frac{L}{v_{sat}}\qquad(v_{sat}=10^7\text{ cm/s},\ L=1\ \mu m\Rightarrow\tau_t=10\text{ ps}\Rightarrow f_{\max}\approx100\text{ GHz})$$
+      <small>Thường <b>không</b> phải nhân tố giới hạn: nhanh hơn nhiều so với đáp ứng tần số thực tế của MOSFET.</small></div>
+
+    <h3>5.3. Mô hình tần số cao và hiệu ứng Miller</h3>
+    <p>Bỏ qua $r_s$, $r_d$, $r_{ds}$ và $C_{ds}$, mạch rút gọn còn $C_{gsT}$, $C_{gdT}$ và nguồn dòng $g_mV_{gs}$ cấp cho tải $R_L$. Viết định luật Kirchhoff dòng điện ở đầu vào và đầu ra rồi khử $V_d$ cho dòng vào:</p>
+    <div class="f key">$$I_i=j\omega\left[C_{gsT}+C_{gdT}\left(1+g_mR_L\right)\right]V_{gs},\qquad C_M=C_{gdT}\left(1+g_mR_L\right)$$
+      <small>$C_{gsT}$, $C_{gdT}$: điện dung tổng cổng–nguồn và cổng–máng (gồm cả phần chồng lấn $C_{gsp}$, $C_{gdp}$). $C_M$: <b>điện dung Miller</b>, điện dung cổng–máng bị khuếch đại bởi độ lợi $g_mR_L$.</small></div>
+    <div class="box legend"><b>Ý nghĩa hiệu ứng Miller</b><ul>
+      <li>Điện dung chồng lấn cổng–máng $C_{gdp}$ vật lý rất nhỏ, nhưng bị <b>nhân với độ lợi</b> nên thành đóng góp quan trọng vào điện dung vào hiệu dụng, thường lớn hơn cả $C_{gs}$.</li>
+      <li>Trong bão hòa $C_{gd}\to0$ nhưng phần chồng lấn cố định $C_{gdp}$ vẫn còn và vẫn bị nhân lên.</li></ul></div>
+
+    <h3>5.4. Tần số cắt</h3>
+    <p><b>Tần số cắt</b> $f_T$ là tần số mà độ lớn độ lợi dòng ngắn mạch giảm xuống 1, tức $|I_d|=|I_i|$:</p>
+    <div class="f key">$$f_T=\frac{g_m}{2\pi\left(C_{gsT}+C_M\right)}=\frac{g_m}{2\pi C_G},\qquad C_G=C_{gsT}+C_M$$
+      $$\text{Trường hợp lý tưởng } (C_{gsp}=C_{gdp}=0,\ C_{gs}\approx C_{ox}WL,\ g_{ms}=\tfrac{W\mu_nC_{ox}}{L}(V_{GS}-V_T)):\qquad f_T=\frac{\mu_n(V_{GS}-V_T)}{2\pi L^2}$$
+      <small>$C_G$: tổng điện dung vào hiệu dụng. Công thức lý tưởng cho thấy $f_T\propto1/L^2$: thu nhỏ độ dài kênh tăng tốc độ <b>rất mạnh</b>.</small></div>
+    <div class="box tip"><b>Ví dụ 5.1 (bổ sung, nối tiếp Ví dụ 4.1).</b> Với $\mu_n=400\text{ cm}^2/\text{V·s}$, $V_{GS}-V_T=1.2\text{ V}$ và $L=1\ \mu m=10^{-4}\text{ cm}$: $f_T=\dfrac{400\times1.2}{2\pi(10^{-4})^2}\approx\mathbf{7.6\text{ GHz}}$, trong khi $\tau_t=10\text{ ps}$ ứng với khoảng $100\text{ GHz}$. Vậy tốc độ bị giới hạn bởi <b>nạp điện dung cổng</b>, không phải thời gian bay. Đây là ví dụ số tự tính theo công thức slide.</div>
+
+    <h3>5.5. Mô hình tương tác: Tần số cắt $f_T$: ảnh hưởng của độ dài kênh, $V_{GS}-V_T$ và điện dung Miller</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> $f_T$ phụ thuộc nhiều thông số; ở đây em thấy từng thành phần của $C_G$ và so sánh với thời gian bay.</li><li><b>Dùng để làm gì:</b> Đọc $f_T$, $\tau_t$, $C_{gsT}$, $C_M$; thấy $f_T\propto L^{-2}$ khi lý tưởng; thấy $C_M$ tăng theo $g_mR_L$ và kéo $f_T$ xuống.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $L$, $V_{GS}-V_T$, $R_L$, $C_{gdp}$ và quan sát $f_T$ so với $1/(2\pi\tau_t)$.</li></ul></div>
+
+    <div class="box key"><b>Mục 5 — Nhớ</b><ul>
+      <li>$\tau_t=L/v_{sat}$ thường không phải nhân tố chính; giới hạn thật là nạp điện dung cổng.</li>
+      <li>$C_M=C_{gdT}(1+g_mR_L)$; $f_T=g_m/[2\pi(C_{gsT}+C_M)]$; lý tưởng $f_T=\mu_n(V_{GS}-V_T)/(2\pi L^2)$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 6 xem các công thức lý tưởng bị sai ở đâu khi linh kiện thật.</div>
+  </section>
+
+  <section>
+    <h2>6. Các Hiệu Ứng Phi Lý Tưởng</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> Mọi công thức trên dựa trên giả thiết lý tưởng. Slide nêu năm hiệu ứng làm lệch khỏi chúng.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Năm hiệu ứng này là lý do mạch thật không giống bài toán sách giáo khoa, đặc biệt khi $L$ nhỏ dần.</div>
+    <div class="tw"><table><tr><th>Hiệu ứng</th><th>Giả thiết lý tưởng bị phá</th></tr>
+      <tr><td>Dòng dưới ngưỡng</td><td>$I_D=0$ khi $V_{GS}\le V_T$</td></tr>
+      <tr><td>Điều biến độ dài kênh</td><td>$L$ cố định; $I_D$ bão hòa phẳng</td></tr>
+      <tr><td>Thay đổi độ linh động</td><td>$\mu_n$ không đổi</td></tr>
+      <tr><td>Bão hòa vận tốc</td><td>Vận tốc tăng không giới hạn theo điện trường</td></tr>
+      <tr><td>Vận chuyển đạn đạo</td><td>Hạt tải bị tán xạ; vận tốc tối đa là $v_{sat}$</td></tr></table></div>
+
+    <h3>6.1. Dòng dưới ngưỡng</h3>
+    <p>Lý thuyết lý tưởng cho $I_D=0$ khi $V_{GS}\le V_T$, nhưng thực nghiệm $I_D\ne0$. Dòng tồn tại khi $V_{GS}\le V_T$ gọi là <b>dòng dưới ngưỡng</b>. Điều kiện:</p>
+    <div class="f key">$$\phi_{fp}\lt\phi_s\lt2\phi_{fp}\qquad(\text{đảo ngược yếu})$$
+      $$I_D(\text{sub})\propto\left[\exp\left(\frac{eV_{GS}}{kT}\right)\right]\cdot\left[1-\exp\left(\frac{-eV_{DS}}{kT}\right)\right]$$
+      <small>Đảo ngược yếu: bề mặt đã có nhiều electron hơn lõi nhưng chưa đủ để gọi là đảo ngược mạnh. Slide <b>không</b> chứng minh công thức (nằm ngoài phạm vi chương), chỉ nêu dạng tỉ lệ.</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>$I_D$ tăng theo <b>hàm mũ</b> của $V_{GS}$ (đồ thị bán log là đường thẳng), và bão hòa theo $V_{DS}$ chỉ sau vài $kT/e$.</li>
+      <li>Độ dốc của đường này phụ thuộc vào pha tạp đế và <b>mật độ trạng thái mặt phân cách</b>; đo độ dốc là cách xác định thực nghiệm mật độ trạng thái đó.</li>
+      <li>Hệ quả mạch số: dòng rò khi "tắt" làm hao điện khi đứng yên.</li></ul></div>
+
+    <h3>6.2. Mô hình tương tác: Dòng dưới ngưỡng: so sánh đặc tuyến lý tưởng và thực nghiệm</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hai đồ thị ($\sqrt{I_D}$ tuyến tính và $\log I_D$) cho thấy cùng một dòng nhìn từ hai phía: trên ngưỡng theo luật bình phương, dưới ngưỡng theo hàm mũ.</li><li><b>Dùng để làm gì:</b> Thấy "đuôi" dưới ngưỡng, đọc độ dốc (mV mỗi bậc), thấy vì sao đảo ngược yếu nằm giữa $\phi_{fp}$ và $2\phi_{fp}$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_{GS}$, $V_{DS}$, độ dốc và quan sát giản đồ vùng ở đảo ngược yếu.</li></ul></div>
+
+    <h3>6.3. Điều biến độ dài kênh</h3>
+    <p>Khi MOSFET ở vùng bão hòa, vùng nghèo của tiếp giáp máng–đế mở rộng <b>theo chiều ngang</b> vào kênh và làm <b>độ dài kênh hiệu dụng giảm</b>. Vì bề rộng vùng nghèo phụ thuộc điện áp, độ dài kênh hiệu dụng bị điều biến bởi $V_{DS}$: đó là <b>hiệu ứng điều biến độ dài kênh</b>.</p>
+    <div class="f key">$$x_p=\sqrt{\frac{2\epsilon_s\phi_{fp}}{eN_a}}\ \ (\text{phân cực 0}),\qquad x_p=\sqrt{\frac{2\epsilon_s}{eN_a}\left(\phi_{fp}+V_{DS}\right)}\ \ (\text{có }V_{DS})$$
+      <small>Dạng của slide trang 88: vùng nghèo mở rộng vào miền p theo hàm căn của điện áp ngược. Phần kênh mất đi $\Delta L$ ứng với $\Delta V_{DS}=V_{DS}-V_{DS}(\text{sat})$.</small></div>
+    <div class="box warn"><b>Chú ý (phần bổ sung ngoài slide):</b> Slide chỉ cho $x_p$ và hình vẽ. Trong cách trình bày thường dùng, độ dài kênh hiệu dụng $L'=L-\Delta L$ và dòng bão hòa tăng lên thành $I_D=I_D(\text{sat})\dfrac{L}{L-\Delta L}$; kênh càng ngắn thì $\Delta L/L$ càng lớn, đường bão hòa dốc lên rõ hơn.</div>
+
+    <h3>6.4. Mô hình tương tác: Điều biến độ dài kênh: vùng nghèo máng lấn vào kênh</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hiệu ứng này là hình học thuần túy: vùng nghèo phía máng "ăn" vào kênh; nhìn mặt cắt kênh giúp thấy $\Delta L$ tăng theo $V_{DS}$.</li><li><b>Dùng để làm gì:</b> Đọc $x_p$, $\Delta L$, $L'$ và độ dốc $I_D$–$V_{DS}$ trong vùng bão hòa; so sánh kênh dài với kênh ngắn.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_{DS}$, $N_a$, $L$ và quan sát mặt cắt cùng đặc tuyến.</li></ul></div>
+
+    <h3>6.5. Thay đổi độ linh động</h3>
+    <p>Dẫn xuất $I$-$V$ lý tưởng coi độ linh động là hằng số. Giả thiết này cần sửa vì hai lý do: độ linh động đổi theo điện áp cổng, và đổi khi hạt tải tiến gần vận tốc bão hòa.</p>
+    <ul>
+      <li>Lớp đảo được tạo bởi điện trường dọc; điện trường này <b>kéo electron sát mặt phân cách</b>.</li>
+      <li>Trên đường tới máng, electron bị tán xạ bởi các lực Coulomb cục bộ và bởi độ nhám bề mặt: <b>tán xạ bề mặt</b> làm giảm độ linh động.</li>
+      <li>Điện tích oxit dương cố định sát mặt phân cách làm giảm thêm độ linh động (thêm tương tác Coulomb).</li>
+    </ul>
+    <div class="f key">$$E_{eff}=\frac{1}{\epsilon_s}\left(|Q'_{SD}(\max)|+\frac12Q'_n\right),\qquad \mu_{eff}=\mu_0\left(\frac{E_{eff}}{E_0}\right)^{-1/3}$$
+      <small>$E_{eff}$: điện trường ngang hiệu dụng (V/cm), đo vuông góc mặt phân cách; $\mu_0$, $E_0$: tham số thực nghiệm. Độ linh động của lớp đảo phụ thuộc mạnh vào <b>nhiệt độ</b> do tán xạ mạng: <b>hạ nhiệt độ thì độ linh động tăng</b>.</small></div>
+
+    <h3>6.6. Bão hòa vận tốc</h3>
+    <p>Lý thuyết kênh dài giả thiết $\mu$ không đổi, tức vận tốc trôi tăng mãi theo điện trường. Thực tế vận tốc <b>bão hòa</b>; hiệu ứng nổi bật hơn ở kênh ngắn vì điện trường ngang lớn hơn. Dòng bão hòa và mô hình độ linh động được sửa:</p>
+    <div class="f key">$$I_D(\text{sat})=WC_{ox}(V_{GS}-V_T)v_{sat},\qquad \mu=\frac{\mu_{eff}}{\left[1+\left(\dfrac{\mu_{eff}E}{v_{sat}}\right)^2\right]^{1/2}}$$
+      $$g_{ms}=\frac{\partial I_D(\text{sat})}{\partial V_{GS}}=WC_{ox}v_{sat},\qquad f_T=\frac{g_m}{2\pi C_G}=\frac{WC_{ox}v_{sat}}{2\pi(C_{ox}WL)}=\frac{v_{sat}}{2\pi L}$$
+      <small>Bỏ qua điện dung ký sinh trong $f_T$. Khi bão hòa vận tốc, $I_D(\text{sat})$ tỉ lệ <b>tuyến tính</b> (không phải bình phương) với $V_{GS}-V_T$ và $g_{ms}$ <b>không phụ thuộc $V_{GS}$</b> và $L$; $f_T\propto1/L$ (chứ không phải $1/L^2$).</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>$E\ll v_{sat}/\mu_{eff}$: $\mu\approx\mu_{eff}$ (độ linh động không đổi, chế độ lý tưởng).</li>
+      <li>$E\gg v_{sat}/\mu_{eff}$: $\mu E\to v_{sat}$ (vận tốc bão hòa).</li>
+      <li>Ở kênh ngắn, dòng bão hòa thôi theo luật bình phương: tăng $V_{GS}$ không còn "đền công" bằng bình phương.</li></ul></div>
+    <div class="box tip"><b>Ví dụ 6.1 (bổ sung).</b> Với $L=1\ \mu m$ và $v_{sat}=10^7\text{ cm/s}$: $f_T=\dfrac{10^7}{2\pi\times10^{-4}}\approx\mathbf{16\text{ GHz}}$. Con số này cao hơn $7.6\text{ GHz}$ ở Ví dụ 5.1 vì hai mô hình khác nhau: mô hình bão hòa vận tốc bỏ qua điện dung ký sinh và coi hạt tải đạt đúng $v_{sat}$, nên là <b>cận trên</b> lý tưởng của một kênh ngắn. Đây chỉ so sánh bậc độ lớn, không phải kết luận cho cùng một linh kiện.</div>
+
+    <h3>6.7. Mô hình tương tác: Bão hòa vận tốc: luật bình phương so với dòng tuyến tính theo $V_{GS}-V_T$</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hai quy luật (bình phương và tuyến tính) cùng tồn tại; cần thấy kênh nào theo luật nào.</li><li><b>Dùng để làm gì:</b> So $I_D(\text{sat})$ theo $V_{GS}-V_T$ ở kênh dài (parabol) và kênh ngắn (đường thẳng); đọc $v(E)$ bão hòa dần theo công thức độ linh động.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $L$, $\mu_{eff}$, $v_{sat}$ và quan sát điểm gãy của đường cong.</li></ul></div>
+
+    <h3>6.8. Vận chuyển đạn đạo</h3>
+    <p>Theo slide, trong <b>vận chuyển đạn đạo</b>, hạt tải di chuyển nhanh hơn vận tốc trôi trung bình hoặc vận tốc bão hòa, vì đi gần như không bị tán xạ; điều này dẫn tới linh kiện rất nhanh. Hiệu ứng xuất hiện ở linh kiện dưới micromet ($L\lt1\ \mu m$) và càng quan trọng khi công nghệ thu nhỏ độ dài kênh về cỡ $0.1\ \mu m$.</p>
+
+    <div class="box key"><b>Mục 6 — Nhớ</b><ul>
+      <li>Dưới ngưỡng: $\phi_{fp}\lt\phi_s\lt2\phi_{fp}$, $I_D\propto e^{eV_{GS}/kT}[1-e^{-eV_{DS}/kT}]$.</li>
+      <li>Điều biến độ dài kênh: $x_p=\sqrt{2\epsilon_s(\phi_{fp}+V_{DS})/(eN_a)}$ làm $L$ hiệu dụng giảm.</li>
+      <li>Độ linh động: $\mu_{eff}=\mu_0(E_{eff}/E_0)^{-1/3}$; bão hòa vận tốc: $I_D(\text{sat})=WC_{ox}(V_{GS}-V_T)v_{sat}$, $f_T=v_{sat}/(2\pi L)$.</li>
+      <li>Đạn đạo: dưới micromet, vận tốc vượt $v_{sat}$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 7 gom công thức thành cẩm nang.</div>
+  </section>
+
+  <section>
+    <h2>7. Cẩm Nang Công Thức Trọng Tâm Buổi 11</h2>
+    <p class="mut">Mỗi thẻ có giải nghĩa ký hiệu, khi nào dùng, và lưu ý.</p>
+
+    <div class="formula-card">
+      <h3>Công thức 1: Vùng nghèo và ngưỡng đảo của tụ MOS</h3>
+      <div class="f key">
+        $$\phi_{fp}=\frac{kT}{e}\ln\frac{N_a}{n_i}\ \Big|\ x_d=\left(\frac{2\epsilon_s\phi_s}{eN_a}\right)^{1/2}\ \Big|\ x_{dT}=\left(\frac{4\epsilon_s\phi_{fp}}{eN_a}\right)^{1/2}\ \Big|\ |Q'_{SD}(\max)|=eN_ax_{dT}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $\phi_{fp}$, $\phi_s$ (V); $N_a$, $n_i$ ($\text{cm}^{-3}$); $x_d$, $x_{dT}$ (cm); $Q'_{SD}$ ($\text{C/cm}^2$).</div>
+        <div><b>2. Khi nào dùng:</b> Tính vùng nghèo và điện tích tại ngưỡng đảo ngược ($\phi_s=2\phi_{fp}$).</div>
+        <div><b>3. Lưu ý:</b> Đế n thay $N_a\to N_d$, $\phi_{fp}\to\phi_{fn}$. Sau ngưỡng, $x_d$ không tăng nữa.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 2: Điện áp dải phẳng và điện áp ngưỡng</h3>
+      <div class="f key">
+        $$\phi_{ms}=\phi'_m-\left(\chi'+\frac{E_g}{2e}+\phi_{fp}\right)\ \Big|\ V_{FB}=\phi_{ms}-\frac{Q'_{ss}}{C_{ox}}\ \Big|\ V_{TN}=\frac{|Q'_{SD}(\max)|}{C_{ox}}+V_{FB}+2\phi_{fp}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $C_{ox}=\epsilon_{ox}/t_{ox}$ ($\text{F/cm}^2$); $Q'_{ss}$ ($\text{C/cm}^2$); $\phi'_m$, $\chi'$ (V).</div>
+        <div><b>2. Khi nào dùng:</b> Tính $V_T$ của n-MOSFET từ pha tạp, oxit, vật liệu cổng.</div>
+        <div><b>3. Lưu ý:</b> Kênh p: $V_{TP}=(-|Q'_{SD}(\max)|-Q'_{ss})t_{ox}/\epsilon_{ox}+\phi_{ms}-2\phi_{fn}$, $\phi_{ms}=\phi'_m-(\chi'+E_g/2e-\phi_{fn})$. $V_{TN}\lt0$: loại nghèo.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 3: Điện dung MOS</h3>
+      <div class="f key">
+        $$C'(\text{acc})=C_{ox}\ \Big|\ C'(\text{depl})=\frac{\epsilon_{ox}}{t_{ox}+\frac{\epsilon_{ox}}{\epsilon_s}x_d}\ \Big|\ C'_{\min}=\frac{\epsilon_{ox}}{t_{ox}+\frac{\epsilon_{ox}}{\epsilon_s}x_{dT}}\ \Big|\ C'_{FB}=\frac{\epsilon_{ox}}{t_{ox}+\frac{\epsilon_{ox}}{\epsilon_s}\sqrt{\frac{kT}{e}\frac{\epsilon_s}{eN_a}}}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $C'$ ($\text{F/cm}^2$); $x_d$, $t_{ox}$ (cm).</div>
+        <div><b>2. Khi nào dùng:</b> Dựng và đọc đường $C$-$V$; suy ra $t_{ox}$ (từ $C_{ox}$), $N_a$ (từ $C'_{\min}$).</div>
+        <div><b>3. Lưu ý:</b> Đo ở $\sim1\text{ MHz}$ ⇒ trong đảo ngược $C'$ giữ ở $C'_{\min}$; tần số thấp ($5$ đến $100\text{ Hz}$) ⇒ $C'$ quay về $C_{ox}$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 4: Dòng MOSFET lý tưởng</h3>
+      <div class="f key">
+        $$g_d=\frac{W}{L}\mu_n|Q'_n|\ \Big|\ V_{DS}(\text{sat})=V_{GS}-V_T\ \Big|\ I_D=K_n\left[2(V_{GS}-V_T)V_{DS}-V_{DS}^2\right]\ \Big|\ I_D(\text{sat})=K_n(V_{GS}-V_T)^2$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $K_n=\dfrac{W\mu_nC_{ox}}{2L}=\dfrac{k'_n}{2}\dfrac WL$ ($\text{A/V}^2$); $\mu_n$ ($\text{cm}^2/\text{V·s}$); $W$, $L$ (cm).</div>
+        <div><b>2. Khi nào dùng:</b> Tính $I_D$ ở điểm làm việc; $g_{ms}=\dfrac{W\mu_nC_{ox}}{L}(V_{GS}-V_T)$ trong bão hòa.</div>
+        <div><b>3. Lưu ý:</b> Hai công thức bằng nhau tại $V_{DS}=V_{GS}-V_T$. Chỉ đúng khi $V_{GS}\gt V_T$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 5: Tần số và Miller</h3>
+      <div class="f key">
+        $$\tau_t=\frac{L}{v_{sat}}\ \Big|\ C_M=C_{gdT}(1+g_mR_L)\ \Big|\ f_T=\frac{g_m}{2\pi(C_{gsT}+C_M)}\ \Big|\ f_T=\frac{\mu_n(V_{GS}-V_T)}{2\pi L^2}\ (\text{lý tưởng})$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $f_T$ (Hz); $C$ (F); $g_m$ (S); $R_L$ ($\Omega$); $\tau_t$ (s).</div>
+        <div><b>2. Khi nào dùng:</b> Ước lượng giới hạn tần số của MOSFET khuếch đại.</div>
+        <div><b>3. Lưu ý:</b> Có $r_s$ thì $g_m'=g_m/(1+g_mr_s)$. Khi bão hòa vận tốc, $f_T=v_{sat}/(2\pi L)$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 6: Hiệu ứng phi lý tưởng</h3>
+      <div class="f key">
+        $$I_D(\text{sub})\propto e^{eV_{GS}/kT}\left[1-e^{-eV_{DS}/kT}\right]\ \Big|\ x_p=\sqrt{\frac{2\epsilon_s}{eN_a}(\phi_{fp}+V_{DS})}\ \Big|\ \mu_{eff}=\mu_0\left(\frac{E_{eff}}{E_0}\right)^{-1/3}\ \Big|\ I_D(\text{sat})=WC_{ox}(V_{GS}-V_T)v_{sat}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $E_{eff}=\dfrac{1}{\epsilon_s}\left(|Q'_{SD}(\max)|+\tfrac12Q'_n\right)$ (V/cm); $v_{sat}$ (cm/s); $\mu$ theo $E$: $\mu=\mu_{eff}/[1+(\mu_{eff}E/v_{sat})^2]^{1/2}$.</div>
+        <div><b>2. Khi nào dùng:</b> Giải thích vì sao đặc tuyến thật lệch lý tưởng: đuôi dưới ngưỡng, bão hòa dốc lên, dòng kênh ngắn tuyến tính.</div>
+        <div><b>3. Lưu ý:</b> Dưới ngưỡng đúng cho $\phi_{fp}\lt\phi_s\lt2\phi_{fp}$ (đảo ngược yếu). Đạn đạo: $L\lt1\ \mu m$.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Buổi 11: Những Điểm Cốt Lõi Cần Nằm Lòng</h2>
+    <ul>
+      <li><b>Tụ MOS:</b> đế p: $V_G$ âm ⇒ tích lũy, dương nhỏ ⇒ nghèo, đủ dương ⇒ đảo ngược; ngưỡng ở $\phi_s=2\phi_{fp}$, $x_{dT}=\left(4\epsilon_s\phi_{fp}/(eN_a)\right)^{1/2}$.</li>
+      <li><b>$V_{FB}$ và $V_T$:</b> $V_{FB}=\phi_{ms}-Q'_{ss}/C_{ox}$; $V_{TN}=|Q'_{SD}(\max)|/C_{ox}+V_{FB}+2\phi_{fp}$.</li>
+      <li><b>$C$-$V$:</b> $C_{ox}$ ở tích lũy, giảm xuống $C'_{\min}$ khi vùng nghèo đạt cực đại; tần số cao giữ $C'_{\min}$, tần số thấp quay về $C_{ox}$.</li>
+      <li><b>MOSFET:</b> $V_{DS}(\text{sat})=V_{GS}-V_T$; không bão hòa $I_D=K_n[2(V_{GS}-V_T)V_{DS}-V_{DS}^2]$; bão hòa $I_D=K_n(V_{GS}-V_T)^2$.</li>
+      <li><b>Tần số:</b> giới hạn bởi nạp điện dung cổng, không phải thời gian bay; Miller $C_M=C_{gdT}(1+g_mR_L)$; $f_T=g_m/(2\pi C_G)$.</li>
+      <li><b>Phi lý tưởng:</b> dòng dưới ngưỡng (hàm mũ), điều biến độ dài kênh, độ linh động giảm theo $E_{eff}$, bão hòa vận tốc ($I_D\propto V_{GS}-V_T$, $f_T=v_{sat}/2\pi L$), đạn đạo ở $L\lt1\ \mu m$.</li>
+    </ul>
+    <div class="next"><b>Tiếp theo trong môn học:</b> Ta đã nắm cấu trúc MOS và MOSFET cơ bản; các buổi sau mở rộng sang các linh kiện và ứng dụng khác dựa trên kênh điều khiển bằng điện trường.</div>
+  </section>
+</template>
+
+<template id="tpl-buoi-12">
+  <header>
+    <span class="k b3">HỌC PHẦN ENP2209 · BUỔI 12</span>
+    <h1>Transistor Lưỡng Cực BJT: Nguyên Lý Hoạt Động, Hệ Số Khuếch Đại Dòng, Hiệu Ứng Phi Lý Tưởng, Tần Số và Chuyển Mạch</h1>
+    <p class="mut">Slide Chương 15 (Neamen, <i>The Bipolar Transistor</i>). Cấu trúc npn/pnp, dòng khuếch tán qua vùng cơ sở, các chế độ làm việc, $\alpha$ và $\beta$, hiệu ứng Early, phun mức cao, hẹp vùng cấm, dồn dòng, đánh thủng, mạch hybrid-$\pi$, tần số cắt và chuyển mạch tín hiệu lớn.</p>
+    <div class="roadmap"><p><b>Bản đồ Buổi 12: từ "hai tiếp giáp p-n sát nhau" đến "linh kiện khuếch đại và đóng cắt"</b></p><ol>
+      <li><b>Mục 1:</b> Hoạt động cơ bản: phun electron từ emitter, khuếch tán qua cơ sở, thu về collector; dòng $i_C$, $i_E$, $i_B$, $\alpha$, $\beta$.</li>
+      <li><b>Mục 2:</b> Các chế độ làm việc (ngắt, thuận tích cực, bão hòa, ngược tích cực), đường tải và khuếch đại điện áp.</li>
+      <li><b>Mục 3:</b> Vì sao $\alpha\lt1$: hệ số phun $\gamma$, hệ số vận chuyển cơ sở $\alpha_T$, hệ số tái hợp $\delta$.</li>
+      <li><b>Mục 4:</b> Hiệu ứng phi lý tưởng: điều biến bề rộng cơ sở (Early), phun mức cao, hẹp vùng cấm emitter, dồn dòng, đánh thủng.</li>
+      <li><b>Mục 5:</b> Mạch tương đương tín hiệu nhỏ hybrid-$\pi$.</li>
+      <li><b>Mục 6:</b> Giới hạn tần số: các thời gian trễ và tần số cắt $f_\alpha$.</li>
+      <li><b>Mục 7:</b> Chuyển mạch tín hiệu lớn: thời gian trễ, lên, tích trữ, xuống.</li>
+      <li><b>Mục 8:</b> Cẩm nang công thức. Cuối bài là tổng kết.</li></ol>
+      <p><b>Sau buổi này em làm được:</b> giải thích vì sao dòng collector do $V_{BE}$ điều khiển; vẽ phân bố electron trong cơ sở; phân biệt bốn chế độ và đọc điểm làm việc trên đường tải; tính $\gamma$, $\alpha_T$, $\alpha$, $\beta$ từ pha tạp và kích thước; nêu và giải thích các hiệu ứng phi lý tưởng; ước lượng $f_\alpha$; mô tả bốn pha của xung chuyển mạch.</p></div>
+  </header>
+
+  <section>
+    <h2>Mở đầu: Từ "cổng cách điện" đến "tiếp giáp điều khiển tiếp giáp"</h2>
+    <p>Chào em! Ở Buổi 11, MOSFET điều khiển dòng bằng <i>điện trường</i> xuyên qua lớp oxit. Buổi này ta gặp họ hàng lâu đời hơn: <b>transistor lưỡng cực</b> (BJT, <i>Bipolar Junction Transistor</i>). Ý tưởng: đặt hai tiếp giáp p-n <b>rất gần nhau</b>, phân cực tiếp giáp thứ nhất để phun hạt tải vào vùng giữa mỏng, rồi để tiếp giáp thứ hai "hút" gần hết số hạt đó đi. Dòng ra ở tiếp giáp thứ hai do <b>điện áp ở tiếp giáp thứ nhất</b> quyết định: đó là tác dụng transistor.</p>
+    <div class="box analogy">
+      <b>Ví dụ ẩn dụ: đập nước với cửa xả hẹp</b><br>
+      Emitter là hồ chứa đầy nước, cơ sở là một đoạn kênh ngắn, collector là vực sâu phía bên kia. Điện áp $V_{BE}$ nâng hay hạ "cửa đập" giữa hồ và kênh: cửa mở một chút thì nước (electron) tràn vào kênh theo hàm mũ. Kênh ngắn nên gần như toàn bộ nước chảy tuột xuống vực (collector) mà không kịp thấm vào đất (tái hợp ở cơ sở). Lượng nước thấm đi rất nhỏ, đó là dòng cơ sở.
+    </div>
+    <div class="box why"><b>Học phần này để làm gì?</b> BJT là nền của mạch tương tự tốc độ cao, mạch công suất và nhiều mạch logic ECL/BiCMOS. Hiểu BJT cũng củng cố mọi thứ về tiếp giáp p-n (khuếch tán thiểu số, vùng nghèo, đánh thủng) ở Buổi 9.</div>
+    <div class="tw"><table><tr><th>Buổi trước</th><th>Dùng ở Buổi 12 để làm gì</th></tr>
+      <tr><td>Buổi 9: tiếp giáp p-n, phân cực thuận/ngược, dòng khuếch tán, đánh thủng</td><td>Hai tiếp giáp B–E (thuận) và B–C (ngược); hệ số phun $\gamma$; xuyên thấu và thác lũ</td></tr>
+      <tr><td>Buổi 8: khuếch tán, độ dài khuếch tán $L$, tái hợp</td><td>Phân bố electron thiểu số trong cơ sở; $x_B\ll L_B$</td></tr>
+      <tr><td>Buổi 6: pha tạp nặng, hẹp vùng cấm</td><td>Hiệu ứng hẹp vùng cấm ở emitter</td></tr>
+      <tr><td>Buổi 11: mạch tương đương, $f_T$, Miller</td><td>Mạch hybrid-$\pi$, $f_\alpha$ và thời gian trễ</td></tr></table></div>
+  </section>
+
+  <section>
+    <h2>1. Hoạt Động Cơ Bản Của Transistor Lưỡng Cực</h2>
+    <div class="bridge"><b>Nối từ phần mở đầu:</b> Trước hết là cấu trúc và nguyên lý định tính, sau đó là các biểu thức dòng đơn giản.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Mọi công thức về sau (hệ số khuếch đại, Early, tần số) đều xây trên bức tranh "phun, khuếch tán, thu" của mục này.</div>
+
+    <h3>1.1. Cấu trúc npn và pnp</h3>
+    <p>Theo slide, transistor lưỡng cực có <b>ba vùng pha tạp riêng biệt</b> và <b>hai tiếp giáp p-n</b>: emitter (E), cơ sở (B), collector (C). Có hai loại: npn và pnp, cùng nguyên lý và phương trình (ta phát triển lý thuyết cho npn).</p>
+    <ul>
+      <li>Bề rộng vùng cơ sở <b>nhỏ so với độ dài khuếch tán</b> hạt thiểu số.</li>
+      <li>Ký hiệu $(++)$ và $(+)$ chỉ mức pha tạp tương đối: emitter pha <b>rất nặng</b>, cơ sở <b>vừa phải</b>, collector pha nhẹ hơn emitter.</li>
+      <li>BJT <b>không đối xứng</b>: dù có hai vùng cùng loại n, pha tạp và hình học của emitter và collector khác nhau rất nhiều, nên không đổi chỗ được.</li>
+    </ul>
+
+    <h3>1.2. Nguyên lý hoạt động ở chế độ thuận tích cực</h3>
+    <p>Với phân cực bình thường của npn (slide gọi là <b>chế độ thuận tích cực</b>, <i>forward-active</i>):</p>
+    <ol>
+      <li>Tiếp giáp B–E <b>phân cực thuận</b>: electron từ emitter n được phun qua vào cơ sở p.</li>
+      <li>Electron phun vào tạo nồng độ hạt thiểu số dư trong cơ sở. Tiếp giáp B–C <b>phân cực ngược</b>, nên lý tưởng nồng độ electron tại mép B–C bằng 0.</li>
+      <li>Gradient nồng độ lớn khiến electron <b>khuếch tán qua cơ sở</b> đến vùng điện tích không gian B–C, nơi điện trường <b>quét</b> chúng vào collector.</li>
+      <li>Muốn nhiều electron tới collector mà không tái hợp với lỗ trống đa số ở cơ sở thì <b>bề rộng cơ sở phải nhỏ so với độ dài khuếch tán</b>.</li>
+    </ol>
+    <p>Khi cơ sở đủ mỏng, nồng độ electron trong cơ sở phụ thuộc cả điện áp B–E lẫn B–C: hai tiếp giáp "tương tác" với nhau (<i>interacting p-n junctions</i>).</p>
+
+    <h3>1.3. Mô hình tương tác: Phân bố electron thiểu số trong cơ sở khi $V_{BE}$ và $V_{BC}$ thay đổi</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Cả hoạt động của BJT nằm ở đường nồng độ electron trong cơ sở; thấy nó thay đổi giúp nhớ vì sao $I_C$ phụ thuộc $V_{BE}$ theo hàm mũ.</li><li><b>Dùng để làm gì:</b> Thấy $n_B(0)=n_{B0}e^{V_{BE}/V_t}$ ở phía emitter, mép collector bằng 0 khi B–C ngược, đường thẳng khi cơ sở mỏng và đường cong khi cơ sở dài; thấy dòng khuếch tán tỉ lệ độ dốc.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_{BE}$, $V_{BC}$, $x_B/L_B$ và quan sát đường nồng độ cùng vùng điện tích không gian.</li></ul></div>
+
+    <h3>1.4. Dòng collector, dòng emitter và dòng cơ sở (bức tranh đơn giản)</h3>
+    <p><b>Dòng collector.</b> Nếu nồng độ electron trong cơ sở giảm tuyến tính (không tái hợp), dòng collector là dòng khuếch tán, tỉ lệ với độ dốc, và theo phương trình của slide:</p>
+    <div class="f key">$$i_C=I_S\exp\left(\frac{v_{BE}}{V_t}\right),\qquad V_t=\frac{kT}{e}$$
+      <small>$I_S$: dòng bão hòa, phụ thuộc diện tích tiếp giáp B–E ($A_{BE}$), $n_{B0}$ (nồng độ electron cân bằng trong cơ sở) và hình học cơ sở. Ở gần đúng đường thẳng: $I_S=\dfrac{eA_{BE}D_nn_{B0}}{x_B}$ (dạng chuẩn, bổ sung). <b>Dòng ở một cực được điều khiển bằng điện áp ở hai cực kia.</b></small></div>
+    <p><b>Dòng emitter.</b> Tiếp giáp B–E phân cực thuận cũng làm <b>lỗ trống từ cơ sở phun ngược vào emitter</b>, tạo dòng $i_{E2}$ (là dòng của tiếp giáp B–E, <b>không</b> đi vào collector). Dòng emitter gồm hai thành phần:</p>
+    <div class="f key">$$i_E=i_{E1}+i_{E2},\qquad i_{E2}=I_{S2}\exp\left(\frac{v_{BE}}{V_t}\right)$$
+      <small>$i_{E1}$: electron phun từ emitter vào cơ sở. $I_{S2}$ chứa các tham số hạt thiểu số (lỗ trống) trong emitter. Mọi thành phần đều $\propto e^{v_{BE}/V_t}$ nên tỉ số $i_C/i_E$ là <b>hằng số</b>.</small></div>
+    <div class="f key">$$i_C=\alpha\,i_E,\qquad \alpha\lt1$$
+      <small>$\alpha$: <b>hệ số khuếch đại dòng cơ sở chung</b>. Vì $i_{E2}$ không thuộc tác dụng transistor nên ta muốn nó càng nhỏ càng tốt. Theo slide, transistor lúc này hoạt động như một <b>nguồn dòng hằng</b> (đặc tuyến $i_C$–$v_{CB}$ phẳng).</small></div>
+    <p><b>Dòng cơ sở.</b> Có hai thành phần, cả hai $\propto e^{v_{BE}/V_t}$:</p>
+    <ul>
+      <li>$i_{Ba}$: chính là $i_{E2}$ (lỗ trống phun từ cơ sở vào emitter).</li>
+      <li>$i_{Bb}$: lỗ trống bổ sung cho lượng bị <b>tái hợp với electron thiểu số trong cơ sở</b>.</li>
+    </ul>
+    <div class="f key">$$i_C=\beta\,i_B,\qquad \beta\gg1\ (\text{cỡ }100\text{ hoặc hơn}),\qquad \beta=\frac{\alpha}{1-\alpha}$$
+      <small>$\beta$: <b>hệ số khuếch đại dòng emitter chung</b>. Vì $i_B$ rất nhỏ so với $i_C$ nên $\beta$ lớn. Quan hệ $\beta=\alpha/(1-\alpha)$ suy từ $i_E=i_C+i_B$ (bổ sung).</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>$\alpha$ chỉ cần hơi nhỏ hơn 1 (ví dụ $0.99$) là $\beta$ đã cỡ $99$: $\beta$ cực kỳ nhạy với $\alpha$.</li>
+      <li>$i_C$ phụ thuộc <b>hàm mũ</b> vào $v_{BE}$: chỉ tăng $v_{BE}$ khoảng $60\text{ mV}$ ở $300\text{ K}$ là $i_C$ tăng gấp khoảng $10$ lần ($e^{0.060/0.0259}\approx10$).</li></ul></div>
+
+    <h3>1.5. Mô hình tương tác: Các thành phần dòng $i_{E1}$, $i_{E2}$, $i_{Ba}$, $i_{Bb}$ và $i_C$ theo $V_{BE}$</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Khi xem từng đường dòng riêng rẽ, em thấy chúng cùng tăng theo $e^{v_{BE}/V_t}$ nên tỉ số $\alpha$, $\beta$ không đổi.</li><li><b>Dùng để làm gì:</b> Thấy $i_C$ và $i_E$ gần như trùng nhau, $i_B$ nhỏ hơn rất nhiều, đọc $\alpha$ và $\beta$ trực tiếp từ các thành phần.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_{BE}$, $I_S$, $I_{S2}$, tốc độ tái hợp và quan sát mũi tên dòng, đồ thị bán log.</li></ul></div>
+
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul>
+      <li>BJT: ba vùng, hai tiếp giáp; cơ sở mỏng ($x_B\ll L_B$); emitter pha nặng nhất.</li>
+      <li>Thuận tích cực: B–E thuận, B–C ngược; electron phun, khuếch tán qua cơ sở, bị quét vào collector.</li>
+      <li>$i_C=I_Se^{v_{BE}/V_t}$; $i_C=\alpha i_E$; $i_C=\beta i_B$; $\beta=\alpha/(1-\alpha)$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 2 xem các cách phân cực BJT và dùng nó để khuếch đại.</div>
+  </section>
+
+  <section>
+    <h2>2. Các Chế Độ Làm Việc, Đường Tải Và Khuếch Đại</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Ta mới xét thuận tích cực. BJT trong mạch thực còn có ba chế độ khác, và đường tải cho biết nó đang ở chế độ nào.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Chọn đúng điểm làm việc là điều kiện đầu tiên để khuếch đại không méo, và là cách để dùng BJT như một công tắc.</div>
+
+    <h3>2.1. Bốn chế độ</h3>
+    <p>Xét mạch emitter chung (slide): nguồn $V_{BB}$ qua $R_B$ vào cơ sở, nguồn $V_{CC}$ qua $R_C$ vào collector. Phương trình Kirchhoff vòng collector–emitter:</p>
+    <div class="f key">$$V_{CC}=I_CR_C+V_{CB}+V_{BE}=V_R+V_{CE}$$
+      <small>$V_R=I_CR_C$: điện áp rơi trên $R_C$. Khi $V_{CB}\gt0$ thì B–C phân cực ngược.</small></div>
+    <div class="tw"><table><tr><th>Chế độ</th><th>B–E</th><th>B–C</th><th>Đặc điểm</th></tr>
+      <tr><td><b>Ngắt</b> (cutoff)</td><td>$V_{BE}\le0$ (không phun)</td><td>ngược</td><td>Mọi dòng bằng 0</td></tr>
+      <tr><td><b>Thuận tích cực</b></td><td>thuận</td><td>ngược</td><td>$I_C=\beta I_B$ đúng; $I_C$ gần như không đổi theo $V_{CE}$ (bậc nhất)</td></tr>
+      <tr><td><b>Bão hòa</b></td><td>thuận</td><td>thuận ($V_{CB}\lt0$)</td><td>$I_C$ không còn tăng khi $I_B$ tăng; $I_C$ giảm về 0 khi $V_{CE}$ nhỏ</td></tr>
+      <tr><td><b>Ngược tích cực</b></td><td>ngược</td><td>thuận</td><td>Transistor chạy "lộn ngược": vai trò emitter và collector đổi chỗ</td></tr></table></div>
+    <div class="box legend"><b>Vì sao đi vào bão hòa?</b><ul>
+      <li>$V_{BE}$ tăng ⇒ $I_C$ tăng ⇒ $V_R=I_CR_C$ tăng ⇒ $|V_{CB}|$ giảm.</li>
+      <li>Tới một điểm, $V_R$ và $V_{CC}$ làm điện áp trên B–C bằng 0; tăng $I_C$ thêm chút nữa là B–C bị phân cực thuận ($V_{CB}\lt0$): đó là <b>bão hòa</b>.</li></ul></div>
+
+    <h3>2.2. Đường tải</h3>
+    <p>Từ vòng collector–emitter ta có quan hệ tuyến tính giữa $I_C$ và $V_{CE}$, gọi là <b>đường tải</b>:</p>
+    <div class="f key">$$V_{CE}=V_{CC}-I_CR_C\qquad\Longleftrightarrow\qquad I_C=\frac{V_{CC}-V_{CE}}{R_C}$$
+      <small>Cắt trục $V_{CE}$ tại $V_{CC}$ (ứng $I_C=0$: <b>ngắt</b>) và trục $I_C$ tại $V_{CC}/R_C$ (ứng $V_{CE}\approx0$: <b>bão hòa</b>). Điểm làm việc là giao của đường tải với đặc tuyến ứng với $I_B$ cho trước.</small></div>
+    <div class="box tip"><b>Ví dụ 2.1 (bổ sung, số tự chọn).</b> $V_{CC}=10\text{ V}$, $R_C=2\text{ k}\Omega$, $\beta=100$. Đường tải cắt trục tại $V_{CE}=10\text{ V}$ và $I_C=5\text{ mA}$. Với $I_B=20\ \mu A$: thuận tích cực cho $I_C=\beta I_B=2\text{ mA}$, nên $V_{CE}=10-2\times2=\mathbf{6\text{ V}}$. Nếu tăng $I_B$ lên $60\ \mu A$ thì $\beta I_B=6\text{ mA}\gt5\text{ mA}$ (không thể xảy ra): transistor <b>bão hòa</b>, $I_C$ bị đường tải chặn ở khoảng $5\text{ mA}$ và $V_{CE}$ gần $0$.</div>
+
+    <h3>2.3. Mô hình tương tác: Đường tải trên họ đặc tuyến $I_C$–$V_{CE}$: ngắt, thuận tích cực và bão hòa</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Ba chế độ chỉ là ba vùng trên cùng một họ đường cong; kéo $I_B$ cho thấy điểm làm việc trượt trên đường tải.</li><li><b>Dùng để làm gì:</b> Đọc $I_C$, $V_{CE}$, chế độ làm việc; thấy khi nào điểm làm việc rơi vào bão hòa hoặc ngắt; xem mạch và giản đồ vùng tương ứng.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $I_B$ (hoặc $V_{BB}$), $V_{CC}$, $R_C$, $\beta$ và quan sát điểm làm việc.</li></ul></div>
+
+    <h3>2.4. Khuếch đại điện áp</h3>
+    <p>Chồng một điện áp xoay chiều nhỏ $v_i$ lên điện áp một chiều ở đầu vào (slide):</p>
+    <ul>
+      <li>$v_i$ gây ra thành phần dòng cơ sở hình sin chồng lên giá trị tĩnh $I_{BQ}$.</li>
+      <li>Vì $i_C=\beta i_B$, một thành phần dòng collector hình sin <b>lớn hơn nhiều</b> chồng lên $I_{CQ}$.</li>
+      <li>Dòng này gây điện áp thay đổi trên $R_C$, nên theo định luật Kirchhoff có thành phần điện áp xoay chiều giữa collector và emitter, <b>lớn hơn $v_i$</b>.</li>
+    </ul>
+    <p>Mạch như vậy cho <b>độ lợi điện áp</b> với tín hiệu biến thiên theo thời gian và gọi là <b>bộ khuếch đại điện áp</b>.</p>
+
+    <h3>2.5. Mô hình tương tác: Khuếch đại tín hiệu: dòng và điện áp xoay chiều chồng lên giá trị tĩnh</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Ba dạng sóng (điện áp vào, dòng $i_B$ và $i_C$, điện áp trên $R_C$) cho thấy "khuếch đại" là gì: tín hiệu nhỏ điều khiển tín hiệu lớn, đảo pha ở điện áp ra.</li><li><b>Dùng để làm gì:</b> Thấy độ lợi, nhận ra méo khi điểm làm việc quá gần ngắt hoặc bão hòa.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo biên độ tín hiệu, điểm làm việc tĩnh, $\beta$, $R_C$ và quan sát sóng.</li></ul></div>
+
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul>
+      <li>Ngắt: $I_C=0$; thuận tích cực: $I_C=\beta I_B$; bão hòa: $I_C$ không đổi khi $I_B$ đổi; ngược tích cực: B–E ngược, B–C thuận.</li>
+      <li>Đường tải: $V_{CE}=V_{CC}-I_CR_C$.</li>
+      <li>Khuếch đại: dòng cơ sở nhỏ điều khiển dòng collector lớn ⇒ điện áp ra trên $R_C$ lớn hơn điện áp vào.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 3 trả lời vì sao $\alpha$ không bằng 1 và làm sao thiết kế để $\beta$ lớn.</div>
+  </section>
+
+  <section>
+    <h2>3. Hệ Số Khuếch Đại Dòng: $\gamma$, $\alpha_T$, $\delta$</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> $\beta$ trong Mục 2 là một con số cho trước. Giờ ta dựa vào các dòng hạt tải để tìm ra nó từ pha tạp và kích thước.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Đây là mục "thiết kế": nó cho biết cần pha tạp emitter nặng bao nhiêu và làm cơ sở mỏng bao nhiêu để có $\beta$ lớn.</div>
+
+    <h3>3.1. Các thành phần dòng</h3>
+    <p>Slide liệt kê các mật độ dòng trong npn ở chế độ thuận tích cực:</p>
+    <div class="tw"><table><tr><th>Ký hiệu</th><th>Ý nghĩa</th></tr>
+      <tr><td>$J_{nE}$</td><td>Electron phun từ emitter vào cơ sở (khuếch tán ở $x=0$)</td></tr>
+      <tr><td>$J_{nC}$</td><td>Electron tới được collector (khuếch tán ở $x=x_B$)</td></tr>
+      <tr><td>$J_{RB}$</td><td>Lỗ trống bổ sung từ cực cơ sở cho phần tái hợp trong cơ sở: $J_{RB}=J_{nE}-J_{nC}$</td></tr>
+      <tr><td>$J_{pE}$</td><td>Lỗ trống từ cơ sở phun ngược vào emitter</td></tr>
+      <tr><td>$J_R$</td><td>Tái hợp trong vùng điện tích không gian B–E (thuận)</td></tr>
+      <tr><td>$J_G$</td><td>Phát sinh hạt tải trong vùng điện tích không gian B–C (ngược)</td></tr>
+      <tr><td>$J_{pc0}$</td><td>Dòng bão hòa ngược lý tưởng của tiếp giáp B–C</td></tr></table></div>
+    <p>Hệ số khuếch đại dòng cơ sở chung một chiều và tín hiệu nhỏ (slide):</p>
+    <div class="f key">$$\alpha_0=\frac{I_C}{I_E}=\frac{J_C}{J_E}=\frac{J_{nC}+J_G+J_{pc0}}{J_{nE}+J_R+J_{pE}}\qquad\qquad \alpha=\frac{\partial J_C}{\partial J_E}=\frac{J_{nC}}{J_{nE}+J_R+J_{pE}}$$
+      <small>Ở dòng đủ lớn, $J_G$ và $J_{pc0}$ rất nhỏ so với $J_{nC}$ nên hai biểu thức xấp xỉ bằng nhau.</small></div>
+
+    <h3>3.2. Ba hệ số thành phần</h3>
+    <p>Tách $\alpha$ thành tích của ba tỉ số (slide):</p>
+    <div class="f key">$$\alpha=\gamma\,\alpha_T\,\delta$$
+      $$\gamma=\frac{J_{nE}}{J_{nE}+J_{pE}},\qquad \alpha_T=\frac{J_{nC}}{J_{nE}},\qquad \delta=\frac{J_{nE}+J_{pE}}{J_{nE}+J_R+J_{pE}}$$
+      <small>$\gamma$: <b>hệ số hiệu suất phun emitter</b> (tỉ lệ dòng emitter là electron). $\alpha_T$: <b>hệ số vận chuyển cơ sở</b> (tỉ lệ electron phun còn sống sót qua cơ sở). $\delta$: <b>hệ số tái hợp</b> (tỉ lệ ít bị mất ở vùng điện tích không gian B–E; còn phải tính cả hiệu ứng bề mặt).</small></div>
+    <div class="box legend"><b>Mỗi hệ số "ăn bớt" ở một nơi</b><ul>
+      <li>$\gamma\lt1$: một phần dòng emitter là lỗ trống chạy ngược, không đóng góp.</li>
+      <li>$\alpha_T\lt1$: electron tái hợp trong cơ sở trên đường đi.</li>
+      <li>$\delta\lt1$: tái hợp ngay trong vùng điện tích không gian B–E, nhất là khi dòng nhỏ.</li></ul></div>
+
+    <h3>3.3. Hệ số phun emitter</h3>
+    <p>Tính $J_{pE}$ (khuếch tán lỗ trống trong emitter, đoạn $x_E$, độ dài $L_E$) và $J_{nE}$ (electron trong cơ sở, đoạn $x_B$, độ dài $L_B$) bằng cách lấy đạo hàm phân bố hạt thiểu số tại $x=0$ (slide):</p>
+    <div class="f key">$$J_{pE}=\frac{eD_Ep_{E0}}{L_E}\left[\exp\frac{eV_{BE}}{kT}-1\right]\frac{1}{\tanh(x_E/L_E)}$$
+      $$J_{nE}=\frac{eD_Bn_{B0}}{L_B}\left\{\frac{1}{\sinh(x_B/L_B)}+\frac{\exp(eV_{BE}/kT)-1}{\tanh(x_B/L_B)}\right\}$$
+      <small>$D_E$, $D_B$: hệ số khuếch tán; $p_{E0}=n_i^2/N_E$ và $n_{B0}=n_i^2/N_B$: nồng độ thiểu số cân bằng ở emitter và cơ sở.</small></div>
+    <p>Khi B–E phân cực thuận đủ mạnh, $V_{BE}\gg kT/e$ nên $\exp(eV_{BE}/kT)\gg1$ và số hạng $1/\sinh$ bỏ được. Khi đó:</p>
+    <div class="f key">$$\gamma=\frac{1}{1+\dfrac{p_{E0}D_EL_B}{n_{B0}D_BL_E}\cdot\dfrac{\tanh(x_B/L_B)}{\tanh(x_E/L_E)}}\ \ \xrightarrow{\ x_B\ll L_B,\ x_E\ll L_E\ }\ \ \gamma\approx\frac{1}{1+\dfrac{N_B}{N_E}\cdot\dfrac{D_E}{D_B}\cdot\dfrac{x_B}{x_E}}$$
+      <small>Với $p_{E0}\ll n_{B0}$ (emitter pha nặng hơn cơ sở nhiều) thì $\gamma\to1$. Muốn $\gamma$ gần 1: <b>pha emitter nặng hơn cơ sở</b> ($N_E\gg N_B$), cơ sở <b>mỏng</b> ($x_B$ nhỏ).</small></div>
+
+    <h3>3.4. Hệ số vận chuyển cơ sở và hệ số tái hợp</h3>
+    <p>Hệ số vận chuyển cơ sở là tỉ số hai dòng khuếch tán ở hai đầu cơ sở. Từ $J_{nE}$ ở trên và dạng tương ứng của $J_{nC}$ ta có (suy ra từ các công thức trong slide, bổ sung):</p>
+    <div class="f key">$$\alpha_T=\frac{J_{nC}}{J_{nE}}\approx\frac{1}{\cosh(x_B/L_B)}\approx1-\frac{x_B^2}{2L_B^2}\qquad(x_B\ll L_B)$$
+      <small>Cơ sở mỏng so với độ dài khuếch tán thì $\alpha_T\to1$. Bài tập (slide, Ví dụ 12.2): tính $\alpha_T$ với $x_B=0.80\ \mu m$, $L_B=10.0\ \mu m$.</small></div>
+    <p>Hệ số $\delta$ phụ thuộc tái hợp trong vùng điện tích không gian B–E: ở dòng thấp nó <b>giảm</b> (nên $\beta$ giảm ở dòng nhỏ), ở dòng lớn nó gần 1. Slide lưu ý hệ số này còn phải tính cả hiệu ứng bề mặt ở mép tiếp giáp B–E: electron khuếch tán về phía bề mặt và tái hợp tại đó.</p>
+
+    <h3>3.5. Mô hình tương tác: Hệ số $\gamma$, $\alpha_T$, $\delta$, $\alpha$ và $\beta$ theo pha tạp và bề rộng cơ sở</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Ba hệ số cạnh tranh nhau theo cách khác nhau; kéo từng thông số cho thấy cái nào giới hạn $\beta$.</li><li><b>Dùng để làm gì:</b> Thấy $\gamma$ tăng theo $N_E/N_B$, $\alpha_T$ tăng khi $x_B/L_B$ giảm, $\delta$ thay đổi theo dòng; đọc $\alpha$ và $\beta$ tương ứng.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $N_E$, $N_B$, $x_B$, $L_B$ và $V_{BE}$ (hoặc dòng) và quan sát $\gamma$, $\alpha_T$, $\delta$, $\alpha$, $\beta$.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 3.1 (bổ sung; điều kiện của Ví dụ 12.2 và Ví dụ thiết kế 12.4 trong slide, tính theo công thức slide).</b>
+      <br>(a) $x_B=0.80\ \mu m$, $L_B=10.0\ \mu m$: $\alpha_T=\dfrac{1}{\cosh(0.08)}=\mathbf{0.9968}$.
+      <br>(b) Thiết kế $\gamma=0.9967$ với $D_E=D_B$, $L_E=L_B$, $x_E=x_B$: công thức rút gọn thành $\gamma=\dfrac{1}{1+N_B/N_E}$, nên $\dfrac{N_B}{N_E}=\dfrac{1}{0.9967}-1=0.00331$, tức $\mathbf{N_E/N_B\approx302}$.
+      <br>(c) Nếu coi thêm $\delta=1$ (giả thiết bổ sung): $\alpha=0.9967\times0.9968\times1=0.9935$ và $\beta=\dfrac{\alpha}{1-\alpha}\approx\mathbf{153}$.
+      <br><b>Nhận xét:</b> Cần emitter pha nặng hơn cơ sở khoảng 300 lần mới đạt $\gamma\approx0.9967$. Sai khác $0.3\%$ ở $\alpha$ cũng đã đẩy $\beta$ xuống vài trăm đơn vị, cho thấy tính nhạy của $\beta$.</div>
+
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul>
+      <li>$\alpha=\gamma\alpha_T\delta$; $\gamma=J_{nE}/(J_{nE}+J_{pE})$, $\alpha_T=J_{nC}/J_{nE}$, $\delta=(J_{nE}+J_{pE})/(J_{nE}+J_R+J_{pE})$.</li>
+      <li>$\gamma\approx\left[1+\dfrac{N_B}{N_E}\dfrac{D_E}{D_B}\dfrac{x_B}{x_E}\right]^{-1}$: emitter pha nặng, cơ sở mỏng.</li>
+      <li>$\alpha_T\approx1/\cosh(x_B/L_B)$: cơ sở mỏng so với $L_B$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 4 xem những gì làm BJT thật lệch khỏi mô hình lý tưởng.</div>
+  </section>
+
+  <section>
+    <h2>4. Các Hiệu Ứng Phi Lý Tưởng</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Các công thức trên giả thiết transistor lý tưởng: pha tạp đều, phun mức thấp, bề rộng cơ sở và emitter cố định, vùng cấm cố định, mật độ dòng đều, chưa bị đánh thủng. Khi giả thiết nào vi phạm, hành vi thực lệch khỏi lý thuyết.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Năm hiệu ứng dưới đây giải thích vì sao $\beta$ đổi theo dòng và điện áp, vì sao đặc tuyến không phẳng và vì sao BJT có điện áp tối đa.</div>
+
+    <h3>4.1. Điều biến bề rộng cơ sở (hiệu ứng Early)</h3>
+    <p>Bề rộng cơ sở trung hòa $x_B$ phụ thuộc điện áp B–C: khi điện áp ngược tăng, vùng điện tích không gian B–C rộng thêm và lấn vào cơ sở (slide).</p>
+    <ol>
+      <li>$V_{CB}$ ngược tăng ⇒ vùng điện tích không gian B–C rộng ra ⇒ $x_B$ <b>giảm</b>.</li>
+      <li>$x_B$ nhỏ hơn ⇒ <b>gradient</b> nồng độ electron trong cơ sở lớn hơn ⇒ dòng khuếch tán, tức $I_C$, <b>tăng</b>.</li>
+    </ol>
+    <p>Hiện tượng này là <b>điều biến bề rộng cơ sở</b>, còn gọi là <b>hiệu ứng Early</b>. Hệ quả trên đặc tuyến:</p>
+    <div class="f key">$$g_o=\frac{dI_C}{dV_{CE}}=\frac{I_C}{V_{CE}+V_A}=\frac{1}{r_o},\qquad I_C=g_o(V_{CE}+V_A)=\frac{V_{CE}+V_A}{r_o}$$
+      <small>$g_o$: độ dẫn ra; $r_o$: điện trở ra. $V_A$: <b>điện áp Early</b> (dương), là điểm mà các đường $I_C$–$V_{CE}$ kéo dài cắt trục điện áp tại $I_C=0$ (tại $V_{CE}=-V_A$). Giá trị điển hình $V_A\approx100$ đến $300\text{ V}$, thường có trong bảng dữ liệu transistor.</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>Lý tưởng thì $I_C$ không phụ thuộc $V_{CE}$: đường nằm ngang, $g_o=0$. Thực tế đường dốc lên ⇒ <b>điện dẫn ra hữu hạn</b>.</li>
+      <li>$V_A$ lớn ⇒ $r_o$ lớn ⇒ gần với nguồn dòng lý tưởng hơn. Cơ sở càng mỏng thì hiệu ứng Early càng mạnh ($V_A$ nhỏ hơn).</li></ul></div>
+    <div class="box tip"><b>Ví dụ 4.1 (bổ sung, số tự chọn).</b> $V_A=150\text{ V}$, $I_C=1\text{ mA}$ tại $V_{CE}=5\text{ V}$: $r_o=\dfrac{V_{CE}+V_A}{I_C}=\dfrac{155}{10^{-3}}=\mathbf{155\text{ k}\Omega}$, $g_o=6.5\ \mu S$. Nếu $V_{CE}$ tăng thêm $10\text{ V}$ thì $I_C$ tăng thêm khoảng $\dfrac{10}{155}=6.5\%$.</div>
+
+    <h3>4.2. Mô hình tương tác: Hiệu ứng Early: bề rộng cơ sở co lại và đường $I_C$–$V_{CE}$ dốc lên</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Nguyên nhân (cơ sở co lại, gradient tăng) và kết quả (đường dốc) nằm ở hai đồ thị khác nhau; mô hình đặt chúng cạnh nhau.</li><li><b>Dùng để làm gì:</b> Đọc $x_B$ hiệu dụng, độ dốc, $V_A$ (điểm cắt trục), $r_o$; thấy các đường cong đều hội tụ về $-V_A$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_{CE}$ (hoặc $V_{CB}$), $N_B$, $x_{B0}$, $V_{BE}$ và quan sát.</li></ul></div>
+
+    <h3>4.3. Phun mức cao</h3>
+    <p>Phương trình vận chuyển lưỡng cực dùng để tìm phân bố thiểu số giả thiết <b>phun mức thấp</b>. Khi $V_{BE}$ tăng, nồng độ electron phun vào cơ sở có thể đạt hoặc <b>vượt nồng độ lỗ trống đa số</b> (slide). Với trung hòa điện tích chuẩn, nồng độ lỗ trống đa số ở $x=0$ cũng tăng lên vì có lỗ trống dư đi theo.</p>
+    <p>Ở mức thấp, tại $x=0$ của npn: $p_p(0)=p_{p0}=N_a$ và $n_p(0)=n_{p0}\exp(eV_{BE}/kT)$, nên $p_p(0)n_p(0)=p_{p0}n_{p0}\exp(eV_{BE}/kT)$. Ở mức cao, tích này vẫn thỏa luật như vậy nhưng $p_p(0)$ cũng tăng; kết quả của slide:</p>
+    <div class="f key">$$n_p(0)\approx n_{p0}\exp\left(\frac{eV_{BE}}{2kT}\right)\qquad(\text{phun mức cao})$$
+      <small>Dòng tăng theo $\exp(eV_{BE}/2kT)$ thay vì $\exp(eV_{BE}/kT)$: <b>độ dốc đồ thị bán log giảm một nửa</b>, và $\beta$ giảm ở dòng rất lớn.</small></div>
+
+    <h3>4.4. Hẹp vùng cấm ở emitter</h3>
+    <p>Hệ số phun $\gamma$ tiếp tục tăng và tiến đến 1 khi tỉ số pha tạp emitter/cơ sở tăng. Nhưng ở pha tạp rất nặng xuất hiện <b>hẹp vùng cấm</b> (slide):</p>
+    <ul>
+      <li>Khi silic pha tạp nặng, mức donor rời rạc trong emitter n tách thành một <b>dải năng lượng</b> vì khoảng cách giữa các nguyên tử donor giảm và chúng tương tác lẫn nhau.</li>
+      <li>Pha tạp tiếp tục tăng thì dải donor rộng ra, lệch dần lên phía vùng dẫn và cuối cùng <b>nhập</b> vào vùng dẫn.</li>
+      <li>Khi đó độ rộng vùng cấm hiệu dụng giảm đi một lượng $\Delta E_g$.</li>
+    </ul>
+    <div class="f key">$$n_i^2=N_cN_v\exp\left(\frac{-E_g}{kT}\right)\ \Longrightarrow\ n_{iE}^2=N_cN_v\exp\left[\frac{-(E_{g0}-\Delta E_g)}{kT}\right]=n_i^2\exp\left(\frac{\Delta E_g}{kT}\right)$$
+      $$p'_{E0}=\frac{n_{iE}^2}{N_E}=\frac{n_i^2}{N_E}\exp\left(\frac{\Delta E_g}{kT}\right),\qquad \gamma=\frac{1}{1+\dfrac{p'_{E0}D_EL_B}{n_{B0}D_BL_E}\cdot\dfrac{\tanh(x_B/L_B)}{\tanh(x_E/L_E)}}$$
+      <small>$\Delta E_g$ tăng theo $N_E$ (đồ thị trong slide: cỡ vài chục đến khoảng một trăm meV ở $N_D\approx10^{18}$ đến $10^{19}\text{ cm}^{-3}$). $p'_{E0}$ lớn hơn giá trị không hẹp vùng cấm, nên <b>$\gamma$ bị giảm</b>.</small></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>Hệ số $\exp(\Delta E_g/kT)$ tăng $p_{E0}$, tức tăng dòng phun lỗ trống ngược vào emitter: pha tạp emitter càng nặng <b>không</b> làm $\gamma$ cứ tăng mãi.</li>
+      <li>Ví dụ: $\Delta E_g=100\text{ meV}$ ở $300\text{ K}$ cho $e^{0.1/0.0259}\approx47$ lần ($\gamma$ xấu đi tương ứng).</li></ul></div>
+
+    <h3>4.5. Mô hình tương tác: Hẹp vùng cấm ở emitter và phun mức cao: ảnh hưởng đến $\gamma$ và $\beta$</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Cả hai hiệu ứng làm $\beta$ giảm nhưng ở hai chế độ khác nhau (pha tạp emitter quá nặng; dòng quá lớn).</li><li><b>Dùng để làm gì:</b> Thấy $\gamma$ đạt cực đại rồi giảm khi $N_E$ tăng nếu có hẹp vùng cấm; thấy $\beta$ giảm ở dòng lớn vì độ dốc $\exp(eV/2kT)$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $N_E$ (thang log), bật/tắt hẹp vùng cấm, kéo $V_{BE}$ (hoặc dòng) và quan sát $\gamma$, $\beta$, đồ thị bán log $I_C$.</li></ul></div>
+
+    <h3>4.6. Dồn dòng ở emitter</h3>
+    <p>Vùng cơ sở thường mỏng dưới một micromet nên có <b>điện trở cơ sở</b> đáng kể (slide). Điện trở này gây <b>chênh lệch điện thế ngang</b> dưới vùng emitter: với npn, điện thế giảm từ mép emitter vào giữa. Emitter pha nặng nên gần đúng là một vùng đẳng thế.</p>
+    <ul>
+      <li>Số electron phun từ emitter vào cơ sở phụ thuộc <b>hàm mũ</b> vào điện áp B–E.</li>
+      <li>Do điện áp rơi ngang trong cơ sở, điện áp B–E thực tế ở <b>mép</b> emitter lớn hơn ở <b>giữa</b>, nên phun nhiều hơn ở mép: dòng emitter <b>bị dồn ra mép</b>.</li>
+      <li>Mật độ dòng lớn ở mép gây <b>nóng cục bộ</b> và hiệu ứng <b>phun mức cao cục bộ</b>; dòng cơ sở dưới emitter cũng không đều.</li>
+    </ul>
+    <p>Tính chính xác cần phân tích hai chiều. Slide nêu cách đơn giản: <b>chia transistor thành nhiều transistor song song nhỏ</b> và gộp điện trở cơ sở của từng phần thành một điện trở ngoài tương đương. Vì vậy transistor công suất dùng emitter dạng <b>ngón tay</b> (hẹp, nhiều ngón) để tăng chu vi emitter.</p>
+
+    <h3>4.7. Mô hình tương tác: Dồn dòng: phân bố dòng emitter dưới cực emitter do điện trở cơ sở</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hiệu ứng là hình học: điện áp rơi ngang trong cơ sở làm dòng chạy về mép; nhìn mặt cắt giúp thấy rõ.</li><li><b>Dùng để làm gì:</b> Thấy mật độ dòng cao ở hai mép, thấp ở giữa; thấy ảnh hưởng của điện trở cơ sở, bề rộng emitter và dòng tổng.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo bề rộng emitter, điện trở cơ sở, dòng tổng; thử chia emitter thành nhiều ngón.</li></ul></div>
+
+    <h3>4.8. Đánh thủng: xuyên thấu</h3>
+    <p>Khi điện áp ngược B–C tăng, vùng điện tích không gian B–C rộng và lấn sâu vào cơ sở trung hòa (slide). Nó có thể xuyên <b>hoàn toàn</b> qua cơ sở và chạm vùng điện tích không gian B–E: đó là <b>xuyên thấu</b> (<i>punch-through</i>).</p>
+    <ul>
+      <li>Điện áp ngược C–B nhỏ ($V_{R1}$): hàng rào thế B–E không bị ảnh hưởng, dòng transistor vẫn gần 0.</li>
+      <li>Điện áp ngược lớn ($V_{R2}$): vùng nghèo xuyên qua cơ sở và <b>hàng rào thế B–E bị hạ thấp</b> do điện áp C–B. Dòng tăng rất mạnh khi điện áp tăng rất ít: hiện tượng đánh thủng xuyên thấu.</li>
+    </ul>
+    <p>Tại ngưỡng xuyên thấu, bề rộng phần cơ sở bị vùng nghèo B–C chiếm bằng bề rộng cơ sở trung hòa ban đầu $x_{BO}$ (slide):</p>
+    <div class="f key">$$x_{dB}=x_{BO}=\left\{\frac{2\epsilon_s(V_{bi}+V_{pt})}{e}\cdot\frac{N_C}{N_B}\cdot\frac{1}{N_C+N_B}\right\}^{1/2},\qquad V_{pt}=\frac{ex_{BO}^2}{2\epsilon_s}\cdot\frac{N_B(N_C+N_B)}{N_C}$$
+      <small>$N_B$, $N_C$: nồng độ pha tạp cơ sở và collector; $V_{pt}$: điện áp xuyên thấu (V). Biểu thức $V_{pt}$ của slide đã bỏ $V_{bi}$ vì $V_{pt}\gg V_{bi}$. Cơ sở càng mỏng, pha tạp càng nhẹ thì $V_{pt}$ càng nhỏ.</small></div>
+
+    <h3>4.9. Đánh thủng thác lũ và $I_{CEO}$</h3>
+    <p>Khi cực cơ sở để hở, dòng ngược của tiếp giáp B–C gồm lỗ trống thiểu số từ collector qua vùng điện tích không gian B–C vào cơ sở (slide, Hình 12.34). Lỗ trống này làm cơ sở dương hơn emitter, B–E bị phân cực thuận và phun electron: tạo dòng $I_{CEO}$. Electron khuếch tán qua cơ sở tới B–C đóng góp $\alpha I_{CEO}$:</p>
+    <div class="f key">$$I_{CEO}=\alpha I_{CEO}+I_{CBO}\ \Longrightarrow\ I_{CEO}=\frac{I_{CBO}}{1-\alpha}\approx\beta I_{CBO}$$
+      <small>$I_{CBO}$: dòng B–C ngược khi emitter hở; $I_{CEO}$: dòng collector–emitter khi cơ sở hở. Vì $I_{CEO}\approx\beta I_{CBO}$ gấp $\beta$ lần $I_{CBO}$, <b>đánh thủng thác lũ xảy ra ở điện áp thấp hơn</b> khi nối emitter chung (cơ sở hở) so với khi nối cơ sở chung (nhận xét bổ sung).</small></div>
+
+    <h3>4.10. Mô hình tương tác: Đánh thủng xuyên thấu và dòng $I_{CEO}$ khi cơ sở hở</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hai kiểu đánh thủng có hình ảnh khác nhau: vùng nghèo "chạm" vùng nghèo (xuyên thấu) và dòng ngược được khuếch đại bởi chính transistor ($I_{CEO}$).</li><li><b>Dùng để làm gì:</b> Thấy vùng nghèo B–C lấn vào cơ sở khi $V_{CB}$ tăng, hàng rào B–E bị hạ khi xuyên thấu; thấy $I_{CEO}$ lớn hơn $I_{CBO}$ khoảng $\beta$ lần.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_{CB}$, $N_B$, $x_{BO}$, $\beta$ và quan sát giản đồ vùng cùng dòng.</li></ul></div>
+
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul>
+      <li>Early: $x_B$ giảm khi $V_{CB}$ tăng ⇒ $g_o=I_C/(V_{CE}+V_A)$, $V_A\sim100$ đến $300\text{ V}$.</li>
+      <li>Phun mức cao: $n_p(0)\approx n_{p0}e^{eV_{BE}/2kT}$; hẹp vùng cấm: $p'_{E0}=(n_i^2/N_E)e^{\Delta E_g/kT}$, làm $\gamma$ giảm.</li>
+      <li>Dồn dòng: dòng emitter dồn ra mép vì điện trở cơ sở; xuyên thấu: vùng nghèo B–C chạm B–E; $I_{CEO}=I_{CBO}/(1-\alpha)\approx\beta I_{CBO}$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 5 và 6 đưa BJT về mạch tương đương để nói chuyện tần số.</div>
+  </section>
+
+  <section>
+    <h2>5. Mạch Tương Đương Tín Hiệu Nhỏ Hybrid-$\pi$</h2>
+    <div class="bridge"><b>Nối từ Mục 4:</b> Muốn thiết kế mạch khuếch đại ta cần thay transistor bằng một mạch điện tương đương.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Mạch hybrid-$\pi$ là ngôn ngữ chung để phân tích khuếch đại BJT, gồm cả hiệu ứng tần số.</div>
+    <p>Theo slide, BJT dùng cho hai loại ứng dụng: <b>đóng cắt</b> (chuyển giữa ngắt và dẫn) và <b>khuếch đại</b> (chồng tín hiệu hình sin lên giá trị một chiều, chỉ làm nhiễu loạn nhẹ điểm làm việc). Chương này tập trung vào mô hình <b>hybrid-$\pi$</b> cho khuếch đại; transistor được phân cực ở vùng thuận tích cực và các điện áp, dòng điện nhỏ chồng lên điện áp, dòng một chiều.</p>
+    <div class="tw"><table><tr><th>Phần của mạch (slide)</th><th>Các phần tử</th></tr>
+      <tr><td>Giữa cơ sở và emitter</td><td>$r_b$ (điện trở cơ sở), $r_\pi$, $C_\pi$ (điện dung khuếch tán), $C_{je}$ (điện dung tiếp giáp B–E), $r_{ex}$ (điện trở nối tiếp emitter)</td></tr>
+      <tr><td>Giữa collector và emitter</td><td>nguồn dòng $g_mV_{b'e'}$, $r_o$ (điện trở ra, liên quan hiệu ứng Early), $r_c$, $C_s$ (điện dung đế/collector)</td></tr>
+      <tr><td>Giữa cơ sở và collector</td><td>$r_\mu$ và $C_\mu$ (điện dung tiếp giáp B–C ngược)</td></tr></table></div>
+    <div class="box legend"><b>Ý nghĩa</b><ul>
+      <li>Mạch đầy đủ có nhiều phần tử, thường phải <b>mô phỏng máy tính</b>; có thể đơn giản hóa để nắm hiệu ứng tần số.</li>
+      <li>Các điện dung làm hệ số khuếch đại phụ thuộc <b>tần số</b> của tín hiệu vào.</li>
+      <li>Từ $i_C=I_Se^{v_{BE}/V_t}$ ta có độ truyền dẫn $g_m=\dfrac{dI_C}{dV_{BE}}=\dfrac{I_{CQ}}{V_t}$ (suy ra trực tiếp; bổ sung). Ví dụ $I_{CQ}=1\text{ mA}$ cho $g_m=38.6\text{ mS}$; với $\beta=153$ thì $r_\pi=\beta/g_m\approx4.0\text{ k}\Omega$ (số tự tính, bổ sung).</li></ul></div>
+    <div class="box key"><b>Mục 5 — Nhớ</b><ul>
+      <li>Mạch hybrid-$\pi$ có $r_b$, $r_\pi$, $C_\pi$, $C_{je}$, $r_{ex}$, $g_mV_{b'e'}$, $r_o$, $r_c$, $C_s$, $r_\mu$, $C_\mu$.</li>
+      <li>$g_m=I_{CQ}/V_t$; các điện dung gây hiệu ứng tần số.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 6 tìm giới hạn tần số của BJT qua thời gian trễ.</div>
+  </section>
+
+  <section>
+    <h2>6. Giới Hạn Tần Số: Thời Gian Trễ Và Tần Số Cắt</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> Các điện dung và thời gian bay của hạt tải quyết định BJT làm việc nhanh tới đâu.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> $f_\alpha$ cho biết đến tần số nào BJT còn khuếch đại dòng; nó chỉ ra từng khâu trễ cần cải tiến.</div>
+    <h3>6.1. Các thành phần thời gian trễ</h3>
+    <p>BJT là một <b>linh kiện thời gian bay</b> (<i>transit-time device</i>): khi $V_{BE}$ tăng, hạt tải được phun thêm vào cơ sở, khuếch tán qua cơ sở và được thu ở collector. Khi tần số tăng, thời gian này trở nên so sánh được với chu kỳ tín hiệu: đáp ứng ra lệch pha với tín hiệu vào và độ lớn hệ số khuếch đại dòng <b>giảm</b>.</p>
+    <p>Tổng thời gian trễ từ emitter đến collector gồm bốn thành phần (slide):</p>
+    <div class="f key">$$\tau_{ec}=\tau_e+\tau_b+\tau_d+\tau_c,\qquad f_\alpha=\frac{1}{2\pi\tau_{ec}}$$
+      <small>$\tau_e$: thời gian nạp điện dung tiếp giáp B–E; $\tau_b$: thời gian bay qua cơ sở; $\tau_d$: thời gian bay qua vùng nghèo collector; $\tau_c$: thời gian nạp điện dung collector. $f_\alpha$: <b>tần số cắt</b> liên hệ với $\tau_{ec}$ (tại đó độ lớn hệ số khuếch đại dòng cơ sở chung giảm còn $1/\sqrt2$ giá trị tần số thấp, theo Ví dụ 12.13 của slide).</small></div>
+    <div class="box tip"><b>Ví dụ 6.1 (bổ sung, số tự chọn).</b> Nếu $\tau_{ec}=20\text{ ps}$ thì $f_\alpha=\dfrac{1}{2\pi\times20\times10^{-12}}\approx\mathbf{8.0\text{ GHz}}$. Muốn tăng $f_\alpha$ phải giảm thời gian trễ lớn nhất trong bốn thành phần, thường là $\tau_b$ (làm cơ sở mỏng hơn) hoặc các thời gian nạp điện dung.</div>
+
+    <h3>6.2. Mô hình tương tác: Bốn thành phần thời gian trễ $\tau_e$, $\tau_b$, $\tau_d$, $\tau_c$ và tần số cắt $f_\alpha$</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Tần số cắt là kết quả cộng bốn thời gian; thấy cột xếp chồng cho biết khâu nào là "nút cổ chai".</li><li><b>Dùng để làm gì:</b> Đọc $\tau_{ec}$, $f_\alpha$; thấy độ lớn và pha của hệ số khuếch đại dòng theo tần số; thấy $f_\alpha$ tăng khi giảm khâu chiếm ưu thế.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo từng $\tau$, tần số tín hiệu và quan sát độ lớn và pha dòng ra so với dòng vào.</li></ul></div>
+    <div class="box key"><b>Mục 6 — Nhớ</b><ul>
+      <li>$\tau_{ec}=\tau_e+\tau_b+\tau_d+\tau_c$; $f_\alpha=1/(2\pi\tau_{ec})$.</li>
+      <li>Tần số cao: dòng ra trễ pha và độ lớn giảm vì thời gian bay so sánh được với chu kỳ.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 7 xem BJT làm công tắc, một thay đổi tín hiệu lớn.</div>
+  </section>
+
+  <section>
+    <h2>7. Chuyển Mạch Tín Hiệu Lớn</h2>
+    <div class="bridge"><b>Nối từ Mục 6:</b> Chuyển mạch liên quan chặt tới đặc trưng tần số, nhưng là thay đổi <b>tín hiệu lớn</b>, trong khi hiệu ứng tần số giả thiết biến đổi nhỏ.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Tốc độ chuyển mạch quyết định tốc độ của mạch số dùng BJT; phần lớn thời gian bị "ăn" bởi điện tích tích trữ.</div>
+    <p>Chuyển mạch mô tả BJT di chuyển giữa <b>ngắt</b> và <b>bão hòa</b>. Slide phân tích mạch có nguồn $V_{BB}$ qua $R_B$ vào cơ sở và $V_{CC}$ qua $R_C$ vào collector; một xung điện áp cơ sở đưa npn từ ngắt vào bão hòa rồi trở về ngắt.</p>
+
+    <h3>7.1. Quá trình bật (ngắt → bão hòa)</h3>
+    <ul>
+      <li><b>$0\to t_1$ (thời gian trễ $t_d$):</b> dòng cơ sở trung hòa điện tích không gian ở tiếp giáp B–E (từ ngược đến thuận nhẹ); $I_C$ tăng từ 0 đến $10\%$ giá trị cuối.</li>
+      <li><b>$t_1\to t_2$ (thời gian lên $t_r$):</b> dòng cơ sở tiếp tục cấp điện tích, $V_{BE}$ đi từ gần ngắt đến gần bão hòa; gradient electron trong cơ sở tăng, $I_C$ tăng từ $10\%$ lên $90\%$.</li>
+      <li><b>Sau $t_2$:</b> cơ sở vẫn được cấp dòng, đẩy transistor sâu vào bão hòa và xác lập phân bố cuối cùng, kể cả <b>điện tích dư</b> $Q_B$, $Q_{BX}$ và $Q_C$ (Hình 12.44 của slide: $Q_B$ là điện tích tích trữ ở chế độ thuận tích cực; $Q_{BX}$ và $Q_C$ là điện tích thêm vào ở cơ sở và collector khi bão hòa).</li>
+    </ul>
+
+    <h3>7.2. Quá trình tắt (bão hòa → ngắt)</h3>
+    <p>Tại $t_3$, $V_{BB}$ đổi thành $-V_R$, đảo chiều dòng cơ sở (giống điốt chuyển từ thuận sang ngược):</p>
+    <ul>
+      <li><b>Thời gian tích trữ $t_s$ ($t_3\to t_4$):</b> dòng cơ sở ngược trước hết rút <b>điện tích dư</b> $Q_{BX}$ giữ B–C ở phân cực thuận. $I_C$ chưa đổi nhiều vì gradient thiểu số gần collector chưa thay đổi. Kết thúc khi $I_C$ giảm còn $90\%$ giá trị bão hòa. <b>Thường đây là thành phần chính giới hạn tốc độ chuyển mạch</b>.</li>
+      <li><b>Thời gian xuống $t_f$ ($t_4\to t_5$):</b> B–C đã phân cực ngược; điện tích dư còn lại trong cơ sở được rút đi và $I_C$ giảm từ $90\%$ xuống $10\%$.</li>
+    </ul>
+    <div class="box warn"><b>Chú ý:</b> Slide không cho công thức cho $t_d$, $t_r$, $t_s$, $t_f$ mà chỉ mô tả định tính. Phân tích đầy đủ dùng mô hình Ebers–Moll với tham số khuếch đại phụ thuộc tần số, giải bằng biến đổi Laplace; slide yêu cầu sinh viên đọc thêm trong giáo trình. Vì vậy mô hình tương tác cho phần này chỉ nên là minh họa định tính.</div>
+
+    <h3>7.3. Mô hình tương tác: Xung chuyển mạch: $t_d$, $t_r$, $t_s$, $t_f$ và điện tích tích trữ trong cơ sở</h3>
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Xung $I_C(t)$ có bốn đoạn với nguyên nhân vật lý khác nhau; đặt cạnh phân bố điện tích trong cơ sở giúp thấy vì sao $t_s$ dài.</li><li><b>Dùng để làm gì:</b> Thấy $I_C$ đi qua các mốc $10\%$ và $90\%$, đọc từng khoảng thời gian, thấy vai trò của điện tích dư $Q_{BX}$, $Q_C$ khi bão hòa sâu.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo mức bão hòa (quá kích dòng cơ sở), $V_R$ và quan sát xung và điện tích tích trữ (minh họa định tính).</li></ul></div>
+
+    <div class="box key"><b>Mục 7 — Nhớ</b><ul>
+      <li>Bật: $t_d$ ($0\to10\%$), $t_r$ ($10\%\to90\%$). Tắt: $t_s$ (rút điện tích dư), $t_f$ ($90\%\to10\%$).</li>
+      <li>$t_s$ thường là thành phần chính giới hạn tốc độ; bão hòa càng sâu thì điện tích dư càng nhiều.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 8 gom các công thức chính thành cẩm nang.</div>
+  </section>
+
+  <section>
+    <h2>8. Cẩm Nang Công Thức Trọng Tâm Buổi 12</h2>
+    <p class="mut">Mỗi thẻ có giải nghĩa ký hiệu, khi nào dùng, và lưu ý.</p>
+
+    <div class="formula-card">
+      <h3>Công thức 1: Dòng của BJT lý tưởng</h3>
+      <div class="f key">
+        $$i_C=I_Se^{v_{BE}/V_t}\ \Big|\ i_C=\alpha i_E\ \Big|\ i_C=\beta i_B\ \Big|\ \beta=\frac{\alpha}{1-\alpha}\ \Big|\ g_m=\frac{I_{CQ}}{V_t}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $I_S$ (A): dòng bão hòa; $V_t=kT/e\approx0.0259\text{ V}$; $\alpha$, $\beta$ không thứ nguyên; $g_m$ (S).</div>
+        <div><b>2. Khi nào dùng:</b> Quan hệ dòng–điện áp ở chế độ thuận tích cực; ước lượng $\beta$ từ $\alpha$.</div>
+        <div><b>3. Lưu ý:</b> $\beta$ rất nhạy với $\alpha$. $i_C$ tăng $\sim10$ lần mỗi $60\text{ mV}$ của $v_{BE}$ ở $300\text{ K}$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 2: Chế độ và đường tải</h3>
+      <div class="f key">
+        $$V_{CC}=I_CR_C+V_{CE}\ \Big|\ V_{CE}=V_{CC}-I_CR_C\ \Big|\ I_{C,\text{sat}}\approx\frac{V_{CC}}{R_C}\ \Big|\ V_{CE,\text{cutoff}}=V_{CC}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $V_{CC}$ (V); $R_C$ ($\Omega$); $I_C$ (A).</div>
+        <div><b>2. Khi nào dùng:</b> Tìm điểm làm việc và chế độ (ngắt, thuận tích cực, bão hòa).</div>
+        <div><b>3. Lưu ý:</b> Nếu $\beta I_B$ tính ra vượt $V_{CC}/R_C$ thì transistor bão hòa và $I_C$ bị đường tải chặn.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 3: Hệ số khuếch đại dòng</h3>
+      <div class="f key">
+        $$\alpha=\gamma\alpha_T\delta\ \Big|\ \gamma=\frac{J_{nE}}{J_{nE}+J_{pE}}\ \Big|\ \alpha_T=\frac{J_{nC}}{J_{nE}}\ \Big|\ \delta=\frac{J_{nE}+J_{pE}}{J_{nE}+J_R+J_{pE}}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $J$ là mật độ dòng ($\text{A/cm}^2$); $\gamma$: hiệu suất phun; $\alpha_T$: hệ số vận chuyển; $\delta$: hệ số tái hợp.</div>
+        <div><b>2. Khi nào dùng:</b> Phân tích nguồn gốc mất mát dòng và thiết kế để $\beta$ lớn.</div>
+        <div><b>3. Lưu ý:</b> $\gamma\approx\left[1+\frac{N_B}{N_E}\frac{D_E}{D_B}\frac{x_B}{x_E}\right]^{-1}$; $\alpha_T\approx1/\cosh(x_B/L_B)$ (bổ sung).</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 4: Hiệu ứng Early</h3>
+      <div class="f key">
+        $$g_o=\frac{dI_C}{dV_{CE}}=\frac{I_C}{V_{CE}+V_A}=\frac{1}{r_o}\ \Big|\ I_C=g_o(V_{CE}+V_A)$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $V_A$ (V): điện áp Early; $r_o$ ($\Omega$); $g_o$ (S).</div>
+        <div><b>2. Khi nào dùng:</b> Tính điện trở ra và độ nghiêng của đặc tuyến.</div>
+        <div><b>3. Lưu ý:</b> $V_A\approx100$ đến $300\text{ V}$. Nguyên nhân: $x_B$ giảm khi $V_{CB}$ ngược tăng.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 5: Phun mức cao, hẹp vùng cấm, xuyên thấu, $I_{CEO}$</h3>
+      <div class="f key">
+        $$n_p(0)\approx n_{p0}e^{eV_{BE}/2kT}\ \Big|\ p'_{E0}=\frac{n_i^2}{N_E}e^{\Delta E_g/kT}\ \Big|\ V_{pt}=\frac{ex_{BO}^2}{2\epsilon_s}\frac{N_B(N_C+N_B)}{N_C}\ \Big|\ I_{CEO}=\frac{I_{CBO}}{1-\alpha}\approx\beta I_{CBO}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $\Delta E_g$ (eV): độ hẹp vùng cấm; $x_{BO}$ (cm): bề rộng cơ sở trung hòa ban đầu; $V_{pt}$ (V).</div>
+        <div><b>2. Khi nào dùng:</b> Giải thích sụt $\beta$ ở dòng lớn và ở emitter quá nặng; ước lượng điện áp đánh thủng.</div>
+        <div><b>3. Lưu ý:</b> Dồn dòng ở emitter do điện trở cơ sở là hiệu ứng hình học, không có công thức đơn giản trong slide.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 6: Tần số và chuyển mạch</h3>
+      <div class="f key">
+        $$\tau_{ec}=\tau_e+\tau_b+\tau_d+\tau_c\ \Big|\ f_\alpha=\frac{1}{2\pi\tau_{ec}}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $\tau$ (s); $f_\alpha$ (Hz).</div>
+        <div><b>2. Khi nào dùng:</b> Ước lượng tần số làm việc tối đa và tìm khâu trễ chiếm ưu thế.</div>
+        <div><b>3. Lưu ý:</b> Chuyển mạch gồm $t_d$, $t_r$, $t_s$, $t_f$; $t_s$ thường lớn nhất; slide không cho công thức, chỉ mô tả định tính.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Buổi 12: Những Điểm Cốt Lõi Cần Nằm Lòng</h2>
+    <ul>
+      <li><b>Nguyên lý:</b> B–E thuận phun electron, cơ sở mỏng cho chúng khuếch tán sang, B–C ngược quét vào collector; $i_C=I_Se^{v_{BE}/V_t}$.</li>
+      <li><b>Khuếch đại dòng:</b> $i_C=\alpha i_E=\beta i_B$, $\beta=\alpha/(1-\alpha)$; $\alpha=\gamma\alpha_T\delta$ ⇒ emitter pha nặng, cơ sở mỏng, ít tái hợp.</li>
+      <li><b>Chế độ làm việc:</b> ngắt, thuận tích cực, bão hòa, ngược tích cực; đường tải $V_{CE}=V_{CC}-I_CR_C$ cho điểm làm việc.</li>
+      <li><b>Phi lý tưởng:</b> Early ($g_o=I_C/(V_{CE}+V_A)$), phun mức cao ($e^{eV/2kT}$), hẹp vùng cấm làm $\gamma$ giảm, dồn dòng ra mép emitter, đánh thủng xuyên thấu và $I_{CEO}\approx\beta I_{CBO}$.</li>
+      <li><b>Tần số:</b> $\tau_{ec}=\tau_e+\tau_b+\tau_d+\tau_c$, $f_\alpha=1/(2\pi\tau_{ec})$.</li>
+      <li><b>Chuyển mạch:</b> $t_d$, $t_r$ khi bật; $t_s$ (rút điện tích dư, thường chiếm ưu thế), $t_f$ khi tắt.</li>
+    </ul>
+    <div class="next"><b>Tiếp theo trong môn học:</b> Ta đã xong hai loại transistor chính: MOSFET (điều khiển bằng điện trường) và BJT (điều khiển bằng dòng khuếch tán qua tiếp giáp), nền tảng cho các linh kiện và mạch ở các buổi sau.</div>
+  </section>
+</template>
+
 <template id="tpl-buoi-pending">
   <header>
     <span class="k b3" id="pending-badge">ĐANG CHỜ NỐI TIẾP</span>
@@ -6429,5 +7317,7 @@ window.MathJax = {
 <script src="lab-b8.js"></script>
 <script src="lab-b9.js"></script>
 <script src="lab-b10.js"></script>
+<script src="lab-b11.js"></script>
+<script src="lab-b12.js"></script>
 
 </body></html>
