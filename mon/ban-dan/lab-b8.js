@@ -43,6 +43,15 @@ function rr(ctx, x, y, w, h, r) {
   ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
   ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
 }
+function gauge(ctx, cx, cy, r, title, valText, frac, col, ghost) {
+  txt(ctx, title, cx, cy - r - 12, C.mut, 11.5, 'center', 700);
+  ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI * 1.12, Math.PI * 1.88); ctx.strokeStyle = C.g; ctx.lineWidth = 5; ctx.stroke();
+  const ang = f => Math.PI * (1.12 + .76 * clamp(f, 0, 1));
+  if (ghost != null) { const a = ang(ghost); ln(ctx, cx, cy, cx + Math.cos(a) * (r - 2), cy + Math.sin(a) * (r - 2), C.main, 1.6, [3, 3]); }
+  const a = ang(frac); arr(ctx, cx, cy, cx + Math.cos(a) * (r - 4), cy + Math.sin(a) * (r - 4), col || C.main, 2.4);
+  dot(ctx, cx, cy, 3.5, col || C.main);
+  txt(ctx, valText, cx, cy + 16, col || C.main, 12, 'center', 700);
+}
 /* ---------- vật lý dùng chung ---------- */
 const MU = { n: { mn: 92, mx: 1350, N0: 1.3e17, a: 0.91 }, p: { mn: 49, mx: 480, N0: 6.3e16, a: 0.76 } };
 const ct = (N, t) => { const m = MU[t]; return m.mn + (m.mx - m.mn) / (1 + Math.pow(N / m.N0, m.a)); };
@@ -63,7 +72,7 @@ const N0P = 7, KREC = .6;
 LABS.push({
   id: 'gr', name: 'Sinh – tái hợp', no: '1–2', secs: [1, 2],
   S: { I: 0 },
-  cols: '1.5fr 1fr', rows: '1.4fr 1fr', areas: '"a l" "c l"',
+  cols: '1.5fr 1fr', rows: '2.4fr 1fr', areas: '"a l" "c l"',
   panels: [
     { title: 'Cặp electron – lỗ trống sinh ra và biến mất', area: 'a', anim: true,
       ctrls: [{ k: 'I', l: 'Ánh sáng', min: 0, max: 1, step: .05, f: v => v ? Math.round(v * 100) + '%' : 'Tắt' }],
@@ -101,21 +110,15 @@ LABS.push({
         M.fl = M.fl.filter(f => (f.a -= dt * 2) > 0);
         M.fl.forEach(f => { const x = mx + f.x * bw, y = vbY + f.y * vbH; ctx.globalAlpha = f.a; ctx.beginPath(); ctx.arc(x, y, 6 + (1 - f.a) * 18, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 2.5; ctx.stroke(); ctx.globalAlpha = 1; });
       } },
-    { title: 'Cán cân sinh – tái hợp', area: 'c',
+    { title: 'Ba đồng hồ kim: sinh G, tái hợp R, tích n·p', area: 'c',
       anim: true,
       draw(p, ctx, W, H) {
         const M = p.tab.M; if (M.G == null) return;
-        const bx = 70, bw = W - bx - 16, mx = 22, bh = 16;
-        [['Sinh G', M.G, C.c1], ['Tái hợp R', M.R, C.c3]].forEach((r, i) => {
-          const y = 14 + i * 34; txt(ctx, r[0], 12, y + bh / 2, C.mut, 12, 'left', 700);
-          rr(ctx, bx, y, bw, bh, 5); ctx.fillStyle = C.tint; ctx.fill(); rr(ctx, bx, y, Math.max(2, bw * clamp(r[1] / mx, 0, 1)), bh, 5); ctx.fillStyle = r[2]; ctx.fill();
-        });
-        const ratio = Math.pow(M.N / N0P, 2), y = 14 + 2 * 34 + 8;
-        txt(ctx, 'n·p ÷ nᵢ² = ' + ratio.toFixed(1), 12, y + 8, C.ink, 14, 'left', 700);
-        rr(ctx, bx, y + 24, bw, bh, 5); ctx.fillStyle = C.tint; ctx.fill();
-        const f = clamp(Math.log10(Math.max(1, ratio)) / 2, 0, 1); rr(ctx, bx, y + 24, Math.max(2, bw * f), bh, 5); ctx.fillStyle = Math.abs(M.G - M.R) < 2 ? C.c2 : C.main; ctx.fill();
-        txt(ctx, '1', bx, y + 24 + bh + 10, C.sub, 10.5, 'left', 600); txt(ctx, '100', bx + bw, y + 24 + bh + 10, C.sub, 10.5, 'right', 600);
-        if (Math.abs(M.G - M.R) < 2) txt(ctx, 'G ≈ R: cân bằng', W - 12, y + 8, C.c2, 12, 'right', 700);
+        const r = Math.min(W / 7, H * .34, 46), cy = H * .52, ratio = Math.pow(M.N / N0P, 2), eq = Math.abs(M.G - M.R) < 2;
+        gauge(ctx, W * .17, cy, r, 'Sinh G', M.G.toFixed(1) + '/s', M.G / 22, C.c1);
+        gauge(ctx, W * .50, cy, r, 'Tái hợp R', M.R.toFixed(1) + '/s', M.R / 22, C.c3);
+        gauge(ctx, W * .83, cy, r, 'n·p ÷ nᵢ²', ratio.toFixed(1), clamp(Math.log10(Math.max(1, ratio)) / 2, 0, 1), eq ? C.c2 : C.main);
+        if (eq) txt(ctx, 'G ≈ R: cân bằng', W / 2, H - 14, C.c2, 12.5, 'center', 700);
       } }
   ]
 });
@@ -126,7 +129,7 @@ LABS.push({
 LABS.push({
   id: 'rec', name: 'Thời gian sống', no: '3', secs: [3],
   S: { tau: 1.5, g: 20, on: 1 },
-  cols: '1.4fr 1fr', rows: '1.2fr 1fr', areas: '"a l" "c l"',
+  cols: '1.5fr 1fr', rows: '2.4fr 1fr', areas: '"a l" "c l"',
   panels: [
     { title: 'Bật / tắt sáng: hạt dư tái hợp dần', area: 'a', anim: true,
       ctrls: [{ k: 'on', seg: [[1, 'Bật sáng'], [0, 'Tắt sáng']] }, { k: 'tau', l: 'τ', min: .5, max: 4, step: .1, f: v => v.toFixed(1) + ' s' }, { k: 'g', l: "g′", min: 5, max: 40, step: 1, f: v => v + '/s' }],
@@ -148,19 +151,15 @@ LABS.push({
         txt(ctx, 'δn = ' + M.ps.length, W - 14, 14, C.main, 14, 'right', 700);
         if (S.on) { for (let i = 0; i < 4; i++) { const x = bx + bw * (.15 + i * .23), y0 = by - 2 + ((t * 30 + i * 12) % 20); arr(ctx, x, y0 - 14, x + 6, y0, C.main, 2); } }
       } },
-    { title: 'Số hạt dư theo thời gian (nét đứt: công thức)', area: 'c', anim: true,
+    { title: 'Đồng hồ kim δn: kim đặc = số hạt thật, kim đứt = công thức', area: 'c', anim: true,
       draw(p, ctx, W, H, t) {
-        const S = p.S, M = p.tab.M; if (!M.hist) return; const ev = M.ev, win = 14, mx = 14, my = 22, pw = W - 2 * mx, ph = H - my - 16;
-        let ymax = Math.max(10, ev.Ninf, ...M.hist.map(h => h[1])) * 1.15; M.ym = M.ym ? M.ym + (ymax - M.ym) * .05 : ymax; ymax = M.ym;
-        const X = tt => mx + (tt - (M.t - win)) / win * pw, Y = v => my + ph - v / ymax * ph;
-        ln(ctx, mx, my + ph, mx + pw, my + ph, C.sub, 1.2);
-        if (ev.Ninf > 0) { ln(ctx, mx, Y(ev.Ninf), mx + pw, Y(ev.Ninf), C.c2, 1, [4, 4]); txt(ctx, "g′τ = " + Math.round(ev.Ninf), mx + 4, Y(ev.Ninf) - 8, C.c2, 11, 'left', 700); }
-        ctx.beginPath(); M.hist.forEach((h, i) => i ? ctx.lineTo(X(h[0]), Y(h[1])) : ctx.moveTo(X(h[0]), Y(h[1]))); ctx.strokeStyle = C.c2; ctx.lineWidth = 2.2; ctx.stroke();
-        ctx.beginPath(); let st = false; for (let tt = Math.max(ev.ts, M.t - win); tt <= M.t; tt += .15) { const v = ev.Ninf + (ev.N0 - ev.Ninf) * Math.exp(-(tt - ev.ts) / ev.tau); st ? ctx.lineTo(X(tt), Y(v)) : ctx.moveTo(X(tt), Y(v)); st = true; }
-        ctx.setLineDash([5, 4]); ctx.strokeStyle = C.main; ctx.lineWidth = 1.8; ctx.stroke(); ctx.setLineDash([]);
-        txt(ctx, 'δn(t)', mx + 2, 12, C.mut, 11.5, 'left', 700);
-        const k = Math.round((S.on ? 1 - Math.exp(-(M.t - ev.ts) / ev.tau) : Math.exp(-(M.t - ev.ts) / ev.tau)) * 100);
-        txt(ctx, 'sau ' + Math.max(0, (M.t - ev.ts)).toFixed(1) + ' s: ' + (S.on ? 'đạt ' : 'còn ') + k + '%', W - 12, 12, C.ink, 11.5, 'right', 700);
+        const S = p.S, M = p.tab.M; if (!M.hist) return; const ev = M.ev, r = Math.min(W / 5, H * .36, 52);
+        const dtm = Math.max(0, M.t - ev.ts), fm = ev.Ninf + (ev.N0 - ev.Ninf) * Math.exp(-dtm / ev.tau);
+        const top = Math.max(10, ev.Ninf, ev.N0, M.ps.length) * 1.15; M.ym = M.ym ? M.ym + (top - M.ym) * .05 : top;
+        gauge(ctx, W * .27, H * .55, r, 'δn', M.ps.length + ' hạt', M.ps.length / M.ym, C.c2, fm / M.ym);
+        const k = Math.round((S.on ? 1 - Math.exp(-dtm / ev.tau) : Math.exp(-dtm / ev.tau)) * 100);
+        gauge(ctx, W * .73, H * .55, r, S.on ? 'đã đạt' : 'còn lại', k + '%', k / 100, C.main);
+        txt(ctx, 'sau ' + dtm.toFixed(1) + ' s' + (ev.Ninf > 0 ? ' · g′τ = ' + Math.round(ev.Ninf) : ''), W / 2, H - 14, C.ink, 12, 'center', 700);
       } }
   ]
 });
@@ -172,7 +171,7 @@ const SLAB = 6, NB = 24;
 LABS.push({
   id: 'diff', name: 'Độ dài khuếch tán', no: '4–5', secs: [4, 5],
   S: { D: 1.2, tau: 1.5 },
-  cols: '1.5fr 1fr', rows: '1.5fr 1fr', areas: '"a l" "c l"',
+  cols: '1.5fr 1fr', rows: '2.4fr 1fr', areas: '"a l" "c l"',
   panels: [
     { title: 'Nguồn ở mép trái: hạt loang ra và chết dần', area: 'a', anim: true,
       ctrls: [{ k: 'D', l: 'D', min: .2, max: 3, step: .1, f: v => v.toFixed(1) }, { k: 'tau', l: 'τ', min: .3, max: 3, step: .1, f: v => v.toFixed(1) }],
@@ -192,20 +191,24 @@ LABS.push({
         M.ps.forEach(q => dot(ctx, bx + q.x / SLAB * bw, sy + 6 + q.y * (sh - 12), 3, C.c2));
         txt(ctx, 'nguồn', bx + 10, sy - 10, C.main, 11.5, 'left', 700);
         const xL = bx + Math.min(L, SLAB) / SLAB * bw; ln(ctx, xL, sy, xL, hy + hh, C.main, 1.6, [5, 4]); txt(ctx, 'x = L', xL + 5, sy + 12, C.main, 12, 'left', 700);
-        const h0 = Math.max(1, (M.h[0] + M.h[1]) / 2), mxh = h0 * 1.25, bwd = bw / NB;
-        ln(ctx, bx, hy + hh, bx + bw, hy + hh, C.sub, 1.2);
-        M.h.forEach((v, i) => { const hgt = clamp(v / mxh, 0, 1) * hh; ctx.globalAlpha = .55; ctx.fillStyle = C.c2; ctx.fillRect(bx + i * bwd + 1, hy + hh - hgt, bwd - 2, hgt); ctx.globalAlpha = 1; });
-        ctx.beginPath(); for (let i = 0; i <= 60; i++) { const x = i / 60 * SLAB, v = h0 * Math.exp(-(x - SLAB / NB / 2) / L); const px = bx + x / SLAB * bw, py = hy + hh - clamp(v / mxh, 0, 1) * hh; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
-        ctx.strokeStyle = C.main; ctx.lineWidth = 2; ctx.stroke();
-        txt(ctx, 'mật độ δn(x): cột = đo, đường = e^(−x/L)', bx + 4, hy + 8, C.mut, 11, 'left', 600);
+        const h0 = Math.max(1, (M.h[0] + M.h[1]) / 2), bwd = bw / NB, sh2 = (hh - 14) / 2;
+        for (let i = 0; i < NB; i++) {
+          const th = h0 * Math.exp(-((i + .5) * SLAB / NB - SLAB / NB / 2) / L);
+          ctx.save(); ctx.fillStyle = C.c2;
+          ctx.globalAlpha = .08 + .8 * clamp(M.h[i] / h0, 0, 1); ctx.fillRect(bx + i * bwd, hy, bwd - 1, sh2);
+          ctx.globalAlpha = .08 + .8 * clamp(th / h0, 0, 1); ctx.fillRect(bx + i * bwd, hy + sh2 + 14, bwd - 1, sh2);
+          ctx.restore();
+        }
+        txt(ctx, 'độ đậm = mật độ hạt đo được', bx + 4, hy + sh2 / 2, C.ink, 11, 'left', 700);
+        txt(ctx, 'độ đậm theo công thức e^(−x/L)', bx + 4, hy + sh2 + 14 + sh2 / 2, C.ink, 11, 'left', 700);
       } },
     { title: 'L = √(D·τ)', area: 'c',
       draw(p, ctx, W, H) {
         const S = p.S, L = Math.sqrt(S.D * S.tau);
         txt(ctx, 'L = √(' + S.D.toFixed(1) + ' × ' + S.tau.toFixed(1) + ') = ' + L.toFixed(2), W / 2, H * .22, C.ink, 16, 'center', 700);
-        const bx = 20, bw = W - 40, y = H * .45, h = 26;
-        const g = ctx.createLinearGradient(bx, 0, bx + bw, 0); for (let i = 0; i <= 10; i++) g.addColorStop(i / 10, 'rgba(120,200,240,' + Math.exp(-i / 10 * 4) + ')');
-        rr(ctx, bx, y, bw, h, 6); ctx.fillStyle = C.tint; ctx.fill(); rr(ctx, bx, y, bw, h, 6); ctx.fillStyle = g; ctx.fill();
+        const bx = 20, bw = W - 40, y = H * .45, h = 26, NS = 40;
+        rr(ctx, bx, y, bw, h, 6); ctx.fillStyle = C.tint; ctx.fill();
+        for (let i = 0; i < NS; i++) { ctx.save(); ctx.globalAlpha = Math.exp(-(i + .5) / NS * 4) * .9; ctx.fillStyle = C.c2; ctx.fillRect(bx + i * bw / NS, y, bw / NS + .5, h); ctx.restore(); }
         [0, 1, 2, 3].forEach(m => { const x = bx + m / 4 * bw; ln(ctx, x, y - 4, x, y + h + 4, C.main, 1.6); txt(ctx, m ? m + 'L' : '0', x, y + h + 16, C.main, 12, 'center', 700); txt(ctx, Math.round(Math.exp(-m) * 100) + '%', x, y - 14, C.ink, 12, 'center', 700); });
         txt(ctx, 'còn lại bao nhiêu % hạt dư so với mép nguồn', W / 2, H - 14, C.sub, 11, 'center', 600);
       } }
@@ -221,7 +224,7 @@ const ambM = r => MUN * MUP * (1 - r) / (MUN * r + MUP);
 LABS.push({
   id: 'amb', name: 'Lưỡng cực', no: '6–7', secs: [6, 7],
   S: { link: 1, r: .001, E: .5 },
-  cols: '1.5fr 1fr', rows: '1.3fr 1fr', areas: '"a l" "c l"',
+  cols: '1.5fr 1fr', rows: '2.4fr 1fr', areas: '"a l" "c l"',
   panels: [
     { title: 'Đám electron và đám lỗ trống dư trong điện trường', area: 'a', anim: true,
       ctrls: [{ k: 'link', seg: [[1, 'Đi chung (lưỡng cực)'], [0, 'Tách rời (giả định)']] }, { k: 'r', l: 'n/p', min: -3, max: 3, step: .1, log: 1, f: v => p10(Math.round(Math.log10(v))) }, { k: 'E', l: 'E', min: 0, max: 1, step: .05, f: v => v.toFixed(2) }, { btn: 'Đặt lại', fn: p => { p.tab.M = {}; } }],
@@ -242,19 +245,12 @@ LABS.push({
         if (S.link && E > .1) txt(ctx, 'điện trường nội kéo hai đám đi chung', W / 2, by + bh - 12, C.c2, 12, 'center', 700);
         M.sep = Math.abs(mxE - mxH);
       } },
-    { title: 'Hệ số lưỡng cực theo loại bán dẫn', area: 'c',
+    { title: 'Hai đồng hồ kim: D′ và μ′ của đám lưỡng cực', area: 'c',
       draw(p, ctx, W, H) {
-        const S = p.S, r = S.r, Dl = ambD(r), Ml = ambM(r), bx = 80, bw = W - bx - 16;
-        const bar = (y, lab, v, lo, hi, marks) => {
-          txt(ctx, lab, 10, y + 8, C.ink, 12.5, 'left', 700);
-          rr(ctx, bx, y, bw, 16, 5); ctx.fillStyle = C.tint; ctx.fill();
-          const X = vv => bx + (vv - lo) / (hi - lo) * bw; const z = X(0);
-          ctx.fillStyle = C.main; ctx.fillRect(Math.min(z, X(v)), y + 2, Math.abs(X(v) - z), 12);
-          marks.forEach(m => { ln(ctx, X(m[0]), y - 3, X(m[0]), y + 19, C.sub, 1.2); txt(ctx, m[1], X(m[0]), y + 30, C.sub, 10.5, 'center', 600); });
-        };
-        bar(18, 'D′', Dl, 0, 40, [[DP, 'D_p'], [DN, 'D_n']]);
-        bar(H * .52, 'μ′', Ml, -600, 1500, [[-MUP, '−μ_p'], [0, '0'], [MUN, 'μ_n']]);
-        txt(ctx, 'D′ = ' + Dl.toFixed(1) + ' cm²/s    μ′ = ' + Math.round(Ml) + ' cm²/V·s', W / 2, H - 12, C.ink, 12.5, 'center', 700);
+        const S = p.S, Dl = ambD(S.r), Ml = ambM(S.r), r = Math.min(W / 5, H * .34, 48);
+        gauge(ctx, W * .27, H * .52, r, 'D′ (cm²/s)', Dl.toFixed(1), Dl / 40, C.main);
+        gauge(ctx, W * .73, H * .52, r, 'μ′ (cm²/V·s)', Math.round(Ml) + '', (Ml + 600) / 2100, Ml < 0 ? C.c4 : C.c2);
+        txt(ctx, 'D_p = ' + DP + ' · D_n = ' + DN + '   |   μ_p = ' + MUP + ' · μ_n = ' + MUN, W / 2, H - 14, C.sub, 11, 'center', 600);
       } }
   ]
 });
@@ -272,7 +268,7 @@ function hsCurve(S) {
 LABS.push({
   id: 'pulse', name: 'Xung & Haynes–Shockley', no: '8, 10', secs: [8, 10],
   S: { E: 10, mu: 1000, tau: 100 },
-  cols: '1.5fr 1fr', rows: '1fr 1.15fr', areas: '"a l" "c l"',
+  cols: '1.5fr 1fr', rows: '2.4fr 1fr', areas: '"a l" "c l"',
   panels: [
     { title: 'Xung lỗ trống: trôi, loang rộng, hao hụt', area: 'a', anim: true,
       ctrls: [{ k: 'E', l: 'E', min: 4, max: 20, step: 1, f: v => v + ' V/cm' }, { k: 'mu', l: 'μ', min: 500, max: 1500, step: 50, f: v => v }, { k: 'tau', l: 'τ', min: 20, max: 400, step: 10, f: v => v + ' µs' }, { btn: 'Bắn xung', fn: p => { p.tab.M.ps = null; } }],
@@ -292,20 +288,18 @@ LABS.push({
         txt(ctx, 't = ' + Math.round(M.tm) + ' µs', 14, 14, C.mut, 12.5, 'left', 700);
         p.tab.M.tmNow = M.tm;
       } },
-    { title: 'Tín hiệu đọc tại B (như trên máy hiện sóng)', area: 'c', anim: true,
+    { title: 'Đầu dò tại B: đèn nháy khi xung đi qua, hai đồng hồ đọc μ và D', area: 'c', anim: true,
       draw(p, ctx, W, H) {
-        const S = p.S, M = p.tab.M, c = hsCurve(S), mx = 14, my = 18, pw = W - 2 * mx, ph = H * .5;
-        const X = t => mx + t / c.tm * pw, Y = y => my + ph - y / c.mx * ph * .95;
-        ln(ctx, mx, my + ph, mx + pw, my + ph, C.sub, 1.2);
-        ctx.beginPath(); c.ts.forEach((t, i) => i ? ctx.lineTo(X(t), Y(c.ys[i])) : ctx.moveTo(X(t), Y(c.ys[i]))); ctx.strokeStyle = C.c4; ctx.lineWidth = 2.4; ctx.stroke();
-        ln(ctx, X(c.tp), my, X(c.tp), my + ph, C.main, 1.2, [4, 4]); txt(ctx, 't₀', X(c.tp), my + ph + 11, C.main, 12, 'center', 700);
-        const yh = Y(c.mx / Math.E); ln(ctx, X(c.t1), yh, X(c.t2), yh, C.c2, 2.2); txt(ctx, 'Δt', (X(c.t1) + X(c.t2)) / 2, yh - 9, C.c2, 12, 'center', 700);
-        if (M.tmNow != null) { const x = X(Math.min(M.tmNow, c.tm)); ln(ctx, x, my, x, my + ph, C.err, 1.4); }
+        const S = p.S, M = p.tab.M, c = hsCurve(S), r = Math.min(W / 7, H * .3, 44), cy = H * .5;
+        const near = M.ps ? M.ps.filter(q => Math.abs(q.x - 1) < .05).length : 0, a = clamp(near / 14, 0, 1);
+        ctx.save(); ctx.globalAlpha = .15 + .7 * a; dot(ctx, W * .12, cy, 26, C.c4); ctx.restore();
+        dot(ctx, W * .12, cy, 18, a > .08 ? C.c4 : C.tint); ctx.beginPath(); ctx.arc(W * .12, cy, 18, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.4; ctx.stroke();
+        txt(ctx, 'đầu dò B', W * .12, cy + 38, C.mut, 11, 'center', 700);
         const dt_ = c.t2 - c.t1, muM = 1e6 / (S.E * c.tp), DM = Math.pow(muM * S.E * dt_ * 1e-6, 2) / (16 * c.tp * 1e-6);
-        const y0 = my + ph + 32;
-        txt(ctx, 'μ = d/(E·t₀) = ' + Math.round(muM) + '   (thật ' + S.mu + ')', 12, y0, C.ink, 12.5, 'left', 700);
-        txt(ctx, 'D = (μEΔt)²/(16t₀) = ' + DM.toFixed(1) + '   (thật ' + c.D.toFixed(1) + ')', 12, y0 + 20, C.ink, 12.5, 'left', 700);
-        txt(ctx, 'diện tích ∝ e^(−t₀/τ) = ' + Math.round(Math.exp(-c.tp / S.tau) * 100) + '%', 12, y0 + 40, C.main, 12.5, 'left', 700);
+        gauge(ctx, W * .42, cy, r, 'μ đo', Math.round(muM) + '', muM / 1500, C.c4, S.mu / 1500);
+        gauge(ctx, W * .74, cy, r, 'D đo', DM.toFixed(1), DM / 40, C.c2, c.D / 40);
+        txt(ctx, 't₀ = d/(E·μ) = ' + Math.round(c.tp) + ' µs · Δt = ' + Math.round(dt_) + ' µs   (kim đứt = giá trị thật)', 12, H - 34, C.ink, 12, 'left', 700);
+        txt(ctx, 'diện tích còn ∝ e^(−t₀/τ) = ' + Math.round(Math.exp(-c.tp / S.tau) * 100) + '%', 12, H - 14, C.main, 12, 'left', 700);
       } }
   ]
 });
@@ -316,7 +310,7 @@ LABS.push({
 LABS.push({
   id: 'relax', name: 'Phục hồi điện môi', no: '9', secs: [9],
   S: { N: 1e16 },
-  cols: '1.5fr 1fr', rows: '1.4fr 1fr', areas: '"a l" "c l"',
+  cols: '1.5fr 1fr', rows: '2.4fr 1fr', areas: '"a l" "c l"',
   panels: [
     { title: 'Bơm lỗ trống vào loại N: electron lao tới trung hòa', area: 'a', anim: true,
       ctrls: [{ k: 'N', l: 'Nd', min: 14, max: 19, step: .1, log: 1, f: v => p10(Math.round(Math.log10(v))) }, { btn: 'Bơm lại', fn: p => { p.tab.M = {}; } }],
@@ -331,7 +325,7 @@ LABS.push({
         const mu = ct(S.N, 'n'), td = 11.7 * 8.854e-14 / (Q * S.N * mu);
         rr(ctx, bx, by, bw, bh, 8); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
         for (let i = 0; i < 10; i++) for (let j = 0; j < 4; j++) { txt(ctx, '+', bx + (i + .5) * bw / 10, by + (j + .5) * bh / 4, C.sub, 13, 'center', 700); }
-        const rad = 90; const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad); g.addColorStop(0, 'rgba(230,100,150,' + (.55 * sig) + ')'); g.addColorStop(1, 'rgba(230,100,150,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, rad, 0, TAU2); ctx.fill();
+        const rad = 90; for (let k = 0; k < 6; k++) { ctx.save(); ctx.globalAlpha = .09 * sig; dot(ctx, cx, cy, rad * (1 - k / 6), C.c4); ctx.restore(); }
         M.el.forEach(e => { dot(ctx, bx + 8 + e.x * (bw - 16) + Math.sin(M.t * 4 + e.jt) * 2, by + 8 + e.y * (bh - 16) + Math.cos(M.t * 3 + e.jt) * 2, 3, C.c2); });
         M.arr.forEach(a => { const f = clamp(1 - Math.exp(-0), 0, 1); const prog = tp > a.tA ? clamp((tp - a.tA) / .35, 0, 1) : 0; const ex = a.sx + (cx + Math.cos(a.a) * a.r - a.sx) * prog, ey = a.sy + (cy + Math.sin(a.a) * a.r - a.sy) * prog; dot(ctx, ex, ey, 4.5, C.c2); });
         M.hl.forEach(h => { dot(ctx, cx + Math.cos(h.a) * h.r, cy + Math.sin(h.a) * h.r, 5.5, C.c4); txt(ctx, '+', cx + Math.cos(h.a) * h.r, cy + Math.sin(h.a) * h.r + .5, C.bg, 11, 'center', 800); });
@@ -339,16 +333,17 @@ LABS.push({
         txt(ctx, 'τ_d = ' + (td * 1e12).toFixed(2) + ' ps', W - 14, 14, C.ink, 12.5, 'right', 700);
         M.td = td; M.sig = sig;
       } },
-    { title: 'Điện tích thừa tan nhanh hơn mọi thứ khác', area: 'c', anim: true,
-      draw(p, ctx, W, H) {
-        const M = p.tab.M; if (!M.td) return; const lo = -15, hi = -3, bx = 16, bw = W - 32, y = H * .42;
-        const X = v => bx + (Math.log10(v) - lo) / (hi - lo) * bw;
-        ln(ctx, bx, y, bx + bw, y, C.sub, 2);
-        [-15, -12, -9, -6, -3].forEach(e => { ln(ctx, X(Math.pow(10, e)), y - 4, X(Math.pow(10, e)), y + 4, C.sub, 1.5); txt(ctx, e === -15 ? 'fs' : e === -12 ? 'ps' : e === -9 ? 'ns' : e === -6 ? 'µs' : 'ms', X(Math.pow(10, e)), y + 18, C.sub, 11, 'center', 600); });
-        const tau = 1e-7;
-        dot(ctx, X(M.td), y, 7, C.c4); txt(ctx, 'τ_d', X(M.td), y - 18, C.c4, 13, 'center', 700);
-        dot(ctx, X(tau), y, 7, C.c2); txt(ctx, 'τ (≈0,1 µs)', X(tau), y - 18, C.c2, 13, 'center', 700);
-        txt(ctx, 'τ ÷ τ_d ≈ ' + sci(tau / M.td, 1), W / 2, H - 16, C.ink, 14, 'center', 700);
+    { title: 'Hai đèn: τ_d tắt ngay, τ vẫn còn sáng', area: 'c', anim: true,
+      draw(p, ctx, W, H, t) {
+        const M = p.tab.M; if (!M.td) return; const tau = 1e-7, ratio = tau / M.td, cy = H * .42, r = 20, TSL = 1.2;
+        const tp = (M.t || 0) % (TSL * 6), al = Math.exp(-tp / TSL);
+        [[W * .2, C.c4, al, 'τ_d = ' + (M.td * 1e12).toFixed(2) + ' ps'], [W * .5, C.c2, 1, 'τ ≈ 0,1 µs']].forEach(l => {
+          ctx.save(); ctx.globalAlpha = .15 + .7 * l[2]; dot(ctx, l[0], cy, r + 8, l[1]); ctx.restore();
+          dot(ctx, l[0], cy, r, l[2] > .15 ? l[1] : C.tint); ctx.beginPath(); ctx.arc(l[0], cy, r, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.4; ctx.stroke();
+          txt(ctx, l[3], l[0], cy + r + 18, l[1], 12, 'center', 700);
+        });
+        gauge(ctx, W * .82, cy + 6, Math.min(W * .12, 40), 'log₁₀(τ ÷ τ_d)', Math.log10(ratio).toFixed(1), Math.log10(ratio) / 8, C.main);
+        txt(ctx, 'τ ÷ τ_d ≈ ' + sci(ratio, 1), W / 2, H - 16, C.ink, 14, 'center', 700);
       } }
   ]
 });
@@ -363,23 +358,133 @@ LABS.push({
   qf() { const S = this.S, ni = 1e10, kT = .0259, n0 = S.type === 'n' ? S.N : ni * ni / S.N, p0 = S.type === 'n' ? ni * ni / S.N : S.N;
     const Ef = kT * Math.log(n0 / ni), Efn = kT * Math.log((n0 + S.d) / ni), Efp = -kT * Math.log((p0 + S.d) / ni); return { Ef, Efn, Efp, n0, p0, kT, lli: S.d / S.N }; },
   panels: [
-    { title: 'Giản đồ năng lượng: một mức Fermi hay hai?', area: 'a',
+    { title: 'Hạt trong tinh thể: một mức Fermi hay hai? Ba đồng hồ kim đọc E_F, E_Fn, E_Fp', area: 'a', anim: true,
       ctrls: [{ k: 'type', seg: [['n', 'Loại N'], ['p', 'Loại P']] }, { k: 'N', l: 'pha tạp', min: 14, max: 18, step: .1, log: 1, f: v => p10(Math.round(Math.log10(v))) }, { k: 'd', l: 'δn = δp', min: 8, max: 17, step: .1, log: 1, f: v => p10(Math.round(Math.log10(v))) }],
-      draw(p, ctx, W, H) {
-        const q = p.tab.qf(), top = 28, bot = H - 36, mid = (top + bot) / 2, sc = (bot - top) / 1.5, Y = e => mid - e * sc, hg = .56;
-        const side = (x0, x1, title, lines) => {
-          txt(ctx, title, (x0 + x1) / 2, 12, C.mut, 12, 'center', 700);
-          ctx.fillStyle = C.tint; ctx.fillRect(x0, top - 6, x1 - x0, Y(hg) - top + 6); ctx.fillRect(x0, Y(-hg), x1 - x0, bot + 6 - Y(-hg));
-          ln(ctx, x0, Y(hg), x1, Y(hg), C.sub, 2.5); ln(ctx, x0, Y(-hg), x1, Y(-hg), C.sub, 2.5);
-          txt(ctx, 'Ec', x0 + 6, Y(hg) - 9, C.sub, 11, 'left', 700); txt(ctx, 'Ev', x0 + 6, Y(-hg) + 10, C.sub, 11, 'left', 700);
-          ln(ctx, x0, Y(0), x1, Y(0), C.sub, 1.2, [4, 4]); txt(ctx, 'Eᵢ', x1 - 6, Y(0) - 8, C.sub, 11, 'right', 700);
-          lines.forEach(l => { const e = clamp(l[0], -hg + .02, hg - .02); ln(ctx, x0, Y(e), x1, Y(e), l[2], l[3] || 2.6, l[4]); txt(ctx, l[1] + ' ' + (l[0] >= 0 ? '+' : '−') + Math.abs(l[0]).toFixed(3), (x0 + x1) / 2, Y(e) + (l[5] || -9), l[2], 12, 'center', 700); });
+      draw(p, ctx, W, H, t) {
+        const q = p.tab.qf(), by = 30, bh = H * .46, bw = W * .4, cnt = v => Math.round(2 + 26 * clamp((Math.log10(Math.max(v, 1)) - 4) / 14, 0, 1));
+        const box = (x0, title, ne, nh) => {
+          txt(ctx, title, x0 + bw / 2, 14, C.mut, 12, 'center', 700);
+          rr(ctx, x0, by, bw, bh, 8); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
+          for (let i = 0; i < ne; i++) { const x = x0 + 10 + ((i * .618 + .13) % 1) * (bw - 20) + Math.sin(t * 2.6 + i) * 3, y = by + 10 + ((i * .382 + .21) % 1) * (bh - 20) + Math.cos(t * 3 + i * 1.3) * 3; dot(ctx, x, y, 4.4, C.c2); }
+          for (let i = 0; i < nh; i++) { const x = x0 + 10 + ((i * .414 + .31) % 1) * (bw - 20) + Math.sin(t * 2.2 + i * 1.7) * 3, y = by + 10 + ((i * .732 + .47) % 1) * (bh - 20) + Math.cos(t * 2.8 + i) * 3; dot(ctx, x, y, 3, C.c4); }
         };
-        side(W * .04, W * .44, 'Cân bằng (tối)', [[q.Ef, 'E_F', C.main, 2.8, 0, -9]]);
-        const gap = Math.abs(q.Efn - q.Efp);
-        side(W * .56, W * .96, 'Có hạt dư (sáng)', [[q.Efn, 'E_Fn', C.c2, 2.8, 0, q.Efn >= q.Efp ? -9 : 12], [q.Efp, 'E_Fp', C.c4, 2.8, 0, q.Efn >= q.Efp ? 12 : -9]]);
-        arr(ctx, W * .46, mid, W * .54, mid, C.sub, 2);
-        txt(ctx, 'E_Fn − E_Fp = ' + (q.Efn - q.Efp).toFixed(3) + ' eV', W / 2, H - 12, C.ink, 12.5, 'center', 700);
+        box(W * .04, 'Cân bằng (tối)', cnt(q.n0), cnt(q.p0));
+        box(W * .56, 'Có hạt dư (sáng)', cnt(q.n0 + p.S.d), cnt(q.p0 + p.S.d));
+        txt(ctx, 'electron (to)', W * .5, by + bh * .35, C.c2, 11, 'center', 700); txt(ctx, 'lỗ trống (nhỏ)', W * .5, by + bh * .55, C.c4, 11, 'center', 700);
+        const r = Math.min(W / 8, (H - by - bh) * .32, 40), cy = by + bh + (H - by - bh) * .55, fr = e => (e + .56) / 1.12;
+        gauge(ctx, W * .2, cy, r, 'E_F (tối)', (q.Ef >= 0 ? '+' : '−') + Math.abs(q.Ef).toFixed(3), fr(q.Ef), C.main);
+        gauge(ctx, W * .5, cy, r, 'E_Fn (sáng)', (q.Efn >= 0 ? '+' : '−') + Math.abs(q.Efn).toFixed(3), fr(q.Efn), C.c2);
+        gauge(ctx, W * .8, cy, r, 'E_Fp (sáng)', (q.Efp >= 0 ? '+' : '−') + Math.abs(q.Efp).toFixed(3), fr(q.Efp), C.c4);
+        txt(ctx, 'E_Fn − E_Fp = ' + (q.Efn - q.Efp).toFixed(3) + ' eV  (đo từ Eᵢ)', W / 2, H - 10, C.ink, 12, 'center', 700);
+      } }
+  ]
+});
+
+/* ==========================================================================
+   TAB 0 — TỔNG QUAN: MỘT THANH Si, MỘT XUNG SÁNG, BẢY THÍ NGHIỆM LIÊN KẾT
+   ========================================================================== */
+const AOV = [
+  ['gr', 1, 'Sinh'], ['rec', 2, 'Sống τ'], ['diff', 3, 'Khuếch tán L'], ['amb', 4, 'Lưỡng cực'], ['pulse', 5, 'Đọc tại B'], ['relax', 6, 'Đa số trung hòa'], ['qf', 7, 'Fermi chuẩn']
+];
+function allCalc(S) {
+  const mu = ct(S.N, 'n'), D = mu * .0259, t0 = 1e6 / (mu * S.E), L = Math.sqrt(D * S.tau * 1e-6), td = 11.7 * 8.854e-14 / (Q * S.N * ct(S.N, 'p'));
+  const ni = 1e10, d = 1e13 * S.I, n0 = ni * ni / S.N, dEF = .0259 * Math.log((n0 + d) * (S.N + d) / (ni * ni));
+  return { mu, D, t0, L, td, dEF, d };
+}
+LABS.unshift({
+  id: 'all', name: 'Tổng quan', no: '★', secs: [],
+  S: { E: 10, tau: 100, N: 1e15, I: 1, view: .45 },
+  cols: '1.5fr 1fr', rows: '2.4fr 1fr', areas: '"a l" "c l"',
+  panels: [
+    { title: 'Khối 3D thanh Si loại P dài 1 cm: đèn chiếu xung sáng ở đầu trái — kéo "Góc nhìn 3D", bấm số ①–⑦ để vào thí nghiệm chi tiết', area: 'a', anim: true,
+      ctrls: [
+        { k: 'E', l: 'E', min: 4, max: 20, step: 1, f: v => v + ' V/cm' },
+        { k: 'tau', l: 'τ', min: 20, max: 400, step: 10, f: v => v + ' µs' },
+        { k: 'N', l: 'pha tạp P', min: 14, max: 18, step: .1, log: 1, f: v => p10(Math.round(Math.log10(v))) },
+        { k: 'I', l: 'Ánh sáng', min: .1, max: 1, step: .05, f: v => Math.round(v * 100) + '%' },
+        { k: 'view', l: 'Góc nhìn 3D', min: .05, max: 1, step: .05, f: v => Math.round(5 + 80 * v) + '°' },
+        { btn: 'Bắn xung', fn: p => { p.tab.M.ps = null; } }
+      ],
+      onClick(p, x, y) { const h = (p.hits || []).find(h => x >= h.x && x <= h.x + h.w && y >= h.y && y <= h.y + h.h); if (h) show(h.id); },
+      draw(p, ctx, W, H, t, dt) {
+        const S = p.S, M = p.tab.M, K = allCalc(S), NP = 300;
+        const sig = S.E + '|' + S.tau + '|' + S.N + '|' + S.I; if (sig !== M.sig) { M.sig = sig; M.ps = null; }
+        if (!M.ps) { M.ps = Array.from({ length: NP }, () => ({ x: Math.abs(gauss()) * .004, y: Math.random(), z: Math.random() })); M.tm = 0; M.hold = 0; M.fl = []; }
+        const dtm = dt * K.t0 / 3, ds = dtm * 1e-6;
+        if (M.tm < 2.3 * K.t0) { M.tm += dtm; M.ps = M.ps.filter(q => { q.x += K.mu * S.E * ds + gauss() * Math.sqrt(2 * K.D * ds); q.y = clamp(q.y + gauss() * .03, 0, 1); q.z = clamp(q.z + gauss() * .03, 0, 1); if (Math.random() < dtm / S.tau) { M.fl.push({ x: q.x, y: q.y, z: q.z, a: 1 }); return false; } return true; }); }
+        else if ((M.hold += dt) > 1.2) M.ps = null;
+        if (!M.ps) return;
+        M.fl = M.fl.filter(f => (f.a -= dt * 2.5) > 0);
+        const th = (5 + 80 * S.view) * Math.PI / 180, Dd = Math.min(W * .16, H * .30), vx = Math.cos(th) * Dd, vy = -Math.sin(th) * Dd * .6;
+        const Lp = W - 70 - Math.abs(vx), hp = H * .15, ox = 34, oy = H * .70;
+        const P = (x, y, z) => [ox + x * Lp + y * vx, oy + y * vy - z * hp];
+        const face = (pts, col, al) => { ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = col; ctx.fill(); ctx.restore(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.2; ctx.stroke(); };
+        const box = (x0, x1, y0, y1, z0, z1, col, al) => {
+          face([P(x0, y0, z0), P(x1, y0, z0), P(x1, y0, z1), P(x0, y0, z1)], col, al);
+          face([P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)], col, al * .8);
+          face([P(x1, y0, z0), P(x1, y1, z0), P(x1, y1, z1), P(x1, y0, z1)], col, al * .6);
+        };
+        const hull = pts => { const a = pts.slice().sort((u, v) => u[0] - v[0] || u[1] - v[1]), cr = (o, u, v) => (u[0] - o[0]) * (v[1] - o[1]) - (u[1] - o[1]) * (v[0] - o[0]), lo = [], up = [];
+          a.forEach(q => { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); });
+          a.slice().reverse().forEach(q => { while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); });
+          return lo.slice(0, -1).concat(up.slice(0, -1)); };
+        /* mặt sau + mạng '+' đa số */
+        face([P(0, 1, 0), P(1, 1, 0), P(1, 1, 1), P(0, 1, 1)], C.card, 1);
+        for (let i = 0; i < 22; i++) for (let j = 0; j < 3; j++) { const q = P((i + .5) / 22, 1, (j + .5) / 3); txt(ctx, '+', q[0], q[1], C.g, 11, 'center', 700); }
+        /* đèn và chùm sáng */
+        const lp = P(.05, .5, 1), lx = lp[0], ly = lp[1] - H * .24, k = .35 + .65 * S.I;
+        const patch = [P(0, .1, 1), P(.1, .1, 1), P(.1, .9, 1), P(0, .9, 1)];
+        const bm = hull([[lx - 11, ly + 12], [lx + 11, ly + 12]].concat(patch));
+        face(bm, C.main, .16 * k);
+        /* hạt dư, xếp từ xa đến gần */
+        M.ps.slice().sort((a, b) => b.y - a.y).forEach(q => { if (q.x > -.05 && q.x < 1.05) { const c = P(q.x, q.y, q.z), r = 3.9 - 1.3 * q.y; dot(ctx, c[0], c[1], r, C.c2); dot(ctx, c[0] + 5, c[1] + 2, r * .62, C.c4); } });
+        M.fl.forEach(f => { const c = P(f.x, f.y, f.z); ctx.globalAlpha = f.a; ctx.beginPath(); ctx.arc(c[0], c[1], 4 + (1 - f.a) * 12, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 2; ctx.stroke(); ctx.globalAlpha = 1; });
+        /* khối thanh + hai đầu dò A, B */
+        box(0, 1, 0, 1, 0, 1, C.tint, .22);
+        box(-.03, 0, -.04, 1.04, -.08, 1.08, C.main, .85); box(1, 1.03, -.04, 1.04, -.08, 1.08, C.main, .85);
+        face(patch, C.main, .5 * k);
+        const a0 = P(-.015, 0, 0), b0 = P(1.015, 0, 0);
+        txt(ctx, 'A', a0[0], a0[1] + 16, C.main, 12, 'center', 700); txt(ctx, 'B', b0[0], b0[1] + 16, C.main, 12, 'center', 700);
+        /* ánh sáng: vầng, hạt photon chạy theo chùm */
+        for (let r = 3; r >= 1; r--) { ctx.save(); ctx.globalAlpha = .12 * k; dot(ctx, lx, ly + 12, 10 + r * 9, C.main); ctx.restore(); }
+        rr(ctx, lx - 14, ly - 4, 28, 12, 4); ctx.fillStyle = C.sub; ctx.fill();
+        rr(ctx, lx - 11, ly + 6, 22, 7, 3); ctx.fillStyle = C.main; ctx.fill();
+        for (let i = 0; i < 8; i++) {
+          const u = (t * .9 + i / 8) % 1, tx = P(.01 + ((i * .37) % 1) * .08, .15 + ((i * .61) % 1) * .7, 1), x = lx + (tx[0] - lx) * u, y = ly + 14 + (tx[1] - ly - 14) * u;
+          ctx.save(); ctx.globalAlpha = (.3 + .7 * u) * k; dot(ctx, x, y, 2.6, C.main); ctx.restore();
+        }
+        /* thước độ rộng đám, điện trường và các số bấm */
+        let cx = 0, n = M.ps.length; M.ps.forEach(q => cx += q.x); cx = n ? cx / n : 0;
+        let sd = 0; M.ps.forEach(q => sd += (q.x - cx) * (q.x - cx)); sd = n ? Math.sqrt(sd / n) : 0;
+        const s1 = P(clamp(cx - sd, 0, 1), 1, 1), s2 = P(clamp(cx + sd, 0, 1), 1, 1);
+        ctx.setLineDash([4, 3]); ctx.strokeStyle = C.main; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(s1[0], s1[1] - 9); ctx.lineTo(s2[0], s2[1] - 9); ctx.stroke(); ctx.setLineDash([]);
+        const e1 = P(.42, 0, 0), e2 = P(.58, 0, 0); arr(ctx, e1[0], e1[1] + 92, e2[0], e2[1] + 92, C.main, 2.4); txt(ctx, 'điện trường E', (e1[0] + e2[0]) / 2, e1[1] + 106, C.main, 11, 'center', 700);
+        const hits = [], chip = (id, num, label, x, y, col) => {
+          const wd = 30 + label.length * 6.8, xx = clamp(x - wd / 2, 4, W - wd - 4);
+          rr(ctx, xx, y - 11, wd, 22, 11); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke();
+          txt(ctx, num + ' ' + label, xx + wd / 2, y + .5, col, 11.5, 'center', 700); hits.push({ x: xx, y: y - 11, w: wd, h: 22, id });
+        };
+        const fb = P(.2, 0, 0), top = P(cx, 1, 1), bR = P(1, 1, 1);
+        chip('gr', '①', 'Sinh', lx, ly - 22, C.c1);
+        chip('diff', '③', 'Khuếch tán L', clamp(top[0], 70, Math.min(W - 70, bR[0] - 130)), top[1] - 28, C.main);
+        chip('pulse', '⑤', 'Đọc tại B', bR[0], bR[1] - 28, C.c4);
+        chip('rec', '②', 'Sống τ', fb[0], fb[1] + 34, C.c3);
+        chip('relax', '⑥', 'Đa số trung hòa', P(clamp(cx, .4, .9), 0, 0)[0], fb[1] + 34, C.c4);
+        chip('amb', '④', 'Lưỡng cực', P(.5, 0, 0)[0], fb[1] + 62, C.c2);
+        chip('qf', '⑦', 'Fermi chuẩn', P(.12, 0, 0)[0], fb[1] + 62, C.c5);
+        p.hits = hits;
+        txt(ctx, 't = ' + Math.round(M.tm) + ' µs · còn ' + n + '/' + NP + ' hạt', W - 14, 14, C.ink, 12, 'right', 700);
+        txt(ctx, 'chấm to = electron dư · chấm nhỏ cạnh = lỗ trống đi kèm · vòng vàng = tái hợp', 14, 14, C.mut, 11, 'left', 600);
+        M.K = K;
+      } },
+    { title: 'Một chuỗi nhân quả: τ → L → t₀ → τ_d → E_Fn − E_Fp', area: 'c', anim: true,
+      draw(p, ctx, W, H) {
+        const S = p.S, K = allCalc(S), r = Math.min(W / 12, H * .3, 36), cy = H * .5, g = [
+          ['τ', S.tau + ' µs', S.tau / 400, C.c3], ['L', (K.L * 1e4).toFixed(0) + ' µm', K.L * 1e4 / 1500, C.main], ['t₀', Math.round(K.t0) + ' µs', K.t0 / 200, C.c4],
+          ['τ_d', (K.td * 1e12).toFixed(1) + ' ps', clamp(Math.log10(K.td * 1e12 + 1) / 2, 0, 1), C.c4], ['ΔE_F', K.dEF.toFixed(2) + ' eV', K.dEF / .8, C.c5]
+        ];
+        g.forEach((q, i) => gauge(ctx, W * (.1 + i * .2), cy, r, q[0], q[1], q[2], q[3]));
+        txt(ctx, 'L = √(Dτ)   ·   t₀ = d/(μE)   ·   τ_d = ε/σ', W / 2, H - 12, C.sub, 11, 'center', 600);
       } }
   ]
 });
@@ -389,6 +494,22 @@ LABS.push({
    ========================================================================== */
 const LD = {};
 const pw = v => p10(Math.round(Math.log10(v)));
+LD.all = {
+  intro: [
+    ['i', 'Cả bảy thí nghiệm là các lát cắt của cùng MỘT câu chuyện: bắn một xung sáng vào đầu thanh Si loại P và theo dõi nó cho đến khi biến mất.'],
+    ['w', '① Ánh sáng sinh cặp e–h (hạt dư). ② Mỗi electron dư sống trung bình τ rồi tái hợp (vòng vàng). ③ Trong lúc sống, đám hạt loang ra: đi được cỡ L = √(Dτ).'],
+    ['w', '④ Electron kéo theo lỗ trống nên cả đám trôi chung dưới điện trường E. ⑤ Đầu dò B đo lúc đám tới: t₀ cho μ, bề rộng cho D, độ hao hụt cho τ.'],
+    ['w', '⑥ Hạt đa số lao tới trung hòa điện tích trong τ_d cực ngắn, nên đám hạt luôn gần trung hòa. ⑦ Khi đám còn đó, n và p không còn chung một mức Fermi: cần E_Fn và E_Fp.'],
+    ['v', 'Bấm số ①–⑦ trên thanh để vào thí nghiệm chi tiết. Kéo "Góc nhìn 3D" để xoay khối; kéo E, τ, pha tạp P, ánh sáng và xem cả chuỗi (đồng hồ bên dưới) đổi theo.']
+  ],
+  react(S, k, P, say) {
+    const K = allCalc(S);
+    if (k === 'E') say('w', `E = ${S.E} V/cm: đám tới B sau t₀ = ${Math.round(K.t0)} µs. E lớn thì tới sớm, ít kịp loang và hao hụt.`);
+    else if (k === 'tau') say('w', `τ = ${S.tau} µs: L = √(Dτ) = ${(K.L * 1e4).toFixed(0)} µm. Sống lâu thì loang xa hơn và tới B còn nhiều hạt hơn.`);
+    else if (k === 'N') say('w', `Pha tạp P = ${pw(S.N)}: μ giảm khi pha tạp nặng, nhưng σ tăng nên τ_d = ${(K.td * 1e12).toFixed(1)} ps còn ngắn hơn. Giả thiết δn ≈ δp càng đúng.`);
+    else say('w', `Ánh sáng ${Math.round(S.I * 100)}%: hạt dư δ = ${sci(K.d, 1)} cm⁻³ ⇒ E_Fn − E_Fp = ${K.dEF.toFixed(2)} eV, hệ lệch cân bằng nhiệt càng xa.`);
+  }
+};
 LD.gr = {
   intro: [
     ['i', 'Ở mọi nhiệt độ, nhiệt liên tục "bứt" electron từ vùng hóa trị lên vùng dẫn, tạo cặp electron–lỗ trống: đó là SINH. Electron rơi xuống lấp lỗ trống: đó là TÁI HỢP.'],
@@ -407,14 +528,14 @@ LD.gr = {
 LD.rec = {
   intro: [
     ['i', 'Mỗi electron dư sống một thời gian ngẫu nhiên rồi tái hợp. Trung bình thời gian đó là τ (thời gian sống của hạt thiểu số).'],
-    ['w', 'Tốc độ mất hạt dư R′ = δn/τ: càng nhiều hạt dư thì càng nhiều hạt mất mỗi giây. Đó là lý do ra đường cong hàm mũ.'],
+    ['w', 'Tốc độ mất hạt dư R′ = δn/τ: càng nhiều hạt dư thì càng nhiều hạt mất mỗi giây. Đó là lý do số hạt dư giảm theo hàm mũ.'],
     ['w', 'Bật sáng: δn tăng từ 0 lên g′τ (sinh bằng tái hợp). Tắt sáng: δn(t) = δn(0)·e^(−t/τ).'],
-    ['v', 'Đổi τ, g′ hoặc bấm Bật/Tắt. Nét đứt là công thức, nét liền là số hạt thật đếm được (có nhiễu).']
+    ['v', 'Đổi τ, g′ hoặc bấm Bật/Tắt. Kim đứt là công thức, kim đặc là số hạt thật đếm được (có nhiễu).']
   ],
   react(S, k, P, say) {
     if (k === 'on') say('w', S.on ? 'Bật sáng: δn leo dần về g′τ, sau 1τ đạt 63%, sau 3τ đạt 95%.' : 'Tắt sáng: δn tụt theo e^(−t/τ), sau 1τ còn 37%, sau 3τ còn 5%.');
-    else if (k === 'tau') say('w', `τ = ${S.tau.toFixed(1)} s. τ lớn thì hạt dư sống lâu, đường cong thoải hơn và mức dừng g′τ = ${Math.round(S.g * S.tau)} cao hơn.`);
-    else say('w', `g′ = ${S.g}/s. Sinh nhiều hơn thì mức dừng cao hơn (g′τ = ${Math.round(S.g * S.tau)}) nhưng đường cong vẫn có cùng hằng số thời gian τ.`);
+    else if (k === 'tau') say('w', `τ = ${S.tau.toFixed(1)} s. τ lớn thì hạt dư sống lâu, kim nhúc nhích chậm hơn và mức dừng g′τ = ${Math.round(S.g * S.tau)} cao hơn.`);
+    else say('w', `g′ = ${S.g}/s. Sinh nhiều hơn thì mức dừng cao hơn (g′τ = ${Math.round(S.g * S.tau)}) nhưng kim vẫn chạy với cùng hằng số thời gian τ.`);
   }
 };
 LD.diff = {
@@ -422,7 +543,7 @@ LD.diff = {
     ['i', 'Phương trình liên tục: hạt trong một khoảng thay đổi vì có hạt chạy vào/ra, được sinh thêm hoặc tái hợp.'],
     ['w', 'Ở đây nguồn giữ nồng độ cố định ở mép trái. Hạt loang sang phải theo khuếch tán (hệ số D) và chết dần (thời gian sống τ).'],
     ['w', 'Hai cơ chế cân bằng nhau tạo ra phân bố mũ δn(x) = δn₀·e^(−x/L), với L = √(Dτ).'],
-    ['v', 'Kéo D và τ: nét vàng đứt là x = L, cột xanh là mật độ hạt đo được.']
+    ['v', 'Kéo D và τ: vạch vàng đứt là x = L, dải đậm nhạt phía dưới là mật độ hạt.']
   ],
   react(S, k, P, say) {
     const L = Math.sqrt(S.D * S.tau);
@@ -450,7 +571,7 @@ LD.pulse = {
   intro: [
     ['i', 'Bắn một xung lỗ trống tại A, điện trường E quét xung về B. Trên đường đi xung vừa dịch (trôi), vừa bè ra (khuếch tán), vừa nhỏ dần (tái hợp).'],
     ['w', 'Đỉnh xung tới B tại t₀ = d/(μE), nên đo t₀ cho ra μ. Độ rộng xung Δt cho ra D. Diện tích còn lại cho ra τ.'],
-    ['w', 'Đồ thị dưới là tín hiệu tại B. Số đo μ, D từ đường cong gần đúng với giá trị thật (sai lệch nhỏ vì công thức đã xấp xỉ).'],
+    ['w', 'Đầu dò tại B nháy khi xung đi qua. Số đo μ, D trên hai đồng hồ gần đúng với giá trị thật (sai lệch nhỏ vì công thức đã xấp xỉ).'],
     ['v', 'Đổi E, μ, τ. Bấm Bắn xung để chạy lại.']
   ],
   react(S, k, P, say) {
@@ -464,7 +585,7 @@ LD.relax = {
   intro: [
     ['i', 'Bơm vào loại N một cụm lỗ trống mà không có electron đi kèm: ngay lập tức xuất hiện điện tích dương thừa.'],
     ['w', 'Electron đa số (rất đông, rất linh động) bị điện tích dương hút, lao tới bù trừ. Điện tích thừa tan theo ρ(t) = ρ₀·e^(−t/τ_d), τ_d = ε/σ.'],
-    ['w', 'Hình dùng "đồng hồ chậm": thời gian thật chỉ cỡ pico giây. Đồ thị dưới so τ_d với thời gian sống hạt dư τ.'],
+    ['w', 'Hình dùng "đồng hồ chậm": thời gian thật chỉ cỡ pico giây. Hai đèn bên dưới so τ_d với thời gian sống hạt dư τ.'],
     ['v', 'Kéo pha tạp Nd để xem τ_d đổi.']
   ],
   react(S, k, P, say) {
@@ -475,7 +596,7 @@ LD.relax = {
 };
 LD.qf = {
   intro: [
-    ['i', 'Ở cân bằng, một mức Fermi E_F quyết định cả n lẫn p. Khi có hạt dư, n và p tăng độc lập nên một E_F không đủ.'],
+    ['i', 'Ở cân bằng, một mức Fermi E_F quyết định cả n lẫn p (số chấm xanh, chấm hồng trong ô tối). Khi có hạt dư, n và p tăng độc lập nên một E_F không đủ.'],
     ['w', 'Ta dùng hai mức: E_Fn cho electron (tăng thì n tăng), E_Fp cho lỗ trống (xuống thấp thì p tăng).'],
     ['w', 'Hạt đa số hầu như không đổi nên mức Fermi chuẩn của chúng gần như đứng yên. Hạt thiểu số tăng nhiều bậc nên mức chuẩn của chúng bị kéo đi xa.'],
     ['v', 'Kéo δ (hạt dư) từ nhỏ lên lớn, và đổi loại N/P.']
@@ -542,7 +663,7 @@ const FLASK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke
 
 const sty = document.createElement('style'); sty.textContent = CSS; document.head.appendChild(sty);
 let timers = [], logEl = null;
-let root, bodyEl, tabsEl, cur = null, curPanels = [], raf = 0, last = 0, tAcc = 0, opener = null, lastTab = 'gr';
+let root, bodyEl, tabsEl, cur = null, curPanels = [], raf = 0, last = 0, tAcc = 0, opener = null, lastTab = 'all';
 
 function ensureDom() {
   if (root) return;
@@ -606,6 +727,7 @@ function show(id, panelIdx) {
     const cv = el.querySelector('canvas'), box = el.querySelector('.lb-cv');
     const p = { el, cv, ctx: cv && cv.getContext('2d'), W: 0, H: 0, tab, S: tab.S, st: {}, dirty: true, spec, syncs: [] };
     p.syncCtrls = () => p.syncs.forEach(f => f());
+    if (spec.onClick && cv) { cv.style.cursor = 'pointer'; cv.addEventListener('click', ev => { const r = cv.getBoundingClientRect(); spec.onClick(p, ev.clientX - r.left, ev.clientY - r.top); }); }
     if (spec.ctrls && spec.ctrls.length) { const cb = document.createElement('div'); cb.className = 'lb-c'; spec.ctrls.forEach(c => cb.appendChild(mkCtrl(tab, c, p))); el.appendChild(cb); }
     bodyEl.appendChild(el); curPanels.push(p);
     if (spec.host) spec.mount(p, box);
