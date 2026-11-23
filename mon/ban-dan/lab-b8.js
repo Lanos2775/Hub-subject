@@ -391,12 +391,13 @@ function allCalc(S) {
   const ni = 1e10, d = 1e13 * S.I, n0 = ni * ni / S.N, dEF = .0259 * Math.log((n0 + d) * (S.N + d) / (ni * ni));
   return { mu, D, t0, L, td, dEF, d };
 }
+const FOLLOW_SLOW = .2, FOLLOW_ZOOM = 4.2;   /* hệ số tua chậm và độ zoom khi theo dõi 1 hạt */
 LABS.unshift({
   id: 'all', name: 'Tổng quan', no: '★', secs: [],
   S: { E: 10, tau: 100, N: 1e15, I: 1, yaw: 30, pitch: 32, zoom: 1, speed: 1 },
   cols: '1.5fr 1fr', rows: '3.4fr 1fr', areas: '"a l" "c l"',
   panels: [
-    { title: 'Khối 3D thanh Si loại P dài 1 cm — kéo chuột để xoay, lăn chuột để phóng to, bấm vào đám hạt để FOCUS, bấm số ①–⑦ để vào thí nghiệm',
+    { title: 'Khối 3D thanh Si loại P dài 1 cm — bấm số ①–⑦ để vào thí nghiệm',
       area: 'a', anim: true,
       ctrls: [
         { k: 'E', l: 'E', min: 4, max: 20, step: 1, f: v => v + ' V/cm' },
@@ -413,27 +414,79 @@ LABS.unshift({
         { btn: 'Bắn xung', fn: p => { p.tab.M.ps = null; } }
       ],
       onDrag(p, dx, dy) { const S = p.S; S.yaw = ((S.yaw + dx * .5 + 540) % 360) - 180; S.pitch = clamp(S.pitch + dy * .4, 5, 90); p.syncCtrls(); },
-      onWheel(p, dy) { p.S.zoom = clamp(p.S.zoom * (dy < 0 ? 1.1 : 1 / 1.1), .5, 3); p.syncCtrls(); },
+      onWheel(p, dy) {
+        if (p.follow) p.fz = clamp(p.fz * (dy < 0 ? 1.1 : 1 / 1.1), 2, 9);
+        else { p.S.zoom = clamp(p.S.zoom * (dy < 0 ? 1.1 : 1 / 1.1), .5, 3); p.syncCtrls(); }
+      },
       onClick(p, x, y) {
         const hit = r => r && x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
-        if (p.focus) { p.focus = false; return; }
+        if (p.follow) { p.follow = false; return; }
+        if (p.cam && p.cam.k > .05) return;               /* đang lùi camera ra: bỏ qua */
         const h = (p.hits || []).find(hit); if (h) { show(h.id); return; }
-        const c = p.cloud; if (c && Math.hypot(x - c.x, y - c.y) <= c.r) p.focus = true;
+        const c = p.cloud; if (!c || Math.hypot(x - c.x, y - c.y) > c.r) return;
+        /* chọn hạt gần điểm bấm nhất trong số hạt đang hiện trong thanh */
+        let best = null, bd = 1e9;
+        (p.proj || []).forEach(o => { if (o.q.x <= 0 || o.q.x >= 1) return; const d = Math.hypot(o.c[0] - x, o.c[1] - y); if (d < bd) { bd = d; best = o.q; } });
+        const M = p.tab.M; if (!best || !M.ps || !M.ps.includes(best)) return;
+        M.ps = M.ps.filter(q => !(q.trk && q.arr)); M.ps.forEach(q => { q.trk = false; q.seg = null; q.trail = null; });
+        best.trk = true; best.arr = false; best.hit = 0; best.seg = null; best.trail = [[best.x, best.y, best.z]];
+        p.follow = true; p.fz = FOLLOW_ZOOM;
+        say('w', 'Camera zoom vào 1 electron dư và tua chậm. Đường gấp khúc là quỹ đạo: mỗi đoạn = trôi theo E cộng một bước khuếch tán ngẫu nhiên. Hạt này được giữ sống đến B để bạn đi hết quãng đường (các hạt khác vẫn có thể tái hợp). Bấm bất kỳ đâu để thoát.');
       },
       draw(p, ctx, W, H, t, dt) {
-        const S = p.S, M = p.tab.M, K = allCalc(S), NP = 300, sp = S.speed, dts = dt * sp;
+        const S = p.S, M = p.tab.M, K = allCalc(S), NP = 300, sp = S.speed;
+        /* tua chậm mượt khi đang theo dõi 1 hạt */
+        p.slow = (p.slow == null ? 1 : p.slow); p.slow += ((p.follow ? FOLLOW_SLOW : 1) - p.slow) * (1 - Math.exp(-dt * 3));
+        const dts = dt * sp * p.slow;
         const sig = S.E + '|' + S.tau + '|' + S.N + '|' + S.I; if (sig !== M.sig) { M.sig = sig; M.ps = null; }
         if (!M.ps) { M.ps = Array.from({ length: NP }, () => ({ x: Math.abs(gauss()) * .004, y: Math.random(), z: Math.random() })); M.tm = 0; M.hold = 0; M.fl = []; }
         M.at = (M.at || 0) + dts; const ta = M.at;
         const dtm = dts * K.t0 / 3, ds = dtm * 1e-6;
-        if (M.tm < 2.3 * K.t0) { M.tm += dtm; M.ps = M.ps.filter(q => { q.x += K.mu * S.E * ds + gauss() * Math.sqrt(2 * K.D * ds); q.y = clamp(q.y + gauss() * .03, 0, 1); q.z = clamp(q.z + gauss() * .03, 0, 1); if (Math.random() < dtm / S.tau) { M.fl.push({ x: q.x, y: q.y, z: q.z, a: 1 }); return false; } return true; }); }
-        else if ((M.hold += dts) > 1.2) M.ps = null;
+        if (M.tm < 2.3 * K.t0) { M.tm += dtm; M.ps = M.ps.filter(q => { if (q.trk) return true; q.x += K.mu * S.E * ds + gauss() * Math.sqrt(2 * K.D * ds); q.y = clamp(q.y + gauss() * .03, 0, 1); q.z = clamp(q.z + gauss() * .03, 0, 1); if (Math.random() < dtm / S.tau) { M.fl.push({ x: q.x, y: q.y, z: q.z, a: 1 }); return false; } return true; }); }
+        else if ((M.hold += dts) > 1.2 && !p.follow) M.ps = null;
         if (!M.ps) return;
         M.fl = M.fl.filter(f => (f.a -= dts * 2.5) > 0);
-        /* ===== phép chiếu 3D thật: xoay ngang, nghiêng, phóng to ===== */
+
+        /* ===== THEO DÕI 1 HẠT: mô hình chuyển động ===== */
+        let T = M.ps.find(q => q.trk);
+        if (p.follow && !T) p.follow = false;                         /* xung bị đặt lại */
+        if (!p.follow && T && (!p.cam || p.cam.k < .05)) { T.trk = false; T.seg = null; T.trail = null; if (T.arr) M.ps = M.ps.filter(q => q !== T); T = null; }
+        if (T) {
+          if (T.arr) { T.hit += dt; if (T.hit > 2.6) p.follow = false; }
+          else {
+            /* quỹ đạo = chuỗi ~28 bước, mỗi bước: trôi μE·Δt + khuếch tán √(2DΔt); nội suy thẳng giữa hai mốc để nhìn rõ */
+            const dseg = K.t0 / 28, nseg = q => {
+              const d2 = dseg * 1e-6;
+              let x1 = Math.max(.002, q.x + K.mu * S.E * d2 + gauss() * Math.sqrt(2 * K.D * d2)), y1 = clamp(q.y + gauss() * .075, 0, 1), z1 = clamp(q.z + gauss() * .075, 0, 1), dur = dseg, fin = false;
+              if (x1 >= 1) { const f = (1 - q.x) / (x1 - q.x); y1 = q.y + (y1 - q.y) * f; z1 = q.z + (z1 - q.z) * f; x1 = 1; dur = dseg * f; fin = true; }
+              q.seg = { x0: q.x, y0: q.y, z0: q.z, x1, y1, z1, u: 0, dur: Math.max(dur, 1e-3), fin };
+            };
+            if (!T.seg) nseg(T);
+            let adv = dtm;
+            while (adv > 0 && !T.arr) {
+              const s = T.seg, need = (1 - s.u) * s.dur;
+              if (adv < need) { s.u += adv / s.dur; adv = 0; }
+              else {
+                adv -= need; T.x = s.x1; T.y = s.y1; T.z = s.z1; T.trail.push([T.x, T.y, T.z]);
+                if (s.fin) { T.arr = true; T.hit = 0; say('v', 'Hạt chạm tấm B sau ' + Math.round(M.tm) + ' µs (cả đám: t₀ = ' + Math.round(K.t0) + ' µs). Từng hạt đến sớm/muộn hơn t₀ một chút vì khuếch tán ngẫu nhiên, đó là độ rộng của xung tại B.'); }
+                else nseg(T);
+              }
+            }
+            if (!T.arr) { const s = T.seg; T.x = s.x0 + (s.x1 - s.x0) * s.u; T.y = s.y0 + (s.y1 - s.y0) * s.u; T.z = s.z0 + (s.z1 - s.z0) * s.u; }
+          }
+        }
+        /* ===== camera lia theo hạt ===== */
+        const cam = p.cam || (p.cam = { tx: .5, ty: .5, tz: .5, z: S.zoom, k: 0 }), fol = !!(p.follow && T);
+        const a1 = 1 - Math.exp(-dt * 3), a2 = 1 - Math.exp(-dt * 2.4), dest = fol ? [T.x, T.y, T.z] : [.5, .5, .5], zd = fol ? p.fz : S.zoom;
+        cam.tx += (dest[0] - cam.tx) * a1; cam.ty += (dest[1] - cam.ty) * a1; cam.tz += (dest[2] - cam.tz) * a1;
+        cam.z += (zd - cam.z) * a2; cam.k += ((fol ? 1 : 0) - cam.k) * a2;
+        if (!fol && cam.k < .01) { cam.k = 0; cam.tx = cam.ty = cam.tz = .5; cam.z = S.zoom; }
+        const ao = 1 - clamp(cam.k * 1.25, 0, 1);            /* độ hiện của các hạt còn lại */
+
+        /* ===== phép chiếu 3D thật: xoay ngang, nghiêng, phóng to (tâm = điểm camera nhìn) ===== */
         const ya = S.yaw * Math.PI / 180, pb = S.pitch * Math.PI / 180, cyw = Math.cos(ya), syw = Math.sin(ya), cpb = Math.cos(pb), spb = Math.sin(pb);
-        const U = Math.min(W / 3.9, H / 2.9) * S.zoom, ccx = W / 2, ccy = H * .52;
-        const R = (x, y, z) => { const wx = (x - .5) * 3, wy = (y - .5) * .8, wz = (z - .5) * .8, ax = wx * cyw - wy * syw, ay = wx * syw + wy * cyw; return [ccx + U * ax, ccy - U * (wz * cpb + ay * spb), ay * cpb - wz * spb]; };
+        const U = Math.min(W / 3.9, H / 2.9) * cam.z, ccx = W / 2, ccy = H * .52;
+        const R = (x, y, z) => { const wx = (x - cam.tx) * 3, wy = (y - cam.ty) * .8, wz = (z - cam.tz) * .8, ax = wx * cyw - wy * syw, ay = wx * syw + wy * cyw; return [ccx + U * ax, ccy - U * (wz * cpb + ay * spb), ay * cpb - wz * spb]; };
         const fillPoly = (pts, col, al, edge) => { ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.save(); ctx.globalAlpha = al; ctx.fillStyle = col; ctx.fill(); ctx.restore(); if (edge) { ctx.strokeStyle = edge; ctx.lineWidth = 1.1; ctx.stroke(); } };
         const faces = [], addBox = (x0, x1, y0, y1, z0, z1, col, al) => {
           const c = [[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]].map(v => R(v[0], v[1], v[2]));
@@ -449,10 +502,18 @@ LABS.unshift({
           a.slice().reverse().forEach(q => { while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); });
           return lo.slice(0, -1).concat(up.slice(0, -1)); };
         fillPoly(hull([[lx - 9, ly + 9], [lx + 9, ly + 9]].concat(patch)), C.main, .16 * k);
-        /* hạt dư xếp từ xa đến gần */
-        const rs = Math.max(.6, Math.min(1.8, S.zoom)), pr = M.ps.filter(q => q.x > -.05 && q.x < 1.05).map(q => ({ q, c: R(q.x, q.y, q.z) })).sort((a, b) => b.c[2] - a.c[2]);
-        pr.forEach(o => { const r = (3.4 - o.c[2] * .9) * rs; dot(ctx, o.c[0], o.c[1], Math.max(1.8, r), C.c2); dot(ctx, o.c[0] + 5 * rs, o.c[1] + 2 * rs, Math.max(1.2, r * .62), C.c4); });
-        M.fl.forEach(f => { const c = R(f.x, f.y, f.z); ctx.globalAlpha = f.a; ctx.beginPath(); ctx.arc(c[0], c[1], (4 + (1 - f.a) * 12) * rs, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 2; ctx.stroke(); ctx.globalAlpha = 1; });
+        /* hạt dư xếp từ xa đến gần; khi theo dõi: mờ dần rồi ẩn (hạt được theo dõi vẽ riêng ở trên cùng) */
+        const rs = Math.max(.6, Math.min(1.8, cam.z)), pr = M.ps.filter(q => q.x > -.05 && q.x < 1.05 && !q.trk).map(q => ({ q, c: R(q.x, q.y, q.z) })).sort((a, b) => b.c[2] - a.c[2]);
+        p.proj = pr;
+        if (ao > .01) {
+          pr.forEach(o => {
+            const r = Math.max(1.8, (3.4 - o.c[2] * .9) * rs), bl = cam.k;
+            if (bl > .02) { ctx.globalAlpha = ao * .3; dot(ctx, o.c[0], o.c[1], r * (1 + 3 * bl), C.c2); }
+            ctx.globalAlpha = ao * (1 - .5 * bl); dot(ctx, o.c[0], o.c[1], r, C.c2); dot(ctx, o.c[0] + 5 * rs, o.c[1] + 2 * rs, Math.max(1.2, r * .62), C.c4);
+          });
+          ctx.globalAlpha = 1;
+          M.fl.forEach(f => { const c = R(f.x, f.y, f.z); ctx.globalAlpha = f.a * ao; ctx.beginPath(); ctx.arc(c[0], c[1], (4 + (1 - f.a) * 12) * rs, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 2; ctx.stroke(); ctx.globalAlpha = 1; });
+        }
         /* khối thanh + đầu dò A, B: các mặt xếp xa → gần */
         addBox(0, 1, 0, 1, 0, 1, C.tint, .22); addBox(-.03, 0, -.04, 1.04, -.08, 1.08, C.main, .85); addBox(1, 1.03, -.04, 1.04, -.08, 1.08, C.main, .85);
         faces.sort((a, b) => b.d - a.d).forEach(f => fillPoly(f.pts, f.col, f.al * .8, C.sub));
@@ -463,49 +524,64 @@ LABS.unshift({
         rr(ctx, lx - 14 * rs, ly - 4 * rs, 28 * rs, 12 * rs, 4); ctx.fillStyle = C.sub; ctx.fill();
         rr(ctx, lx - 11 * rs, ly + 6 * rs, 22 * rs, 7 * rs, 3); ctx.fillStyle = C.main; ctx.fill();
         for (let i = 0; i < 8; i++) { const u = (ta * .9 + i / 8) % 1, tx = R(.01 + ((i * .37) % 1) * .08, .15 + ((i * .61) % 1) * .7, 1), x = lx + (tx[0] - lx) * u, y = ly + 9 + (tx[1] - ly - 9) * u; ctx.save(); ctx.globalAlpha = (.3 + .7 * u) * k; dot(ctx, x, y, 2.6 * rs, C.main); ctx.restore(); }
+
+        /* ===== hạt được theo dõi: đuôi quỹ đạo + đầu hạt (trên cùng của khối) ===== */
+        if (T && cam.k > .02) {
+          const ak = clamp(cam.k * 1.5, 0, 1), pts = (T.trail || []).slice(-60).map(v => R(v[0], v[1], v[2])), hd = R(T.x, T.y, T.z);
+          pts.push(hd);
+          ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          for (let i = 1; i < pts.length; i++) { const f = i / (pts.length - 1); ctx.globalAlpha = ak * (.12 + .88 * f); ln(ctx, pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], C.main, 1.6 + 2.6 * f); }
+          for (let i = 0; i < pts.length - 1; i++) { const f = i / (pts.length - 1); ctx.globalAlpha = ak * (.15 + .85 * f); dot(ctx, pts[i][0], pts[i][1], 2.4 + 1.6 * f, C.main); }
+          const pul = 1 + .12 * Math.sin(t * 7);
+          ctx.globalAlpha = ak * .22; dot(ctx, hd[0], hd[1], 24 * pul, C.main);
+          ctx.globalAlpha = ak; dot(ctx, hd[0], hd[1], 10, C.c2); txt(ctx, '−', hd[0], hd[1] + .5, C.bg, 14, 'center', 800);
+          dot(ctx, hd[0] + 13, hd[1] + 5, 6, C.c4); txt(ctx, '+', hd[0] + 13, hd[1] + 5.5, C.bg, 11, 'center', 800);
+          txt(ctx, 'electron dư đang theo dõi (+ lỗ trống đi kèm)', hd[0], hd[1] - 32, C.main, 11.5, 'center', 800);
+          if (T.arr) {                                            /* va chạm tấm B: vòng sóng + tia */
+            const g = T.hit;
+            for (let i = 0; i < 3; i++) { const f = g * 1.3 - i * .22; if (f <= 0 || f >= 1) continue; ctx.globalAlpha = ak * (1 - f); ctx.beginPath(); ctx.arc(hd[0], hd[1], 12 + f * 110, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 3 * (1 - f) + 1; ctx.stroke(); }
+            if (g < .9) for (let i = 0; i < 12; i++) { const a = i / 12 * TAU2, r1 = 14 + g * 90, r2 = r1 + 14 * (1 - g); ctx.globalAlpha = ak * (1 - g / .9); ln(ctx, hd[0] + Math.cos(a) * r1, hd[1] + Math.sin(a) * r1, hd[0] + Math.cos(a) * r2, hd[1] + Math.sin(a) * r2, C.main, 2.2); }
+          }
+          ctx.restore();
+        }
+
         /* thống kê đám hạt */
         let cx = 0, n = M.ps.length; M.ps.forEach(q => cx += q.x); cx = n ? cx / n : 0;
         let sd = 0; M.ps.forEach(q => sd += (q.x - cx) * (q.x - cx)); sd = n ? Math.sqrt(sd / n) : 0;
         const cc = R(clamp(cx, 0, 1), .5, .5), s1 = R(clamp(cx - sd, 0, 1), .5, .5), s2 = R(clamp(cx + sd, 0, 1), .5, .5);
         const cr_ = Math.max(36, Math.hypot(s2[0] - s1[0], s2[1] - s1[1]) * 1.1 + 18);
         p.cloud = n ? { x: cc[0], y: cc[1], r: cr_ } : null;
-        if (n) { ctx.setLineDash([5, 4]); ctx.strokeStyle = C.main; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(cc[0], cc[1], cr_, 0, TAU2); ctx.stroke(); ctx.setLineDash([]); txt(ctx, 'bấm để FOCUS', cc[0], cc[1] - cr_ - 8, C.main, 10.5, 'center', 700); }
-        /* các số bấm được */
-        const hits = [], placed = [], chip = (id, num, label, x, y, col) => {
+        if (n && ao > .01) { ctx.save(); ctx.globalAlpha = ao; ctx.setLineDash([5, 4]); ctx.strokeStyle = C.main; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(cc[0], cc[1], cr_, 0, TAU2); ctx.stroke(); ctx.setLineDash([]); txt(ctx, 'bấm để theo dõi 1 hạt', cc[0], cc[1] - cr_ - 8, C.main, 10.5, 'center', 700); ctx.restore(); }
+        /* các số bấm được (ẩn khi camera đang theo hạt) */
+        const hits = [], placed = [], ca = clamp(1 - cam.k * 4, 0, 1), chip = (id, num, label, x, y, col) => {
           const wd = 30 + label.length * 6.8; let xx = clamp(x - wd / 2, 4, W - wd - 4), yy = y;
           for (let it = 0; it < 6; it++) { const o = placed.find(q => Math.abs(q.y - yy) < 24 && xx < q.x + q.w + 4 && xx + wd + 4 > q.x); if (!o) break; yy += 26; }
           yy = clamp(yy, 14, H - 14); placed.push({ x: xx, y: yy, w: wd });
           rr(ctx, xx, yy - 11, wd, 22, 11); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke();
           txt(ctx, num + ' ' + label, xx + wd / 2, yy + .5, col, 11.5, 'center', 700); hits.push({ x: xx, y: yy - 11, w: wd, h: 22, id });
         };
-        chip('gr', '①', 'Sinh', lx, ly - 26, C.c1);
-        chip('diff', '③', 'Khuếch tán L', cc[0], cc[1] - cr_ - 30, C.main);
-        chip('pulse', '⑤', 'Đọc tại B', b0[0], R(1.015, .5, 1.1)[1] - 30, C.c4);
-        [['rec', '②', 'Sống τ', C.c3], ['relax', '⑥', 'Đa số trung hòa', C.c4], ['amb', '④', 'Lưỡng cực', C.c2], ['qf', '⑦', 'Fermi chuẩn', C.c5]].forEach((q, i) => chip(q[0], q[1], q[2], W * (.14 + i * .24), H - 18, q[3]));
-        p.hits = hits;
-        txt(ctx, 't = ' + Math.round(M.tm) + ' µs · còn ' + n + '/' + NP + ' hạt · tốc độ ' + sp.toFixed(2) + '×', W - 14, 14, C.ink, 12, 'right', 700);
-        txt(ctx, 'chấm to = electron dư · chấm nhỏ cạnh = lỗ trống đi kèm · vòng vàng = tái hợp', 14, 14, C.mut, 11, 'left', 600);
-        /* ===== FOCUS: khung vuông chồng lên, phóng to xung đang chạy ===== */
-        if (p.focus) {
-          ctx.save(); ctx.globalAlpha = .55; ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H); ctx.restore();
-          const Sq = Math.min(W * .62, H * .86), fx = (W - Sq) / 2, fy = (H - Sq) / 2, hd = 30;
-          rr(ctx, fx, fy, Sq, Sq, 12); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.main; ctx.lineWidth = 2.4; ctx.stroke();
-          txt(ctx, 'FOCUS · xung đang chạy', fx + 14, fy + 16, C.main, 12.5, 'left', 800);
-          txt(ctx, '✕', fx + Sq - 16, fy + 16, C.ink, 14, 'center', 800);
-          const wv = Math.max(.07, 3.4 * sd), x0 = cx - wv, x1 = cx + wv, ix = fx + 12, iy = fy + hd + 6, iw = Sq - 24, ih = Sq - hd - 70;
-          rr(ctx, ix, iy, iw, ih, 8); ctx.fillStyle = C.tint; ctx.fill();
-          ctx.save(); ctx.beginPath(); ctx.rect(ix, iy, iw, ih); ctx.clip();
-          const FX = x => ix + (x - x0) / (x1 - x0) * iw, FY = y => iy + 10 + y * (ih - 20);
-          for (let i = 0; i < 16; i++) for (let j = 0; j < 12; j++) txt(ctx, '+', ix + (i + .5) / 16 * iw, iy + (j + .5) / 12 * ih, C.g, 11, 'center', 700);
-          M.ps.forEach(q => { if (q.x < x0 - .01 || q.x > x1 + .01) return; const x = FX(q.x), y = FY(q.y), r = 4.5 + 3 * q.z; dot(ctx, x, y, r, C.c2); dot(ctx, x + r + 2, y + 2, r * .6, C.c4); });
-          M.fl.forEach(f => { if (f.x < x0 || f.x > x1) return; ctx.globalAlpha = f.a; ctx.beginPath(); ctx.arc(FX(f.x), FY(f.y), 6 + (1 - f.a) * 20, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 2.4; ctx.stroke(); ctx.globalAlpha = 1; });
-          ctx.setLineDash([5, 4]); ctx.strokeStyle = C.main; ctx.lineWidth = 2; const bx1 = FX(cx - sd), bx2 = FX(cx + sd); ctx.beginPath(); ctx.moveTo(bx1, iy + 8); ctx.lineTo(bx2, iy + 8); ctx.stroke(); ctx.setLineDash([]);
-          txt(ctx, '±σ', (bx1 + bx2) / 2, iy + 22, C.main, 11, 'center', 700);
+        if (ca > .02) {
+          ctx.save(); ctx.globalAlpha = ca;
+          chip('gr', '①', 'Sinh', lx, ly - 26, C.c1);
+          chip('diff', '③', 'Khuếch tán L', cc[0], cc[1] - cr_ - 30, C.main);
+          chip('pulse', '⑤', 'Đọc tại B', b0[0], R(1.015, .5, 1.1)[1] - 30, C.c4);
+          [['rec', '②', 'Sống τ', C.c3], ['relax', '⑥', 'Đa số trung hòa', C.c4], ['amb', '④', 'Lưỡng cực', C.c2], ['qf', '⑦', 'Fermi chuẩn', C.c5]].forEach((q, i) => chip(q[0], q[1], q[2], W * (.14 + i * .24), H - 18, q[3]));
           ctx.restore();
-          const um = (x1 - x0) * 1e4, nice = (() => { const e = Math.pow(10, Math.floor(Math.log10(um / 4))), m = um / 4 / e; return e * (m >= 5 ? 5 : m >= 2 ? 2 : 1); })(), sl = nice / um * iw;
-          ln(ctx, ix + 8, iy + ih + 14, ix + 8 + sl, iy + ih + 14, C.ink, 2); txt(ctx, nice + ' µm', ix + 8 + sl / 2, iy + ih + 28, C.ink, 11, 'center', 700);
-          arr(ctx, ix + iw - 110, iy + ih + 14, ix + iw - 20, iy + ih + 14, C.main, 2.4); txt(ctx, 'cả đám trôi theo E', ix + iw - 65, iy + ih + 28, C.main, 10.5, 'center', 700);
-          txt(ctx, 'σ = ' + (sd * 1e4).toFixed(0) + ' µm · ' + n + ' hạt còn sống · khung rộng ' + um.toFixed(0) + ' µm · bấm bất kỳ đâu để đóng', fx + Sq / 2, fy + Sq - 14, C.mut, 10.5, 'center', 600);
+        }
+        p.hits = ca > .5 ? hits : [];
+        txt(ctx, 't = ' + Math.round(M.tm) + ' µs · còn ' + n + '/' + NP + ' hạt · tốc độ ' + (sp * p.slow).toFixed(2) + '×', W - 14, 14, C.ink, 12, 'right', 700);
+        if (cam.k > .5) txt(ctx, 'THEO DÕI 1 HẠT · tua chậm', 14, 14, C.main, 12, 'left', 800);
+        else txt(ctx, 'chấm to = electron dư · chấm nhỏ cạnh = lỗ trống đi kèm · vòng vàng = tái hợp', 14, 14, C.mut, 11, 'left', 600);
+        /* thanh tiến độ A → B + trạng thái */
+        if (T && cam.k > .05) {
+          const ak = clamp(cam.k * 1.5, 0, 1), mw = Math.min(W * .5, 340), mx0 = (W - mw) / 2, my = H - 40, xp = mx0 + mw * clamp(T.x, 0, 1);
+          ctx.save();
+          rr(ctx, mx0 - 70, H - 64, mw + 140, 56, 12); ctx.globalAlpha = ak * .9; ctx.fillStyle = C.card; ctx.fill(); ctx.globalAlpha = ak; ctx.strokeStyle = C.main; ctx.lineWidth = 1.4; ctx.stroke();
+          ln(ctx, mx0, my, mx0 + mw, my, C.g, 5); ln(ctx, mx0, my, xp, my, C.main, 5);
+          txt(ctx, 'A', mx0 - 14, my, C.main, 12, 'center', 800); txt(ctx, 'B', mx0 + mw + 14, my, C.main, 12, 'center', 800);
+          dot(ctx, xp, my, 7, C.c2);
+          txt(ctx, T.arr ? 'ĐÃ CHẠM TẤM B · t = ' + Math.round(M.tm) + ' µs' : 'x = ' + T.x.toFixed(2) + ' cm · còn ' + (1 - T.x).toFixed(2) + ' cm tới B · bấm để thoát', W / 2, H - 20, T.arr ? C.main : C.ink, 11.5, 'center', 700);
+          ctx.restore();
         }
         M.K = K;
       } },
@@ -532,7 +608,7 @@ LD.all = {
     ['w', '① Ánh sáng sinh cặp e–h (hạt dư). ② Mỗi electron dư sống trung bình τ rồi tái hợp (vòng vàng). ③ Trong lúc sống, đám hạt loang ra: đi được cỡ L = √(Dτ).'],
     ['w', '④ Electron kéo theo lỗ trống nên cả đám trôi chung dưới điện trường E. ⑤ Đầu dò B đo lúc đám tới: t₀ cho μ, bề rộng cho D, độ hao hụt cho τ.'],
     ['w', '⑥ Hạt đa số lao tới trung hòa điện tích trong τ_d cực ngắn, nên đám hạt luôn gần trung hòa. ⑦ Khi đám còn đó, n và p không còn chung một mức Fermi: cần E_Fn và E_Fp.'],
-    ['v', 'Bấm số ①–⑦ trên thanh để vào thí nghiệm chi tiết. Kéo chuột (hoặc các thanh Xoay ngang, Nghiêng, Phóng to) để xoay và zoom khối, bấm vào đám hạt để FOCUS, chọn "Tua chậm" để xem kỹ; kéo E, τ, pha tạp P, ánh sáng và xem cả chuỗi (đồng hồ bên dưới) đổi theo.']
+    ['v', 'Bấm số ①–⑦ trên thanh để vào thí nghiệm chi tiết. Kéo chuột (hoặc các thanh Xoay ngang, Nghiêng, Phóng to) để xoay và zoom khối, bấm vào xung đang chạy để camera zoom vào 1 hạt, làm mờ các hạt khác và đi theo hạt đó tới tấm B (tua chậm, có đuôi quỹ đạo); chọn "Tua chậm" để xem cả xung kỹ hơn; kéo E, τ, pha tạp P, ánh sáng và xem cả chuỗi (đồng hồ bên dưới) đổi theo.']
   ],
   react(S, k, P, say) {
     const K = allCalc(S);
@@ -762,7 +838,7 @@ function show(id, panelIdx) {
     if (spec.onClick && cv) {
       cv.style.cursor = 'pointer'; cv.style.touchAction = 'none'; let dn = null;
       cv.addEventListener('pointerdown', ev => { dn = { x: ev.clientX, y: ev.clientY, mv: 0 }; });
-      cv.addEventListener('pointermove', ev => { if (!dn) return; const dx = ev.clientX - dn.x, dy = ev.clientY - dn.y; dn.mv += Math.abs(dx) + Math.abs(dy); dn.x = ev.clientX; dn.y = ev.clientY; if (spec.onDrag && dn.mv > 6 && !p.focus) spec.onDrag(p, dx, dy); });
+      cv.addEventListener('pointermove', ev => { if (!dn) return; const dx = ev.clientX - dn.x, dy = ev.clientY - dn.y; dn.mv += Math.abs(dx) + Math.abs(dy); dn.x = ev.clientX; dn.y = ev.clientY; if (spec.onDrag && dn.mv > 6) spec.onDrag(p, dx, dy); });
       const up = ev => { if (dn && dn.mv <= 6 && ev.type === 'pointerup') { const r = cv.getBoundingClientRect(); spec.onClick(p, ev.clientX - r.left, ev.clientY - r.top); } dn = null; };
       cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
       if (spec.onWheel) cv.addEventListener('wheel', ev => { ev.preventDefault(); spec.onWheel(p, ev.deltaY); }, { passive: false });

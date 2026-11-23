@@ -393,7 +393,7 @@ function drawSimpleGrid(ctx, x, y, w, h, step = 28) {
 LABS.push({
   id: 'balance', name: 'Cân bằng n₀p₀', no: '1–2', secs: [1, 2],
   S: { mode: 'simple', view: 'live', dE: 0.30, T: 300 },
-  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  cols: '2.1fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
     title: 'Buồng mật độ hạt tải & Đòn bẩy cân bằng n₀·p₀ = nᵢ²',
     area: 'a', anim: true,
@@ -440,7 +440,7 @@ LABS.push({
         ctx.clip();
 
         const cols = 7, rows = 5;
-        const gaugeW = S.mode === 'simple' ? clamp(Math.round(fw * 0.16), 54, 70) : 0;
+        const gaugeW = 0;
         const simX = fx + gaugeW, simW = fw - gaugeW;
 
         if (S.mode === 'field') {
@@ -461,27 +461,6 @@ LABS.push({
           });
         } else {
           drawSimpleGrid(ctx, fx, fy, fw, fh, 30);
-          // Thước đòn bẩy E_F − E_Fi dọc mép trái buồng
-          const gx0 = fx + 7, gw = gaugeW - 12;
-          const gyTop = fy + 18, gyBot = fy + fh - 36, gSpan = gyBot - gyTop;
-          const gyMid = gyTop + gSpan * 0.5;
-          ctx.fillStyle = 'rgba(255,255,255,0.03)';
-          rr(ctx, gx0, gyTop, gw, gSpan, 4); ctx.fill();
-          ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
-
-          ln(ctx, gx0, gyTop, gx0 + gw, gyTop, COL_WARM, 2.0);
-          ln(ctx, gx0, gyBot, gx0 + gw, gyBot, COL_CYAN, 2.0);
-          txt(ctx, 'E_c', gx0 + gw * 0.5, gyTop - 8, COL_WARM, 8.8, 'center', 800, MONO);
-          txt(ctx, 'E_v', gx0 + gw * 0.5, gyBot + 8, COL_CYAN, 8.8, 'center', 800, MONO);
-
-          ln(ctx, gx0 + 3, gyMid, gx0 + gw - 3, gyMid, C.mut, 1, [3, 3]);
-          txt(ctx, 'E_Fi', gx0 + gw * 0.5, gyMid + (dEval >= 0 ? 9 : -9), C.mut, 8.0, 'center', 600, MONO);
-
-          const yEf = clamp(gyMid - (dEval / (EG * 0.5)) * (gSpan * 0.5), gyTop + 6, gyBot - 6);
-          const efCol = dEval > 0.02 ? C.main : dEval < -0.02 ? C.c2 : C.ink;
-          ln(ctx, gx0 + 2, yEf, gx0 + gw - 2, yEf, efCol, 2.4);
-          txt(ctx, 'E_F', gx0 + gw * 0.5, yEf + (yEf < gyTop + 18 ? 10 : -9), efCol, 9.0, 'center', 800, MONO);
-          ln(ctx, simX, fy, simX, fy + fh - 22, C.g, 1);
         }
 
         // Lưới hạt nhân Silicon
@@ -545,7 +524,7 @@ LABS.push({
       };
 
       if (S.view === 'live') {
-        const meterW = 114;
+        const meterW = 88;
         const bx = areaX, bw = areaW - meterW - 10;
         const kindTxt = S.dE > 0.02 ? 'Bán dẫn loại N (e⁻ áp đảo · Tái hợp kìm h⁺)'
           : S.dE < -0.02 ? 'Bán dẫn loại P (h⁺ áp đảo · Tái hợp kìm e⁻)'
@@ -618,7 +597,7 @@ LABS.push({
 LABS.push({
   id: 'degenerate', name: 'Suy biến & FD', no: '3–4', secs: [3, 4],
   S: { mode: 'simple', view: 'trio', type: 'n', eta: 0.0 },
-  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  cols: '2.1fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
     title: 'Chồng lấn quầng tạp chất — Không suy biến vs Suy biến (Fermi–Dirac)',
     area: 'a', anim: true,
@@ -758,7 +737,7 @@ LABS.push({
           chX + 12, chY + 17, C.ink, 10.4, 'left', 700, MONO);
         txt(ctx, 'Mốc Boltzmann: cách mép ≥ 3kT (~3×10¹⁷)', chX + chW - 12, chY + 17, C.main, 10.4, 'right', 700, MONO);
       } else {
-        const meterW = 122;
+        const meterW = 92;
         const bw = areaW - meterW - 10;
         const normEta = clamp((S.eta + 5.0) / 9.0, 0, 1);
         const cnt = Math.round(3 + Math.pow(normEta, 1.4) * 38);
@@ -817,7 +796,7 @@ LABS.push({
 LABS.push({
   id: 'ionize', name: 'Ion hóa & Đóng băng', no: '5–6', secs: [5, 6],
   S: { mode: 'simple', type: 'n', T: 300, N: 1e16 },
-  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  cols: '2.1fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
     title: 'Buồng Cryostat — Bẫy quầng Bohr (Đóng băng) vs Ion hóa hoàn toàn (Donor g=2 / Acceptor g=4)',
     area: 'a', anim: true,
@@ -843,7 +822,7 @@ LABS.push({
       const pad = 10, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
       drawScopeBg(ctx, chX, chY, chW, chH, 10, C.g);
 
-      const topBar = 32, meterW = 122;
+      const topBar = 32, meterW = 92;
       const bx = chX + 10, by = chY + topBar + 4, bw = chW - meterW - 30, bh = chH - topBar - 14;
 
       if (!st.sites) {
@@ -1020,7 +999,7 @@ LABS.push({
 LABS.push({
   id: 'compensate', name: 'Bù trừ P⁺–B⁻', no: '7', secs: [7],
   S: { mode: 'simple', Nd: 8, Na: 3, nearNi: false },
-  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  cols: '2.1fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
     title: 'Buồng tinh thể bù trừ — Ion cố định P⁺/B⁻, cặp bù trừ & Ampe kế 2 chiều',
     area: 'a', anim: true,
@@ -1051,7 +1030,7 @@ LABS.push({
       const pad = 10, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
       drawScopeBg(ctx, chX, chY, chW, chH, 10);
 
-      const topBar = 32, meterW = 122;
+      const topBar = 32, meterW = 92;
       const bx = chX + 24, by = chY + topBar + 4, bw = chW - meterW - 54, bh = chH - topBar - 14;
 
       // Điện cực thăm dò dòng yếu hai bên buồng
@@ -1206,7 +1185,7 @@ LABS.push({
 LABS.push({
   id: 'designer', name: 'Cấy Ion & E_F', no: '8', secs: [8],
   S: { mode: 'simple', beam: 'P', baseNa: 16, dose: 2.24e16 },
-  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  cols: '2.1fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
     title: 'Máy Cấy Ion (Ion Implanter) — Thiết kế pha tạp điều khiển khoảng cách |E_mép − E_F|',
     area: 'a', anim: true,
@@ -1246,7 +1225,7 @@ LABS.push({
       const pad = 10, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
       drawScopeBg(ctx, chX, chY, chW, chH, 10);
 
-      const topBar = 32, meterW = 126;
+      const topBar = 32, meterW = 94;
       const bx = chX + 10, by = chY + topBar + 4, bw = chW - meterW - 30, bh = chH - topBar - 14;
 
       if (!st.ions) {
@@ -1429,7 +1408,7 @@ LABS.push({
 LABS.push({
   id: 'thermal', name: '3 Vùng Nhiệt độ', no: '9', secs: [9],
   S: { mode: 'simple', T: 300, Nd: 1e15 },
-  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  cols: '2.1fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
     title: 'Buồng thử nghiệm nhiệt chip Si — Đóng băng · Cửa sổ Ngoại lai · Sụp đổ Nội tại',
     area: 'a', anim: true,
@@ -1457,7 +1436,7 @@ LABS.push({
       const bCol = regime === 'freeze' ? C.c2 : regime === 'intrinsic' ? C.err : C.c1;
       drawScopeBg(ctx, chX, chY, chW, chH, 10, C.g);
 
-      const topBar = 32, meterW = 128;
+      const topBar = 32, meterW = 94;
       const bx = chX + 10, by = chY + topBar + 4, bw = chW - meterW - 30, bh = chH - topBar - 14;
 
       if (!st.donors) {
@@ -1647,7 +1626,7 @@ LABS.push({
 LABS.push({
   id: 'junction', name: 'Tiếp xúc N–P', no: '10', secs: [10],
   S: { mode: 'simple', joined: 1, Nd: 1e17, Na: 1e16 },
-  cols: '1.65fr 1fr', rows: '1fr', areas: '"a l"',
+  cols: '2.1fr 1fr', rows: '1fr', areas: '"a l"',
   panels: [{
     title: 'Bàn ép tiếp xúc N–P — Khuếch tán, Vùng nghèo bất đối xứng, E_bi & Vôn kế thế nội tại V_bi',
     area: 'a', anim: true,
@@ -1669,7 +1648,7 @@ LABS.push({
       const pad = 10, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
       drawScopeBg(ctx, chX, chY, chW, chH, 10);
 
-      const topBar = 32, meterW = 128;
+      const topBar = 32, meterW = 94;
       const bx = chX + 10, by = chY + topBar + 4, bw = chW - meterW - 30, bh = chH - topBar - 14;
 
       if (st.joinAnim == null) {
@@ -1859,7 +1838,144 @@ LABS.push({
 /* ==========================================================================
    NHẬT KÝ THÍ NGHIỆM (Cột phải — Intro + React chi tiết cho cả 7 tab Buổi 6)
    ========================================================================== */
+/* ==========================================================================
+   TAB 0 — TỔNG QUAN: MỘT KHỐI Si N–P 3D LIÊN KẾT BẢY THÍ NGHIỆM
+   - Máy cấy ion bắn hai chùm vào hai nửa khối; nhiệt độ quyết định tạp ion hóa
+     hay đóng băng; hạt tải, ion cố định và vùng nghèo hình thành ở mặt ghép.
+   - Bấm số ①–⑦ để vào thí nghiệm chi tiết tương ứng.
+   ========================================================================== */
+function allCalc(S) {
+  const sn = solveNeutrality(S.T, S.Nd, 0), sp = solveNeutrality(S.T, 0, S.Na), ni = ni_of(S.T), kT = kT_of(S.T);
+  const Vbi = Math.max(0, kT * Math.log((S.Nd * S.Na) / (ni * ni)));
+  const w = clamp(.08 * Math.sqrt(Vbi * (1 / S.Nd + 1 / S.Na)) / 8.8e-9, 0, .3);
+  return { sn, sp, ni, kT, Vbi, w, wn: w * S.Na / (S.Na + S.Nd), wp: w * S.Nd / (S.Na + S.Nd) };
+}
+const ALLNAV = [['balance', '①', 'Cân bằng n₀p₀'], ['degenerate', '②', 'Suy biến'], ['ionize', '③', 'Ion hóa'], ['compensate', '④', 'Bù trừ'], ['designer', '⑤', 'Cấy ion'], ['thermal', '⑥', '3 vùng nhiệt'], ['junction', '⑦', 'Tiếp xúc N–P']];
+LABS.unshift({
+  id: 'all', name: 'Tổng quan', no: '★', secs: [],
+  S: { T: 300, Nd: 1e17, Na: 1e16, view: .45 },
+  cols: '2.1fr 1fr', rows: '1fr', areas: '"a l"',
+  panels: [{
+    title: 'Khối Si N–P 3D: máy cấy ion bắn tạp vào hai nửa, nhiệt độ làm tạp ion hóa — bấm số ①–⑦ để vào thí nghiệm chi tiết',
+    area: 'a', anim: true,
+    ctrls: [
+      { k: 'T', l: 'Nhiệt độ T', min: 80, max: 800, step: 10, f: v => v + ' K' },
+      { k: 'Nd', l: 'Phiến N (N_d)', min: 15, max: 19, step: 0.25, log: 1, f: v => fmtPow(v) },
+      { k: 'Na', l: 'Phiến P (N_a)', min: 15, max: 19, step: 0.25, log: 1, f: v => fmtPow(v) },
+      { k: 'view', l: 'Góc nhìn 3D', min: 0.05, max: 1, step: 0.05, f: v => Math.round(5 + 80 * v) + '°' },
+      { btn: 'VD Bài 6 (10¹⁷/10¹⁶)', fn: p => { p.S.T = 300; p.S.Nd = 1e17; p.S.Na = 1e16; p.syncCtrls(); queueReact(p.tab, 'Nd'); } },
+      { btn: 'Đóng băng (100 K)', fn: p => { p.S.T = 100; p.syncCtrls(); queueReact(p.tab, 'T'); } },
+      { btn: 'Nội tại (700 K)', fn: p => { p.S.T = 700; p.syncCtrls(); queueReact(p.tab, 'T'); } }
+    ],
+    onClick(p, x, y) { const h = (p.hits || []).find(h => x >= h.x && x <= h.x + h.w && y >= h.y && y <= h.y + h.h); if (h) show(h.id); },
+    draw(p, ctx, W, H, t, dt) {
+      const S = p.S, st = p.st, key = S.T + '|' + S.Nd + '|' + S.Na;
+      if (st.key !== key) { st.key = key; st.K = allCalc(S); }
+      const K = st.K;
+      if (!st.pts) {
+        const rg = mkRng(606), mk = () => ({ u: rg(), y: rg(), z: rg(), ph: rg() * TAU, f: .6 + rg() * 1.2 });
+        st.pts = { eN: Array.from({ length: 30 }, mk), hN: Array.from({ length: 30 }, mk), eP: Array.from({ length: 30 }, mk), hP: Array.from({ length: 30 }, mk), dN: Array.from({ length: 16 }, mk), aP: Array.from({ length: 16 }, mk), ion: Array.from({ length: 14 }, mk) };
+        st.mN = .5; st.mI = .5;
+      }
+      const pad = 10, chX = pad, chY = 8, chW = W - pad * 2, chH = H - 16;
+      drawScopeBg(ctx, chX, chY, chW, chH, 10);
+      const meterW = 92, topBar = 32, areaX = chX + 10, areaY = chY + topBar + 4, areaH = chH - topBar - 14, aw = chW - 20 - meterW - 10;
+      const th = (5 + 80 * S.view) * Math.PI / 180, Dd = Math.min(aw * .2, areaH * .34), vx = Math.cos(th) * Dd, vy = -Math.sin(th) * Dd * .6;
+      const Lp = aw - 30 - Math.abs(vx), hp = areaH * .17, ox = areaX + 12, oy = areaY + areaH * .72;
+      const P = (x, y, z) => [ox + x * Lp + y * vx, oy + y * vy - z * hp];
+      const face = (pts, col, al, edge) => { ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.fillStyle = hexA(col, al); ctx.fill(); ctx.strokeStyle = hexA(edge || C.sub, .8); ctx.lineWidth = 1; ctx.stroke(); };
+      const box = (x0, x1, y0, y1, z0, z1, col, al) => {
+        face([P(x0, y0, z0), P(x1, y0, z0), P(x1, y0, z1), P(x0, y0, z1)], col, al);
+        face([P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)], col, al * .8);
+        face([P(x1, y0, z0), P(x1, y1, z0), P(x1, y1, z1), P(x1, y0, z1)], col, al * .6);
+      };
+      const xl = .5 - K.wn, xr = .5 + K.wp;
+      /* mặt sau của hai nửa */
+      face([P(0, 1, 0), P(xl, 1, 0), P(xl, 1, 1), P(0, 1, 1)], COL_WARM, .10);
+      face([P(xr, 1, 0), P(1, 1, 0), P(1, 1, 1), P(xr, 1, 1)], COL_CYAN, .10);
+      face([P(xl, 1, 0), P(xr, 1, 0), P(xr, 1, 1), P(xl, 1, 1)], COL_PURP, .22);
+      /* hạt */
+      const cnt = v => Math.round(clamp((lg10(v) - 4) / 14 * 30, 0, 30));
+      const items = [], pos = (o, a, b) => [a + (b - a) * (.04 + .92 * ((o.u + .012 * Math.sin(t * o.f + o.ph)) % 1)), clamp(o.y + .02 * Math.sin(t * o.f * 1.3 + o.ph), 0, 1), clamp(o.z + .02 * Math.cos(t * o.f + o.ph), 0, 1)];
+      const nd = Math.round(clamp((lg10(S.Nd) - 14) / 5 * 12 + 4, 4, 16)), na = Math.round(clamp((lg10(S.Na) - 14) / 5 * 12 + 4, 4, 16));
+      for (let i = 0; i < cnt(K.sn.n); i++) items.push({ k: 'e', q: pos(st.pts.eN[i], 0, xl) });
+      for (let i = 0; i < cnt(K.sn.p); i++) items.push({ k: 'h', q: pos(st.pts.hN[i], 0, xl) });
+      for (let i = 0; i < cnt(K.sp.n); i++) items.push({ k: 'e', q: pos(st.pts.eP[i], xr, 1) });
+      for (let i = 0; i < cnt(K.sp.p); i++) items.push({ k: 'h', q: pos(st.pts.hP[i], xr, 1) });
+      for (let i = 0; i < nd; i++) { const o = st.pts.dN[i]; items.push({ k: 'd', q: [.03 + .94 * o.u * xl, o.y, o.z], on: i < Math.round(nd * K.sn.ionD) }); }
+      for (let i = 0; i < na; i++) { const o = st.pts.aP[i]; items.push({ k: 'a', q: [xr + .03 * (1 - xr) + .94 * o.u * (1 - xr), o.y, o.z], on: i < Math.round(na * K.sp.ionA) }); }
+      items.sort((a, b) => b.q[1] - a.q[1]);
+      items.forEach(it => {
+        const c = P(it.q[0], it.q[1], it.q[2]), r = 3.9 - 1.2 * it.q[1];
+        if (it.k === 'e') glowDot(ctx, c[0], c[1], r, '#fef1b6', hexA(COL_WARM, .9));
+        else if (it.k === 'h') { glowDot(ctx, c[0], c[1], r * .8, '#dafefe', hexA(COL_CYAN, .85)); ctx.beginPath(); ctx.arc(c[0], c[1], r + 1.4, 0, TAU); ctx.strokeStyle = COL_ICE; ctx.lineWidth = 1.3; ctx.stroke(); }
+        else {
+          const col = it.k === 'd' ? COL_WARM : COL_CYAN;
+          ctx.beginPath(); ctx.rect(c[0] - 3.4, c[1] - 3.4, 6.8, 6.8);
+          if (it.on) { ctx.fillStyle = col; ctx.fill(); txt(ctx, it.k === 'd' ? '+' : '−', c[0], c[1] + .5, NIGHT_BG, 8, 'center', 800, MONO); }
+          else { ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.stroke(); }
+        }
+      });
+      /* khối kính ngoài */
+      box(0, xl, 0, 1, 0, 1, COL_WARM, .13); box(xr, 1, 0, 1, 0, 1, COL_CYAN, .13); box(xl, xr, 0, 1, 0, 1, COL_PURP, .30);
+      /* hai máy cấy ion: chùm + hạt ion rơi */
+      const nz = (xc, col, label, id) => {
+        const sp = P(xc, .5, 1), nx = sp[0], ny = sp[1] - areaH * .30;
+        const patch = [P(xc - .07, .15, 1), P(xc + .07, .15, 1), P(xc + .07, .85, 1), P(xc - .07, .85, 1)];
+        const pts = [[nx - 9, ny + 12], [nx + 9, ny + 12]].concat(patch).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+        const cr = (o, u, v) => (u[0] - o[0]) * (v[1] - o[1]) - (u[1] - o[1]) * (v[0] - o[0]), lo = [], up = [];
+        pts.forEach(q => { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); });
+        pts.slice().reverse().forEach(q => { while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); });
+        face(lo.slice(0, -1).concat(up.slice(0, -1)), col, .13, col); face(patch, col, .38, col);
+        rr(ctx, nx - 15, ny - 6, 30, 14, 4); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.stroke();
+        for (let i = 0; i < 7; i++) { const o = st.pts.ion[i], u = (t * .7 + i / 7) % 1, tx = P(xc - .06 + o.u * .12, .2 + o.y * .6, 1); glowDot(ctx, nx + (tx[0] - nx) * u, ny + 12 + (tx[1] - ny - 12) * u, 2.8, '#ffffff', hexA(col, .9)); }
+        return [nx, ny];
+      };
+      const nA = nz(.25, COL_WARM), nB = nz(.75, COL_CYAN);
+      /* chip bấm được */
+      const hits = [], chip = (i, x, y, col) => {
+        const [id, num, label] = ALLNAV[i], wd = 30 + label.length * 7, xx = clamp(x - wd / 2, chX + 4, chX + chW - wd - 4);
+        rr(ctx, xx, y - 11, wd, 22, 11); ctx.fillStyle = hexA(NIGHT_BG, .92); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke();
+        txt(ctx, num + ' ' + label, xx + wd / 2, y + .5, col, 10.6, 'center', 700, MONO); hits.push({ x: xx, y: y - 11, w: wd, h: 22, id });
+      };
+      const fb = P(.5, 0, 0), jt = P(.5, 1, 1);
+      chip(4, nA[0], nA[1] - 24, COL_WARM);
+      chip(0, P(.25, 0, 0)[0] - 70, fb[1] + 28, COL_WARM);
+      chip(1, P(.25, 0, 0)[0] + 70, fb[1] + 28, COL_PURP);
+      chip(2, P(.25, 0, 0)[0], fb[1] + 56, COL_WARM);
+      chip(3, P(.75, 0, 0)[0] - 60, fb[1] + 28, COL_CYAN);
+      chip(5, P(.75, 0, 0)[0] + 70, fb[1] + 28, COL_HOT);
+      chip(6, jt[0], jt[1] - 26, COL_PURP);
+      p.hits = hits;
+      /* đồng hồ kim */
+      const mx = chX + chW - meterW - 10, mh = (areaH - 20) / 3;
+      st.mN += (clamp((lg10(K.sn.n) - 2) / 17, 0, 1) - st.mN) * Math.min(1, dt * 8);
+      st.mI += (K.sn.ionD - st.mI) * Math.min(1, dt * 8);
+      drawMeter(ctx, mx, areaY, meterW, mh, { title: 'n BÊN N', val: fmtSci(K.sn.n, 1), sub: 'cm⁻³ (log)', frac: st.mN, accent: C.main, zones: [[0.5, 1, C.main]] });
+      drawMeter(ctx, mx, areaY + mh + 10, meterW, mh, { title: 'ION HÓA TẠP', val: Math.round(K.sn.ionD * 100) + '%', sub: S.T < 150 ? 'đóng băng' : S.T > 550 ? 'nội tại' : 'ngoại lai', frac: st.mI, accent: COL_HOT });
+      drawMeter(ctx, mx, areaY + 2 * (mh + 10), meterW, mh, { title: 'V_bi', val: K.Vbi.toFixed(2) + ' V', sub: 'vùng nghèo ' + (K.w * 100).toFixed(0) + '%', frac: clamp(K.Vbi / 1.0, 0, 1), accent: COL_PURP });
+      txt(ctx, 'T = ' + S.T + ' K  |  N_d = ' + fmtPow(S.Nd) + '  |  N_a = ' + fmtPow(S.Na) + ' cm⁻³', chX + 12, chY + 17, C.ink, 10.4, 'left', 700, MONO);
+      txt(ctx, 'nᵢ = ' + fmtSci(K.ni, 1) + ' cm⁻³', chX + chW - 12, chY + 17, C.main, 10.6, 'right', 700, MONO);
+    }
+  }]
+});
+
 const LD = {};
+LD.all = {
+  intro: [
+    ['i', 'Cả bảy thí nghiệm của Bài 6 là các góc nhìn vào cùng MỘT khối Si: hai nửa pha tạp khác loại ghép lại, giữa là vùng nghèo.'],
+    ['w', '⑤ Máy cấy ion bắn tạp vào từng nửa (cam: donor vào phiến N, cyan: acceptor vào phiến P). ③ Mỗi tạp chỉ cho hạt tải khi ion hóa: ô đặc là đã ion hóa, ô rỗng là còn đóng băng.'],
+    ['w', '① Hạt tải đa số do tạp ion hóa quyết định, hạt thiểu số theo n₀p₀ = nᵢ². ② Pha tạp quá nặng thì chồng lấn quầng, Boltzmann hết đúng (suy biến). ④ Donor và acceptor cùng có mặt sẽ bù trừ nhau.'],
+    ['w', '⑥ Nhiệt độ thấp: đóng băng. Vừa phải: ngoại lai, n ≈ N_d. Rất cao: nội tại, nᵢ lấn át. ⑦ Hai nửa ghép lại: hạt tải khuếch tán, để lại ion cố định tạo vùng nghèo (tím) và hiệu thế V_bi.'],
+    ['v', 'Kéo "Góc nhìn 3D" để xoay khối, kéo T, N_d, N_a và xem ba đồng hồ đổi. Bấm số ①–⑦ để vào thí nghiệm chi tiết.']
+  ],
+  react(S, k, P, say) {
+    const K = allCalc(S);
+    if (k === 'T') say('w', `T = ${S.T} K: tạp ion hóa ${Math.round(K.sn.ionD * 100)}% bên N, n = ${fmtSci(K.sn.n, 2)} cm⁻³, nᵢ = ${fmtSci(K.ni, 2)}. ${S.T < 150 ? 'Còn nhiều ô rỗng: đóng băng.' : S.T > 550 ? 'nᵢ đã gần bằng pha tạp: sắp thành nội tại, V_bi tụt.' : 'Gần như ion hóa hết: vùng ngoại lai.'}`);
+    else say('w', `N_d = ${fmtPow(S.Nd)}, N_a = ${fmtPow(S.Na)}: V_bi = ${K.Vbi.toFixed(2)} V. Phiến pha nhẹ hơn có vùng nghèo lấn sâu hơn (N_d·x_n = N_a·x_p).`);
+  }
+};
+
 
 LD.balance = {
   intro: [
@@ -2039,7 +2155,7 @@ const FLASK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke
 
 const sty = document.createElement('style'); sty.textContent = CSS; document.head.appendChild(sty);
 let timers = [], logEl = null;
-let root, bodyEl, tabsEl, cur = null, curPanels = [], raf = 0, last = 0, tAcc = 0, opener = null, lastTab = 'balance';
+let root, bodyEl, tabsEl, cur = null, curPanels = [], raf = 0, last = 0, tAcc = 0, opener = null, lastTab = 'all';
 
 function ensureDom() {
   if (root) return;
@@ -2160,6 +2276,7 @@ function show(id, panelIdx) {
     const cv = el.querySelector('canvas'), box = el.querySelector('.lb6-cv');
     const p = { el, cv, ctx: cv && cv.getContext('2d'), W: 0, H: 0, tab, S: tab.S, st: {}, dirty: true, spec, syncs: [] };
     p.syncCtrls = () => p.syncs.forEach(f => f());
+    if (spec.onClick) { cv.style.cursor = 'pointer'; cv.addEventListener('click', ev => { const r = cv.getBoundingClientRect(); spec.onClick(p, ev.clientX - r.left, ev.clientY - r.top); }); }
     if (spec.ctrls && spec.ctrls.length) {
       const cb = document.createElement('div'); cb.className = 'lb6-c';
       spec.ctrls.forEach(c => cb.appendChild(mkCtrl(tab, c, p)));
