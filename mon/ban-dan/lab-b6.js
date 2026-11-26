@@ -254,7 +254,8 @@ function drawCrystal(ctx, x, y, w, h, o) {
     const ker = o.ker || .085, asp = w / ph;
     drawField(ctx, x, y, w, ph, o.fieldFn || ((u, v) => { let s = 0; for (let i = 0; i < ne; i++) { const p = cr.e[i], du = (u - p.u) * asp, dv = v - p.v; s += Math.exp(-(du * du + dv * dv) / (2 * ker * ker)); } for (let i = 0; i < nh; i++) { const p = cr.h[i], du = (u - p.u) * asp, dv = v - p.v; s -= Math.exp(-(du * du + dv * dv) / (2 * ker * ker)); } return clamp(s * .5, -1, 1); }), st);
   }
-  /* mạng nguyên tử */
+  /* mạng nguyên tử + tạp chất (ẩn ở Trường 2D: chỉ xem nồng độ) */
+  if (!field) {
   const vib = o.vib == null ? 1 : o.vib; ctx.lineWidth = 1.2; ctx.strokeStyle = field ? 'rgba(217,214,224,.35)' : C.g;
   for (let r = 0; r < 5; r++) for (let c = 0; c < 9; c++) { ctx.beginPath(); ctx.arc(X((c + .5) / 9) + Math.sin(t * 9 + r * 3 + c) * vib, Y((r + .5) / 5) + Math.cos(t * 10 + c * 4 + r) * vib, 4.4, 0, TAU2); ctx.stroke(); }
   /* tạp chất cố định */
@@ -265,6 +266,7 @@ function drawCrystal(ctx, x, y, w, h, o) {
   for (let i = 0; i < na; i++) { const p = cr.a[i], px = X(p.u), py = Y(p.v);
     if (i < ai) { dot(ctx, px, py, 5.4, C.c5); txt(ctx, '−', px, py + .5, C.bg, 10, 'center', 800); }
     else { ctx.beginPath(); ctx.arc(px, py, 5.4, 0, TAU2); ctx.strokeStyle = C.c5; ctx.lineWidth = 1.6; ctx.stroke(); if (!field) { ctx.beginPath(); ctx.arc(px + Math.cos(t * 3 + p.ph) * 11, py + Math.sin(t * 3 + p.ph) * 11, 3, 0, TAU2); ctx.strokeStyle = C.c4; ctx.lineWidth = 1.3; ctx.stroke(); } } }
+  }
   /* hạt tải tự do */
   if (!o.noStep) for (let i = 0; i < 48; i++) { if (i < ne) stepP(cr.e[i], dt, sp); if (i < nh) stepP(cr.h[i], dt, sp); }
   if (!field) {
@@ -275,7 +277,7 @@ function drawCrystal(ctx, x, y, w, h, o) {
   if (o.recomb && !o.noStep && Math.random() < dt * o.recomb) cr.fl.push({ u: rnd(.1, .9), v: rnd(.12, .88), a: 1 });
   cr.fl = cr.fl.filter(f => (f.a -= dt * 1.9) > 0);
   if (!field) cr.fl.forEach(f => { ctx.globalAlpha = f.a; ctx.beginPath(); ctx.arc(X(f.u), Y(f.v), 4 + (1 - f.a) * 16, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 1.8; ctx.stroke(); ctx.globalAlpha = 1; });
-  if (o.extra) o.extra(ctx, X, Y, x, y, w, ph);
+  if (o.extra && !field) o.extra(ctx, X, Y, x, y, w, ph);
   ctx.restore(); rr(ctx, x, y, w, ph, 8); ctx.strokeStyle = C.g; ctx.lineWidth = 1.2; ctx.stroke();
   if (o.label) txt(ctx, o.label, x + w / 2, y + ph - 12, field ? NIGHT_INK : C.ink, 11, 'center', 700);
   return { X, Y, ph };
@@ -566,6 +568,7 @@ function drawJunction(ctx, x, y, w, h, o) {
   rr(ctx, x, y, w, ph, 8); ctx.fillStyle = field ? NIGHT_BG : C.card; ctx.fill(); ctx.save(); rr(ctx, x, y, w, ph, 8); ctx.clip();
   const X = u => x + 8 + u * (w - 16), Y = v => y + 8 + v * (ph - 16), aN = ampOf(S.Nd), aP = ampOf(S.Na);
   if (field) drawField(ctx, x, y, w, ph, u => u < uL ? aN * (1 - .8 * Math.exp(-(uL - u) / .12)) : u > uR ? -aP * (1 - .8 * Math.exp(-(u - uR) / .12)) : 0, st);
+  if (!field) {
   ctx.lineWidth = 1.2; ctx.strokeStyle = field ? 'rgba(217,214,224,.35)' : C.g;
   for (let r = 0; r < 5; r++) for (let c = 0; c < 12; c++) { const u = (c + .5) / 12; if (u > uL && u < uR && !field && a < .05) { } ctx.beginPath(); ctx.arc(X(u) + Math.sin(t * 9 + r * 3 + c), Y((r + .5) / 5) + Math.cos(t * 10 + c * 4 + r), 4, 0, TAU2); ctx.stroke(); }
   /* ion cố định trong vùng nghèo */
@@ -584,9 +587,10 @@ function drawJunction(ctx, x, y, w, h, o) {
     if (Math.random() < dt * 2.2) cr.fl.push({ u: Math.random() < .5 ? uL : uR, v: rnd(.1, .9), a: 1, raw: 1 });
   }
   cr.fl = cr.fl.filter(f => (f.a -= dt * 1.9) > 0); cr.fl.forEach(f => { if (!f.raw) return; ctx.globalAlpha = f.a; ctx.beginPath(); ctx.arc(X(f.u), Y(f.v), 4 + (1 - f.a) * 14, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 1.8; ctx.stroke(); ctx.globalAlpha = 1; });
+  }
   ctx.restore(); rr(ctx, x, y, w, ph, 8); ctx.strokeStyle = C.g; ctx.lineWidth = 1.2; ctx.stroke();
   txt(ctx, 'N (donor ' + fmtPow(S.Nd) + ')', x + w * .2, y + ph - 12, field ? COL_WARM : C.c2, 11, 'center', 700); txt(ctx, 'P (acceptor ' + fmtPow(S.Na) + ')', x + w * .8, y + ph - 12, field ? COL_CYAN : C.c4, 11, 'center', 700);
-  if (a > .5) txt(ctx, 'vùng nghèo: chỉ còn ion cố định', X(.5), y + ph - 28, field ? NIGHT_INK : C.ink, 10.5, 'center', 700);
+  if (a > .5 && !field) txt(ctx, 'vùng nghèo: chỉ còn ion cố định', X(.5), y + ph - 28, field ? NIGHT_INK : C.ink, 10.5, 'center', 700);
 }
 
 LABS.push({
