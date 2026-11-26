@@ -202,7 +202,7 @@ function resetCam(p) {
   const c = camOf(p, p.spec && p.spec.view0);
   c.goal = Object.assign({}, c.b); p.dirty = true;
 }
-function scene3(p, ctx, dt, tgt, anchor, v0) {
+function scene3(p, ctx, dt, tgt0, anchor0, v0) {
   const c = camOf(p, v0);
   if (c.goal) {                                   /* về góc mặc định thật mượt */
     const k = 1 - Math.exp(-dt * 7);
@@ -212,7 +212,11 @@ function scene3(p, ctx, dt, tgt, anchor, v0) {
       c.yaw = c.goal.yaw; c.pitch = c.goal.pitch; c.zoom = c.goal.zoom; c.goal = null;
     }
   }
-  const ya = c.yaw * DEG, pb = c.pitch * DEG, cy = Math.cos(ya), sy = Math.sin(ya), cp = Math.cos(pb), sp = Math.sin(pb), S = 1.0 * c.zoom;
+  /* luôn đặt tâm khối vào chính giữa khung; khi chiếu phim thì tâm xoay/zoom dời tới tiêu điểm */
+  const fol = c.follow || 0, ff = c.f || [0.5, 0.5, 0.5];
+  const tgt = [0, 1, 2].map(i => lerp(tgt0[i], tgt0[i] * 2 * ff[i], fol));
+  const anchor = [p.W * 0.5, p.H * lerp(0.53, 0.47, fol)];
+  const ya = c.yaw * DEG, pb = c.pitch * DEG, cy = Math.cos(ya), sy = Math.sin(ya), cp = Math.cos(pb), sp = Math.sin(pb), S = c.zoom * lerp(clamp(Math.min(p.W / 640, p.H / 350), 0.85, 1.6), 1, clamp((c.zoom - 1) / 1.5, 0, 1));
   /* chiếu trực giao: trả [sx, sy, độ sâu] — độ sâu càng lớn càng xa người xem */
   const P = (x, y, z) => {
     const dx = x - tgt[0], dy = y - tgt[1], dz = z - tgt[2], xr = dx * cy - dy * sy, away = -(dx * sy + dy * cy);
@@ -241,12 +245,12 @@ function scene3(p, ctx, dt, tgt, anchor, v0) {
         const q = P(x_, y_, z_);
         g.items.push({ d: q[2], fn: () => {
           ctx.save(); ctx.globalAlpha = al_ == null ? 1 : al_;
-          const rd = Math.max(2, r * S); dot(ctx, q[0], q[1], rd, col_);
+          const rd = Math.max(2, r * Math.pow(S, 0.65)); dot(ctx, q[0], q[1], rd, col_);
           if (glyph && rd >= 4) txt(ctx, glyph, q[0], q[1] + 0.5, C.bg, Math.max(8, rd * 1.7), 'center', 800);
           ctx.restore();
         } });
       };
-      g.ion = (x_, y_, z_, sign, col_, sz) => { const q = P(x_, y_, z_); g.items.push({ d: q[2], fn: () => drawIon(ctx, q[0], q[1], sign, col_, Math.max(3, (sz || 4.2) * S)) }); };
+      g.ion = (x_, y_, z_, sign, col_, sz) => { const q = P(x_, y_, z_); g.items.push({ d: q[2], fn: () => drawIon(ctx, q[0], q[1], sign, col_, Math.max(3, (sz || 4.2) * Math.pow(S, 0.65))) }); };
       g.fn = (x_, y_, z_, fn) => { const q = P(x_, y_, z_); g.items.push({ d: q[2], fn: () => fn(q) }); };
       groups.push(g); return g;
     },
@@ -346,7 +350,7 @@ const LABS = [];
 LABS.push({
   id: 'join', tag: '1', name: 'Ghép p-n', sec: 1,
   S: { joined: 1, Na: 1e16, Nd: 1e16 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Hai khối tinh thể p-Si & n-Si ghép liền tạo vùng nghèo & điện trường nội E',
@@ -530,7 +534,7 @@ LABS.push({
 LABS.push({
   id: 'hill', tag: '2a', name: 'Đồi thế V_bi', sec: 2,
   S: { mat: 'Si', Na: 1e16, Nd: 1e15, T: 300 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Mẫu p-n trên đế gia nhiệt T — thay đổi vật liệu (Si/GaAs/Ge) & pha tạp đổi V_bi',
@@ -679,7 +683,7 @@ LABS.push({
 LABS.push({
   id: 'probe', tag: '2b', name: 'Thăm dò vùng nghèo', sec: 2,
   S: { mat: 'Si', Na: 1e16, Nd: 1e15, pos: 0 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Kéo kim đầu dò trượt qua tiếp giáp p-n đo trực tiếp |E(x)| và φ(x)',
@@ -839,7 +843,7 @@ LABS.push({
 LABS.push({
   id: 'rev', tag: '3a', name: 'Phân cực ngược', sec: 3,
   S: { VR: 5, Na: 1e16, Nd: 1e15, mat: 'Si', A: 1e-4 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Khối điốt p-n nối Nguồn ngược DC (cực − vào p, + vào n) làm vùng nghèo phình to',
@@ -916,22 +920,14 @@ LABS.push({
           const pL = sc.P(10, bd * 0.5, bh), pR = sc.P(bw - 10, bd * 0.5, bh);
           drawProbe(ctx, pL[0], pL[1], -1, C.c2, '− nối p');
           drawProbe(ctx, pR[0], pR[1], 1, C.c4, '+ nối n');
-          const psuX = W * 0.68, psuY = 36;
-          ln(ctx, pR[0] + 40, pR[1] - 50, psuX, psuY + 24, C.c4, 2.2);
         });
         sc.flush();
 
-        // Bộ nguồn ngược DC bên phải
-        const psuX = W * 0.68, psuW = Math.min(148, W - psuX - 12), psuH = 74, psuY = 36;
-        rr(ctx, psuX, psuY, psuW, psuH, 8); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.main; ctx.lineWidth = 1.4; ctx.stroke();
-        txt(ctx, 'NGUỒN NGƯỢC V_R', psuX + psuW / 2, psuY + 13, C.mut, 9.2, 'center', 700);
-        txt(ctx, S.VR.toFixed(1) + ' V', psuX + psuW / 2, psuY + 36, C.main, 16, 'center', 800);
-        txt(ctx, 'C(10⁻⁴)=' + (j.Cp * S.A * 1e12).toFixed(3) + ' pF', psuX + psuW / 2, psuY + 58, C.c2, 9.8, 'center', 700);
-
-        // Hai đồng hồ mini không khung ở khoảng trống dưới bộ nguồn
-        const gy = Math.min(H - 26, psuY + psuH + 50);
-        drawMiniGauge(ctx, psuX + psuW * 0.25, gy, 20, 'W (×' + (j.W / j0.W).toFixed(1) + ')', fmtUm(j.W), st.depF, C.c5);
-        drawMiniGauge(ctx, psuX + psuW * 0.78, gy, 20, 'C\' = ε_s/W', (j.Cp * 1e9).toFixed(2) + ' nF', j.Cp / j0.Cp, C.c2);
+        // Đồng hồ kim gọn ở cột phải (nguồn ngược, vùng nghèo, điện dung)
+        const gx = W - 68, gr = H < 360 ? 18 : 22;
+        drawMiniGauge(ctx, gx, H * 0.20, gr, 'Nguồn ngược V_R', S.VR.toFixed(1) + ' V', S.VR / 30, C.main);
+        drawMiniGauge(ctx, gx, H * 0.50, gr, 'W (×' + (j.W / j0.W).toFixed(1) + ')', fmtUm(j.W), st.depF, C.c5);
+        drawMiniGauge(ctx, gx, H * 0.80, gr, 'C\' = ε_s/W', (j.Cp * 1e9).toFixed(2) + ' nF', j.Cp / j0.Cp, C.c2);
 
         chip(ctx, 'V_R = ' + S.VR.toFixed(1) + ' V → W = ' + fmtUm(j.W) + ' · |E_max| = ' + sci(j.Emax, 2) + ' V/cm', W * 0.44, 15, C.main, 'center');
       }
@@ -990,7 +986,7 @@ LABS.push({
 LABS.push({
   id: 'cv', tag: '3b', name: 'Máy đo C-V', sec: 3,
   S: { sample: 'ex34', VR: 4, Nd: 1.96e15, Na: 1.64e17 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Mâm kẹp wafer p⁺n + Kim dò BNC nối Máy đo LCR giải mã N_d và V_bi',
@@ -1052,25 +1048,13 @@ LABS.push({
         sc.flush();
         pTop = sc.P(bw * 0.5, bd * 0.5, siH + 12); pCh = sc.P(bw + 12, bd * 0.5, -7);
 
-        // Máy đo LCR giải mã số bên phải
-        const lx = W * 0.54, lw = Math.min(280, W - lx - 12), lh = Math.min(174, H - 44), ly = (H - lh) * 0.56;
-        ln(ctx, pTop[0] + 40, pTop[1] - 50, lx, ly + 36, C.main, 2.3);
-        ln(ctx, pCh[0], pCh[1], lx, ly + lh - 28, C.c2, 2.3);
-        const u = (t * 0.9) % 1;
-        dot(ctx, pTop[0] + 40 + (lx - (pTop[0] + 40)) * u, (pTop[1] - 50) + (ly + 36 - (pTop[1] - 50)) * u, 3.6, C.main);
-
-        rr(ctx, lx, ly, lw, lh, 10); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.5; ctx.stroke();
-        txt(ctx, 'MÁY ĐO LCR · GIẢI MÃ C-V (p⁺n)', lx + lw / 2, ly + 15, C.mut, 9.8, 'center', 700);
-        rr(ctx, lx + 10, ly + 26, lw - 20, 52, 6); ctx.fillStyle = C.bg; ctx.fill(); ctx.strokeStyle = C.main; ctx.lineWidth = 1.3; ctx.stroke();
-        txt(ctx, (jNow.Cp * 1e9).toFixed(2) + ' nF/cm²', lx + lw / 2, ly + 45, C.main, 17, 'center', 800);
-        txt(ctx, 'W ≈ xₙ = ' + fmtUm(jNow.xn) + '  (tại V_R=' + S.VR.toFixed(1) + 'V)', lx + lw / 2, ly + 66, C.c2, 10, 'center', 700);
-
-        txt(ctx, 'Độ dốc 1/C\'² → N_d = ' + sci(NdMeas, 2) + ' cm⁻³', lx + lw / 2, ly + 98, C.ink, 10.5, 'center', 800);
-        txt(ctx, 'Ngoại suy → V_bi = ' + VbiMeas.toFixed(3) + ' V', lx + lw / 2, ly + 120, C.c5, 10.5, 'center', 700);
-        txt(ctx, 'Suy ra phía đậm Nₐ ≈ ' + sci(NaMeas, 2) + ' cm⁻³', lx + lw / 2, ly + 142, C.c4, 10.2, 'center', 700);
-
-        drawMiniGauge(ctx, 50, 48, 20, 'Quét xₙ', fmtUm(jNow.xn), clamp(jNow.xn / 6.5e-4, 0, 1), C.main);
-        chip(ctx, 'Tiếp giáp một phía p⁺n: đo C\' theo V_R để "soi" N_d mà không cần cắt mẫu!', W * 0.54, 15, C.main, 'center');
+        // Đồng hồ kim gọn ở cột phải: kết quả máy đo LCR giải mã
+        const gx = W - 68, gr = H < 400 ? 17 : 21;
+        drawMiniGauge(ctx, gx, H * 0.15, gr, 'Điện dung C\'', (jNow.Cp * 1e9).toFixed(2) + ' nF/cm²', clamp(jNow.Cp / j0.Cp, 0, 1), C.main);
+        drawMiniGauge(ctx, gx, H * 0.38, gr, 'Bề dày xₙ', fmtUm(jNow.xn), clamp(jNow.xn / 6.5e-4, 0, 1), C.c2);
+        drawMiniGauge(ctx, gx, H * 0.61, gr, 'N_d (từ dốc 1/C\'²)', sci(NdMeas, 2), clamp((Math.log10(Math.max(1e13, NdMeas)) - 14.5) / 2, 0, 1), C.ink);
+        drawMiniGauge(ctx, gx, H * 0.84, gr, 'V_bi (ngoại suy)', VbiMeas.toFixed(3) + ' V', clamp(VbiMeas / 1.0, 0, 1), C.c5);
+        chip(ctx, 'Tiếp giáp một phía p⁺n: đo C\' theo V_R để "soi" N_d mà không cần cắt mẫu!', W * 0.5, 15, C.main, 'center');
       }
     },
     {
@@ -1127,7 +1111,7 @@ LABS.push({
 LABS.push({
   id: 'brk', tag: '4', name: 'Đánh thủng', sec: 4,
   S: { mode: 'avalanche', NB: 4e15, VR: 90, mat: 'Si' },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Bàn thử đánh thủng cao áp — Điốt p-n + Điện trở hạn dòng & Cảnh báo dòng vọt',
@@ -1308,7 +1292,7 @@ LABS.push({
 LABS.push({
   id: 'grad', tag: '5a', name: 'So sánh pha tạp', sec: 5,
   S: { VR: 5, cmp: 'linear', a: 1e20 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Hai khối p-n mắc chung một nguồn V_R — so tốc độ phình vùng nghèo 3D',
@@ -1423,11 +1407,11 @@ LABS.push({
 LABS.push({
   id: 'var', tag: '5b', name: 'Đài LC biến dung', sec: 5,
   S: { m: -1.5, VR: 4, Vbi: 0.7 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế: Mạch cộng hưởng LC dùng Varactor — vặn V_R giãn khe tụ W chỉnh tần số dao động f',
-      area: 'a', anim: true,
+      area: 'a', anim: true, cam2d: true,
       ctrls: [
         { k: 'm', l: 'Số mũ m', min: -1.75, max: 2, step: 0.05, f: v => v.toFixed(2) },
         { k: 'VR', l: 'Áp V_R', min: 0, max: 10, step: 0.2, f: v => v.toFixed(1) + ' V' },
@@ -1686,6 +1670,13 @@ const CSS = `
 #lab9 .lb-ln.i{color:var(--ink)}#lab9 .lb-ln.i::before{content:'›';color:var(--c5)}
 #lab9 .lb-ln.w{color:var(--ink)}#lab9 .lb-ln.w::before{content:'◆';color:var(--c2);font-size:10px;top:2px}
 #lab9 .lb-ln.v{color:var(--main)}#lab9 .lb-ln.v::before{content:'=';color:var(--main)}
+#lab9 .lb-c{position:relative}
+#lab9 .lb-film{position:absolute;top:3px;right:3px;z-index:3;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--main);color:var(--bg);font:700 13px/1 var(--font-ui);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);user-select:none}
+#lab9 .lb-film.on{background:var(--err);color:#fff}
+#lab9.filming .lb-c>*:not(.lb-cap){visibility:hidden}
+#lab9.filming .lb-cv canvas{cursor:default!important}
+#lab9 .lb-cap{position:absolute;left:0;right:0;bottom:0;min-height:100%;box-sizing:border-box;display:none;background:var(--card);border-top:1px solid var(--main);padding:8px 14px 9px;font:600 13px/1.45 var(--font-body);color:var(--ink);pointer-events:none;z-index:2}
+#lab9 .lb-cap i{display:block;height:3px;background:var(--main);border-radius:2px;margin-top:7px;width:0}
 @keyframes lb9in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .lab-m{appearance:none;border:0;background:transparent;color:var(--sub);cursor:pointer;padding:2px 3px;margin-left:6px;border-radius:5px;vertical-align:middle;opacity:.65;line-height:0;transition:color .15s,opacity .15s,transform .15s}
 .lab-m svg{width:.8em;height:.8em;min-width:14px;min-height:14px;display:inline-block;margin:0;background:none;border:0;border-radius:0;max-height:none}
@@ -1699,6 +1690,7 @@ sty.textContent = CSS;
 document.head.appendChild(sty);
 
 let timers = [], ros = [], logEl = null;
+let film = null, TSC = 1, TT = 0;
 let root, bodyEl, tabsEl, cur = null, curPanels = [], raf = 0, last = 0, tAcc = 0, opener = null, lastTab = 'join';
 
 function ensureDom() {
@@ -1819,9 +1811,195 @@ function mkCtrl(tab, c, p) {
   return w;
 }
 
+/* ==========================================================================
+   PHIM TỰ ĐỘNG — một nút (biểu tượng ▶) ở góc trên bên phải màn hình thực tế.
+   Trong khi chiếu: thanh điều khiển được ẩn, lời thuyết minh hiện ngay tại đó,
+   người xem không chỉnh được thông số. Camera chỉ zoom cận / lia ở những chỗ có hạt tải chuyển động
+   hoặc có nguyên lý cần nhìn kỹ; chuyển động hạt được làm chậm (slow).
+   Bước: { d: giây, cap: thuyết minh, v: V(yaw°, pitch°, zoom, [fx,fy,fz]?), set: {thông số: đích}, slow: tốc độ (1 = thường), orbit: °/s }
+   fx,fy,fz = vị trí tiêu điểm theo tỉ lệ trong khối (x: p→n, y: sau→trước, z: dưới→trên).
+   ========================================================================== */
+const V = (yaw, pitch, zoom, f) => ({ yaw, pitch, zoom, f });
+const SNAPK = ['joined', 'mode', 'sample', 'mat', 'cmp'];
+const FILM = {
+  join: [
+    { d: 6, cap: 'Hai khối tinh thể Si riêng rẽ: bên trái là loại p (nhiều lỗ trống +), bên phải là loại n (nhiều electron −). Mỗi khối riêng đều trung hòa điện.', v: V(30, 22, 1.0), orbit: 4, set: { joined: 0, Na: 1e16, Nd: 1e16 } },
+    { d: 8, cap: 'Trong khối p, các lỗ trống (+) chuyển động nhiệt hỗn loạn khắp nơi — mỗi lỗ trống có một ion acceptor đứng yên đi kèm làm cân bằng điện tích.', v: V(12, 14, 3.0, [0.25, 0.5, 0.5]), slow: 0.4 },
+    { d: 7, cap: 'Khối n thì ngược lại: các electron (−) chuyển động hỗn loạn, mỗi electron đi kèm một ion donor dương.', v: V(-12, 14, 3.0, [0.75, 0.5, 0.5]) },
+    { d: 11, cap: 'Ghép hai khối lại: ở mặt ghép có chênh lệch nồng độ rất lớn nên lỗ trống từ p tràn sang n, electron từ n tràn sang p — gọi là khuếch tán. Các vòng sáng đánh dấu khoảnh khắc hạt vượt qua ranh giới.', v: V(0, 12, 3.4, [0.5, 0.5, 0.5]), set: { joined: 1 }, slow: 0.3 },
+    { d: 9, cap: 'Hạt đi qua rồi tái hợp, để lại phía sau các ion cố định: ion acceptor âm (−) bên p, ion donor dương (+) bên n. Vùng chứa các ion trần ấy là vùng nghèo.', slow: 0.3 },
+    { d: 9, cap: 'Hai lớp ion trái dấu tạo ra điện trường nội E hướng từ n sang p (mũi tên vàng) — nó cản các hạt khuếch tán tiếp. Khi E cân bằng với khuếch tán thì dừng lại: đó là trạng thái cân bằng nhiệt với thế tiếp xúc V_bi.', v: V(15, 26, 1.8, [0.5, 0.5, 1.0]), slow: 1 },
+    { d: 8, cap: 'Tăng pha tạp bên p lên 10¹⁷: để điện tích hai phía bù nhau, vùng nghèo co lại bên p (nhiều ion trên mỗi đơn vị bề dày) và lấn sâu sang phía n.', v: V(20, 24, 2.0, [0.5, 0.5, 0.6]), set: { Na: 1e17 } },
+    { d: 8, cap: 'Giảm pha tạp bên n xuống 10¹⁵: lúc này vùng nghèo lấn rất sâu vào phía n vì ion donor quá thưa.', set: { Na: 1e16, Nd: 1e15 } }
+  ],
+  hill: [
+    { d: 6, cap: 'Mẫu p-n đặt trên đế gia nhiệt. Tại vùng nghèo có một "con dốc thế năng" eV_bi cản các hạt tải đi sang phía bên kia.', v: V(30, 22, 1.0), orbit: 4, set: { mat: 'Si', Na: 1e16, Nd: 1e15, T: 300 } },
+    { d: 10, cap: 'Cận cảnh, chuyển động chậm: electron (−) từ phía n lao về phía p, gặp dốc thì bị đẩy chậm lại rồi dội ngược trở về. Đa số hạt không đủ động năng để leo lên.', v: V(0, 12, 3.3, [0.5, 0.5, 0.5]), slow: 0.3 },
+    { d: 9, cap: 'Chỉ rất ít hạt "nóng" (màu vàng) đủ năng lượng leo qua đỉnh dốc. Đó là dòng khuếch tán nhỏ giọt, cân bằng với dòng trôi do điện trường nội kéo ngược lại.', slow: 0.25 },
+    { d: 9, cap: 'Nung đế lên 450 K: hạt có động năng nhiệt lớn hơn nên nhiều hạt hơn leo được qua dốc. Đồng hồ nᵢ(T) tăng vọt.', set: { T: 450 }, slow: 0.3 },
+    { d: 8, cap: 'Đổi sang GaAs ở 300 K: vùng cấm rộng hơn nên V_bi (chiều cao dốc) cao hơn nhiều — hạt càng khó vượt.', v: V(15, 20, 2.4, [0.5, 0.5, 0.5]), set: { mat: 'GaAs', T: 300 }, slow: 0.5 },
+    { d: 8, cap: 'Quay lại Si và pha tạp nặng 10¹⁸ ở cả hai bên: dốc cao hơn và dựng đứng hơn, vùng nghèo hẹp lại.', set: { mat: 'Si', Na: 1e18, Nd: 1e18 } }
+  ],
+  probe: [
+    { d: 6, cap: 'Một kim dò trượt trên mặt khối p-n để đo trực tiếp điện trường |E(x)| và điện thế φ(x) tại từng vị trí.', v: V(25, 24, 1.0), orbit: 4, set: { mat: 'Si', Na: 1e16, Nd: 1e15, pos: -1 } },
+    { d: 8, cap: 'Kim ở sát điện cực phía p, ngoài vùng nghèo: E = 0 và φ = 0 vì vùng trung hòa không có điện trường.', v: V(15, 20, 1.7, [0.2, 0.5, 0.9]) },
+    { d: 12, cap: 'Đưa kim vào vùng nghèo: các ion − và + đứng yên tạo đường sức; chấm nhỏ chạy từ ion + sang ion −. Chấm chạy nhanh nhất ở x = 0, nghĩa là E lớn nhất ngay tại mặt ghép.', v: V(0, 14, 3.2, [0.5, 0.5, 0.5]), set: { pos: 0 }, slow: 0.35 },
+    { d: 9, cap: 'Kim sang phía n: đường sức thưa dần, E giảm đều về 0 ở mép vùng nghèo; điện thế φ thì tăng lên.', v: V(10, 16, 2.4, [0.65, 0.5, 0.6]), set: { pos: 0.6 }, slow: 0.5 },
+    { d: 8, cap: 'Ra khỏi vùng nghèo hẳn: E = 0 còn φ giữ nguyên bằng V_bi — thế của toàn bộ phía n cao hơn phía p đúng một lượng V_bi.', v: V(15, 20, 1.7, [0.8, 0.5, 0.9]), set: { pos: 1 }, slow: 1 },
+    { d: 8, cap: 'Cho pha tạp hai phía bằng nhau 10¹⁶: vùng nghèo cân đối hai bên mặt ghép và E_max cao hơn.', v: V(0, 14, 2.4, [0.5, 0.5, 0.6]), set: { Nd: 1e16, pos: 0 } }
+  ],
+  rev: [
+    { d: 6, cap: 'Điốt p-n nối với nguồn ngược: cực âm vào p, cực dương vào n. Ta sẽ xem vùng nghèo phản ứng thế nào khi tăng V_R.', v: V(25, 22, 1.0), orbit: 4, set: { VR: 0, Na: 1e16, Nd: 1e15, mat: 'Si' } },
+    { d: 8, cap: 'Chưa có điện áp ngoài (V_R = 0): vùng nghèo mỏng, các hạt đa số chuyển động nhiệt tự do ở hai phía.', v: V(0, 14, 2.6, [0.5, 0.5, 0.5]), slow: 0.4 },
+    { d: 12, cap: 'Tăng V_R lên 10 V: cực âm hút lỗ trống (+) về phía điện cực p, cực dương hút electron (−) về phía điện cực n. Hạt đa số dạt khỏi mặt ghép, để lộ thêm các ion cố định — vùng nghèo phình rộng.', v: V(0, 14, 2.4, [0.5, 0.5, 0.5]), set: { VR: 10 }, slow: 0.4 },
+    { d: 9, cap: 'Tăng tiếp đến 30 V: vùng nghèo còn rộng hơn nữa. Vì phía n pha tạp nhẹ hơn nên nó chủ yếu lấn sâu sang phía n.', v: V(0, 14, 1.9, [0.5, 0.5, 0.5]), set: { VR: 30 } },
+    { d: 10, cap: 'Cận cảnh: chỉ có vài hạt thiểu số (chấm nhạt) bị điện trường mạnh cuốn vọt ngang qua vùng nghèo. Chúng tạo ra dòng ngược bão hòa rất nhỏ.', v: V(0, 12, 3.0, [0.5, 0.5, 0.5]), slow: 0.25 },
+    { d: 8, cap: 'Giảm V_R còn 10 V rồi tăng pha tạp n lên 10¹⁶: ion dày hơn nên vùng nghèo hẹp hơn nhiều với cùng điện áp.', v: V(15, 20, 2.0, [0.5, 0.5, 0.5]), set: { VR: 10, Nd: 1e16 }, slow: 0.6 },
+    { d: 8, cap: 'Đổi sang GaAs: V_bi lớn hơn nên vùng nghèo hơi rộng hơn ở cùng V_R.', set: { mat: 'GaAs' } }
+  ],
+  cv: [
+    { d: 6, cap: 'Wafer p⁺n kẹp trên mâm, kim dò nối vào máy đo LCR. Lớp p⁺ phía trên pha tạp cực đậm nên vùng nghèo hầu như nằm hết trong lớp n bên dưới.', v: V(30, 24, 1.0), orbit: 4, set: { sample: 'ex34', VR: 0, Nd: 1.96e15, Na: 1.64e17 } },
+    { d: 9, cap: 'Cận cảnh: khi chưa phân cực, vùng nghèo (khối vàng nhạt) mỏng, chỉ lộ ra các ion donor dương (+); electron tự do bên dưới chuyển động nhiệt.', v: V(0, 14, 3.0, [0.5, 0.5, 0.78]), slow: 0.4 },
+    { d: 12, cap: 'Vặn V_R lên 12 V: electron tự do bị đẩy xuống đáy wafer, mép vùng nghèo như một pít-tông quét sâu vào lớp n và để lộ thêm nhiều ion donor.', v: V(0, 14, 2.6, [0.5, 0.5, 0.65]), set: { VR: 12 }, slow: 0.35 },
+    { d: 9, cap: 'Máy đo: C′ = ε_s / xₙ nên điện dung giảm khi vùng nghèo sâu hơn. Từ độ dốc của 1/C′² theo V_R, máy suy ra N_d; ngoại suy về trục cho V_bi.', v: V(25, 22, 1.3), set: { VR: 6 }, slow: 1 },
+    { d: 8, cap: 'Mẫu n đậm (N_d = 1,5×10¹⁶): nhiều ion hơn nên vùng nghèo mỏng hơn, C′ lớn hơn và đường 1/C′² dốc nhỏ lại.', v: V(10, 18, 1.8, [0.5, 0.5, 0.7]), set: { sample: 'heavy', Nd: 1.5e16, Na: 5e17 } },
+    { d: 8, cap: 'Mẫu n nhẹ (N_d = 5×10¹⁴): ít ion nên vùng nghèo rất sâu, C′ nhỏ.', set: { sample: 'light', Nd: 5e14, Na: 1e17 } }
+  ],
+  brk: [
+    { d: 6, cap: 'Bàn thử đánh thủng: điốt p-n phân cực ngược mạnh, có điện trở hạn dòng. Ta xem vùng nghèo chịu đựng thế nào khi V_R tăng lên.', v: V(25, 22, 1.0), orbit: 4, set: { mode: 'avalanche', NB: 4e15, VR: 40, mat: 'Si' } },
+    { d: 9, cap: 'Ở 40 V: electron đi vào vùng nghèo bị điện trường gia tốc, nhưng chưa đủ mạnh để va chạm gây ion hóa — hầu như không có dòng.', v: V(0, 14, 2.4, [0.5, 0.5, 0.5]), slow: 0.35 },
+    { d: 12, cap: 'Tăng V_R đến gần điện áp đánh thủng V_B: electron nhanh dần, va chạm vào mạng tinh thể và bứt ra cặp electron − lỗ trống mới (vòng sáng). Các hạt mới lại được gia tốc rồi va chạm tiếp — hiện tượng thác lũ.', v: V(0, 14, 2.4, [0.5, 0.5, 0.5]), set: { VR: 104 }, slow: 0.25 },
+    { d: 9, cap: 'Vượt V_B: thác lũ lan rộng, dòng vọt lên không kiểm soát và điốt phát sáng cảnh báo — nếu không có điện trở hạn dòng thì linh kiện sẽ hỏng.', v: V(10, 20, 1.7, [0.5, 0.5, 0.5]), set: { VR: 118 }, slow: 0.5 },
+    { d: 12, cap: 'Chuyển sang pha tạp rất nặng (Zener): vùng nghèo mỏng cỡ vài nm nên chỉ cần vài volt đã có điện trường khổng lồ. Electron không cần va chạm mà xuyên hầm lượng tử (đoạn sóng lượn) thẳng qua vùng nghèo.', v: V(0, 14, 2.5, [0.5, 0.5, 0.5]), set: { mode: 'zener', NB: 9e17, VR: 3.6 }, slow: 0.3 },
+    { d: 8, cap: 'Đổi sang GaAs: vùng cấm rộng hơn nên cần điện trường lớn hơn mới đánh thủng.', set: { mat: 'GaAs' } }
+  ],
+  grad: [
+    { d: 6, cap: 'Hai điốt p-n đặt cạnh nhau, dùng chung một nguồn V_R. Khối trước có mối ghép đột biến, khối sau có mối ghép khác kiểu — ta so sánh tốc độ vùng nghèo phình ra.', v: V(24, 34, 1.1), orbit: 4, set: { VR: 5, cmp: 'linear', a: 1e20 } },
+    { d: 10, cap: 'Tăng V_R chung lên 20 V: mối ghép đột biến mở rộng theo V^(1/2), mối ghép tuyến tính chỉ theo V^(1/3) nên nở chậm hơn — nhìn hai đồng hồ W/W₀.', v: V(14, 36, 1.3), set: { VR: 20 } },
+    { d: 9, cap: 'Cận cảnh các ion: ở mối ghép đột biến, mật độ ion đều và dày cho tới mép; ở mối ghép tuyến tính, ion thưa dần ra xa mặt ghép nên bên trong cần ít điện tích hơn để đạt cùng điện áp.', v: V(0, 22, 2.8, [0.5, 0.5, 0.4]), slow: 0.5 },
+    { d: 10, cap: 'Chuyển sang so sánh với mối ghép siêu đột biến (m < 0): ion tập trung sát mặt ghép nên vùng nghèo phình CỰC NHANH theo V^1,35.', v: V(14, 36, 1.3), set: { cmp: 'hyper' } },
+    { d: 8, cap: 'Hạ V_R về 5 V: các vùng nghèo co lại — chênh lệch tốc độ giữa hai kiểu mối ghép là cơ sở để làm varactor.', set: { VR: 5 } }
+  ],
+  var: [
+    { d: 6, cap: 'Mạch cộng hưởng LC dùng varactor: điện dung của điốt p⁺n phân cực ngược thay đổi theo V_R và quyết định tần số dao động.', set: { m: -1.5, VR: 4 } },
+    { d: 9, cap: 'Cận cảnh varactor (bên phải): khe giữa hai bản là vùng nghèo W. Dòng điện trong mạch (chấm vàng) dao động qua lại giữa cuộn cảm L và tụ.', v: V(0, 0, 2.3, [0.58, 0.5]), slow: 0.4 },
+    { d: 10, cap: 'Tăng V_R lên 10 V: khe W mở rộng nên điện dung C giảm; theo f = 1/(2π√LC), tần số dao động tăng lên — chấm vàng chạy nhanh dần.', set: { VR: 10 }, slow: 0.4 },
+    { d: 9, cap: 'Với m = −3/2 (mối ghép siêu đột biến), tần số f tăng TUYẾN TÍNH theo V_R — điều lý tưởng cho dò đài.', v: V(0, 0, 1.2, [0.5, 0.5]), set: { VR: 4 }, slow: 1 },
+    { d: 8, cap: 'Mối ghép đột biến m = 0: khe tụ mở chậm hơn, dải chỉnh tần hẹp hơn và các vạch 0V–10V bị dồn lệch.', set: { m: 0 } },
+    { d: 8, cap: 'm = +1: dải chỉnh tần còn hẹp hơn nữa.', set: { m: 1 } }
+  ]
+};
+
+/* ---------- ĐIỀU KHIỂN PHIM: camera + thông số + chậm ---------- */
+const ease = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+const lerp = (a, b, k) => a + (b - a) * k;
+const wrapD = (a, b) => ((b - a + 540) % 360) - 180;
+
+function camGet(p) {                      // 3D: camera thật; 2D: camera phẳng đơn giản
+  if (p.spec.view3d) return camOf(p, p.spec.view0);
+  return p.cam2 || (p.cam2 = { zoom: 1, fx: 0.5, fy: 0.5, follow: 0 });
+}
+function camSnap(p) {
+  const c = camGet(p);
+  return p.spec.view3d
+    ? { yaw: c.yaw, pitch: c.pitch, zoom: c.zoom, f: (c.f || [0.5, 0.5, 0.5]).slice(), follow: c.follow || 0, slow: TSC }
+    : { yaw: 0, pitch: 0, zoom: c.zoom, f: [c.fx, c.fy, 0.5], follow: c.follow, slow: TSC };
+}
+function setupFilm(tab, p, el, box, cb) {
+  if (!FILM[tab.id]) return;
+  const fb = document.createElement('div');
+  fb.className = 'lb-film'; fb.textContent = '▶'; fb.title = 'Phim tự động'; fb.setAttribute('aria-label', 'Phim tự động');
+  fb.setAttribute('role', 'button'); fb.tabIndex = 0;
+  fb.onclick = () => { if (film) filmStop(false); else filmStart(tab, p); };
+  fb.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fb.onclick(); } };
+  box.appendChild(fb); p.filmBtn = fb;
+  const cap = document.createElement('div'); cap.className = 'lb-cap'; cap.innerHTML = '<span></span><i></i>';
+  cb.appendChild(cap); p.cap = cap;
+}
+function filmStart(tab, p, at) {
+  if (!FILM[tab.id] || !p.filmBtn) return;
+  filmStop(false, true);
+  const c = camGet(p), home = Object.assign({}, tab.S), stepOf = {};
+  tab.panels.forEach(q => (q.ctrls || []).forEach(k => { if (k.k && k.step && !k.log) stepOf[k.k] = k.step; }));
+  const hv = p.spec.view3d ? V(c.b.yaw, c.b.pitch, c.b.zoom) : V(0, 0, 1);
+  const steps = FILM[tab.id].concat([{ d: 3, cap: 'Kết thúc phim — mọi thông số và góc nhìn đã trở về như ban đầu. Bạn có thể tự xoay hình, kéo thanh trượt để thử lại.', v: hv, set: home, slow: 1 }]);
+  film = { tab, p, steps, stepOf, i: -1, t: 0, total: steps.reduce((s, q) => s + q.d, 0), done: 0, home };
+  if (c.goal) c.goal = null;
+  root.classList.add('filming');
+  p.filmBtn.textContent = '■'; p.filmBtn.title = 'Dừng phim'; p.filmBtn.setAttribute('aria-label', 'Dừng phim'); p.filmBtn.classList.add('on');
+  p.cap.style.display = 'block';
+  filmNext();
+  for (let rest = at || 0; rest > 0 && film;) { const s = Math.min(0.1, rest); filmTick(s); rest -= s; }
+}
+function filmNext() {
+  const f = film; f.i++;
+  if (f.i >= f.steps.length) { filmStop(true); return; }
+  const st = f.steps[f.i], S = f.tab.S;
+  f.from = { cam: camSnap(f.p), S: {} };
+  f.t = 0;
+  if (st.set) Object.keys(st.set).forEach(k => {
+    if (typeof st.set[k] !== 'number' || SNAPK.includes(k)) S[k] = st.set[k]; else f.from.S[k] = S[k];
+  });
+  f.p.cap.firstChild.textContent = st.cap;
+  say('w', st.cap);
+}
+function filmTick(dt) {
+  const f = film; if (!f) return;
+  const st = f.steps[f.i], p = f.p, c = camGet(p), S = f.tab.S, from = f.from, three = !!p.spec.view3d;
+  f.t += dt;
+  const mv = st.mv || 0.5, sc = ease(f.t / (st.d * mv)), ss = ease(f.t / (st.d * 0.8)), v = st.v || {};
+  const tZoom = v.zoom != null ? v.zoom : from.cam.zoom;
+  const zoom = Math.exp(lerp(Math.log(from.cam.zoom), Math.log(tZoom), sc));
+  if (three) {
+    c.goal = null;
+    const tYaw = v.yaw != null ? v.yaw : from.cam.yaw, tPit = v.pitch != null ? v.pitch : from.cam.pitch;
+    c.yaw = from.cam.yaw + wrapD(from.cam.yaw, tYaw) * sc + (st.orbit || 0) * Math.max(0, f.t - st.d * mv);
+    c.yaw = ((c.yaw + 540) % 360) - 180;
+    c.pitch = clamp(lerp(from.cam.pitch, tPit, sc), 4, 89);
+    c.zoom = zoom;
+    const tf = v.f;
+    if (tf) { c.f = [lerp(from.cam.f[0], tf[0], sc), lerp(from.cam.f[1], tf[1], sc), lerp(from.cam.f[2], tf[2] != null ? tf[2] : 0.5, sc)]; c.follow = lerp(from.cam.follow, 1, sc); }
+    else if (v.zoom != null || v.yaw != null) c.follow = lerp(from.cam.follow, 0, sc);
+  } else {
+    c.zoom = zoom;
+    const tf = v.f;
+    if (tf) { c.fx = lerp(from.cam.f[0], tf[0], sc); c.fy = lerp(from.cam.f[1], tf[1], sc); c.follow = lerp(from.cam.follow, 1, sc); }
+    else if (v.zoom != null) c.follow = lerp(from.cam.follow, 0, sc);
+  }
+  TSC = lerp(from.cam.slow, st.slow != null ? st.slow : from.cam.slow, sc);
+  if (st.set) Object.keys(from.S).forEach(k => {
+    const a = from.S[k], b = st.set[k];
+    if (a == null) return;
+    let val = (a > 0 && b > 0 && Math.max(a, b) / Math.min(a, b) >= 10) ? Math.pow(10, lerp(Math.log10(a), Math.log10(b), ss)) : lerp(a, b, ss);
+    const sp = f.stepOf[k]; if (sp && ss < 1) val = Math.round(val / sp) * sp;
+    S[k] = ss >= 1 ? b : val;
+  });
+  if (f.t >= st.d) { f.done += st.d; filmNext(); }
+  if (!film) return;
+  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+  p.cap.lastChild.style.width = (100 * clamp((f.done + f.t) / f.total, 0, 1)) + '%';
+}
+function filmStop(done, silent) {
+  const f = film; if (!f) return;
+  film = null; TSC = 1;
+  root.classList.remove('filming');
+  const p = f.p;
+  if (p.filmBtn) { p.filmBtn.textContent = '▶'; p.filmBtn.title = 'Phim tự động'; p.filmBtn.setAttribute('aria-label', 'Phim tự động'); p.filmBtn.classList.remove('on'); }
+  if (p.cap) p.cap.style.display = 'none';
+  if (!done) {
+    Object.assign(f.tab.S, f.home);
+    const c = camGet(p);
+    if (p.spec.view3d) { c.goal = Object.assign({}, c.b); c.follow = 0; } else Object.assign(c, { zoom: 1, fx: 0.5, fy: 0.5, follow: 0 });
+  } else if (p.spec.view3d) camGet(p).follow = 0;
+  f.tab.prev = Object.assign({}, f.tab.S);
+  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+  if (done && !silent) say('v', 'Phim đã kết thúc. Hãy tự thử thay đổi các thanh trượt!');
+}
+
 function show(id, panelIdx, patch) {
   const tab = LABS.find(l => l.id === id) || LABS[0];
   if (patch) Object.assign(tab.S, patch);
+  filmStop(false, true);
   cur = tab; lastTab = tab.id;
   clearTimers(); logEl = null; bodyEl.innerHTML = ''; curPanels = [];
 
@@ -1871,12 +2049,14 @@ function show(id, panelIdx, patch) {
       const ptrs = new Map(); let pd = 0;
       cv.style.cursor = 'grab'; cv.style.touchAction = 'none';
       cv.addEventListener('pointerdown', ev => {
+        if (film) return;
         ptrs.set(ev.pointerId, [ev.clientX, ev.clientY]);
         try { cv.setPointerCapture(ev.pointerId); } catch (e) { /* bỏ qua */ }
         cv.style.cursor = 'grabbing'; camOf(p, spec.view0).goal = null;
         if (ptrs.size === 2) { const a = [...ptrs.values()]; pd = Math.hypot(a[0][0] - a[1][0], a[0][1] - a[1][1]); }
       });
       cv.addEventListener('pointermove', ev => {
+        if (film) return;
         const old = ptrs.get(ev.pointerId); if (!old) return;
         const c = camOf(p, spec.view0);
         if (ptrs.size === 1) {
@@ -1894,27 +2074,19 @@ function show(id, panelIdx, patch) {
       const up = ev => { ptrs.delete(ev.pointerId); pd = 0; if (!ptrs.size) cv.style.cursor = 'grab'; };
       cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
       cv.addEventListener('wheel', ev => {
-        ev.preventDefault();
+        ev.preventDefault(); if (film) return;
         const c = camOf(p, spec.view0); c.goal = null;
         c.zoom = clamp(c.zoom * (ev.deltaY < 0 ? 1.1 : 1 / 1.1), 0.5, 4); p.dirty = true;
       }, { passive: false });
-      cv.addEventListener('dblclick', () => resetCam(p));
+      cv.addEventListener('dblclick', () => { if (!film) resetCam(p); });
     }
 
-    if ((spec.ctrls && spec.ctrls.length) || spec.view3d) {
+    if ((spec.ctrls && spec.ctrls.length) || (spec.area === 'a' && FILM[tab.id])) {
       const cb = document.createElement('div');
       cb.className = 'lb-c';
       (spec.ctrls || []).forEach(c => cb.appendChild(mkCtrl(tab, c, p)));
-      if (spec.view3d) {
-        const rb = document.createElement('div');
-        rb.className = 'lb-btn'; rb.textContent = 'Đặt lại góc nhìn'; rb.setAttribute('role', 'button'); rb.tabIndex = 0;
-        rb.onclick = () => resetCam(p);
-        rb.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); resetCam(p); } };
-        const hint = document.createElement('span');
-        hint.className = 'lb-k'; hint.textContent = 'kéo chuột: xoay · lăn: zoom · bấm đúp: đặt lại';
-        cb.append(rb, hint);
-      }
       el.appendChild(cb);
+      if (spec.area === 'a') setupFilm(tab, p, el, box, cb);
     }
 
     bodyEl.appendChild(el);
@@ -1941,7 +2113,8 @@ function show(id, panelIdx, patch) {
 function loop(ts) {
   if (!root || root.hidden) { raf = 0; return; }
   const dt = Math.min(0.04, (ts - last) / 1000);
-  last = ts; tAcc += dt;
+  last = ts; tAcc += dt; TT += dt * TSC;
+  if (film) filmTick(dt);
   curPanels.forEach(p => {
     if (!p.ctx || !p.W || !(p.spec.anim || p.dirty)) return;
     p.dirty = false;
@@ -1950,7 +2123,12 @@ function loop(ts) {
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, p.W, p.H);
     ctx.save();
-    try { p.spec.draw(p, ctx, p.W, p.H, tAcc, dt); } catch (err) { console.error('[LabB9]', err); }
+    const c2 = p.spec.cam2d && p.cam2;
+    if (c2 && (c2.zoom !== 1 || c2.follow)) {
+      const gx = 0.5 + (c2.fx - 0.5) * c2.follow, gy = 0.5 + (c2.fy - 0.5) * c2.follow;
+      ctx.translate(p.W / 2, p.H / 2); ctx.scale(c2.zoom, c2.zoom); ctx.translate(-gx * p.W, -gy * p.H);
+    }
+    try { p.spec.draw(p, ctx, p.W, p.H, TT, dt * TSC); } catch (err) { console.error('[LabB9]', err); }
     ctx.restore();
   });
   raf = requestAnimationFrame(loop);
@@ -1968,6 +2146,7 @@ function open(id, panelIdx, patch) {
 
 function close() {
   if (!root || root.hidden) return;
+  filmStop(false, true);
   root.hidden = true; clearTimers(); logEl = null; bodyEl.innerHTML = ''; curPanels = [];
   const b = document.getElementById('tb-lab');
   if (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }
@@ -2016,5 +2195,5 @@ function markLesson(rootEl) {
 if (document.getElementById('tb-badge') && document.getElementById('tb-badge').textContent === 'Buổi 9') {
   markLesson(document.getElementById('app-content'));
 }
-window.LabB9 = { open, close, mark: markLesson, tabs: () => LABS.map(l => l.id) };
+window.LabB9 = { open, close, mark: markLesson, tabs: () => LABS.map(l => l.id), film: (id, at) => { open(id); const p = curPanels.find(q => q.filmBtn); if (p) filmStart(cur, p, at); } };
 })();
