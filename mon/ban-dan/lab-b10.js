@@ -2124,8 +2124,8 @@ const CSS = `
 #lab10 .lb-cv canvas.cam:active{cursor:grabbing}
 #lab10 .lb-sep{width:1px;height:18px;background:var(--g);margin:0 2px}
 #lab10 .lb-c{position:relative}
-#lab10 .lb-film{position:absolute;top:3px;right:3px;z-index:3;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--main);color:var(--bg);font:700 13px/1 var(--font-body);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);user-select:none}
-#lab10 .lb-film.on{background:var(--err);color:#fff}
+#lab10 .lb-film{position:absolute;top:0;right:4px;z-index:3;width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:none;color:var(--ink);font:700 15px/1 var(--font-body);cursor:pointer;opacity:.8;user-select:none}
+#lab10 .lb-film:hover{opacity:1}
 #lab10.filming .lb-c>*:not(.lb-cap){visibility:hidden}
 #lab10.filming .lb-cv canvas.cam{cursor:default}
 #lab10 .lb-cap{position:absolute;left:0;right:0;bottom:0;min-height:100%;box-sizing:border-box;display:none;background:var(--card);border-top:1px solid var(--main);padding:8px 14px 9px;font:600 13px/1.45 var(--font-body);color:var(--ink);pointer-events:none;z-index:2}
@@ -2286,9 +2286,11 @@ function setupCam(tab, p, el, cv) {
   const resetView = () => { if (film) return; Object.assign(c, { yaw: 0, sy: 0.28, zoom: 1, follow: 0, mx: 0, my: 0 }); p.syncCtrls(); p.dirty = true; };
   if (FILM[tab.id]) {
     const fb = document.createElement('div'); fb.className = 'lb-film'; fb.textContent = '▶'; fb.title = 'Phim tự động'; fb.setAttribute('aria-label', 'Phim tự động'); fb.setAttribute('role', 'button'); fb.tabIndex = 0;
-    fb.onclick = () => { if (film) filmStop(false); else filmStart(tab, p); };
-    fb.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fb.onclick(); } };
+    fb.onclick = e => { if (e) e.stopPropagation(); if (film) filmStop(false); else { filmStart(tab, p); fb.blur(); } };
+    fb.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); fb.onclick(); } };
     el.querySelector('.lb-cv').appendChild(fb); p.filmBtn = fb;
+    el.querySelector('.lb-cv').addEventListener('click', () => { if (film) film.paused = !film.paused; });
+    el.addEventListener('wheel', e => { if (!film) return; e.preventDefault(); filmSeek(Math.sign(e.deltaY) * clamp(Math.abs(e.deltaY) / 100, 0.5, 3) * 1.5); }, { passive: false });
     const cap = document.createElement('div'); cap.className = 'lb-cap'; cap.innerHTML = '<span></span><i></i>';
     cb.appendChild(cap); p.cap = cap;
   }
@@ -2316,7 +2318,7 @@ function filmStart(tab, p, at) {
   const home = Object.assign({}, tab.S), ctrl = {};
   const stepOf = {}; tab.panels.forEach(q => (q.ctrls || []).forEach(k => { if (k.k && k.step && !k.log) stepOf[k.k] = k.step; }));
   const steps = FILM[tab.id].concat([{ d: 3, cap: 'Kết thúc phim — mọi thông số và góc nhìn đã trở về như ban đầu. Bạn có thể tự xoay, zoom và chỉnh thanh trượt để thử lại.', v: V(0, tiltOf(0.28), 1), set: home, slow: 1 }]);
-  film = { tab, p, steps, stepOf, i: -1, t: 0, total: steps.reduce((s, q) => s + q.d, 0), done: 0, home };
+  film = { tab, p, steps, stepOf, i: -1, t: 0, total: steps.reduce((s, q) => s + q.d, 0), done: 0, home, cam0: camSnap(p.cam), paused: false, quiet: false };
   root.classList.add('filming');
   if (p.filmBtn) { p.filmBtn.textContent = '■'; p.filmBtn.title = 'Dừng phim'; p.filmBtn.setAttribute('aria-label', 'Dừng phim'); p.filmBtn.classList.add('on'); }
   if (p.cap) p.cap.style.display = 'block';
@@ -2333,7 +2335,7 @@ function filmNext() {
     if (typeof st.set[k] !== 'number' || SNAPK.includes(k)) S[k] = st.set[k]; else f.from.S[k] = S[k];
   });
   if (f.p.cap) { const n = f.p.cap; n.firstChild.textContent = st.cap; }
-  say('w', st.cap);
+  if (!f.quiet) say('w', st.cap);
 }
 function filmTick(dt) {
   const f = film; if (!f) return;
@@ -2359,9 +2361,25 @@ function filmTick(dt) {
   });
   if (f.t >= st.d) { f.done += st.d; filmNext(); }
   if (!film) return;
-  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+  if (!f.quiet) curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
   if (f.p.cap) f.p.cap.lastChild.style.width = (100 * clamp((f.done + f.t) / f.total, 0, 1)) + '%';
 }
+function camApply(c, k) { c.yaw = k.yaw * D2R; c.sy = syOf(k.tilt); c.zoom = k.zoom; c.fx = k.f[0]; c.fy = k.f[1]; c.fz = k.f[2]; c.follow = k.follow; }
+function filmSeek(delta) {            // lăn chuột: tua tới / lùi thời gian của phim
+  const f = film; if (!f) return;
+  const T = clamp(f.done + f.t + delta, 0, f.total - 0.05), prevI = f.i;
+  Object.assign(f.tab.S, f.home); camApply(f.p.cam, f.cam0); TSC = 1;
+  f.i = -1; f.done = 0; f.t = 0; f.quiet = true;
+  filmNext();
+  for (let rest = T; rest > 0 && film === f;) { const s = Math.min(0.1, rest); filmTick(s); rest -= s; }
+  if (film !== f) return;
+  f.quiet = false;
+  if (f.i !== prevI) say('w', f.steps[f.i].cap);
+  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+}
+document.addEventListener('keydown', e => {      // phím cách: tạm dừng / tiếp tục
+  if (film && root && !root.hidden && (e.key === ' ' || e.code === 'Space')) { e.preventDefault(); e.stopImmediatePropagation(); film.paused = !film.paused; }
+}, true);
 function filmStop(done, silent) {
   const f = film; if (!f) return;
   film = null; TSC = 1;
@@ -2454,9 +2472,9 @@ function show(id, panelIdx, patch) {
 
 function loop(ts) {
   if (!root || root.hidden) { raf = 0; return; }
-  const dt = Math.min(0.04, (ts - last) / 1000);
+  const dt = (film && film.paused) ? 0 : Math.min(0.04, (ts - last) / 1000);
   last = ts; tAcc += dt; TT += dt * TSC;
-  if (film) filmTick(dt);
+  if (film && !film.paused) filmTick(dt);
   curPanels.forEach(p => {
     if (!p.ctx || !p.W || !(p.spec.anim || p.dirty)) return;
     p.dirty = false;

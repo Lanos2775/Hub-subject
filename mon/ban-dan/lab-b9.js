@@ -1671,8 +1671,8 @@ const CSS = `
 #lab9 .lb-ln.w{color:var(--ink)}#lab9 .lb-ln.w::before{content:'◆';color:var(--c2);font-size:10px;top:2px}
 #lab9 .lb-ln.v{color:var(--main)}#lab9 .lb-ln.v::before{content:'=';color:var(--main)}
 #lab9 .lb-c{position:relative}
-#lab9 .lb-film{position:absolute;top:3px;right:3px;z-index:3;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--main);color:var(--bg);font:700 13px/1 var(--font-ui);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);user-select:none}
-#lab9 .lb-film.on{background:var(--err);color:#fff}
+#lab9 .lb-film{position:absolute;top:0;right:4px;z-index:3;width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:none;color:var(--ink);font:700 15px/1 var(--font-ui);cursor:pointer;opacity:.8;user-select:none}
+#lab9 .lb-film:hover{opacity:1}
 #lab9.filming .lb-c>*:not(.lb-cap){visibility:hidden}
 #lab9.filming .lb-cv canvas{cursor:default!important}
 #lab9 .lb-cap{position:absolute;left:0;right:0;bottom:0;min-height:100%;box-sizing:border-box;display:none;background:var(--card);border-top:1px solid var(--main);padding:8px 14px 9px;font:600 13px/1.45 var(--font-body);color:var(--ink);pointer-events:none;z-index:2}
@@ -1910,9 +1910,11 @@ function setupFilm(tab, p, el, box, cb) {
   const fb = document.createElement('div');
   fb.className = 'lb-film'; fb.textContent = '▶'; fb.title = 'Phim tự động'; fb.setAttribute('aria-label', 'Phim tự động');
   fb.setAttribute('role', 'button'); fb.tabIndex = 0;
-  fb.onclick = () => { if (film) filmStop(false); else filmStart(tab, p); };
-  fb.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fb.onclick(); } };
+  fb.onclick = e => { if (e) e.stopPropagation(); if (film) filmStop(false); else { filmStart(tab, p); fb.blur(); } };
+  fb.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); fb.onclick(); } };
   box.appendChild(fb); p.filmBtn = fb;
+  box.addEventListener('click', () => { if (film) film.paused = !film.paused; });
+  el.addEventListener('wheel', e => { if (!film) return; e.preventDefault(); filmSeek(Math.sign(e.deltaY) * clamp(Math.abs(e.deltaY) / 100, 0.5, 3) * 1.5); }, { passive: false });
   const cap = document.createElement('div'); cap.className = 'lb-cap'; cap.innerHTML = '<span></span><i></i>';
   cb.appendChild(cap); p.cap = cap;
 }
@@ -1923,7 +1925,7 @@ function filmStart(tab, p, at) {
   tab.panels.forEach(q => (q.ctrls || []).forEach(k => { if (k.k && k.step && !k.log) stepOf[k.k] = k.step; }));
   const hv = p.spec.view3d ? V(c.b.yaw, c.b.pitch, c.b.zoom) : V(0, 0, 1);
   const steps = FILM[tab.id].concat([{ d: 3, cap: 'Kết thúc phim — mọi thông số và góc nhìn đã trở về như ban đầu. Bạn có thể tự xoay hình, kéo thanh trượt để thử lại.', v: hv, set: home, slow: 1 }]);
-  film = { tab, p, steps, stepOf, i: -1, t: 0, total: steps.reduce((s, q) => s + q.d, 0), done: 0, home };
+  film = { tab, p, steps, stepOf, i: -1, t: 0, total: steps.reduce((s, q) => s + q.d, 0), done: 0, home, cam0: camSnap(p), paused: false, quiet: false };
   if (c.goal) c.goal = null;
   root.classList.add('filming');
   p.filmBtn.textContent = '■'; p.filmBtn.title = 'Dừng phim'; p.filmBtn.setAttribute('aria-label', 'Dừng phim'); p.filmBtn.classList.add('on');
@@ -1941,7 +1943,7 @@ function filmNext() {
     if (typeof st.set[k] !== 'number' || SNAPK.includes(k)) S[k] = st.set[k]; else f.from.S[k] = S[k];
   });
   f.p.cap.firstChild.textContent = st.cap;
-  say('w', st.cap);
+  if (!f.quiet) say('w', st.cap);
 }
 function filmTick(dt) {
   const f = film; if (!f) return;
@@ -1976,9 +1978,29 @@ function filmTick(dt) {
   });
   if (f.t >= st.d) { f.done += st.d; filmNext(); }
   if (!film) return;
-  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+  if (!f.quiet) curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
   p.cap.lastChild.style.width = (100 * clamp((f.done + f.t) / f.total, 0, 1)) + '%';
 }
+function camApply(p, k) {
+  const c = camGet(p);
+  if (p.spec.view3d) { c.goal = null; c.yaw = k.yaw; c.pitch = k.pitch; c.zoom = k.zoom; c.f = k.f.slice(); c.follow = k.follow; }
+  else { c.zoom = k.zoom; c.fx = k.f[0]; c.fy = k.f[1]; c.follow = k.follow; }
+}
+function filmSeek(delta) {            // lăn chuột: tua tới / lùi thời gian của phim
+  const f = film; if (!f) return;
+  const T = clamp(f.done + f.t + delta, 0, f.total - 0.05), prevI = f.i;
+  Object.assign(f.tab.S, f.home); camApply(f.p, f.cam0); TSC = 1;
+  f.i = -1; f.done = 0; f.t = 0; f.quiet = true;
+  filmNext();
+  for (let rest = T; rest > 0 && film === f;) { const s = Math.min(0.1, rest); filmTick(s); rest -= s; }
+  if (film !== f) return;
+  f.quiet = false;
+  if (f.i !== prevI) say('w', f.steps[f.i].cap);
+  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+}
+document.addEventListener('keydown', e => {      // phím cách: tạm dừng / tiếp tục
+  if (film && root && !root.hidden && (e.key === ' ' || e.code === 'Space')) { e.preventDefault(); e.stopImmediatePropagation(); film.paused = !film.paused; }
+}, true);
 function filmStop(done, silent) {
   const f = film; if (!f) return;
   film = null; TSC = 1;
@@ -2112,9 +2134,9 @@ function show(id, panelIdx, patch) {
 
 function loop(ts) {
   if (!root || root.hidden) { raf = 0; return; }
-  const dt = Math.min(0.04, (ts - last) / 1000);
+  const dt = (film && film.paused) ? 0 : Math.min(0.04, (ts - last) / 1000);
   last = ts; tAcc += dt; TT += dt * TSC;
-  if (film) filmTick(dt);
+  if (film && !film.paused) filmTick(dt);
   curPanels.forEach(p => {
     if (!p.ctx || !p.W || !(p.spec.anim || p.dirty)) return;
     p.dirty = false;
