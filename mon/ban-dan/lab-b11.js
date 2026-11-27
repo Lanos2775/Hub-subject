@@ -214,6 +214,47 @@ function isoBox(ctx, ox, oy, x, y, z, dx, dy, dz, col, al, strokeCol) {
   });
 }
 
+
+/* ---------- hạt bên trong khối 3D ---------- */
+function p3(ctx, ox, oy, x, y, z, r, col, sg) {
+  const q = isoP(ox, oy, x, y, z);
+  dot(ctx, q[0], q[1], r, col);
+  if (sg && CAM && CAM.zoom > 1.3) txt(ctx, sg, q[0], q[1] + 0.5, C.bg, 8, 'center', 800);
+  return q;
+}
+function i3(ctx, ox, oy, x, y, z, sg, col) {
+  const q = isoP(ox, oy, x, y, z);
+  drawIon(ctx, q[0], q[1], sg, col, 3.8);
+}
+/* lưới ion cố định trong hộp [x0,x0+w]×[y0,y0+d]×[z0,z0+h] */
+function ions3(ctx, ox, oy, x0, y0, w, d, z0, h, sg, col, nx, ny) {
+  const nl = Math.floor(h / 15);
+  for (let k = 0; k < nl; k++) for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++)
+    i3(ctx, ox, oy, x0 + (i + 0.5) * w / nx, y0 + (j + 0.5) * d / ny, z0 + (k + 0.5) * h / nl, sg, col);
+}
+/* bầy hạt chuyển động nhiệt trong hộp đơn vị, pool cố định nmax */
+function swarm(st, key, nmax, t, sp) {
+  let s = st[key];
+  if (!s) s = st[key] = { t, a: Array.from({ length: nmax }, () => ({ u: Math.random(), v: Math.random(), w: Math.random(), x: gauss(), y: gauss(), z: gauss() })) };
+  const dt = clamp(t - s.t, 0, 0.05); s.t = t;
+  s.a.forEach(q => {
+    if (Math.random() < dt * 3) { q.x = gauss(); q.y = gauss(); q.z = gauss(); }
+    q.u += q.x * sp * dt; q.v += q.y * sp * dt; q.w += q.z * sp * dt;
+    if (q.u < 0.04) { q.u = 0.04; q.x = Math.abs(q.x); } else if (q.u > 0.96) { q.u = 0.96; q.x = -Math.abs(q.x); }
+    if (q.v < 0.04) { q.v = 0.04; q.y = Math.abs(q.y); } else if (q.v > 0.96) { q.v = 0.96; q.y = -Math.abs(q.y); }
+    if (q.w < 0.04) { q.w = 0.04; q.z = Math.abs(q.z); } else if (q.w > 0.96) { q.w = 0.96; q.z = -Math.abs(q.z); }
+  });
+  return s.a;
+}
+/* điện tích cổng: n×m dấu trên mặt trên của cổng */
+function gateQ3(ctx, ox, oy, x0, y0, w, d, z, sg, col, nx, ny) {
+  if (!sg) return;
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+    const q = isoP(ox, oy, x0 + (i + 0.5) * w / nx, y0 + (j + 0.5) * d / ny, z);
+    txt(ctx, sg, q[0], q[1], col, 12, 'center', 800);
+  }
+}
+
 function drawProbe(ctx, tx, ty, dir, col, label) {
   const s = dir < 0 ? -1 : 1;
   ln(ctx, tx + s * 42, ty - 54, tx + s * 10, ty - 16, C.sub, 5);
@@ -431,6 +472,18 @@ LABS.push({
         isoBox(ctx, ox, oy, 0, 0, subH, bw, bd, oxH, C.c1, 0.22, C.g);
         isoBox(ctx, ox, oy, padX, padY, subH + oxH, padW, padD, gH, C.main, 0.92, C.ink);
 
+        {
+          const st3 = p.st, majSign = isP ? '+' : '−', minSign = isP ? '−' : '+', ionSign = isP ? '−' : '+';
+          const qGate = S.VG > m.VFB + 0.03 ? '+' : S.VG < m.VFB - 0.03 ? '−' : '';
+          gateQ3(ctx, ox, oy, padX, padY, padW, padD, subH + oxH + gH + 1, qGate, qGate === '+' ? C.c4 : C.c2, 4, 3);
+          if (st.dep3d > 14) ions3(ctx, ox, oy, padX, padY, padW, padD, subH - st.dep3d + 4, st.dep3d - (curSt.mode === 'inv' ? 14 : 6), ionSign, ionCol, 4, 3);
+          const topBulk = Math.max(14, subH - st.dep3d - (curSt.mode === 'acc' ? 12 : 5));
+          swarm(st3, 'blk', 24, t, 0.25).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), 5 + q.w * (topBulk - 5), 4.2, majCol, majSign));
+          if (curSt.mode === 'inv' || curSt.mode === 'acc') {
+            const isInv = curSt.mode === 'inv', n = Math.round(6 + (isInv ? curSt.invFrac : curSt.accFrac) * 8);
+            swarm(st3, 'lay', 14, t, 0.35).slice(0, n).forEach(q => p3(ctx, ox, oy, padX + 4 + q.u * (padW - 8), padY + 4 + q.v * (padD - 8), subH - 3.5, 4.4, isInv ? minCol : majCol, isInv ? minSign : majSign));
+          }
+        }
         const gTop = isoP(ox, oy, padX + padW * 0.5, padY + padD * 0.5, subH + oxH + gH);
         drawProbe(ctx, gTop[0], gTop[1], 1, C.main, 'Cổng (G)');
         const gx = W - 62;
@@ -591,6 +644,13 @@ LABS.push({
         isoBox(ctx, ox, oy, 0, 0, siH, bw, bd, oxH, C.c1, 0.22, C.g);
         isoBox(ctx, ox, oy, bw * 0.14, bd * 0.14, siH + oxH, bw * 0.72, bd * 0.72, 13, C.main, 0.9, C.ink);
 
+        {
+          const st3 = p.st;
+          if (curD > 16) ions3(ctx, ox, oy, 0, 0, bw, bd, siH - curD + 3, curD - 14, '−', C.c5, 5, 3);
+          swarm(st3, 'ho', 18, t, 0.25).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), 5 + q.w * Math.max(6, siH - curD - 12), 4.2, C.c4, '+'));
+          const nE = Math.round(invGlow * 16);
+          swarm(st3, 'el', 16, t, 0.35).slice(0, nE).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), siH - 3 - q.w * 3, 4.4, C.c2, '−'));
+        }
         const topR = isoP(ox, oy, bw + 10, bd * 0.5, siH);
         const curR = isoP(ox, oy, bw + 10, bd * 0.5, siH - curD);
         const limR = isoP(ox, oy, bw + 10, bd * 0.5, zFloor);
@@ -689,7 +749,7 @@ LABS.push({
         { k: 'Qss', l: 'Q\'_ss', min: 9.5, max: 12.2, step: 0.1, log: 1, f: v => pw(v) + '/cm²' },
         { btn: 'Ví dụ 2.1', fn: p => { p.S.sub = 'p'; p.S.gate = 'Al'; p.S.Na = 1e15; p.S.tox = 12; p.S.Qss = 1e10; p.syncCtrls(); p.dirty = true; } }
       ],
-      draw(p, ctx, W, H) {
+      draw(p, ctx, W, H, t) {
         const S = p.S, m = mosCalc(S.sub, S.gate, S.Na, S.tox, S.Qss);
         const isEnh = m.VT > 0;
         const gateCol = S.gate === 'Au' ? C.main : S.gate === 'Al' ? C.sub : S.gate === 'nPoly' ? C.c2 : C.c5;
@@ -699,6 +759,7 @@ LABS.push({
         const ox = W * 0.25, oy = H * 0.78;
 
         isoBox(ctx, ox, oy, 0, 0, 0, bw, bd, subH, C.card, 1, C.sub);
+        isoBox(ctx, ox, oy, 0, 0, subH * 0.42, bw, bd, subH * 0.58, C.c5, 0.16, C.c5);
         if (!isEnh) isoBox(ctx, ox, oy, 0, 0, subH - 9, bw, bd, 9, C.c2, 0.76, C.c2);
         isoBox(ctx, ox, oy, 0, 0, subH, bw, bd, oxH, C.c1, 0.28, C.c1);
 
@@ -710,6 +771,12 @@ LABS.push({
         }
         isoBox(ctx, ox, oy, bw * 0.12, bd * 0.12, subH + oxH, bw * 0.76, bd * 0.76, gH, gateCol, 0.92, C.ink);
 
+        {
+          const st3 = p.st, isP = S.sub !== 'n';
+          ions3(ctx, ox, oy, 0, 0, bw, bd, subH * 0.42 + 3, subH * 0.58 - (isEnh ? 6 : 14), isP ? '−' : '+', isP ? C.c5 : C.c4, 5, 3);
+          swarm(st3, 'ho', 18, t, 0.22).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), 5 + q.w * Math.max(6, subH * 0.42 - 8), 4.2, isP ? C.c4 : C.c2, isP ? '+' : '−'));
+          if (!isEnh) swarm(st3, 'el', 14, t, 0.35).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), subH - 3 - q.w * 3, 4.4, isP ? C.c2 : C.c4, isP ? '−' : '+'));
+        }
         // LED thử mạch + số đọc V_FB, V_TN không khung rườm rà ở vùng trống bên phải
         const rx = W - 74, lcy = H * 0.30;
         if (CAM) { ctx.save(); ctx.globalAlpha = 0.88; ctx.fillStyle = C.bg; rr(ctx, rx - 70, lcy - 46, 140, 138, 8); ctx.fill(); ctx.restore(); }
@@ -822,6 +889,18 @@ LABS.push({
         isoBox(ctx, ox, oy, 0, 0, siH, bw, bd, oxH, C.c1, 0.25, C.g);
         isoBox(ctx, ox, oy, bw * 0.18, bd * 0.18, siH + oxH, bw * 0.64, bd * 0.64, 12, C.main, 0.92, C.ink);
 
+        {
+          const st3 = p.st, dHp = curSt.mode === 'dep' ? siH * clamp(curSt.xd / m.xdT, 0.16, 0.74) : 0;
+          const px0 = bw * 0.18, py0 = bd * 0.18, pw0 = bw * 0.64, pd0 = bd * 0.64;
+          const qGate = S.VG > m.VFB + 0.03 ? '+' : S.VG < m.VFB - 0.03 ? '−' : '';
+          gateQ3(ctx, ox, oy, px0, py0, pw0, pd0, siH + oxH + 13, qGate, qGate === '+' ? C.c4 : C.c2, 4, 3);
+          if (dHp > 16) ions3(ctx, ox, oy, px0, py0, pw0, pd0, siH - dHp + 3, dHp - 6, '−', C.c5, 4, 3);
+          swarm(st3, 'ho', 20, t, 0.25).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), 5 + q.w * Math.max(6, siH - dHp - (curSt.mode === 'dep' ? 6 : 12)), 4.2, C.c4, '+'));
+          if (curSt.mode === 'inv' || curSt.mode === 'acc') {
+            const isInv = curSt.mode === 'inv';
+            swarm(st3, 'lay', 12, t, 0.35).forEach(q => p3(ctx, ox, oy, px0 + 4 + q.u * (pw0 - 8), py0 + 4 + q.v * (pd0 - 8), siH - 3.5, 4.4, isInv ? C.c2 : C.c4, isInv ? '−' : '+'));
+          }
+        }
         const pTop = isoP(ox, oy, bw * 0.5, bd * 0.5, siH + oxH + 12);
         const pChuck = isoP(ox, oy, bw + 14, bd * 0.5, -8);
         drawProbe(ctx, pTop[0], pTop[1], 1, C.main, 'HI');
@@ -926,6 +1005,13 @@ LABS.push({
         isoBox(ctx, mx, my, 0, 0, siH - 8, bw, bd, 8, C.c2, clamp(0.45 + gateSig * 0.35 * follow, 0.2, 0.96), C.c2);
         isoBox(ctx, mx, my, 0, 0, siH, bw, bd, 10, C.c1, 0.24, C.g);
         isoBox(ctx, mx, my, bw * 0.14, bd * 0.14, siH + 10, bw * 0.72, bd * 0.72, 11, C.main, 0.92, C.ink);
+        {
+          const st3 = p.st, nEl = Math.round(2 + 12 * follow * (0.55 + 0.45 * gateSig));
+          if (depH > 18) ions3(ctx, mx, my, 0, 0, bw, bd, siH - depH + 3, depH - 12, '−', (1 - follow) > 0.4 ? C.err : C.c5, 5, 3);
+          swarm(st3, 'ho', 18, t, 0.22).forEach(q => p3(ctx, mx, my, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), 5 + q.w * Math.max(6, siH - depH - 8), 4.2, C.c4, '+'));
+          swarm(st3, 'el', 14, t, 0.4).slice(0, nEl).forEach(q => p3(ctx, mx, my, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), siH - 3 - q.w * 3, 4.4, C.c2, '−'));
+          gateQ3(ctx, mx, my, bw * 0.14, bd * 0.14, bw * 0.72, bd * 0.72, siH + 22, gateSig >= 0 ? '+' : '−', gateSig >= 0 ? C.c4 : C.c2, 4, 3);
+        }
         const gp = isoP(mx, my, bw * 0.5, bd * 0.5, siH + 21 + 16);
         ctx.save(); ctx.globalAlpha = 0.35 + 0.65 * Math.abs(gateSig);
         txt(ctx, gateSig >= 0 ? '+' : '−', gp[0], gp[1], C.main, 22, 'center', 800); ctx.restore();
@@ -1046,6 +1132,13 @@ LABS.push({
             const pt = isoP(ox, oy, sdW + u * chW, bd * (0.18 + (k % 4) * 0.22), subH - 2);
             dot(ctx, pt[0], pt[1], 4, C.main);
           }
+          if (isSat) p3(ctx, ox, oy, xEnd, bd * 0.5, subH - 2, 5.5, C.err);
+        }
+        {
+          const st3 = p.st;
+          swarm(st3, 'sdL', 8, t, 0.3).forEach(q => p3(ctx, ox, oy, 6 + q.u * (sdW - 12), 6 + q.v * (bd - 12), subH - sdH + 4 + q.w * (sdH - 8), 4, C.main, '−'));
+          swarm(st3, 'sdR', 8, t, 0.3).forEach(q => p3(ctx, ox, oy, bw - sdW + 6 + q.u * (sdW - 12), 6 + q.v * (bd - 12), subH - sdH + 4 + q.w * (sdH - 8), 4, C.main, '−'));
+          swarm(st3, 'ho', 14, t, 0.22).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), 5 + q.w * Math.max(6, subH - sdH - 12), 4.2, C.c4, '+'));
         }
 
         isoBox(ctx, ox, oy, sdW - 4, 0, subH, chW + 8, bd, 10, C.c1, 0.25, C.g);
@@ -1307,6 +1400,25 @@ LABS.push({
           arr(ctx, pOv[0] + 18, pOv[1] - 28, pOv[0] + 2, pOv[1] - 2, C.err, 2);
           chip(ctx, 'C_gdp=' + S.Cgdp + 'fF', pOv[0] + 18, pOv[1] - 36, C.err, 'center');
         }
+        {
+          const st3 = p.st, fillLvl = 0.5 + 0.42 * Math.sin(t * clamp(Math.log10(fT) - 6.5, 1.5, 5.5) * 1.4);
+          const cx0 = sdW - ovPx, cw = bw - sdW * 2 + ovPx * 2;
+          isoBox(ctx, ox, oy, sdW, 0, subH - 5, bw - sdW * 2, bd, 5, C.c2, 0.55, C.c2);
+          swarm(st3, 'sdL', 8, t, 0.3).forEach(q => p3(ctx, ox, oy, 6 + q.u * (sdW - 12), 6 + q.v * (bd - 12), subH - 24 + q.w * 20, 4, C.main, '−'));
+          swarm(st3, 'sdR', 8, t, 0.3).forEach(q => p3(ctx, ox, oy, bw - sdW + 6 + q.u * (sdW - 12), 6 + q.v * (bd - 12), subH - 24 + q.w * 20, 4, C.main, '−'));
+          const spd = clamp(1.0 / S.L, 0.4, 3.8) * 0.5;
+          for (let k = 0; k < 8; k++) {
+            const u = (t * spd + k / 8) % 1, xx = sdW + u * (bw - sdW * 2), yy = bd * (0.14 + (k % 4) * 0.24);
+            const a = isoP(ox, oy, Math.max(sdW, xx - 22), yy, subH - 3), b = isoP(ox, oy, xx, yy, subH - 3);
+            ln(ctx, a[0], a[1], b[0], b[1], C.c2, 2);
+            dot(ctx, b[0], b[1], 4.2, C.c2);
+          }
+          gateQ3(ctx, ox, oy, cx0, 0, cw, bd, subH + 26, '+', C.c4, Math.max(2, Math.round(2 + 4 * fillLvl)), 3);
+          if (ovPx > 1) {
+            const nM = Math.min(6, 1 + Math.round(clamp(CM / CG, 0, 1) * 5));
+            for (let i = 0; i < nM; i++) p3(ctx, ox, oy, bw - sdW + ovPx * 0.5, (i + 0.5) / nM * bd, subH + 5, 3.8, C.err, '+');
+          }
+        }
         const pG = isoP(ox, oy, bw * 0.5, 0, subH + 34);
         txt(ctx, 'L = ' + S.L.toFixed(2) + ' µm', pG[0], pG[1], C.main, 11, 'center', 700);
 
@@ -1527,6 +1639,13 @@ LABS.push({
           dot(ctx, pt[0], pt[1], 4, u * chW > (chW - eatPx) ? C.err : C.main);
         }
 
+        {
+          const st3 = p.st;
+          ions3(ctx, ox, oy, bw - sdW - eatPx, 0, sdW + eatPx, bd, subH - sdH - 12, sdH + 12, '−', C.err, 3, 3);
+          swarm(st3, 'sdL', 8, t, 0.3).forEach(q => p3(ctx, ox, oy, 6 + q.u * (sdW - 12), 6 + q.v * (bd - 12), subH - sdH + 4 + q.w * (sdH - 8), 4, C.main, '−'));
+          swarm(st3, 'sdR', 8, t, 0.3).forEach(q => p3(ctx, ox, oy, bw - sdW + 6 + q.u * (sdW - 12), 6 + q.v * (bd - 12), subH - sdH + 4 + q.w * (sdH - 8), 4, C.main, '−'));
+          swarm(st3, 'ho', 14, t, 0.22).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), 5 + q.w * Math.max(6, subH - sdH - 28), 4.2, C.c4, '+'));
+        }
         const pG = isoP(ox, oy, sdW + chW / 2, 0, subH + 30);
         txt(ctx, 'L = ' + S.L.toFixed(1) + ' µm → L\' = ' + Leff.toFixed(2) + ' µm', pG[0], pG[1], C.main, 11, 'center', 700);
 
@@ -1614,6 +1733,9 @@ LABS.push({
       ],
       draw(p, ctx, W, H, t) {
         const S = p.S, L_cm = S.L * 1e-4, W_cm = 10e-4, Cox = EPS_OX / (12e-7);
+        const st3 = p.st, dt3 = clamp(t - (st3.t3 == null ? t : st3.t3), 0, 0.05); st3.t3 = t;
+        if (!st3.ev) { st3.ev = Array.from({ length: 10 }, (_, i) => ({ u: i / 10, v: (i % 4) / 4 + 0.1, vx: 0.4 })); st3.fl = []; }
+        st3.fl = st3.fl.filter(f => (f.a -= dt3 * 2.8) > 0);
         const muEff = 450 * Math.pow(clamp(S.Vov / 0.6, 0.6, 4), -1 / 3);
         const Ehoriz = S.Vov / L_cm;
         const vDrift = (muEff / Math.sqrt(1 + Math.pow((muEff * Ehoriz) / VSAT_SI, 2))) * Ehoriz;
@@ -1634,10 +1756,18 @@ LABS.push({
           isoBox(ctx, ox, oy, bw - 66, 0, 14, 66, bd, 24, C.c2, 0.38, C.c2);
           isoBox(ctx, ox, oy, 64, 0, 38, bw - 128, bd, 10, C.c1, 0.25, C.g);
           isoBox(ctx, ox, oy, 64, -4, 48, bw - 128, bd + 8, 20, C.main, 0.92, C.ink);
-          for (let k = 0; k < 8; k++) {
-            const u = (t * 0.55 + k * 0.125) % 1;
-            const pt = isoP(ox, oy, 64 + u * (bw - 128), bd * (0.2 + (k % 3) * 0.3), 36);
-            dot(ctx, pt[0], pt[1], 4.2, C.c2);
+          const rate = S.mode === 'surf' ? 2.5 + S.Vov * 3.5 : 1.2 + clamp(S.Vov / L_cm / 2e4, 0.5, 6);
+          st3.ev.slice(0, 8).forEach(q => {
+            if (Math.random() < dt3 * rate) { q.vx = 0.08; st3.fl.push({ x: 64 + q.u * (bw - 128), y: bd * q.v, z: 36, a: 1 }); }
+            q.vx = Math.min(S.mode === 'surf' ? 0.34 : 0.55, q.vx + 0.5 * dt3); q.u += q.vx * dt3; if (q.u > 1) q.u -= 1;
+            p3(ctx, ox, oy, 64 + q.u * (bw - 128), bd * q.v, 36, 4.2, C.c2, '−');
+          });
+          swarm(st3, 'sdL', 8, t, 0.3).forEach(q => p3(ctx, ox, oy, 6 + q.u * 54, 6 + q.v * (bd - 12), 16 + q.w * 20, 4, C.c2, '−'));
+          swarm(st3, 'sdR', 8, t, 0.3).forEach(q => p3(ctx, ox, oy, bw - 60 + q.u * 54, 6 + q.v * (bd - 12), 16 + q.w * 20, 4, C.c2, '−'));
+          swarm(st3, 'ho', 12, t, 0.22).forEach(q => p3(ctx, ox, oy, 6 + q.u * (bw - 12), 6 + q.v * (bd - 12), 4 + q.w * 8, 4.2, C.c4, '+'));
+          if (S.mode === 'surf') for (let k = 1; k <= 5; k++) {
+            const a = isoP(ox, oy, 64 + (bw - 128) * k / 6, bd * 0.5, 16), b = isoP(ox, oy, 64 + (bw - 128) * k / 6, bd * 0.5, 33);
+            arr(ctx, a[0], a[1], b[0], b[1], C.c5, 1.6);
           }
           chip(ctx, 'Kiến trúc PLANAR (phẳng · L ≥ 0.8 µm): cổng phủ 1 mặt trên', W * 0.44, 14, C.c5, 'center');
         } else if (arch === 'finfet') {
@@ -1647,11 +1777,12 @@ LABS.push({
           isoBox(ctx, ox, oy, gX, 6, 38, gW, finY - 6, finH + 16, C.main, 0.86, C.ink);
           isoBox(ctx, ox, oy, gX, finY + finD, 38, gW, bd - (finY + finD) - 6, finH + 16, C.main, 0.86, C.ink);
           isoBox(ctx, ox, oy, gX, 6, 38 + finH, gW, bd - 12, 16, C.main, 0.94, C.ink);
-          for (let k = 0; k < 10; k++) {
-            const u = (t * 1.1 + k * 0.1) % 1;
-            const pt = isoP(ox, oy, 20 + u * (bw - 40), finY + finD * 0.5, 48 + (k % 3) * 18);
-            dot(ctx, pt[0], pt[1], 4.2, C.main);
-          }
+          const vN = clamp(vActual / (VSAT_SI * 1.6), 0.12, 1.35), rateF = 1.2 + clamp(Ehoriz / 2e4, 0.5, 6);
+          st3.ev.forEach((q, k) => {
+            if (Math.random() < dt3 * rateF) { q.vx = 0.1; if (Ehoriz > 2e4) st3.fl.push({ x: 20 + q.u * (bw - 40), y: finY + finD * 0.5, z: 48 + (k % 3) * 18, a: 1 }); }
+            q.vx = Math.min(1.1 * vN, q.vx + 0.9 * dt3); q.u += q.vx * dt3; if (q.u > 1) q.u -= 1;
+            p3(ctx, ox, oy, 20 + q.u * (bw - 40), finY + finD * 0.5, 48 + (k % 3) * 18, 4.2, C.main, '−');
+          });
           chip(ctx, 'Kiến trúc FinFET 3D (kênh ngắn · v_sat): cổng bọc ôm 3 mặt vây Si!', W * 0.44, 14, C.main, 'center');
         } else {
           const sY = bd * 0.27, sD = bd * 0.46;
@@ -1670,6 +1801,11 @@ LABS.push({
           chip(ctx, 'Kiến trúc GAA Nanosheet (<0.1 µm · ĐẠN ĐẠO): cổng bọc kín 4 mặt!', W * 0.44, 14, C.c2, 'center');
         }
 
+        st3.fl.forEach(f => {
+          const q = isoP(ox, oy, f.x, f.y, f.z);
+          ctx.beginPath(); ctx.arc(q[0], q[1], 4 + (1 - f.a) * 12, 0, TAU2);
+          ctx.strokeStyle = C.err; ctx.globalAlpha = f.a; ctx.lineWidth = 1.6; ctx.stroke(); ctx.globalAlpha = 1;
+        });
         // Đồng hồ mini f_T & 2 dòng so sánh I_long vs I_sat KHÔNG khung ở vùng trống bên phải!
         const gx = W - 74;
         drawMiniGauge(ctx, gx, H * 0.28, 22, 'f_T = v_sat/(2πL)', fmtFreq(fTSat), clamp(Math.log10(fTSat / 1e9) / 2.6, 0, 1), C.main);
