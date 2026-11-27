@@ -5794,6 +5794,587 @@ window.MathJax = {
   </section>
 </template>
 
+<template id="tpl-buoi-9-5">
+  <header>
+    <span class="k b3">HỌC PHẦN ENP2209 · BUỔI 9.5</span>
+    <h1>Điốt Tiếp Giáp p-n: Dòng Điện Lý Tưởng, Dòng Không Lý Tưởng và Mô Hình Tín Hiệu Nhỏ</h1>
+    <p class="mut">Slide Chương 8 (Neamen, <i>The pn junction diode</i>). Phun hạt tải, điều kiện biên hạt thiểu số, phương trình điốt lý tưởng, dòng sinh-tái hợp, phun mức cao, điện trở khuếch tán $r_d$, điện dung khuếch tán $C_d$ và sơ đồ tương đương tín hiệu nhỏ.</p>
+    <div class="roadmap"><p><b>Bản đồ Buổi 9.5: từ "hàng rào thế" đến "đặc tuyến dòng-áp"</b></p><ol>
+      <li><b>Mục 1:</b> Cân bằng, phân cực ngược, phân cực thuận: hạt tải đi đâu? Giả thiết của điốt lý tưởng.</li>
+      <li><b>Mục 2:</b> Điều kiện biên của hạt thiểu số tại mép vùng nghèo và phân bố hạt thiểu số trong vùng trung hòa.</li>
+      <li><b>Mục 3:</b> Dòng khuếch tán và <b>phương trình điốt lý tưởng</b> $I=I_s[e^{V_a/V_t}-1]$.</li>
+      <li><b>Mục 4:</b> Thành phần dòng, ảnh hưởng nhiệt độ, điốt dài và điốt ngắn.</li>
+      <li><b>Mục 5:</b> Điốt thật lệch lý tưởng: dòng sinh, dòng tái hợp, phun mức cao, hệ số lý tưởng $n$.</li>
+      <li><b>Mục 6:</b> Mô hình tín hiệu nhỏ: $r_d$, $C_d$, $C_j$, $r_s$.</li>
+      <li><b>Mục 7:</b> Cẩm nang công thức. Cuối bài là tổng kết và câu hỏi ôn tập.</li></ol>
+      <p><b>Sau buổi này em làm được:</b> tính nồng độ hạt thiểu số ở mép vùng nghèo, viết và dùng phương trình điốt, tính $I_s$ từ thông số vật liệu, đánh giá ảnh hưởng nhiệt độ, nhận ra vùng nào của đặc tuyến thuận là tái hợp/lý tưởng/mức cao, và tính $r_d$, $C_d$ cho một điểm làm việc.</p></div>
+  </header>
+
+  <section>
+    <h2>Mở đầu: Từ "tiếp giáp tĩnh" đến "điốt có dòng chạy qua"</h2>
+    <p>Chào em! Ở Buổi 9 ta mới nghiên cứu tiếp giáp p-n ở trạng thái <i>tĩnh</i>: vùng nghèo, thế tiếp xúc $V_{bi}$, điện dung. Hôm nay ta làm cho nó <b>có dòng điện chạy qua</b>. Câu hỏi trung tâm: khi đặt điện áp $V_a$ lên tiếp giáp, dòng $I$ phụ thuộc $V_a$ thế nào, và vì sao đặc tuyến lại <b>mũ</b> chứ không phải tuyến tính như điện trở?</p>
+    <div class="box analogy">
+      <b>Ví dụ ẩn dụ: hạ cửa đập</b><br>
+      Hàng rào thế giống một con đập giữ nước hai bên. Phân cực thuận là <i>hạ thấp đập</i>: chỉ cần hạ thêm một chút, lượng nước tràn qua tăng theo hàm mũ. Nước tràn sang bờ bên kia trở thành "nước lạ" (hạt thiểu số), rồi thấm dần vào đất và hòa lẫn (tái hợp). Phân cực ngược là <i>nâng cao đập</i>: nước hầu như không qua được, chỉ còn vài giọt rỉ (dòng ngược nhỏ).
+    </div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Phương trình điốt là nền của mạch chỉnh lưu, mạch ổn áp, cảm biến nhiệt độ bằng điốt, và là bước đệm để hiểu transistor lưỡng cực (hai tiếp giáp ghép lại). Mô hình tín hiệu nhỏ ở Mục 6 là công cụ phân tích mạch khuếch đại, mạch tần số cao.</div>
+    <div class="tw"><table><tr><th>Buổi trước</th><th>Dùng ở Buổi 9.5 để làm gì</th></tr>
+      <tr><td>Buổi 5, 6: $n_0p_0=n_i^2$, $n_i$</td><td>Tính $n_{p0}=n_i^2/N_a$, $p_{n0}=n_i^2/N_d$ (hạt thiểu số cân bằng)</td></tr>
+      <tr><td>Buổi 7, 8: khuếch tán, hạt dư, $L_p$, $L_n$, $\tau$</td><td>Giải phương trình khuếch tán cho hạt thiểu số dư trong vùng trung hòa</td></tr>
+      <tr><td>Buổi 9: $V_{bi}$, vùng nghèo $W$, $C_j$</td><td>Hàng rào $V_{bi}\mp V$, $J_{\text{gen}}\propto W$, điện dung tiếp giáp trong mô hình đầy đủ</td></tr></table></div>
+  </section>
+
+  <section>
+    <h2>1. Bức Tranh Vật Lý: Cân Bằng, Phân Cực Ngược, Phân Cực Thuận</h2>
+    <div class="bridge"><b>Nối từ phần mở đầu:</b> Trước khi tính toán, ta cần nắm chắc hạt tải di chuyển thế nào ở ba trạng thái: không phân cực, phân cực ngược và phân cực thuận.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Hiểu <i>vì sao</i> phân cực thuận cho dòng lớn còn phân cực ngược cho dòng rất nhỏ. Mọi công thức ở các mục sau là định lượng hóa hình ảnh này.</div>
+
+    <h3>1.1. Ba trạng thái phân cực</h3>
+    <p>Quy ước: $V_a\gt0$ là phân cực <b>thuận</b> (cực dương nối phía p); phân cực ngược dùng $V_R=-V_a\gt0$ (slide trang 4 đến 6).</p>
+    <div class="tw"><table><tr><th></th><th>Cân bằng ($V_a=0$)</th><th>Phân cực ngược</th><th>Phân cực thuận</th></tr>
+      <tr><td><b>Hàng rào thế</b></td><td>$V_{bi}$</td><td>$V_{\text{barrier}}=V_{bi}+V_R$ (tăng)</td><td>$V_{\text{barrier}}=V_{bi}-V_a$ (giảm)</td></tr>
+      <tr><td><b>Vùng nghèo và điện trường</b></td><td>Giá trị cân bằng</td><td>Vùng nghèo <b>rộng ra</b>, điện trường tăng</td><td>Vùng nghèo <b>hẹp lại</b>, điện trường giảm</td></tr>
+      <tr><td><b>Hạt tải đa số</b></td><td>Dòng khuếch tán bị dòng trôi triệt tiêu</td><td>Bị chặn mạnh hơn</td><td>Vượt hàng rào, được <b>phun</b> sang phía bên kia</td></tr>
+      <tr><td><b>Dòng điện</b></td><td>Tổng bằng $0$</td><td>Rất nhỏ: do hạt thiểu số và sự sinh hạt tải trong vùng nghèo</td><td>Lớn, tăng theo hàm mũ của $V_a$</td></tr></table></div>
+    <p>Ở phân cực thuận (slide trang 6): lỗ trống từ p được <b>phun</b> (injected) sang n, electron từ n được phun sang p. Sau khi qua vùng nghèo, hạt đa số <b>trở thành hạt thiểu số</b> ở phía bên kia. Các hạt thiểu số này tiếp tục khuếch tán và tái hợp trong vùng trung hòa.</p>
+    <div class="box key"><b>Ý chính:</b> phân cực thuận <b>không "tạo" thêm hạt tải</b>. Nó chỉ hạ hàng rào để hạt đa số có sẵn đi sang phía bên kia dễ hơn nhiều. Dòng điện của điốt là dòng <b>khuếch tán của hạt thiểu số</b> được phun vào.</div>
+
+    <h3>1.2. Giả thiết của điốt lý tưởng</h3>
+    <p>Để tìm được công thức gọn, ta dùng các giả thiết sau (slide trang 7):</p>
+    <ul>
+      <li>Tiếp giáp <b>đột biến</b>, biên vùng nghèo rõ ràng.</li>
+      <li>Bên ngoài vùng nghèo, bán dẫn <b>trung hòa điện</b>.</li>
+      <li>Phân bố hạt tải theo xấp xỉ Maxwell-Boltzmann; tạp chất ion hóa hoàn toàn.</li>
+      <li><b>Điều kiện phun mức thấp</b> (low-level injection): $\Delta n_p\ll p_{p0}\approx N_a$ và $\Delta p_n\ll n_{n0}\approx N_d$.</li>
+      <li>Dòng tổng không đổi dọc cấu trúc; dòng electron và dòng lỗ trống liên tục.</li>
+      <li><b>Không có sinh-tái hợp</b> trong vùng nghèo.</li>
+    </ul>
+    <p>Các ký hiệu nồng độ dùng suốt buổi này (slide trang 8):</p>
+    <div class="tw"><table><tr><th>Ký hiệu</th><th>Ý nghĩa</th></tr>
+      <tr><td>$n_{n0}=N_d$, $p_{p0}=N_a$</td><td>Hạt đa số ở cân bằng (vùng n, vùng p)</td></tr>
+      <tr><td>$n_{p0}=n_i^2/N_a$, $p_{n0}=n_i^2/N_d$</td><td>Hạt <b>thiểu số</b> ở cân bằng (electron ở p, lỗ trống ở n)</td></tr>
+      <tr><td>$n_p$, $p_n$</td><td>Tổng nồng độ hạt thiểu số khi có phân cực</td></tr>
+      <tr><td>$n_p(-x_p)$, $p_n(x_n)$</td><td>Hạt thiểu số tại <b>mép</b> vùng nghèo</td></tr>
+      <tr><td>$\delta n_p=n_p-n_{p0}$, $\delta p_n=p_n-p_{n0}$</td><td>Hạt thiểu số <b>dư</b> (excess)</td></tr></table></div>
+    <div class="box legend"><b>Hai điều dễ nhầm</b><ul>
+      <li>$n_{p0}$ là electron ở vùng <b>p</b> (thiểu số), không phải ở vùng n. Chỉ số đầu là loại hạt, chỉ số sau là vùng.</li>
+      <li>Phun mức thấp nghĩa là hạt thiểu số dư vẫn <i>nhỏ hơn nhiều</i> hạt đa số, dù đã lớn hơn nồng độ thiểu số cân bằng hàng bậc độ lớn.</li></ul></div>
+
+    <h3 data-lab="b95-lab-01">1.3. Mô hình tương tác: Ba trạng thái phân cực của tiếp giáp p-n</h3>
+    <!-- LAB-ANCHOR b95-lab-01
+         TODO: Giản đồ vùng năng lượng (Ec, Ev, EFp, EFn) + sơ đồ dòng hạt tải.
+         Điều khiển: thanh trượt Va từ -5 V đến ~Vbi (mặc định 0), Na, Nd (log), nhiệt độ.
+         Hiển thị: hàng rào e(Vbi - Va), tách mức Fermi eVa, mũi tên dòng electron/lỗ trống (độ dày ~ exp), độ rộng vùng nghèo W(Va).
+         Chế độ: nút nhanh "Cân bằng / Ngược / Thuận". -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Ba trạng thái phân cực là cùng một tiếp giáp ở ba mức điện áp; nhìn giản đồ vùng chuyển động sẽ thấy rõ.</li><li><b>Dùng để làm gì:</b> Thấy hàng rào $V_{bi}\mp V$ đổi theo điện áp, hai mức Fermi tách nhau $eV_a$, và dòng hạt đa số được phun hay bị chặn.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo thanh trượt $V_a$ từ âm sang dương; quan sát hàng rào hạ thấp, vùng nghèo hẹp lại và mũi tên dòng dày lên.</li><li><b>Liên hệ với phần khác:</b> Mục 2 tính định lượng nồng độ hạt phun vào ở mép vùng nghèo.</li></ul></div>
+
+    <div class="box key"><b>Mục 1 — Nhớ</b><ul>
+      <li>Thuận: hàng rào $V_{bi}-V_a$; ngược: $V_{bi}+V_R$.</li>
+      <li>Thuận: hạt đa số được <b>phun</b> thành hạt thiểu số ở bên kia; ngược: dòng rất nhỏ.</li>
+      <li>Điốt lý tưởng: đột biến, phun mức thấp, không sinh-tái hợp trong vùng nghèo.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 2 tính nồng độ hạt thiểu số tại mép vùng nghèo, rồi giải phương trình khuếch tán trong vùng trung hòa.</div>
+  </section>
+
+  <section>
+    <h2>2. Điều Kiện Biên Và Phân Bố Hạt Thiểu Số</h2>
+    <div class="bridge"><b>Nối từ Mục 1:</b> Ta biết hạt đa số bị phun sang bên kia. Câu hỏi định lượng: ngay mép vùng nghèo có bao nhiêu hạt thiểu số, và chúng giảm dần theo khoảng cách thế nào?</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Dòng điện của điốt chính là <i>độ dốc</i> của phân bố hạt thiểu số tại mép vùng nghèo. Có điều kiện biên và phân bố là có dòng.</div>
+
+    <h3>2.1. Điều kiện biên ở cân bằng nhiệt</h3>
+    <p>Ở cân bằng, hạt thiểu số bằng $n_{p0}=n_i^2/N_a$ và $p_{n0}=n_i^2/N_d$ (slide trang 9). Hàng rào $V_{bi}$ giữ cho nồng độ hai bên chênh nhau theo hàm mũ:</p>
+    <div class="f key">$$n_{p0}=n_{n0}\exp\!\left(-\frac{V_{bi}}{V_t}\right)$$<small>Hệ thức tương tự cho lỗ trống: $p_{n0}=p_{p0}\exp(-V_{bi}/V_t)$.</small></div>
+    <div class="box tip"><b>Kiểm tra nhanh.</b> Từ $V_{bi}=V_t\ln\dfrac{N_aN_d}{n_i^2}$ suy ra $e^{-V_{bi}/V_t}=\dfrac{n_i^2}{N_aN_d}$. Nhân với $n_{n0}=N_d$ được $\dfrac{n_i^2}{N_a}=n_{p0}$. Khớp đúng với $n_{p0}=n_i^2/N_a$.</div>
+
+    <h3>2.2. Điều kiện biên khi phân cực thuận</h3>
+    <p>Đặt $V_a$ thuận: hàng rào hạ từ $V_{bi}$ xuống $V_{bi}-V_a$. Với phun mức thấp, hạt đa số bên n ở mép vẫn xấp xỉ $N_d$, nên chỉ cần thay $V_{bi}\to V_{bi}-V_a$ trong hệ thức trên (slide trang 10):</p>
+    <div class="f">$$n_p(-x_p)=n_{n0}\exp\!\left(-\frac{V_{bi}-V_a}{V_t}\right)=n_{p0}\exp\!\left(\frac{V_a}{V_t}\right)$$</div>
+    <div class="f key">$$n_p(-x_p)=n_{p0}\,e^{V_a/V_t},\qquad p_n(x_n)=p_{n0}\,e^{V_a/V_t}$$<small>$n_p(-x_p)$, $p_n(x_n)$ ($\text{cm}^{-3}$): hạt thiểu số tại mép vùng nghèo phía p, phía n. $V_a$ (V): điện áp thuận. Dùng cả cho $V_a\lt0$.</small></div>
+
+    <h3>2.3. Ý nghĩa vật lý</h3>
+    <ul>
+      <li>$V_a=0$: nồng độ bằng giá trị cân bằng.</li>
+      <li>$V_a\gt0$: hạt thiểu số ở mép vùng nghèo tăng <b>theo hàm mũ</b>.</li>
+      <li>$V_a\lt0$: hạt thiểu số ở mép giảm, và tiến về $0$ khi $|V_a|\gg V_t$.</li>
+      <li>Chỉ cần tăng $V_a$ một chút, nồng độ tăng nhiều bậc độ lớn. Ở $300\text{ K}$, cứ tăng $\approx 60\text{ mV}$ thì $e^{V_a/V_t}$ tăng $\approx10$ lần, vì $V_t\ln10=0.0259\times2.303\approx59.6\text{ mV}$ (slide trang 11).</li>
+    </ul>
+
+    <div class="box tip"><b>Ví dụ 2.1 (bài bổ sung).</b> Si ở $300\text{ K}$, $N_d=10^{16}\text{ cm}^{-3}$, $n_i=1.5\times10^{10}\text{ cm}^{-3}$. Tìm $p_n(x_n)$ khi $V_a=0.6\text{ V}$ và kiểm tra điều kiện phun mức thấp.
+      <div class="step">
+        <span class="cmt">// Hạt thiểu số cân bằng:</span>
+        $$p_{n0}=\frac{n_i^2}{N_d}=\frac{2.25\times10^{20}}{10^{16}}=2.25\times10^{4}\ \text{cm}^{-3}$$
+        <span class="cmt">// Hệ số mũ ($0.6/0.0259=23.17$):</span>
+        $$e^{V_a/V_t}=e^{23.17}\approx1.15\times10^{10}$$
+        <span class="cmt">// Nồng độ tại mép vùng nghèo:</span>
+        $$p_n(x_n)=p_{n0}\,e^{V_a/V_t}=(2.25\times10^4)(1.15\times10^{10})=\mathbf{2.6\times10^{14}\ \text{cm}^{-3}}$$
+      </div>
+      <b>Kiểm tra:</b> $\delta p_n/N_d\approx2.6\times10^{14}/10^{16}=2.6\%\ll1$, nên phun mức thấp hợp lệ. Lưu ý lỗ trống tăng từ $2.25\times10^4$ lên $2.6\times10^{14}$, tức tăng hơn $10$ bậc độ lớn.</div>
+
+    <h3 data-lab="b95-lab-02">2.4. Mô hình tương tác: Hạt thiểu số tại mép vùng nghèo theo $V_a$</h3>
+    <!-- LAB-ANCHOR b95-lab-02
+         TODO: Đồ thị log10 của p_n(x_n) và n_p(-x_p) theo Va (từ -0.3 V đến ~0.8 V), kèm đường ngang p_n0, n_p0 và đường Nd, Na (mức hạt đa số).
+         Điều khiển: Na, Nd, T, vật liệu (Si/GaAs).
+         Hiển thị: hệ số exp(Va/Vt), "60 mV mỗi decade" (có thước đo kéo được), điểm Va mà p_n(x_n) chạm Nd (hết phun mức thấp).
+         Đối chiếu Ví dụ 2.1. -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Hàm mũ khó "cảm" bằng công thức; đồ thị log biến nó thành đường thẳng.</li><li><b>Dùng để làm gì:</b> Thấy mỗi $60\text{ mV}$ làm nồng độ tăng $10$ lần, và biết đến điện áp nào thì điều kiện phun mức thấp không còn đúng.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_a$, đổi $N_a$, $N_d$ và nhiệt độ; đối chiếu Ví dụ 2.1 ($2.6\times10^{14}\text{ cm}^{-3}$ ở $0.6\text{ V}$).</li></ul></div>
+
+    <h3>2.5. Phương trình khuếch tán trong vùng trung hòa</h3>
+    <p>Trong vùng n trung hòa, ($x\gt x_n$) ta giả thiết: trạng thái dừng, không có sinh hạt tải từ bên ngoài, điện trường xấp xỉ $0$ (slide trang 12). Khi đó phương trình liên tục cho lỗ trống dư thu về:</p>
+    <div class="f key">$$D_p\frac{d^2(\delta p_n)}{dx^2}-\frac{\delta p_n}{\tau_{p0}}=0\ \Rightarrow\ \frac{d^2(\delta p_n)}{dx^2}-\frac{\delta p_n}{L_p^2}=0\quad(x\gt x_n),\qquad L_p=\sqrt{D_p\tau_{p0}}$$<small>Tương tự ở vùng p: $\dfrac{d^2(\delta n_p)}{dx^2}-\dfrac{\delta n_p}{L_n^2}=0$ với $x\lt-x_p$, $L_n=\sqrt{D_n\tau_{n0}}$. $D$ ($\text{cm}^2/\text{s}$), $\tau$ (s), $L$ (cm).</small></div>
+
+    <div class="box explain"><b>Dẫn nghiệm (slide trang 13, 14)</b><ul><li><b>Vì sao có phần này:</b> Thấy nghiệm chỉ còn một hằng số sau khi dùng hai điều kiện biên.</li><li><b>Đọc thế nào:</b> bốn bước: nghiệm tổng quát, loại hằng số tăng vô hạn, dùng điều kiện biên ở mép, rút kết quả.</li></ul></div>
+    <p><b>Bước 1: nghiệm tổng quát.</b></p>
+    <div class="f">$$\delta p_n(x)=A\,e^{x/L_p}+B\,e^{-x/L_p}\quad(x\ge x_n)$$</div>
+    <p><b>Bước 2: điều kiện ở vô cực.</b> Xa tiếp giáp, hạt về giá trị cân bằng: $p_n(x\to+\infty)=p_{n0}$, tức $\delta p_n\to0$. Số hạng $e^{x/L_p}$ tăng vô hạn nên $A=0$.</p>
+    <p><b>Bước 3: điều kiện ở mép.</b> $\delta p_n(x_n)=p_{n0}\left[e^{V_a/V_t}-1\right]=B\,e^{-x_n/L_p}$.</p>
+    <p><b>Bước 4: ghép lại.</b></p>
+    <div class="f key">$$\delta p_n(x)=p_{n0}\left[e^{V_a/V_t}-1\right]e^{(x_n-x)/L_p}\quad(x\ge x_n)$$
+      $$\delta n_p(x)=n_{p0}\left[e^{V_a/V_t}-1\right]e^{(x_p+x)/L_n}\quad(x\le-x_p)$$<small>Phía p: số hạng $e^{-x/L_n}$ tăng vô hạn khi $x\to-\infty$ nên bị loại, chỉ còn $e^{x/L_n}$.</small></div>
+
+    <div class="box legend"><b>Nhận xét (slide trang 15)</b><ul>
+      <li>Hạt thiểu số dư <b>lớn nhất tại mép vùng nghèo</b>, rồi <b>giảm dần theo hàm mũ</b> khi rời xa tiếp giáp.</li>
+      <li>Sự giảm là do <b>tái hợp</b> với hạt đa số. $L_p$, $L_n$ là quãng đường đặc trưng mà hạt khuếch tán được trước khi tái hợp.</li>
+      <li>Gradien nồng độ này sinh ra dòng khuếch tán (Mục 3).</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 2.2 (bài bổ sung).</b> Si, $D_p=10\text{ cm}^2/\text{s}$, $\tau_{p0}=5\times10^{-7}\text{ s}$. Tìm $L_p$ và khoảng cách để $\delta p_n$ giảm còn $5\%$ giá trị ở mép.
+      <div class="step">
+        <span class="cmt">// Độ dài khuếch tán:</span>
+        $$L_p=\sqrt{D_p\tau_{p0}}=\sqrt{(10)(5\times10^{-7})}=2.24\times10^{-3}\text{ cm}=\mathbf{22.4\ \mu m}$$
+        <span class="cmt">// $e^{-s/L_p}=0.05\Rightarrow s=L_p\ln20\approx3L_p$:</span>
+        $$s=3\times22.4\ \mu\text{m}\approx\mathbf{67\ \mu m}$$
+      </div>
+      <b>Nhận xét:</b> tại $s=L_p$ giá trị còn $e^{-1}\approx37\%$. Vùng "có hạt phun vào" dày cỡ vài $L_p$, lớn hơn rất nhiều so với bề rộng vùng nghèo ($\sim1\ \mu\text{m}$).</div>
+
+    <h3 data-lab="b95-lab-03">2.6. Mô hình tương tác: Phân bố hạt thiểu số dư trong hai vùng trung hòa</h3>
+    <!-- LAB-ANCHOR b95-lab-03
+         TODO: Đồ thị np(x) và pn(x) theo x, có vùng nghèo ở giữa (-xp, 0, xn), đường p_n0, n_p0.
+         Điều khiển: Va, Lp, Ln (hoặc Dp, Dn, tau), Na, Nd; công tắc thang tuyến tính/log theo trục y.
+         Hiển thị: các điểm tại mép, giá trị δp_n(xn), đoạn "L_p" đánh dấu mức 1/e, tô vùng diện tích (điện tích tích trữ). -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Phân bố mũ giảm dần là trái tim của lý thuyết điốt.</li><li><b>Dùng để làm gì:</b> Thấy hạt phun vào "đi" được bao xa và tại sao độ dốc tại mép quyết định dòng.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_a$ và $\tau$; quan sát đường cong cao lên và dài ra; chuyển thang log để thấy đường thẳng.</li></ul></div>
+
+    <div class="box key"><b>Mục 2 — Nhớ</b><ul>
+      <li>$n_p(-x_p)=n_{p0}e^{V_a/V_t}$, $p_n(x_n)=p_{n0}e^{V_a/V_t}$; cứ $\approx60\text{ mV}$ tăng $10$ lần.</li>
+      <li>$\delta p_n(x)=p_{n0}[e^{V_a/V_t}-1]\,e^{(x_n-x)/L_p}$; $L_p=\sqrt{D_p\tau_{p0}}$.</li>
+      <li>Hạt dư lớn nhất ở mép, giảm mũ vì tái hợp.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 3 lấy đạo hàm phân bố này tại mép vùng nghèo để ra dòng điện, rồi ghép thành phương trình điốt.</div>
+  </section>
+
+  <section>
+    <h2>3. Dòng Khuếch Tán Và Phương Trình Điốt Lý Tưởng</h2>
+    <div class="bridge"><b>Nối từ Mục 2:</b> Có phân bố hạt thiểu số rồi, dòng khuếch tán chỉ là đạo hàm của nó nhân với $eD$.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Đây là kết quả trung tâm của chương: phương trình điốt $I=I_s[e^{V_a/V_t}-1]$ và công thức tính $I_s$ từ thông số vật liệu.</div>
+
+    <h3>3.1. Dòng tại mép vùng nghèo</h3>
+    <p>Tại mép phía n ($x=x_n$), dòng khuếch tán của lỗ trống thiểu số (slide trang 16):</p>
+    <div class="f">$$J_p(x_n)=-eD_p\frac{dp_n}{dx}\Big|_{x=x_n}=\frac{eD_pp_{n0}}{L_p}\left[e^{V_a/V_t}-1\right]$$</div>
+    <p>Đây là dòng do lỗ trống phun từ p sang n. Tại mép phía p ($x=-x_p$), dòng electron thiểu số:</p>
+    <div class="f">$$J_n(-x_p)=eD_n\frac{dn_p}{dx}\Big|_{x=-x_p}=\frac{eD_nn_{p0}}{L_n}\left[e^{V_a/V_t}-1\right]$$</div>
+    <div class="box legend"><b>Lưu ý ký hiệu</b><ul>
+      <li>Hai dòng này đều chảy theo chiều $+x$ (từ p sang n) dù hạt mang điện khác dấu: electron đi sang trái mang dòng sang phải.</li>
+      <li>Dòng tính ở mép bằng đạo hàm của $\delta p_n$ (dùng nghiệm ở Mục 2.5): đạo hàm của $e^{(x_n-x)/L_p}$ cho thừa số $-1/L_p$.</li></ul></div>
+
+    <h3>3.2. Dòng tổng và dòng bão hòa ngược</h3>
+    <p>Ta giả thiết không có sinh-tái hợp trong vùng nghèo, nên $J_n$ và $J_p$ <b>không đổi qua vùng nghèo</b>. Dòng tổng là tổng hai dòng tại hai mép:</p>
+    <div class="f">$$J=J_p(x_n)+J_n(-x_p)=\left[\frac{eD_pp_{n0}}{L_p}+\frac{eD_nn_{p0}}{L_n}\right]\left[e^{V_a/V_t}-1\right]$$</div>
+    <div class="f key">$$J=J_s\left[e^{V_a/V_t}-1\right],\qquad J_s=\frac{eD_pp_{n0}}{L_p}+\frac{eD_nn_{p0}}{L_n}=en_i^2\left[\frac{D_p}{L_pN_d}+\frac{D_n}{L_nN_a}\right]$$
+      $$I=I_s\left[e^{V_a/V_t}-1\right],\qquad I_s=AJ_s$$<small>$J_s$ ($\text{A/cm}^2$): mật độ dòng bão hòa ngược. $I_s$ (A): dòng bão hòa ngược. $A$ ($\text{cm}^2$): diện tích tiếp giáp.</small></div>
+    <div class="box legend"><b>Đọc kết quả</b><ul>
+      <li>$J_s\propto n_i^2$: phụ thuộc <b>rất mạnh vào nhiệt độ</b> (Mục 4.3).</li>
+      <li>$J_s$ nhỏ khi pha tạp nặng ($N_a,N_d$ lớn làm $n_{p0}$, $p_{n0}$ nhỏ).</li>
+      <li>Tỉ số dòng lỗ trống trên dòng electron: $\dfrac{J_p}{J_n}=\dfrac{D_pL_nN_a}{D_nL_pN_d}$. Phía pha tạp <b>nặng hơn</b> phun hạt vào phía nhẹ nhiều hơn, nên dòng điốt $p^+n$ chủ yếu là dòng lỗ trống.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 3.1 (bài bổ sung).</b> Si ở $300\text{ K}$, $N_a=N_d=10^{16}\text{ cm}^{-3}$, $D_n=25$, $D_p=10\text{ cm}^2/\text{s}$, $\tau_{n0}=\tau_{p0}=5\times10^{-7}\text{ s}$, $A=10^{-4}\text{ cm}^2$. Tìm $I_s$ và dòng ở $V_a=0.6\text{ V}$.
+      <div class="step">
+        <span class="cmt">// Hạt thiểu số cân bằng và độ dài khuếch tán:</span>
+        $$n_{p0}=p_{n0}=2.25\times10^{4}\text{ cm}^{-3},\quad L_p=22.4\ \mu\text{m},\quad L_n=\sqrt{(25)(5\times10^{-7})}=35.4\ \mu\text{m}$$
+        <span class="cmt">// Mật độ dòng bão hòa (đổi $\mu\text{m}\to\text{cm}$: $L_p=2.236\times10^{-3}$, $L_n=3.536\times10^{-3}$):</span>
+        $$J_s=1.6\times10^{-19}\left[\frac{(10)(2.25\times10^4)}{2.236\times10^{-3}}+\frac{(25)(2.25\times10^4)}{3.536\times10^{-3}}\right]=4.16\times10^{-11}\ \text{A/cm}^2$$
+        <span class="cmt">// Nhân diện tích:</span>
+        $$I_s=J_sA=\mathbf{4.16\times10^{-15}\ A}$$
+        <span class="cmt">// Dòng ở $0.6\text{ V}$ ($e^{23.17}=1.15\times10^{10}$):</span>
+        $$I=I_s\left(e^{V_a/V_t}-1\right)=(4.16\times10^{-15})(1.15\times10^{10})\approx\mathbf{4.8\times10^{-5}\ A=48\ \mu A}$$
+      </div>
+      <b>Nhận xét:</b> lỗ trống chiếm $\approx39\%$ và electron chiếm $\approx61\%$ dòng tổng, vì $D_n/L_n$ lớn hơn $D_p/L_p$ ở cùng pha tạp.</div>
+
+    <h3>3.3. Đặc tuyến thuận và ngược</h3>
+    <div class="tw"><table><tr><th>Chế độ</th><th>Điều kiện</th><th>Dạng đặc tuyến</th></tr>
+      <tr><td><b>Thuận</b></td><td>$V_a\gg V_t$ (khoảng $V_a\gt0.1\text{ V}$ thì số $-1$ có thể bỏ)</td><td>$I\approx I_s\,e^{V_a/V_t}$: <b>tăng theo hàm mũ</b></td></tr>
+      <tr><td><b>Ngược</b></td><td>$V_a\lt0$, $|V_a|\gg V_t$</td><td>$I\approx-I_s$: bão hòa, rất nhỏ</td></tr></table></div>
+
+    <div class="box tip"><b>Ví dụ 3.2 (bài bổ sung).</b> Với điốt ở Ví dụ 3.1, tìm $V_a$ để $I=1\text{ mA}$ và độ tăng $V_a$ để dòng tăng $100$ lần.
+      <div class="step">
+        <span class="cmt">// Dùng $I\approx I_se^{V_a/V_t}$ (thuận, bỏ $-1$):</span>
+        $$V_a=V_t\ln\frac{I}{I_s}=0.0259\ln\frac{10^{-3}}{4.16\times10^{-15}}=0.0259\times26.2=\mathbf{0.679\ V}$$
+        <span class="cmt">// Dòng tăng $100$ lần:</span>
+        $$\Delta V_a=V_t\ln100=0.0259\times4.605=\mathbf{0.119\ V}$$
+      </div>
+      <b>Nhận xét:</b> điện áp thuận của điốt Si gần như "dính" ở cỡ $0.6$ đến $0.7\text{ V}$ cho mọi dòng thông dụng, vì dòng đổi $100$ lần mà áp chỉ đổi $\approx0.12\text{ V}$.</div>
+
+    <h3 data-lab="b95-lab-04">3.4. Mô hình tương tác: Đặc tuyến I-V của điốt lý tưởng</h3>
+    <!-- LAB-ANCHOR b95-lab-04
+         TODO: Đồ thị I theo Va, hai chế độ trục: tuyến tính (-0.5..0.8 V) và log10|I|.
+         Điều khiển: Na, Nd, Dn, Dp, tau_n0, tau_p0, A, T.
+         Hiển thị: Is, Js, tỉ lệ J_p/J_n, điểm "I ứng với Va nhập vào", đường I ≈ Is exp(Va/Vt) và I ≈ -Is.
+         Đối chiếu Ví dụ 3.1 (Is = 4.16e-15 A) và Ví dụ 3.2 (0.679 V ở 1 mA). -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Cùng một đường cong trông khác hẳn ở thang tuyến tính và thang log.</li><li><b>Dùng để làm gì:</b> Thấy "điện áp mở", độ dốc $60\text{ mV/decade}$ và đường bão hòa ngược $-I_s$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Đổi $N_a$, $N_d$, $\tau$ để xem $I_s$ thay đổi và đặc tuyến dịch sang trái hay phải; đối chiếu Ví dụ 3.1 và 3.2.</li></ul></div>
+
+    <div class="box key"><b>Mục 3 — Nhớ</b><ul>
+      <li>$J_p(x_n)=\dfrac{eD_pp_{n0}}{L_p}[e^{V_a/V_t}-1]$, $J_n(-x_p)=\dfrac{eD_nn_{p0}}{L_n}[e^{V_a/V_t}-1]$; $J=J_p+J_n$.</li>
+      <li>$I=I_s[e^{V_a/V_t}-1]$, $I_s=AJ_s$, $J_s\propto n_i^2$.</li>
+      <li>Thuận: $I\approx I_se^{V_a/V_t}$; ngược: $I\approx-I_s$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 4 xem dòng phân bố ra sao trong điốt, nhiệt độ ảnh hưởng thế nào, và điều gì xảy ra nếu điốt quá ngắn.</div>
+  </section>
+
+  <section>
+    <h2>4. Thành Phần Dòng, Nhiệt Độ Và Điốt Dài/Ngắn</h2>
+    <div class="bridge"><b>Nối từ Mục 3:</b> Ta mới tính dòng tại hai mép vùng nghèo. Nhưng dòng tổng phải đều khắp điốt. Ở xa mép, dòng được mang bởi ai? Và công thức có còn đúng khi vùng trung hòa rất ngắn không?</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Hiểu dòng liên tục thế nào giúp em vững khái niệm "hạt thiểu số chuyển thành dòng hạt đa số", nền tảng của transistor lưỡng cực. Phần nhiệt độ cho thấy vì sao điốt dùng làm cảm biến nhiệt được.</div>
+
+    <h3>4.1. Hạt thiểu số "biến thành" dòng hạt đa số</h3>
+    <p>Trong vùng n trung hòa, dòng lỗ trống thiểu số giảm dần theo cùng quy luật mũ với hạt dư (slide trang 19):</p>
+    <div class="f key">$$J_p(x)=J_p(x_n)\,e^{-(x-x_n)/L_p},\qquad J_n^{\text{(đa số)}}(x)=J-J_p(x)\quad(x\gt x_n)$$<small>$J$: dòng tổng, <b>không đổi</b> khắp điốt. Phần dòng lỗ trống bị mất đi do tái hợp được bù bằng dòng electron đa số tăng lên.</small></div>
+    <div class="box key"><b>Ý chính:</b> dòng hạt thiểu số <b>không biến mất</b>; nó <b>chuyển hóa</b> thành dòng hạt đa số nhờ tái hợp. Vùng p đối xứng: dòng electron thiểu số giảm, dòng lỗ trống đa số tăng.</div>
+
+    <h3 data-lab="b95-lab-05">4.2. Mô hình tương tác: Thành phần dòng dọc điốt</h3>
+    <!-- LAB-ANCHOR b95-lab-05
+         TODO: Đồ thị J(x) với 4 đường: J_n(x), J_p(x), và đường ngang J_total; đoạn đứt nét cho phần dòng đa số; vùng nghèo hai mép -xp, xn.
+         Điều khiển: Va, Lp, Ln, Na/Nd (đổi tỉ lệ J_p/J_n).
+         Hiển thị: tại mỗi x, J_n + J_p = J_total (thanh xếp chồng); chú thích "tái hợp biến thiểu số thành đa số". -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Dòng tổng không đổi nhưng từng thành phần đổi theo vị trí; nhìn đồ thị xếp chồng sẽ hiểu.</li><li><b>Dùng để làm gì:</b> Thấy dòng thiểu số giảm mũ, dòng đa số tăng bù lại, tổng luôn là hằng số.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $L_p$, $L_n$ và tỉ số pha tạp; chọn một điểm $x$ để xem thanh xếp chồng.</li></ul></div>
+
+    <h3>4.3. Ảnh hưởng của nhiệt độ</h3>
+    <p>Dòng bão hòa phụ thuộc mạnh vào nồng độ hạt tải riêng (slide trang 20):</p>
+    <div class="f key">$$I_s\propto n_i^2\propto T^3\exp\!\left(-\frac{E_g}{kT}\right)$$<small>Với Si, $I_s$ tăng khoảng $4$ đến $5$ lần cho mỗi $10\ ^\circ\text{C}$ tăng nhiệt độ (slide ghi xấp xỉ $4$ lần).</small></div>
+    <p>Hệ quả: với <b>dòng thuận không đổi</b>, điện áp thuận <b>giảm</b> khi nhiệt độ tăng. Từ $V_a=V_t\ln(I/I_s)$ lấy đạo hàm theo $T$:</p>
+    <div class="f">$$\frac{dV_a}{dT}=\frac{V_a-3V_t-E_g/e}{T}\approx\frac{0.65-0.078-1.12}{300}\approx-1.8\ \text{mV/}^\circ\text{C}$$</div>
+    <p>Đúng với số liệu của slide: hệ số nhiệt điện áp thuận của Si thường vào khoảng $-1.7$ đến $-2.0\text{ mV/}^\circ\text{C}$.</p>
+
+    <div class="box tip"><b>Ví dụ 4.1 (bài bổ sung).</b> Điốt ở Ví dụ 3.1 ($I_s=4.16\times10^{-15}\text{ A}$ ở $300\text{ K}$, $V_a=0.679\text{ V}$ tại $1\text{ mA}$). Nhiệt độ tăng lên $310\text{ K}$; lấy $I_s$ tăng $4$ lần. Tìm $V_a$ mới tại $1\text{ mA}$.
+      <div class="step">
+        <span class="cmt">// $V_t(310\text{ K})=8.617\times10^{-5}\times310=0.0267\text{ V}$; $I_s'=4\times4.16\times10^{-15}=1.66\times10^{-14}\text{ A}$:</span>
+        $$V_a'=0.0267\ln\frac{10^{-3}}{1.66\times10^{-14}}=0.0267\times24.82=\mathbf{0.663\ V}$$
+      </div>
+      <b>Nhận xét:</b> $V_a$ giảm $0.679-0.663\approx16\text{ mV}$ trong $10\ ^\circ\text{C}$, tức $\approx-1.6\text{ mV/}^\circ\text{C}$. Cùng bậc độ lớn với số liệu $-1.7$ đến $-2.0\text{ mV/}^\circ\text{C}$ của slide (chênh nhẹ vì hệ số $4$ chỉ xấp xỉ).</div>
+
+    <h3>4.4. Điốt dài và điốt ngắn</h3>
+    <p>Mọi kết quả ở trên giả thiết các vùng trung hòa <b>dài hơn nhiều</b> $L_p$, $L_n$ (slide trang 21). Gọi $W_n$ là bề rộng vùng n trung hòa tính từ mép vùng nghèo đến tiếp xúc ohmic.</p>
+    <div class="tw"><table><tr><th></th><th>Điốt dài ($W_n\gg L_p$)</th><th>Điốt ngắn ($W_n\ll L_p$)</th></tr>
+      <tr><td><b>Hạt dư</b></td><td>Tắt gần hết trước khi tới tiếp xúc</td><td>Tới được tiếp xúc trước khi tái hợp đáng kể</td></tr>
+      <tr><td><b>Điều kiện biên ở tiếp xúc</b></td><td>$\delta p_n\to0$ khi $x\to\infty$</td><td>$p_n(x_n+W_n)=p_{n0}$ (tiếp xúc ohmic, tái hợp bề mặt rất lớn)</td></tr>
+      <tr><td><b>Phân bố</b></td><td>Mũ giảm với $L_p$</td><td>Gần <b>tuyến tính</b></td></tr></table></div>
+    <div class="f key">$$\delta p_n(x)=p_{n0}\left[e^{V_a/V_t}-1\right]\frac{x_n+W_n-x}{W_n},\qquad J_p=\frac{eD_pp_{n0}}{W_n}\left[e^{V_a/V_t}-1\right]\quad(W_n\ll L_p)$$<small>So với điốt dài, chỉ cần thay $L_p$ bằng $W_n$ trong công thức dòng.</small></div>
+    <div class="box legend"><b>Hệ quả</b><ul>
+      <li>Điốt ngắn có dòng lớn hơn điốt dài khoảng $L_p/W_n$ lần ở cùng $V_a$ (thay $L_p\to W_n$ làm mẫu số nhỏ đi).</li>
+      <li>Ví dụ với $L_p=22.4\ \mu\text{m}$ và $W_n=2\ \mu\text{m}$: dòng lỗ trống tăng $\approx11$ lần.</li></ul></div>
+
+    <h3 data-lab="b95-lab-06">4.5. Mô hình tương tác: Điốt dài và điốt ngắn</h3>
+    <!-- LAB-ANCHOR b95-lab-06
+         TODO: Đồ thị δp_n(x) cho vùng n có bề rộng W_n thay đổi; hai đường: nghiệm mũ (điốt dài) và nghiệm tuyến tính (điốt ngắn) cùng Va.
+         Điều khiển: W_n (từ 0.1 Lp đến 10 Lp), Lp, Va.
+         Hiển thị: tỉ số dòng J_p(ngắn)/J_p(dài), nhãn tự động "dài/ngắn/chuyển tiếp" theo W_n/L_p; điều kiện biên tại x_n + W_n. -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Công thức dòng đổi dạng khi vùng trung hòa ngắn; xem hai nghiệm cạnh nhau sẽ thấy chỗ khác.</li><li><b>Dùng để làm gì:</b> Biết khi nào dùng $L_p$, khi nào dùng $W_n$ trong công thức dòng.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $W_n$ từ rất nhỏ đến rất lớn so với $L_p$; quan sát đường tuyến tính hòa vào đường mũ.</li></ul></div>
+
+    <div class="box key"><b>Mục 4 — Nhớ</b><ul>
+      <li>Dòng tổng không đổi; thiểu số giảm mũ, đa số tăng bù lại: $J_n^{\text{đa số}}=J-J_p(x)$.</li>
+      <li>$I_s\propto n_i^2$: tăng khoảng $4$ đến $5$ lần mỗi $10\ ^\circ\text{C}$; $V_a$ (dòng không đổi) giảm cỡ $-1.7$ đến $-2.0\text{ mV/}^\circ\text{C}$.</li>
+      <li>Điốt ngắn ($W_n\ll L_p$): phân bố tuyến tính, thay $L_p\to W_n$ trong $J_p$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Điốt thật không hoàn toàn theo mô hình này. Mục 5 chỉ ra ba hiệu ứng làm đặc tuyến lệch lý tưởng.</div>
+  </section>
+
+  <section>
+    <h2>5. Dòng Không Lý Tưởng: Sinh, Tái Hợp Và Phun Mức Cao</h2>
+    <div class="bridge"><b>Nối từ Mục 4:</b> Đo một điốt Si thật trên đồ thị $\ln I$ theo $V_a$, ta không thấy một đường thẳng duy nhất mà có ba đoạn dốc khác nhau. Mục này giải thích vì sao.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Nhận ra vùng nào của đặc tuyến chịu cơ chế nào, đọc hệ số lý tưởng $n$ từ số đo, và biết vì sao dòng ngược thật không bão hòa phẳng.</div>
+
+    <h3>5.1. Vì sao điốt thật lệch lý tưởng</h3>
+    <p>Theo slide trang 22, có năm nguyên nhân: (1) sinh hạt tải trong vùng nghèo khi phân cực ngược; (2) tái hợp trong vùng nghèo khi phân cực thuận; (3) phun mức cao ở dòng thuận lớn; (4) điện trở nối tiếp; (5) hiệu ứng bề mặt và dòng rò. Mục này xét ba nguyên nhân đầu; điện trở nối tiếp ở Mục 6.</p>
+
+    <h3>5.2. Dòng sinh khi phân cực ngược</h3>
+    <p>Khi phân cực ngược, điện trường quét sạch hạt tải khỏi vùng nghèo, nên $n,p\ll n_i$. Các <b>bẫy</b> (trap) trong vùng cấm liên tục sinh cặp electron-lỗ trống; điện trường tách cặp và quét chúng về hai phía, tạo thêm dòng ngược (slide trang 23).</p>
+    <p>Khi đó tốc độ tái hợp ròng âm, nghĩa là có <b>sinh</b> thuần:</p>
+    <div class="f">$$R=-\frac{n_i}{2\tau_0}\equiv-G,\qquad \tau_0=\frac{\tau_{p0}+\tau_{n0}}{2}$$</div>
+    <p>Sinh đều trên toàn bề rộng vùng nghèo $W$, nhân với $e$:</p>
+    <div class="f key">$$J_{\text{gen}}=eGW=\frac{en_iW}{2\tau_0},\qquad J_R=J_s+J_{\text{gen}}$$<small>$J_{\text{gen}}$ ($\text{A/cm}^2$): dòng sinh trong vùng nghèo. $W$: bề rộng vùng nghèo (Buổi 9). $J_R$: dòng ngược tổng.</small></div>
+    <div class="box legend"><b>Đặc điểm (slide trang 24)</b><ul>
+      <li>$J_s$ lý tưởng gần như không phụ thuộc điện áp ngược.</li>
+      <li>$J_{\text{gen}}\propto W\propto\sqrt{V_{bi}+V_R}$: <b>tăng theo $V_R$</b>, nên dòng ngược thật <b>không bão hòa hoàn toàn</b>.</li>
+      <li>Ở nhiều điốt Si, $J_{\text{gen}}$ <b>lớn hơn</b> $J_s$ lý tưởng.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 5.1 (bài bổ sung).</b> Điốt Si ở Ví dụ 3.1 ($N_a=N_d=10^{16}\text{ cm}^{-3}$, $J_s=4.16\times10^{-11}\text{ A/cm}^2$, $\tau_0=5\times10^{-7}\text{ s}$). Tìm $J_{\text{gen}}$ ở $V_R=5\text{ V}$ và so với $J_s$.
+      <div class="step">
+        <span class="cmt">// $V_{bi}=0.0259\ln\dfrac{10^{32}}{2.25\times10^{20}}=0.695\text{ V}$. Bề rộng vùng nghèo ($\epsilon_s=1.035\times10^{-12}\text{ F/cm}$):</span>
+        $$W=\left\{\frac{2(1.035\times10^{-12})(5.695)}{1.6\times10^{-19}}\cdot\frac{2\times10^{16}}{10^{32}}\right\}^{1/2}=1.21\times10^{-4}\text{ cm}=1.21\ \mu\text{m}$$
+        <span class="cmt">// Dòng sinh:</span>
+        $$J_{\text{gen}}=\frac{(1.6\times10^{-19})(1.5\times10^{10})(1.21\times10^{-4})}{2(5\times10^{-7})}\approx\mathbf{2.9\times10^{-7}\ \text{A/cm}^2}$$
+      </div>
+      <b>Nhận xét:</b> $J_{\text{gen}}/J_s\approx7\times10^{3}$: dòng ngược thật <b>lớn hơn hàng nghìn lần</b> dòng bão hòa lý tưởng. Tăng $V_R$ lên $25\text{ V}$, $W$ lên $2.58\ \mu\text{m}$ và $J_{\text{gen}}\approx6.2\times10^{-7}\text{ A/cm}^2$ (tăng $\sqrt{25.7/5.7}\approx2.1$ lần): dòng ngược <b>tăng theo</b> $V_R$.</div>
+
+    <h3>5.3. Dòng tái hợp khi phân cực thuận</h3>
+    <p>Khi phân cực thuận, electron và lỗ trống đều bị phun vào vùng nghèo; một phần tái hợp qua bẫy ngay trong vùng nghèo và <b>không đi vào</b> vùng trung hòa, nên cần thêm dòng cấp cho sự tái hợp đó (slide trang 25). Tốc độ tái hợp lớn nhất ở giữa vùng nghèo, nơi $n\approx p\approx n_i\,e^{V_a/2V_t}$ (vì $np=n_i^2e^{V_a/V_t}$). Từ đó ước lượng (slide trang 26):</p>
+    <div class="f key">$$J_{\text{rec}}=\frac{eWn_i}{2\tau_0}\,e^{V_a/2V_t}=J_{r0}\,e^{V_a/2V_t}$$<small>Khác dòng khuếch tán lý tưởng $J_D=J_se^{V_a/V_t}$ ở chỗ số mũ có <b>hệ số $2$ ở mẫu</b>.</small></div>
+    <p>Gộp hai thành phần bằng <b>hệ số lý tưởng</b> $n$:</p>
+    <div class="f key">$$I=I_s\left[\exp\!\left(\frac{V_a}{nV_t}\right)-1\right],\qquad 1\le n\le2$$<small>$n\approx1$: khuếch tán chiếm ưu thế (áp thuận cao hơn); $n\approx2$: tái hợp chiếm ưu thế (áp thuận thấp); $1\lt n\lt2$ ở vùng chuyển tiếp. Đọc $n$ từ đồ thị: cứ $n\times60\text{ mV}$ thì dòng tăng $10$ lần.</small></div>
+
+    <div class="box tip"><b>Ví dụ 5.2 (bài bổ sung).</b> Với điốt ở Ví dụ 3.1, lấy $W\approx0.3\ \mu\text{m}$ ở điện áp thuận thấp. Ước lượng $V_a$ mà tại đó $J_{\text{rec}}=J_D$.
+      <div class="step">
+        <span class="cmt">// Hệ số tái hợp:</span>
+        $$J_{r0}=\frac{eWn_i}{2\tau_0}=\frac{(1.6\times10^{-19})(3\times10^{-5})(1.5\times10^{10})}{2(5\times10^{-7})}=7.2\times10^{-8}\ \text{A/cm}^2$$
+        <span class="cmt">// Cho $J_se^{V_a/V_t}=J_{r0}e^{V_a/2V_t}$, suy ra $e^{V_a/2V_t}=J_{r0}/J_s$:</span>
+        $$V_a=2V_t\ln\frac{J_{r0}}{J_s}=2(0.0259)\ln\frac{7.2\times10^{-8}}{4.16\times10^{-11}}=2(0.0259)(7.46)\approx\mathbf{0.39\ V}$$
+      </div>
+      <b>Nhận xét:</b> dưới khoảng $0.4\text{ V}$ tái hợp chiếm ưu thế ($n\approx2$); trên đó khuếch tán chiếm ưu thế ($n\approx1$). Đây là lý do điốt Si ở dòng rất nhỏ trông "kém lý tưởng".</div>
+
+    <h3>5.4. Phun mức cao</h3>
+    <p>Khi $V_a$ lớn, nồng độ hạt thiểu số dư tiến sát hoặc vượt nồng độ hạt đa số: điều kiện phun mức thấp không còn đúng (slide trang 27). Để trung hòa điện, $\Delta n\approx\Delta p$ và vì $np=n_i^2e^{V_a/V_t}$ nên:</p>
+    <div class="f key">$$\Delta n=\Delta p\approx n_i\,e^{V_a/2V_t},\qquad I\propto\exp\!\left(\frac{V_a}{2V_t}\right)$$</div>
+    <div class="box tip"><b>Ví dụ 5.3 (bài bổ sung).</b> Với $N_d=10^{16}\text{ cm}^{-3}$, tìm $V_a$ mà $\Delta p$ ở mép bằng $N_d$ (bắt đầu phun mức cao).
+      <div class="step">
+        <span class="cmt">// Từ $p_{n0}e^{V_a/V_t}=N_d$ với $p_{n0}=n_i^2/N_d$:</span>
+        $$V_a=2V_t\ln\frac{N_d}{n_i}=2(0.0259)\ln\frac{10^{16}}{1.5\times10^{10}}=2(0.0259)(13.41)\approx\mathbf{0.695\ V}$$
+      </div>
+      <b>Nhận xét:</b> giá trị này chính là $V_{bi}$ của tiếp giáp đối xứng $N_a=N_d=10^{16}\text{ cm}^{-3}$ (Mục 5.2): phun mức cao bắt đầu khi hàng rào $V_{bi}-V_a$ gần như bị xóa hết.</div>
+
+    <h3>5.5. Ba vùng của đặc tuyến thuận</h3>
+    <p>Gộp lại, đặc tuyến thuận trên thang $\ln I$ gồm ba vùng (slide trang 28):</p>
+    <div class="tw"><table><tr><th>Vùng</th><th>Điện áp</th><th>Cơ chế</th><th>Quy luật</th></tr>
+      <tr><td><b>a</b></td><td>Thấp</td><td>Tái hợp trong vùng nghèo</td><td>$I\propto e^{V/2V_t}$ ($n\approx2$)</td></tr>
+      <tr><td><b>b</b></td><td>Trung bình</td><td>Khuếch tán lý tưởng</td><td>$I\propto e^{V/V_t}$ ($n\approx1$)</td></tr>
+      <tr><td><b>c</b></td><td>Cao</td><td>Phun mức cao và điện trở nối tiếp</td><td>Dòng tăng <b>chậm hơn</b> lý tưởng</td></tr></table></div>
+
+    <h3 data-lab="b95-lab-07">5.6. Mô hình tương tác: Ba vùng của đặc tuyến thuận</h3>
+    <!-- LAB-ANCHOR b95-lab-07
+         TODO: Đồ thị log10(I) theo Va, ba đường thành phần (khuếch tán Is e^(Va/Vt), tái hợp Ir0 e^(Va/2Vt), mức cao) và đường tổng; tô màu 3 vùng a/b/c.
+         Điều khiển: Is, Ir0 (hoặc W, tau0), nồng độ Nd (quyết định điểm vào mức cao), rs (bật/tắt điện trở nối tiếp), T.
+         Hiển thị: n(Va) cục bộ = (1/Vt)/(dlnI/dV), hai điểm giao (a→b, b→c), thước "60 mV/decade" và "120 mV/decade".
+         Đối chiếu Ví dụ 5.2 (≈0.39 V) và 5.3 (≈0.695 V). -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Ba vùng là cách kỹ sư đọc số đo điốt thật; nhìn đồ thị thấy ngay vì sao độ dốc đổi.</li><li><b>Dùng để làm gì:</b> Gán cơ chế cho từng vùng và đọc $n$ từ độ dốc.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Đổi $W$, $\tau_0$, $N_d$ và bật/tắt $r_s$; quan sát điểm chuyển giữa các vùng dịch chuyển; đối chiếu Ví dụ 5.2 và 5.3.</li></ul></div>
+
+    <h3 data-lab="b95-lab-08">5.7. Mô hình tương tác: Dòng sinh khi phân cực ngược</h3>
+    <!-- LAB-ANCHOR b95-lab-08
+         TODO: Đồ thị |J_R| theo VR (0..50 V) gồm Js (đường ngang), J_gen(VR) ∝ sqrt(Vbi+VR), và tổng J_R; thang log hoặc tuyến tính.
+         Điều khiển: Na, Nd, tau0, T.
+         Hiển thị: W(VR), tỉ số J_gen/Js, điện áp mà J_gen = Js (nếu có), cảnh báo khi VR tiến gần VB (liên hệ Buổi 9).
+         Đối chiếu Ví dụ 5.1 (2.9e-7 A/cm² tại 5 V). -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Dòng ngược thật không phẳng; đồ thị cho thấy nó "trượt" lên theo $\sqrt{V_R}$.</li><li><b>Dùng để làm gì:</b> So sánh $J_s$ lý tưởng với $J_{\text{gen}}$, thấy vai trò của $W$ và $\tau_0$.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $V_R$ và $\tau_0$; đối chiếu Ví dụ 5.1.</li></ul></div>
+
+    <div class="box key"><b>Mục 5 — Nhớ</b><ul>
+      <li>Ngược: $J_R=J_s+J_{\text{gen}}$, $J_{\text{gen}}=\dfrac{en_iW}{2\tau_0}\propto W$: <b>tăng theo $V_R$</b>; ở Si thường lớn hơn $J_s$.</li>
+      <li>Thuận: $J_{\text{rec}}=\dfrac{eWn_i}{2\tau_0}e^{V_a/2V_t}$; tổng $I=I_s[e^{V_a/nV_t}-1]$, $1\le n\le2$.</li>
+      <li>Phun mức cao: $\Delta n=\Delta p\approx n_ie^{V_a/2V_t}$, $I\propto e^{V_a/2V_t}$.</li>
+      <li>Ba vùng: tái hợp ($n\approx2$), lý tưởng ($n\approx1$), mức cao + $r_s$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 6 xét điốt dưới tín hiệu xoay chiều nhỏ chồng lên điểm làm việc một chiều: mô hình $r_d$, $C_d$, $C_j$, $r_s$.</div>
+  </section>
+
+  <section>
+    <h2>6. Mô Hình Tín Hiệu Nhỏ Của Điốt</h2>
+    <div class="bridge"><b>Nối từ Mục 5:</b> Trong mạch khuếch đại, điốt chịu điện áp một chiều $V_0$ cộng một tín hiệu xoay chiều bé. Ta muốn thay điốt phi tuyến bằng vài phần tử tuyến tính quanh điểm làm việc.</div>
+    <div class="box why"><b>Học phần này để làm gì?</b> Mô hình này là cầu nối từ vật lý bán dẫn sang <b>phân tích mạch</b>: $r_d$ cho biết điện trở xoay chiều, $C_d$ và $C_j$ cho biết điốt "chậm" thế nào ở tần số cao.</div>
+
+    <h3>6.1. Tuyến tính hóa quanh điểm Q</h3>
+    <p>Điện áp trên điốt gồm thành phần một chiều và thành phần xoay chiều nhỏ (slide trang 29):</p>
+    <div class="f">$$v_D(t)=V_0+v_d(t)$$<small>$V_0$: điện áp phân cực một chiều. $v_d(t)$: điện áp xoay chiều biên độ nhỏ. Điểm làm việc tĩnh: $Q(V_0,I_{DQ})$.</small></div>
+    <p>Nếu $v_d$ đủ nhỏ, đặc tuyến phi tuyến có thể được <b>tuyến tính hóa</b> quanh $Q$: một đoạn thẳng có hệ số góc bằng đạo hàm tại $Q$.</p>
+
+    <h3>6.2. Điện dẫn và điện trở khuếch tán</h3>
+    <div class="f key">$$g_d=\frac{dI_D}{dV_a}\Big|_{V_a=V_0}=\frac{e}{kT}I_se^{eV_0/kT}\approx\frac{I_{DQ}}{V_t},\qquad r_d=\frac1{g_d}=\frac{nV_t}{I_{DQ}}\ \xrightarrow{\,n=1\,}\ r_d=\frac{V_t}{I_{DQ}}$$<small>$g_d$ (S): điện dẫn tín hiệu nhỏ. $r_d$ ($\Omega$): điện trở khuếch tán. $I_{DQ}$ (A): dòng một chiều tại $Q$. Ở $300\text{ K}$: $r_d\approx25.9\text{ mV}/I_{DQ}$.</small></div>
+    <div class="box legend"><b>Ý nghĩa vật lý của $r_d$ (slide trang 31)</b><ul>
+      <li>$r_d$ là <b>nghịch đảo độ dốc</b> của đặc tuyến I-V tại $Q$.</li>
+      <li>$r_d$ <b>không phải</b> điện trở một chiều $V_D/I_D$.</li>
+      <li>Dòng phân cực càng lớn thì $r_d$ càng nhỏ; $r_d$ phụ thuộc điểm làm việc.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 6.1 (slide trang 31 và bài bổ sung).</b> Điốt Si lý tưởng ($n=1$) ở $300\text{ K}$, $I_{DQ}=1\text{ mA}$ và $V_0=0.68\text{ V}$. Tìm $r_d$ và so với điện trở một chiều. Tính lại cho $I_{DQ}=0.1\text{ mA}$.
+      <div class="step">
+        <span class="cmt">// Điện trở khuếch tán:</span>
+        $$r_d=\frac{V_t}{I_{DQ}}=\frac{25.9\text{ mV}}{1\text{ mA}}=\mathbf{25.9\ \Omega}$$
+        <span class="cmt">// Điện trở một chiều tại cùng điểm:</span>
+        $$R_{DC}=\frac{V_0}{I_{DQ}}=\frac{0.68}{10^{-3}}=680\ \Omega$$
+        <span class="cmt">// Dòng giảm $10$ lần thì $r_d$ tăng $10$ lần:</span>
+        $$r_d(0.1\text{ mA})=\frac{25.9\text{ mV}}{0.1\text{ mA}}=\mathbf{259\ \Omega}$$
+      </div>
+      <b>Nhận xét:</b> $R_{DC}\approx26\,r_d$: hai khái niệm khác nhau hoàn toàn về giá trị, không được nhầm lẫn.</div>
+
+    <h3>6.3. Điện dung khuếch tán</h3>
+    <p>Khi điện áp thuận thay đổi, nồng độ hạt thiểu số ở mép vùng nghèo thay đổi, nên <b>điện tích hạt thiểu số tích trữ</b> trong vùng trung hòa cũng thay đổi (slide trang 32). Việc nạp-xả điện tích này hoạt động như một điện dung:</p>
+    <div class="f">$$C_d=\frac{dQ_s}{dV_D}$$<small>$Q_s$: điện tích hạt thiểu số tích trữ. Với điốt dài, $Q_s$ phía n bằng $I_{p0}\tau_{p0}$ (dòng lỗ trống nhân thời gian sống).</small></div>
+    <p>Ở tần số thấp (slide trang 33):</p>
+    <div class="f key">$$C_d=\frac1{2V_t}\left(I_{p0}\tau_{p0}+I_{n0}\tau_{n0}\right),\qquad I_{p0}=\frac{eAD_pp_{n0}}{L_p}e^{eV_0/kT},\ \ I_{n0}=\frac{eAD_nn_{p0}}{L_n}e^{eV_0/kT}$$<small>$C_d$ (F). $I_{p0}$, $I_{n0}$: thành phần dòng lỗ trống, electron tại $V_0$, $I_{p0}+I_{n0}=I_{DQ}$.</small></div>
+    <div class="box legend"><b>Nhận xét (slide trang 33)</b><ul>
+      <li>$C_d$ <b>tăng</b> khi dòng thuận tăng và khi thời gian sống hạt tải tăng.</li>
+      <li>Phân cực thuận: $C_d$ thường <b>lớn hơn nhiều</b> điện dung tiếp giáp $C_j$.</li>
+      <li>Phân cực ngược: $C_j$ chiếm ưu thế (Buổi 9).</li>
+      <li>Hệ số $1/2$ đến từ nghiệm xoay chiều tần số thấp của phương trình khuếch tán phụ thuộc thời gian cho điốt dài; bài tập dùng công thức của slide.</li></ul></div>
+
+    <div class="box tip"><b>Ví dụ 6.2 (bài bổ sung).</b> Điốt có $\tau_{n0}=\tau_{p0}=\tau=5\times10^{-7}\text{ s}$, $I_{DQ}=1\text{ mA}$, $300\text{ K}$. Tìm $C_d$, tích $r_dC_d$ và tần số cắt $f_c=1/(2\pi r_dC_d)$.
+      <div class="step">
+        <span class="cmt">// Vì $I_{p0}+I_{n0}=I_{DQ}$ và $\tau$ như nhau:</span>
+        $$C_d=\frac{I_{DQ}\,\tau}{2V_t}=\frac{(10^{-3})(5\times10^{-7})}{2(0.0259)}=\mathbf{9.65\times10^{-9}\ F\approx9.7\ nF}$$
+        <span class="cmt">// Hằng số thời gian ($r_d=25.9\ \Omega$):</span>
+        $$r_dC_d=(25.9)(9.65\times10^{-9})=2.5\times10^{-7}\text{ s}=\frac{\tau}{2}$$
+        <span class="cmt">// Tần số cắt:</span>
+        $$f_c=\frac{1}{2\pi(2.5\times10^{-7})}\approx\mathbf{640\ kHz}$$
+      </div>
+      <b>Nhận xét:</b> $r_dC_d=\tau/2$ không phụ thuộc dòng phân cực (dòng tăng thì $r_d$ giảm và $C_d$ tăng bù trừ nhau). Thời gian sống càng ngắn thì điốt càng nhanh.</div>
+
+    <h3>6.4. Điện nạp tín hiệu nhỏ và sơ đồ tương đương</h3>
+    <p>Điện nạp tín hiệu nhỏ của điốt lý tưởng là tổng của phần thực và phần ảo (slide trang 34, 35):</p>
+    <div class="f key">$$Y_d=g_d+j\omega C_d,\qquad g_d=\frac{I_{p0}+I_{n0}}{V_t}=\frac{I_{DQ}}{V_t}$$<small>Phần thực $g_d$: dòng dẫn tín hiệu nhỏ. Phần ảo $\omega C_d$: hiệu ứng tích trữ điện tích. Xấp xỉ đúng khi tần số tín hiệu không quá cao.</small></div>
+    <p>Tương đương: $r_d$ <b>song song</b> với $C_d$, tức $Z_d=r_d\parallel\dfrac1{j\omega C_d}$.</p>
+
+    <h3>6.5. Sơ đồ tương đương đầy đủ và điện trở nối tiếp</h3>
+    <p>Điốt thật cần thêm điện dung tiếp giáp $C_j$ (song song với $r_d$, $C_d$) và điện trở nối tiếp $r_s$ của vùng bán dẫn trung hòa cùng tiếp xúc (slide trang 36):</p>
+    <div class="f key">$$Z_{\text{điốt}}=r_s+\left(r_d\parallel C_d\parallel C_j\right),\qquad V_{\text{app}}=V_a+I\,r_s$$<small>$V_a$: điện áp rơi trên tiếp giáp. $V_{\text{app}}$: điện áp ngoài đặt lên điốt.</small></div>
+    <p>Ở dòng lớn, độ sụt áp $I\,r_s$ đáng kể: điện áp ngoài không còn rơi hết trên tiếp giáp, dòng tăng chậm hơn so với phương trình lý tưởng và đặc tuyến thuận trở nên <b>gần tuyến tính</b> (slide trang 37). Khi mô phỏng điốt công suất hoặc điốt chạy dòng lớn, <b>không được bỏ qua $r_s$</b>.</p>
+
+    <div class="box tip"><b>Ví dụ 6.3 (bài bổ sung).</b> Điốt ở Ví dụ 3.1 ($I_s=4.16\times10^{-15}\text{ A}$) có $r_s=2\ \Omega$, chạy dòng $I=100\text{ mA}$. Tìm $V_{\text{app}}$ và so sánh $r_d$ với $r_s$.
+      <div class="step">
+        <span class="cmt">// Điện áp trên tiếp giáp:</span>
+        $$V_a=V_t\ln\frac{I}{I_s}=0.0259\ln\frac{0.1}{4.16\times10^{-15}}\approx0.798\ \text{V}$$
+        <span class="cmt">// Cộng sụt áp trên $r_s$:</span>
+        $$V_{\text{app}}=V_a+Ir_s=0.798+(0.1)(2)=\mathbf{0.998\ V}$$
+        <span class="cmt">// Điện trở khuếch tán ở dòng này:</span>
+        $$r_d=\frac{V_t}{I}=\frac{25.9\text{ mV}}{100\text{ mA}}=0.259\ \Omega\ll r_s$$
+      </div>
+      <b>Nhận xét:</b> $r_s$ chiếm khoảng $20\%$ điện áp ngoài và $r_d\ll r_s$: ở dòng lớn, điện trở quan sát ngoài mạch gần như chỉ là $r_s$.</div>
+
+    <h3 data-lab="b95-lab-09">6.6. Mô hình tương tác: Mô hình tín hiệu nhỏ của điốt</h3>
+    <!-- LAB-ANCHOR b95-lab-09
+         TODO: Hai tấm: (1) đặc tuyến I-V với điểm Q kéo được, đường tiếp tuyến độ dốc 1/rd; (2) đồ thị Bode |Z_d(f)| và pha của r_s + (r_d || C_d || C_j).
+         Điều khiển: I_DQ (log, 1 µA..100 mA), tau (hoặc tau_p0, tau_n0), C_j, r_s, n, T.
+         Hiển thị: rd, gd, Cd, rd·Cd = tau/2, tần số cắt fc, so sánh R_DC = V0/I_DQ với rd, V_app = V_a + I·r_s.
+         Có sơ đồ mạch tương đương đồng bộ khi kéo thông số.
+         Đối chiếu Ví dụ 6.1 (25.9 Ω), 6.2 (9.7 nF, 640 kHz), 6.3 (0.998 V). -->
+    <div class="box explain"><b>Hướng dẫn phần này</b><ul><li><b>Vì sao có phần này:</b> Mô hình có nhiều phần tử nên cần thấy chúng đổi thế nào theo điểm làm việc.</li><li><b>Dùng để làm gì:</b> Thấy $r_d$ giảm, $C_d$ tăng khi dòng tăng, $r_dC_d=\tau/2$ không đổi, và $r_s$ chi phối ở dòng lớn.</li><li><b>Cách dùng mô hình:</b> bấm biểu tượng bình thí nghiệm cạnh tiêu đề này. Kéo $I_{DQ}$ từ $\mu\text{A}$ đến chục mA; bật/tắt $r_s$ và $C_j$; đọc đường cong Bode.</li></ul></div>
+
+    <div class="box key"><b>Mục 6 — Nhớ</b><ul>
+      <li>$g_d=I_{DQ}/V_t$, $r_d=V_t/I_{DQ}$ (≈ $25.9\text{ mV}/I_{DQ}$ ở $300\text{ K}$); $r_d\ne V_D/I_D$.</li>
+      <li>$C_d=\dfrac1{2V_t}(I_{p0}\tau_{p0}+I_{n0}\tau_{n0})$: tăng theo dòng và $\tau$; thuận thì $C_d\gg C_j$, ngược thì $C_j$ chi phối.</li>
+      <li>Điốt thật: $r_s+(r_d\parallel C_d\parallel C_j)$; $V_{\text{app}}=V_a+Ir_s$; dòng lớn thì không bỏ $r_s$.</li></ul></div>
+    <div class="next"><b>Tiếp theo:</b> Mục 7 gom công thức của cả buổi vào một cẩm nang tra nhanh.</div>
+  </section>
+
+  <section>
+    <h2>7. Cẩm Nang Công Thức Trọng Tâm Buổi 9.5 (Giải Nghĩa Chi Tiết)</h2>
+    <div class="bridge"><b>Nối từ Mục 1 đến 6:</b> Mỗi mục cho ra một nhóm công thức dùng trực tiếp khi giải bài tập. Bảng dưới là bản đồ tra nhanh.</div>
+
+    <div class="tw"><table><tr><th>Đề bài hỏi gì?</th><th>Dùng công thức</th><th>Học ở</th></tr>
+      <tr><td>Hạt thiểu số ở mép vùng nghèo, điều kiện phun mức thấp</td><td>Công thức 1</td><td>Mục 2.1 đến 2.3</td></tr>
+      <tr><td>Phân bố hạt thiểu số dư, độ dài khuếch tán</td><td>Công thức 2</td><td>Mục 2.5</td></tr>
+      <tr><td>Dòng điốt, $J_s$, $I_s$, điện áp để có dòng cho trước</td><td>Công thức 3</td><td>Mục 3</td></tr>
+      <tr><td>Nhiệt độ, điốt ngắn</td><td>Công thức 4</td><td>Mục 4.3 và 4.4</td></tr>
+      <tr><td>Dòng ngược thật, dòng thuận ở áp thấp/cao, hệ số $n$</td><td>Công thức 5</td><td>Mục 5</td></tr>
+      <tr><td>$r_d$, $C_d$, $r_s$, sơ đồ tương đương</td><td>Công thức 6</td><td>Mục 6</td></tr></table></div>
+    <div class="box tip"><b>Hằng số hay dùng (Si, $300\text{ K}$):</b> $e=1.6\times10^{-19}\text{ C}$; $n_i=1.5\times10^{10}\text{ cm}^{-3}$; $V_t=kT/e=0.0259\text{ V}$; $\epsilon_s=11.7\times8.85\times10^{-14}\text{ F/cm}$; $V_t\ln10\approx59.6\text{ mV}$. Giữ mọi độ dài theo <b>cm</b> (đổi $\mu\text{m}\to\text{cm}$: nhân $10^{-4}$).</div>
+
+    <div class="formula-card">
+      <h3>Công thức 1: Điều kiện biên hạt thiểu số</h3>
+      <div class="f key">
+        $$n_{p0}=\frac{n_i^2}{N_a},\ p_{n0}=\frac{n_i^2}{N_d}\ \Big|\ n_p(-x_p)=n_{p0}\,e^{V_a/V_t},\ p_n(x_n)=p_{n0}\,e^{V_a/V_t}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $n_{p0}$, $p_{n0}$ ($\text{cm}^{-3}$): hạt thiểu số cân bằng. $n_p(-x_p)$, $p_n(x_n)$ ($\text{cm}^{-3}$): hạt thiểu số tại mép vùng nghèo. $V_a$ (V).</div>
+        <div><b>2. Khi nào dùng:</b> Tìm nồng độ hạt phun vào ở mép; kiểm tra phun mức thấp ($\delta p_n\ll N_d$, $\delta n_p\ll N_a$).</div>
+        <div><b>3. Lưu ý:</b> Cứ $\approx60\text{ mV}$ tăng $10$ lần. Dùng được cả cho $V_a\lt0$. Phun mức thấp mất hiệu lực khi $V_a$ tiến gần $V_{bi}$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 2: Hạt thiểu số dư trong vùng trung hòa</h3>
+      <div class="f key">
+        $$\delta p_n(x)=p_{n0}\big[e^{V_a/V_t}-1\big]e^{(x_n-x)/L_p}\ \Big|\ \delta n_p(x)=n_{p0}\big[e^{V_a/V_t}-1\big]e^{(x_p+x)/L_n}\ \Big|\ L=\sqrt{D\tau}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $L_p$, $L_n$ (cm): độ dài khuếch tán. $D$ ($\text{cm}^2/\text{s}$), $\tau$ (s).</div>
+        <div><b>2. Khi nào dùng:</b> Tìm nồng độ hạt dư tại khoảng cách $x$; xác định "hạt đi được bao xa".</div>
+        <div><b>3. Lưu ý:</b> Giảm còn $1/e$ sau $L$, còn $5\%$ sau $\approx3L$. Dành cho điốt dài.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 3: Phương trình điốt lý tưởng</h3>
+      <div class="f key">
+        $$I=I_s\big[e^{V_a/V_t}-1\big]\ \Big|\ J_s=\frac{eD_pp_{n0}}{L_p}+\frac{eD_nn_{p0}}{L_n}\ \Big|\ I_s=AJ_s\ \Big|\ V_a=V_t\ln\frac{I}{I_s}\ (\text{thuận})$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $I$, $I_s$ (A); $J_s$ ($\text{A/cm}^2$); $A$ ($\text{cm}^2$); $V_a$ (V).</div>
+        <div><b>2. Khi nào dùng:</b> Tính $I_s$ từ thông số vật liệu; tính dòng ở một $V_a$; hoặc tìm $V_a$ để có dòng cho trước.</div>
+        <div><b>3. Lưu ý:</b> Thuận ($V_a\gg V_t$): $I\approx I_se^{V_a/V_t}$; ngược: $I\approx-I_s$. Tỉ lệ $J_p/J_n=\dfrac{D_pL_nN_a}{D_nL_pN_d}$. Nhớ nhân diện tích $A$ để từ $J$ ra $I$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 4: Nhiệt độ và điốt ngắn</h3>
+      <div class="f key">
+        $$I_s\propto n_i^2\propto T^3e^{-E_g/kT}\ \Big|\ \frac{dV_a}{dT}\approx\frac{V_a-3V_t-E_g/e}{T}\ \Big|\ J_p=\frac{eD_pp_{n0}}{W_n}\big[e^{V_a/V_t}-1\big]\ (W_n\ll L_p)$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $T$ (K); $E_g$ (eV hoặc J); $W_n$ (cm): bề rộng vùng n trung hòa.</div>
+        <div><b>2. Khi nào dùng:</b> Ước lượng $I_s$ và $V_a$ khi đổi nhiệt độ; tính dòng điốt có vùng trung hòa mỏng.</div>
+        <div><b>3. Lưu ý:</b> Si: $I_s$ tăng $\approx4$ đến $5$ lần mỗi $10\ ^\circ\text{C}$; $dV_a/dT\approx-1.7$ đến $-2.0\text{ mV/}^\circ\text{C}$ ở dòng không đổi. Cập nhật cả $V_t=kT/e$ khi đổi $T$.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 5: Dòng không lý tưởng</h3>
+      <div class="f key">
+        $$J_{\text{gen}}=\frac{en_iW}{2\tau_0}\ \Big|\ J_{\text{rec}}=\frac{eWn_i}{2\tau_0}e^{V_a/2V_t}\ \Big|\ I=I_s\big[e^{V_a/nV_t}-1\big]\ \Big|\ \Delta n=\Delta p\approx n_ie^{V_a/2V_t}$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $\tau_0=(\tau_{p0}+\tau_{n0})/2$ (s); $W$ (cm): vùng nghèo; $n$: hệ số lý tưởng ($1\le n\le2$).</div>
+        <div><b>2. Khi nào dùng:</b> Dòng ngược thật $J_R=J_s+J_{\text{gen}}$; xác định ngưỡng tái hợp/khuếch tán ($V_a=2V_t\ln(J_{r0}/J_s)$) và ngưỡng phun mức cao ($V_a=2V_t\ln(N_d/n_i)$).</div>
+        <div><b>3. Lưu ý:</b> $J_{\text{gen}}\propto W\propto\sqrt{V_{bi}+V_R}$ nên dòng ngược tăng theo $V_R$. $n\approx2$ ở áp thấp, $n\approx1$ ở áp trung bình.</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <h3>Công thức 6: Mô hình tín hiệu nhỏ</h3>
+      <div class="f key">
+        $$r_d=\frac{nV_t}{I_{DQ}}\ \Big|\ C_d=\frac{1}{2V_t}\big(I_{p0}\tau_{p0}+I_{n0}\tau_{n0}\big)\ \Big|\ Y_d=g_d+j\omega C_d\ \Big|\ V_{\text{app}}=V_a+Ir_s$$
+      </div>
+      <div class="formula-meta">
+        <div><b>1. Giải nghĩa ký hiệu & Đơn vị:</b> $r_d$, $r_s$ ($\Omega$); $C_d$, $C_j$ (F); $g_d=1/r_d$ (S); $I_{DQ}$ (A).</div>
+        <div><b>2. Khi nào dùng:</b> Phân tích mạch xoay chiều tín hiệu nhỏ quanh điểm làm việc; ước lượng tần số cắt $f_c=1/(2\pi r_dC_d)$.</div>
+        <div><b>3. Lưu ý:</b> $r_d\ne V_D/I_D$. Thuận: $C_d\gg C_j$; ngược: $C_j$ chi phối. Với $\tau_{p0}=\tau_{n0}=\tau$: $r_dC_d=\tau/2$. Dòng lớn thì $r_s$ chi phối.</div>
+      </div>
+    </div>
+
+    <div class="box warn"><b>Bốn lỗi hay gặp</b><ul>
+      <li>Nhầm $r_d$ với $V_D/I_D$: $r_d$ là nghịch đảo <i>độ dốc</i>, nhỏ hơn nhiều so với điện trở một chiều.</li>
+      <li>Quên nhân diện tích $A$ khi đi từ $J_s$ ($\text{A/cm}^2$) sang $I_s$ (A).</li>
+      <li>Dùng $I\approx I_se^{V_a/V_t}$ ở áp thấp hoặc áp rất cao: ở áp thấp tái hợp ($n\approx2$) và ở áp cao phun mức cao/$r_s$ làm đường cong lệch.</li>
+      <li>Quên đổi $\mu\text{m}\to\text{cm}$ ($L$, $W$, $W_n$) hoặc quên cập nhật $V_t$ khi đổi nhiệt độ.</li></ul></div>
+  </section>
+
+  <section class="sum">
+    <h2>Tổng Kết Buổi 9.5: Những Điểm Cốt Lõi Cần Nằm Lòng</h2>
+    <ul>
+      <li><b>Phun hạt tải:</b> phân cực thuận hạ hàng rào xuống $V_{bi}-V_a$; hạt đa số được phun thành hạt thiểu số ở phía bên kia.</li>
+      <li><b>Điều kiện biên:</b> $n_p(-x_p)=n_{p0}e^{V_a/V_t}$, $p_n(x_n)=p_{n0}e^{V_a/V_t}$; cứ $\approx60\text{ mV}$ tăng $10$ lần.</li>
+      <li><b>Phân bố:</b> hạt dư giảm mũ theo $L_p$, $L_n$ vì tái hợp; gradien tại mép sinh ra dòng khuếch tán.</li>
+      <li><b>Điốt lý tưởng:</b> $I=I_s[e^{V_a/V_t}-1]$, $J_s=\dfrac{eD_pp_{n0}}{L_p}+\dfrac{eD_nn_{p0}}{L_n}\propto n_i^2$; thuận tăng mũ, ngược bão hòa $-I_s$.</li>
+      <li><b>Nhiệt độ:</b> $I_s$ tăng $\approx4$ đến $5$ lần mỗi $10\ ^\circ\text{C}$; áp thuận (dòng không đổi) giảm cỡ $-1.7$ đến $-2.0\text{ mV/}^\circ\text{C}$. Điốt ngắn: thay $L_p\to W_n$.</li>
+      <li><b>Không lý tưởng:</b> ngược có $J_{\text{gen}}\propto W$ (không bão hòa); thuận có tái hợp ($n\approx2$), khuếch tán ($n\approx1$), rồi phun mức cao và $r_s$.</li>
+      <li><b>Tín hiệu nhỏ:</b> $r_d=V_t/I_{DQ}$, $C_d=\dfrac1{2V_t}(I_{p0}\tau_{p0}+I_{n0}\tau_{n0})$; mô hình đầy đủ $r_s+(r_d\parallel C_d\parallel C_j)$.</li>
+    </ul>
+
+    <div class="box tip"><b>Câu hỏi ôn tập tự kiểm tra (slide trang 39), kèm gợi ý đáp án</b>
+      <ol>
+        <li><b>Phân cực thuận thay đổi hàng rào thế thế nào?</b> Hạ từ $V_{bi}$ xuống $V_{bi}-V_a$.</li>
+        <li><b>Viết điều kiện biên cho $n_p(-x_p)$ và $p_n(x_n)$.</b> $n_{p0}e^{V_a/V_t}$ và $p_{n0}e^{V_a/V_t}$ (Công thức 1).</li>
+        <li><b>Vì sao hạt dư giảm khi xa tiếp giáp?</b> Tái hợp với hạt đa số; quãng đường đặc trưng là $L_p$, $L_n$.</li>
+        <li><b>Giả thiết của phương trình điốt lý tưởng?</b> Mục 1.2.</li>
+        <li><b>Phân biệt dòng sinh và dòng tái hợp trong vùng nghèo?</b> Sinh: ngược, $J_{\text{gen}}=en_iW/2\tau_0$. Tái hợp: thuận, $J_{\text{rec}}\propto e^{V_a/2V_t}$.</li>
+        <li><b>Cơ chế ứng với $n=1$ và $n=2$?</b> $n=1$: khuếch tán; $n=2$: tái hợp trong vùng nghèo.</li>
+        <li><b>Khi nào phun mức thấp không còn đúng?</b> Khi hạt thiểu số dư tiến sát hạt đa số; $V_a$ gần $V_{bi}$ (Ví dụ 5.3).</li>
+        <li><b>Phân biệt điện trở một chiều và điện trở tín hiệu nhỏ?</b> $R_{DC}=V_D/I_D$ so với $r_d=V_t/I_{DQ}$ là nghịch đảo độ dốc tại $Q$ (Ví dụ 6.1).</li>
+        <li><b>Nguồn gốc vật lý của $C_d$?</b> Điện tích hạt thiểu số tích trữ trong vùng trung hòa thay đổi theo $V_a$.</li>
+        <li><b>Vẽ sơ đồ tương đương tín hiệu nhỏ đầy đủ.</b> $r_s$ nối tiếp với $(r_d\parallel C_d\parallel C_j)$ (Mục 6.5).</li>
+      </ol>
+    </div>
+
+    <div class="next"><b>Tiếp theo trong môn học:</b> Ta đã có đặc tuyến và mô hình của điốt p-n. Ghép hai tiếp giáp p-n liền nhau sẽ cho ta <i>transistor lưỡng cực</i>, nơi hiểu biết về phun hạt tải và hạt thiểu số dư ở buổi này được dùng trực tiếp.</div>
+  </section>
+</template>
+
+
 <template id="tpl-buoi-10">
   <header>
     <span class="k b3">HỌC PHẦN ENP2209 · BUỔI 10</span>
