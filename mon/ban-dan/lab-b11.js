@@ -76,6 +76,7 @@ function readColors() {
     .forEach(k => C[k] = cs.getPropertyValue('--' + k).trim() || '#888');
 }
 
+let CAM = null;
 /* ---------- hàm vẽ canvas dùng chung ---------- */
 function txt(ctx, s, x, y, col, size, al, wt) {
   ctx.font = (wt || 500) + ' ' + (size || 12) + 'px ' + FONT;
@@ -99,6 +100,7 @@ function arr(ctx, x1, y1, x2, y2, col, w) {
   ctx.closePath(); ctx.fillStyle = col; ctx.fill();
 }
 function dot(ctx, x, y, r, col) {
+  if (CAM && r > 3.5 && r < 6) r *= Math.pow(CAM.zoom, 0.6);   // electron to dần khi zoom cận cảnh
   ctx.beginPath(); ctx.arc(x, y, r, 0, TAU2); ctx.fillStyle = col; ctx.fill();
 }
 function rr(ctx, x, y, w, h, r) {
@@ -126,6 +128,7 @@ function drawIon(ctx, x, y, sign, col, sz) {
 /* Đồng hồ kim siêu gọn, KHÔNG bọc khung — đặt trực tiếp vào góc trống trên canvas */
 function drawMiniGauge(ctx, cx, cy, rad, title, valText, frac, col, dangerFrac) {
   const r = clamp(rad || 22, 16, 30);
+  if (CAM) { ctx.save(); ctx.globalAlpha = 0.88; ctx.fillStyle = C.bg; rr(ctx, cx - 54, cy - r - 20, 108, r + 42, 8); ctx.fill(); ctx.restore(); }
   txt(ctx, title, cx, cy - r - 9, C.mut, 9.5, 'center', 700);
   ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI * 1.12, Math.PI * 1.88);
   ctx.strokeStyle = C.g; ctx.lineWidth = 4; ctx.stroke();
@@ -143,8 +146,43 @@ function drawMiniGauge(ctx, cx, cy, rad, title, valText, frac, col, dangerFrac) 
 }
 
 /* ---------- hàm vẽ hình khối 3D & linh kiện thực tế ---------- */
+const newCam = () => ({ yaw: 0, sy: 0.28, zoom: 1, fx: 0.5, fy: 0.5, fz: 0.5, follow: 0, px: 0, py: 0, mx: 0, my: 0, bb: null, nb: null, o: null, cs: 1, sn: 0, zk: 1 });
+const camCtr = c => c.bb ? [(c.bb.x0 + c.bb.x1) / 2, (c.bb.y0 + c.bb.y1) / 2, (c.bb.z0 + c.bb.z1) / 2] : [0, 0, 0];
+function camProj(c, ox, oy, x, y, z) {
+  const m = camCtr(c), dx = x - m[0], dy = y - m[1], dz = z - m[2];
+  const rx = dx * c.cs - dy * c.sn, ry = dx * c.sn + dy * c.cs, k = 1.118 * c.zoom;   // chiếu trực giao thật: xoay quanh trục z rồi nghiêng
+  return [ox + m[0] - m[1] * 0.5 + k * rx, oy + m[1] * 0.28 - m[2] + k * (ry * c.sy - dz * c.zk)];
+}
+function beginCam(c, W, H) {
+  if (c.nb) c.bb = c.nb;
+  c.nb = null;
+  const th = c.yaw + 0.4636; c.cs = Math.cos(th); c.sn = Math.sin(th); c.zk = Math.sqrt(1 - c.sy * c.sy) * 1.04;
+  c.px = 0; c.py = 0;
+  if (c.bb && c.o) {     // luôn đưa tâm hình chiếu của khối vào chính giữa khung
+    const bb = c.bb; let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    for (let i = 0; i < 8; i++) {
+      const q = camProj(c, c.o[0], c.o[1], i & 1 ? bb.x1 : bb.x0, i & 2 ? bb.y1 : bb.y0, i & 4 ? bb.z1 : bb.z0);
+      if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1];
+    }
+    c.px = W * 0.5 - (x0 + x1) / 2; c.py = H * 0.54 - (y0 + y1) / 2;
+    if (c.follow > 0) {
+      const b = c.bb, s = camProj(c, c.o[0], c.o[1], b.x0 + (b.x1 - b.x0) * c.fx, b.y0 + (b.y1 - b.y0) * c.fy, b.z0 + (b.z1 - b.z0) * c.fz);
+      c.px = lerp(c.px, W * 0.5 - s[0], c.follow); c.py = lerp(c.py, H * 0.46 - s[1], c.follow);
+    }
+  }
+}
+function camExtend(c, x0, x1, y0, y1, z0, z1) {
+  const b = c.nb || (c.nb = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9, z0: 1e9, z1: -1e9 });
+  if (x0 < b.x0) b.x0 = x0; if (x1 > b.x1) b.x1 = x1;
+  if (y0 < b.y0) b.y0 = y0; if (y1 > b.y1) b.y1 = y1;
+  if (z0 < b.z0) b.z0 = z0; if (z1 > b.z1) b.z1 = z1;
+}
 function isoP(ox, oy, x, y, z) {
-  return [ox + x - y * 0.50, oy + y * 0.28 - z];
+  const c = CAM;
+  if (!c) return [ox + x - y * 0.50, oy + y * 0.28 - z];
+  c.o = [ox, oy];
+  const p = camProj(c, ox, oy, x, y, z);
+  return [p[0] + c.px, p[1] + c.py];
 }
 function polyFill(ctx, pts, col, al, strokeCol, lw) {
   ctx.beginPath();
@@ -157,20 +195,25 @@ function polyFill(ctx, pts, col, al, strokeCol, lw) {
   if (strokeCol) { ctx.strokeStyle = strokeCol; ctx.lineWidth = lw || 1; ctx.stroke(); }
 }
 function isoBox(ctx, ox, oy, x, y, z, dx, dy, dz, col, al, strokeCol) {
-  const p000 = isoP(ox, oy, x, y, z), p100 = isoP(ox, oy, x + dx, y, z);
-  const p010 = isoP(ox, oy, x, y + dy, z), p110 = isoP(ox, oy, x + dx, y + dy, z);
-  const p001 = isoP(ox, oy, x, y, z + dz), p101 = isoP(ox, oy, x + dx, y, z + dz);
-  const p011 = isoP(ox, oy, x, y + dy, z + dz), p111 = isoP(ox, oy, x + dx, y + dy, z + dz);
-  const a = al == null ? 1 : al, sc = strokeCol || C.sub;
-  // Mặt trước (y + dy)
-  polyFill(ctx, [p010, p110, p111, p011], col, a * 0.85, sc, 1);
-  polyFill(ctx, [p010, p110, p111, p011], '#000', a * 0.16);
-  // Mặt phải (x + dx)
-  polyFill(ctx, [p110, p100, p101, p111], col, a * 0.85, sc, 1);
-  polyFill(ctx, [p110, p100, p101, p111], '#000', a * 0.34);
-  // Mặt trên (z + dz)
-  polyFill(ctx, [p001, p101, p111, p011], col, a, sc, 1.1);
+  const c = CAM, a = al == null ? 1 : al, sc = strokeCol || C.sub;
+  if (c) camExtend(c, Math.min(x, x + dx), Math.max(x, x + dx), Math.min(y, y + dy), Math.max(y, y + dy), Math.min(z, z + dz), Math.max(z, z + dz));
+  const P = (i, j, k) => isoP(ox, oy, x + dx * i, y + dy * j, z + dz * k);
+  const FACES = [ // [nx, ny, nz, điểm...]
+    [0, 1, 0, [0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]], [0, -1, 0, [0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]],
+    [1, 0, 0, [1, 0, 0], [1, 1, 0], [1, 1, 1], [1, 0, 1]], [-1, 0, 0, [0, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1]],
+    [0, 0, -1, [0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], [0, 0, 1, [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]]
+  ];
+  const cs = c ? c.cs : 1, sn = c ? c.sn : 0, kz = c ? c.sy / Math.sqrt(1 - c.sy * c.sy) : 0.29;
+  FACES.forEach(f => {
+    const rx = f[0] * cs - f[1] * sn, ry = f[0] * sn + f[1] * cs;
+    if (ry + f[2] * kz <= 0) return;           // mặt quay lưng với người xem
+    const pts = f.slice(3).map(q => P(q[0], q[1], q[2]));
+    if (f[2] === 1) { polyFill(ctx, pts, col, a, sc, 1.1); return; }
+    polyFill(ctx, pts, col, a * 0.85, sc, 1);
+    polyFill(ctx, pts, '#000', a * (0.16 + 0.18 * Math.max(0, rx)));
+  });
 }
+
 function drawProbe(ctx, tx, ty, dir, col, label) {
   const s = dir < 0 ? -1 : 1;
   ln(ctx, tx + s * 42, ty - 54, tx + s * 10, ty - 16, C.sub, 5);
@@ -258,6 +301,88 @@ function mosStateAtVg(m, subType, VG) {
   return { mode: 'inv', label: 'Đảo ngược (Inversion)', xd: m.xdT, phiS: 2 * m.phiF + 0.04 * Math.log(1 + over / 0.05), C: m.Cmin, invFrac, accFrac: 0 };
 }
 
+/* ---------- PHIM TỰ ĐỘNG: kịch bản từng thí nghiệm (tập trung vào nguyên lý) ---------- */
+const V = (yaw, tilt, zoom, f) => ({ yaw, tilt, zoom, f });
+const SNAPK = ['sub', 'gate', 'mode'];
+const FILM = {
+  mos: [
+    { d: 7, cap: 'Tụ MOS gồm ba lớp xếp chồng: tấm kim loại (cổng) ở trên, lớp oxit SiO₂ cách điện ở giữa, và phiến silicon p ở dưới. Điện áp V_G đặt lên cổng, phiến Si nối đất.', v: V(25, 26, 1.0), orbit: 6, set: { sub: 'p', VG: 0 } },
+    { d: 10, cap: 'Tích lũy: đặt V_G âm. Cổng âm kéo các lỗ trống (hạt đa số của đế p) về sát lớp oxit — một lớp lỗ dày đặc hình thành ngay mặt tiếp xúc. Oxit chặn nên không có dòng nào chạy qua cổng.', v: V(0, 10, 1.7, [0.5, 1, 0.64]), set: { VG: -1.6 }, slow: 0.4 },
+    { d: 11, cap: 'Nghèo: đổi V_G sang dương nhỏ. Cổng dương đẩy lỗ trống đi sâu xuống, để lại các ion acceptor âm đứng yên (ô vuông −). Vùng chứa toàn ion ấy là vùng nghèo, càng tăng V_G nó càng ăn sâu vào Si.', v: V(0, 12, 1.6, [0.5, 1, 0.58]), set: { VG: 0.55 }, slow: 0.4 },
+    { d: 11, cap: 'Đảo ngược: V_G đủ lớn. Vùng nghèo đã đạt độ sâu tối đa x_dT; lúc này cổng kéo electron (hạt thiểu số) lên sát oxit tạo một lớp mỏng e⁻ phát sáng — đó chính là kênh dẫn n của MOSFET.', v: V(0, 12, 1.7, [0.5, 1, 0.64]), set: { VG: 1.6 }, slow: 0.4 },
+    { d: 9, cap: 'Đổi sang đế n: mọi thứ đảo chiều. Muốn tích lũy cần V_G dương, muốn đảo ngược cần V_G âm, và lớp đảo là lớp lỗ trống — kênh dẫn p.', v: V(0, 20, 1.3), set: { sub: 'n', VG: -1.6 }, slow: 0.5 }
+  ],
+  inv: [
+    { d: 7, cap: 'Khối Si dưới cổng. Vùng nghèo (xanh) ăn xuống từ mặt, còn mặt phẳng đỏ phía dưới là sàn x_dT — độ sâu tối đa mà vùng nghèo có thể đạt.', v: V(25, 26, 1.0), orbit: 6, set: { Na: 1e15, phiS: 0.1 } },
+    { d: 10, cap: 'Tăng độ uốn cong bề mặt φ_s: điện trường mạnh dần đẩy lỗ trống đi, vùng nghèo sâu thêm theo x_d ∝ √φ_s. Phần lớn điện tích của cổng được cân bằng bằng ion acceptor âm.', v: V(0, 12, 1.5, [0.5, 1, 0.55]), set: { phiS: 0.4 } },
+    { d: 11, cap: 'Khi φ_s chạm 2φ_fp, nồng độ electron ở bề mặt bằng nồng độ lỗ trống ở sâu bên trong: màng e⁻ bùng sáng — bán dẫn bị đảo ngược. Vùng nghèo cùng lúc chạm sàn x_dT.', v: V(0, 12, 1.7, [0.5, 1, 0.78]), set: { phiS: 0.58 }, slow: 0.4 },
+    { d: 9, cap: 'Tăng φ_s thêm nữa: x_d bị khóa ở x_dT, điện tích dư không đào sâu thêm mà đi vào màng e⁻, làm màng đậm lên theo hàm mũ. Đó là lý do V_T gắn với điểm 2φ_fp.', v: V(0, 12, 1.7, [0.5, 1, 0.82]), set: { phiS: 0.72 }, slow: 0.4 },
+    { d: 9, cap: 'Pha tạp nặng Nₐ = 10¹⁷: ion acceptor dày đặc nên chỉ cần một lớp rất mỏng đã đủ cân bằng — sàn x_dT nâng sát mặt, và ngưỡng 2φ_fp cũng cao hơn.', v: V(0, 14, 1.8, [0.5, 1, 0.8]), set: { Na: 1e17, phiS: 0.85 } }
+  ],
+  vt: [
+    { d: 7, cap: 'Điện áp ngưỡng V_T do cấu trúc quyết định: vật liệu cổng, độ dày oxit, điện tích kẹt Q′_ss trong oxit, và nồng độ pha tạp của đế. Đèn LED bên phải thử xem linh kiện có dẫn tại V_G = 0 hay không.', v: V(25, 26, 1.0), orbit: 6, set: { sub: 'p', gate: 'Al', Na: 1e15, tox: 12, Qss: 1e10 } },
+    { d: 9, cap: 'Làm oxit dày lên 60 nm: cùng một V_G nhưng trường qua oxit yếu hơn và C_ox nhỏ hơn, nên phải đặt cổng cao hơn mới uốn cong được bề mặt — V_T tăng.', v: V(0, 14, 1.6, [0.5, 1, 0.7]), set: { tox: 60 } },
+    { d: 9, cap: 'Trả oxit về 12 nm rồi đổi cổng sang n⁺-poly: công thoát của cổng thay đổi nên V_FB dịch đi, kéo theo V_T dịch cùng chiều.', v: V(0, 14, 1.4, [0.5, 1, 0.75]), set: { tox: 12, gate: 'nPoly' } },
+    { d: 11, cap: 'Tăng điện tích dương kẹt trong oxit lên 10¹² cm⁻² (các dấu + đỏ trên mặt oxit). Chúng hút electron về mặt đế sẵn từ trước, nên V_T tụt mạnh — đến mức âm: linh kiện thành loại nghèo và đèn LED sáng ngay tại V_G = 0.', v: V(0, 8, 2.2, [0.5, 1, 0.66]), set: { gate: 'Al', Qss: 1e12 } }
+  ],
+  moscv: [
+    { d: 7, cap: 'Trạm đo C–V: wafer tụ MOS nằm trên mâm kẹp, kim dò HI chạm cổng. Máy đo đưa một tín hiệu AC rất nhỏ chồng lên V_G và đọc điện dung; kim đồng hồ cho biết C′ so với C_ox.', v: V(25, 26, 1.0), orbit: 6, set: { VG: -1.2, tox: 12, Na: 1e15 } },
+    { d: 9, cap: 'Tích lũy (V_G âm): lỗ trống dày đặc sát oxit nên chỉ còn lớp oxit đóng vai chất điện môi — điện dung lớn nhất, C′ = C_ox.', v: V(0, 10, 1.8, [0.5, 1, 0.6]), slow: 0.5 },
+    { d: 11, cap: 'Tăng V_G: lỗ trống bị đẩy đi, vùng nghèo hình thành và sâu dần. Vùng nghèo là một tụ nối tiếp thứ hai C′_SD, hai tụ nối tiếp nên C′ giảm — kim đồng hồ tụt xuống.', v: V(0, 12, 1.7, [0.5, 1, 0.5]), set: { VG: 0.5 }, slow: 0.5 },
+    { d: 10, cap: 'V_G lớn hơn nữa: đảo ngược. Ở tần số thấp electron kịp tạo lớp đảo sát oxit, cổng lại ngăn cách với lớp dẫn chỉ bởi oxit — C′ vọt trở về C_ox.', v: V(0, 12, 1.8, [0.5, 1, 0.62]), set: { VG: 1.4 }, slow: 0.4 },
+    { d: 9, cap: 'Oxit mỏng đi (6 nm): hai bản tụ gần nhau hơn nên C_ox lớn hơn, đường cong cả bộ dịch lên — quan sát số nF/cm² trên đồng hồ.', v: V(0, 14, 1.5, [0.5, 1, 0.65]), set: { tox: 6 } }
+  ],
+  cvfreq: [
+    { d: 7, cap: 'Mẫu tụ MOS đang ở trạng thái đảo ngược, được nối với máy phát sóng AC và máy đọc LCR. Câu hỏi: lớp đảo electron có theo kịp tín hiệu AC đổi dấu liên tục không?', v: V(25, 26, 1.0), orbit: 6, set: { logF: 1.7 } },
+    { d: 10, cap: 'Tần số thấp (50 Hz): tín hiệu đảo cực chậm. Electron kịp sinh ra từ nhiệt ở vùng nghèo rồi chạy lên mặt, nên lớp đảo (lớp xanh lá) nở ra rút lại theo từng nhịp — điện dung đọc được ≈ C_ox.', v: V(0, 12, 2.0, [0.5, 1, 0.72]), slow: 0.4 },
+    { d: 10, cap: 'Tăng tần số dần: lúc này electron sinh ra bằng nhiệt không đủ nhanh để bắt kịp nhịp đảo cực nữa, lớp đảo bắt đầu yếu đi và điện dung đọc tụt dần.', v: V(0, 12, 2.0, [0.5, 1, 0.72]), set: { logF: 4.0 }, slow: 0.3 },
+    { d: 11, cap: 'Tần số cao (1 MHz): lớp đảo đóng băng, không còn đáp ứng. Thay vào đó, chính mép vùng nghèo ở độ sâu x_dT rung theo tín hiệu, nên điện dung tụt phẳng xuống C′_min.', v: V(0, 12, 2.0, [0.5, 1, 0.72]), set: { logF: 6.0 }, slow: 0.3 }
+  ],
+  pinch: [
+    { d: 7, cap: 'n-MOSFET phóng lớn: hai vùng n⁺ là Source (trái) và Drain (phải), cổng nằm phía trên. Đang đặt V_GS dưới ngưỡng nên dưới cổng chưa có kênh — không có dòng chảy.', v: V(25, 26, 1.0), orbit: 6, set: { VGS: 0.5, VDS: 1.0 } },
+    { d: 11, cap: 'V_GS vượt V_T: cổng kéo electron hình thành kênh nối hai vùng n⁺. Với V_DS nhỏ, kênh dày đều như một điện trở và electron (chấm vàng) trôi từ Source sang Drain.', v: V(0, 14, 1.7, [0.5, 1, 0.74]), set: { VGS: 2.0, VDS: 0.3 }, slow: 0.3 },
+    { d: 11, cap: 'Tăng V_DS: điện thế dọc kênh tăng dần về phía Drain, nên hiệu điện thế giữa cổng và kênh giảm dần — kênh mỏng dần về phía Drain thành hình nêm. Khi V_DS = V_GS − V_T, kênh thắt hẳn ở mép Drain.', v: V(0, 14, 1.9, [0.68, 1, 0.74]), set: { VDS: 1.2 }, slow: 0.3 },
+    { d: 11, cap: 'Bão hòa: V_DS lớn hơn nữa, điểm thắt lùi về phía Source. Electron đến điểm thắt thì bị điện trường mạnh của vùng nghèo kéo thẳng sang Drain, nên dòng gần như không tăng thêm theo V_DS.', v: V(0, 14, 1.9, [0.64, 1, 0.74]), set: { VDS: 2.5 }, slow: 0.3 },
+    { d: 8, cap: 'Tăng V_GS trong vùng bão hòa: kênh dày hơn, nhiều electron hơn và dòng I_D tăng nhanh (đồng hồ bên phải).', v: V(0, 14, 1.4), set: { VGS: 2.8 }, slow: 0.4 }
+  ],
+  ivlaw: [
+    { d: 7, cap: 'MOSFET lái hai tải: bóng đèn và quạt. Dòng máng I_D chạy từ nguồn V_DD qua tải rồi qua kênh MOSFET; độ sáng đèn và tốc độ quạt cho thấy I_D lớn hay nhỏ.', set: { Vov: 0.6, WL: 10, mu: 400, tox: 12 }, slow: 0.6 },
+    { d: 9, cap: 'Gấp đôi quá mức V_GS − V_T (0,6 → 1,2 V): số electron trong kênh gấp đôi và vận tốc trôi cũng gấp đôi — dòng tăng gấp bốn lần. Đèn sáng vọt, quạt quay nhanh hơn rõ rệt.', set: { Vov: 1.2 }, slow: 0.6 },
+    { d: 9, cap: 'Tăng tiếp lên 2,0 V: dòng tăng theo bình phương V_GS − V_T. Đó là luật bình phương của MOSFET bão hòa.', set: { Vov: 2.0 }, slow: 0.6 },
+    { d: 9, cap: 'Kênh rộng và ngắn hơn (W/L = 30): như mở thêm nhiều làn cho electron, dòng tỉ lệ thuận với W/L.', set: { Vov: 1.2, WL: 30 }, slow: 0.6 },
+    { d: 9, cap: 'Làm oxit mỏng đi còn 6 nm: C_ox lớn nên cùng V_GS kéo được nhiều electron hơn vào kênh — dòng lại tăng.', set: { WL: 10, tox: 6 }, slow: 0.6 }
+  ],
+  miller: [
+    { d: 7, cap: 'MOSFET RF phóng lớn: cổng phủ lên kênh giữa hai vùng n⁺. Phần đỏ là mép cổng chồng lấn lên Drain, tạo thành tụ ký sinh C_gdp rất nhỏ nhưng ảnh hưởng lớn đến tốc độ.', v: V(25, 26, 1.0), orbit: 6, set: { L: 1.0, Vov: 1.2, RL: 0, Cgdp: 8 } },
+    { d: 10, cap: 'Cận cảnh mép chồng lấn: cổng và Drain như hai bản của một tụ nhỏ ngăn cách bởi oxit. Khi RL = 0, điện áp Drain không đổi nên tụ này chỉ cộng đơn giản vào điện dung cổng.', v: V(0, 14, 1.8, [0.74, 1, 0.62]), slow: 0.5 },
+    { d: 11, cap: 'Thêm tải R_L = 2 kΩ: tín hiệu ở Drain bị khuếch đại và đảo pha. Hai bản của C_gdp bị kéo ngược chiều nhau, nên nguồn phải nạp lượng điện tích gấp (1 + g_m·R_L) lần — điện dung Miller lớn hơn nhiều, f_T tụt xuống.', v: V(0, 14, 1.8, [0.74, 1, 0.62]), set: { RL: 2000 }, slow: 0.4 },
+    { d: 9, cap: 'Thu ngắn kênh còn 0,5 µm: electron bay qua nhanh hơn và C_gs nhỏ đi, f_T tăng — nhưng phần Miller vẫn là phần cản trở lớn nhất.', v: V(15, 20, 1.2), set: { L: 0.5 } },
+    { d: 8, cap: 'Giảm chồng lấn (C_gdp về 1 fF): đó là cách chữa chính — điện dung Miller co lại, băng thông phục hồi.', v: V(0, 14, 1.8, [0.74, 1, 0.62]), set: { Cgdp: 1 } }
+  ],
+  subth: [
+    { d: 7, cap: 'Chip một tỉ MOSFET ở chế độ ngủ: mọi transistor "tắt" vì V_GS < V_T. Nhưng mỗi cái vẫn rò một dòng rất nhỏ, và cộng một tỉ cái lại thì rò đủ làm chip ấm lên và pin tụt dần.', set: { VGS: 0.55, VDS: 0.15, SS: 75 }, slow: 0.6 },
+    { d: 9, cap: 'Hạ V_GS xuống 0,2 V: rào thế cao thêm, ít hạt nhiệt đủ năng lượng vượt rào — dòng rò giảm theo hàm mũ, chip mát đi, pin hao chậm lại.', set: { VGS: 0.2 }, slow: 0.6 },
+    { d: 9, cap: 'Nâng V_GS lên sát ngưỡng 0,7 V: rào thấp xuống, dòng rò vọt lên nhiều bậc — chip nóng đỏ và pin tụt nhanh dù vẫn đang "tắt".', set: { VGS: 0.7 }, slow: 0.6 },
+    { d: 9, cap: 'Hệ số dốc SS cho biết phải hạ V_GS bao nhiêu mV thì dòng giảm mười lần. SS = 110 mV/dec: rào "mềm", dòng rò rất lớn.', set: { VGS: 0.5, SS: 110 }, slow: 0.6 },
+    { d: 9, cap: 'SS = 60 mV/dec (giới hạn nhiệt ở nhiệt độ phòng): rào "cứng" nhất có thể, cùng V_GS dòng rò nhỏ đi hàng nghìn lần.', set: { SS: 60 }, slow: 0.6 }
+  ],
+  clm: [
+    { d: 7, cap: 'Kênh dưới cổng có chiều dài L. Khối đỏ là vùng nghèo của Drain; electron (chấm) chạy từ Source sang Drain qua đoạn kênh còn lại.', v: V(25, 26, 1.0), orbit: 6, set: { L: 0.6, VDS: 1.0, Na: 5e15 } },
+    { d: 11, cap: 'Tăng V_DS: vùng nghèo của Drain phình ra, lấn dần vào kênh. Đoạn kênh electron còn phải đi, L′ = L − ΔL, bị rút ngắn — các chấm đỏ là những electron đã vào vùng nghèo.', v: V(0, 14, 2.0, [0.75, 1, 0.6]), set: { VDS: 3.5 }, slow: 0.4 },
+    { d: 10, cap: 'V_DS = 6 V: ΔL lớn hơn nữa. Kênh ngắn lại nên electron qua nhanh hơn, dòng vọt lên theo tỉ lệ L/L′ — dòng bão hòa không phẳng mà dốc dần theo V_DS.', v: V(0, 14, 2.0, [0.75, 1, 0.6]), set: { VDS: 6.0 }, slow: 0.4 },
+    { d: 10, cap: 'Kênh ngắn hơn (L = 0,3 µm): cùng độ ăn ΔL chiếm tỉ lệ lớn hơn nhiều, nên hiệu ứng điều biến chiều dài càng mạnh.', v: V(0, 16, 1.5), set: { L: 0.3, VDS: 4.0 }, slow: 0.5 },
+    { d: 9, cap: 'Pha tạp nặng Nₐ = 10¹⁷: ion dày đặc, vùng nghèo của Drain phình ra rất ít — ΔL nhỏ và hiệu ứng yếu hẳn.', v: V(0, 16, 1.5), set: { Na: 1e17 }, slow: 0.5 }
+  ],
+  velsat: [
+    { d: 8, cap: 'Transistor Planar với kênh dài (L = 1 µm): cổng chỉ phủ mặt trên. Electron trôi chậm, hay va vào bề mặt Si nhám rồi mất vận tốc.', v: V(25, 26, 1.0), orbit: 6, set: { mode: 'surf', L: 1.0, Vov: 1.2 }, slow: 0.4 },
+    { d: 11, cap: 'Rút ngắn kênh còn 0,4 µm: điện trường dọc kênh rất mạnh. Electron tăng tốc nhưng va chạm liên tục với mạng tinh thể nên vận tốc chạm trần v_sat ≈ 10⁷ cm/s — tăng điện áp thêm vận tốc cũng không tăng. Cấu trúc đổi sang FinFET: cổng ôm ba mặt vây Si.', v: V(0, 16, 1.6, [0.5, 0.5, 0.6]), set: { mode: 'sat', L: 0.4 }, slow: 0.3 },
+    { d: 11, cap: 'Dưới 0,1 µm: kênh ngắn hơn quãng đường tự do giữa hai va chạm nên electron bay thẳng không va chạm — chế độ đạn đạo, vận tốc còn vượt v_sat. Cấu trúc GAA nanosheet: cổng bọc kín bốn mặt các lá kênh.', v: V(0, 16, 1.6, [0.5, 0.5, 0.6]), set: { mode: 'ball', L: 0.08 }, slow: 0.25 },
+    { d: 9, cap: 'Tăng V_GS − V_T lên 2,0 V: ở kênh ngắn vận tốc đã bão hòa nên dòng chỉ tăng bậc nhất theo V (nhờ thêm electron), không còn tăng bình phương như kênh dài.', v: V(0, 16, 1.2), set: { Vov: 2.0 }, slow: 0.4 }
+  ]
+};
+const NOCAM = new Set(['ivlaw', 'subth']);
+const THREE = new Set(['mos', 'inv', 'vt', 'moscv', 'cvfreq', 'pinch', 'miller', 'clm', 'velsat']);
+
 const LABS = [];
 
 /* ==========================================================================
@@ -266,7 +391,7 @@ const LABS = [];
 LABS.push({
   id: 'mos', tag: '1.4', name: 'Tụ MOS', sec: 1,
   S: { sub: 'p', VG: 1.2 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Tụ MOS trên phiến wafer Si + Kim dò cổng & Nguồn DC',
@@ -288,7 +413,7 @@ LABS.push({
         const modeCol = curSt.mode === 'inv' ? minCol : curSt.mode === 'dep' ? C.main : curSt.mode === 'acc' ? majCol : C.ink;
 
         // Phóng to tối đa khối tụ MOS 3D lệch trái để tận dụng không gian
-        const bw = Math.min(320, W * 0.50), bd = Math.min(156, H * 0.42), subH = Math.min(112, H * 0.35), oxH = 18, gH = 16;
+        const bw = Math.min(320, W * 0.46), bd = Math.min(156, H * 0.40), subH = Math.min(112, H * 0.33), oxH = 18, gH = 16;
         const ox = W * 0.25, oy = H * 0.72;
         const targetDep = curSt.xd > 0 ? subH * clamp(curSt.xd / m.xdT, 0.14, 1) * 0.68 : 0;
         if (st.dep3d == null) st.dep3d = targetDep;
@@ -307,23 +432,12 @@ LABS.push({
         isoBox(ctx, ox, oy, padX, padY, subH + oxH, padW, padD, gH, C.main, 0.92, C.ink);
 
         const gTop = isoP(ox, oy, padX + padW * 0.5, padY + padD * 0.5, subH + oxH + gH);
-        const backPt = isoP(ox, oy, bw + 14, bd * 0.5, -8);
-        const psuX = Math.max(W * 0.72, ox + bw + 22), psuW = Math.min(156, W - psuX - 12), psuH = 88, psuY = 34;
         drawProbe(ctx, gTop[0], gTop[1], 1, C.main, 'Cổng (G)');
-        ln(ctx, gTop[0] + 42, gTop[1] - 54, psuX, psuY + 24, C.main, 2.2);
-        ln(ctx, backPt[0], backPt[1], psuX, psuY + psuH - 18, C.sub, 2.2);
-
-        rr(ctx, psuX, psuY, psuW, psuH, 8); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.4; ctx.stroke();
-        txt(ctx, 'NGUỒN DC (V_G)', psuX + psuW / 2, psuY + 13, C.mut, 9.5, 'center', 700);
-        rr(ctx, psuX + 8, psuY + 24, psuW - 16, 28, 5); ctx.fillStyle = C.bg; ctx.fill(); ctx.strokeStyle = modeCol; ctx.lineWidth = 1.2; ctx.stroke();
-        txt(ctx, (S.VG >= 0 ? '+' : '−') + Math.abs(S.VG).toFixed(2) + ' V', psuX + psuW / 2, psuY + 38, modeCol, 14, 'center', 800);
-        txt(ctx, 'I_cổng = 0 A (Oxit chặn)', psuX + psuW / 2, psuY + 65, C.c2, 9.5, 'center', 700);
-        txt(ctx, 'Đế ' + (isP ? 'p-Si' : 'n-Si') + ' nối đất', psuX + psuW / 2, psuY + 78, C.mut, 9, 'center', 600);
-
-        // Đồng hồ mini KHÔNG khung đặt ở vùng trống góc dưới-phải dưới bộ nguồn DC!
-        const gCx = psuX + psuW * 0.5, gCy = Math.min(H - 28, psuY + psuH + 54);
-        drawMiniGauge(ctx, gCx, gCy, 23, 'Uốn bề mặt φ_s', curSt.phiS.toFixed(2) + ' V · x_d=' + fmtLen(curSt.xd),
-          clamp(Math.abs(curSt.phiS) / (2.2 * m.phiF), 0, 1), modeCol);
+        const gx = W - 62;
+        drawMiniGauge(ctx, gx, H * 0.27, 23, 'Nguồn DC V_G', (S.VG >= 0 ? '+' : '−') + Math.abs(S.VG).toFixed(2) + ' V', clamp((S.VG + 2.2) / 4.4, 0, 1), modeCol);
+        txt(ctx, 'I_cổng = 0 A (oxit chặn)', gx, H * 0.27 + 52, C.c2, 9.5, 'center', 700);
+        drawMiniGauge(ctx, gx, H * 0.72, 23, 'Uốn bề mặt φ_s', curSt.phiS.toFixed(2) + ' V', clamp(Math.abs(curSt.phiS) / (2.2 * m.phiF), 0, 1), modeCol);
+        txt(ctx, 'x_d = ' + fmtLen(curSt.xd), gx, H * 0.72 + 52, C.mut, 9.5, 'center', 700);
 
         const lbOx = isoP(ox, oy, 0, bd, subH + oxH * 0.5);
         const lbSi = isoP(ox, oy, 0, bd, subH * 0.45);
@@ -441,7 +555,7 @@ LABS.push({
 LABS.push({
   id: 'inv', tag: '2.3', name: 'Ngưỡng đảo', sec: 2,
   S: { Na: 1e15, phiS: 0.575 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Phiến Si phóng lớn — vùng nghèo ăn sâu tới sàn chặn đỏ x_dT rồi màng e⁻ bùng sáng',
@@ -563,7 +677,7 @@ LABS.push({
 LABS.push({
   id: 'vt', tag: '2.7', name: 'Điện áp V_T', sec: 2,
   S: { sub: 'p', gate: 'Al', Na: 1e15, tox: 12, Qss: 1e10 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Vật liệu cổng + độ dày kính SiO₂ + điện tích Q\'_ss & Đèn LED kiểm thử tại V_G = 0 V',
@@ -580,7 +694,7 @@ LABS.push({
         const isEnh = m.VT > 0;
         const gateCol = S.gate === 'Au' ? C.main : S.gate === 'Al' ? C.sub : S.gate === 'nPoly' ? C.c2 : C.c5;
 
-        const bw = Math.min(310, W * 0.50), bd = Math.min(150, H * 0.40), subH = Math.min(106, H * 0.34);
+        const bw = Math.min(310, W * 0.46), bd = Math.min(150, H * 0.38), subH = Math.min(106, H * 0.32);
         const oxH = clamp(8 + (S.tox / 60) * 52, 8, 60), gH = 20;
         const ox = W * 0.25, oy = H * 0.78;
 
@@ -597,13 +711,14 @@ LABS.push({
         isoBox(ctx, ox, oy, bw * 0.12, bd * 0.12, subH + oxH, bw * 0.76, bd * 0.76, gH, gateCol, 0.92, C.ink);
 
         // LED thử mạch + số đọc V_FB, V_TN không khung rườm rà ở vùng trống bên phải
-        const rx = Math.max(W * 0.76, ox + bw + 32), lcy = H * 0.34;
+        const rx = W - 74, lcy = H * 0.30;
+        if (CAM) { ctx.save(); ctx.globalAlpha = 0.88; ctx.fillStyle = C.bg; rr(ctx, rx - 70, lcy - 46, 140, 138, 8); ctx.fill(); ctx.restore(); }
         txt(ctx, 'THỬ TẠI V_G = 0 V', rx, lcy - 34, C.mut, 9.5, 'center', 700);
         if (!isEnh) { ctx.save(); ctx.globalAlpha = 0.38; dot(ctx, rx, lcy, 27, C.err); ctx.restore(); }
         dot(ctx, rx, lcy, 17, isEnh ? C.tint : C.err);
         ctx.beginPath(); ctx.arc(rx, lcy, 17, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.5; ctx.stroke();
         txt(ctx, isEnh ? 'OFF' : 'ON!', rx, lcy + 0.5, isEnh ? C.mut : C.bg, 10.5, 'center', 800);
-        txt(ctx, isEnh ? 'LOẠI GIÀU (V_T > 0)' : 'LOẠI NGHÈO (V_T ≤ 0)', rx, lcy + 30, isEnh ? C.c2 : C.err, 11, 'center', 800);
+        txt(ctx, isEnh ? 'LOẠI GIÀU (V_T>0)' : 'LOẠI NGHÈO (V_T≤0)', rx, lcy + 30, isEnh ? C.c2 : C.err, 11, 'center', 800);
 
         // Số liệu gọn không khung ngay bên dưới LED
         txt(ctx, 'V_FB = ' + (m.VFB >= 0 ? '+' : '−') + Math.abs(m.VFB).toFixed(3) + ' V', rx, lcy + 56, C.c1, 11, 'center', 700);
@@ -675,7 +790,7 @@ LABS.push({
 LABS.push({
   id: 'moscv', tag: '3.2', name: 'Tụ MOS C-V', sec: 3,
   S: { VG: 0.4, tox: 12, Na: 1e15, Qss: 1e10 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Mâm kẹp wafer tụ MOS + Kim dò BNC nối Máy đo LCR',
@@ -692,13 +807,17 @@ LABS.push({
         const Cmeas = curSt.mode === 'inv' ? m.Cox : curSt.C;
 
         // Phóng to mâm wafer + tụ MOS 3D
-        const bw = Math.min(220, W * 0.36), bd = Math.min(126, H * 0.36), siH = Math.min(72, H * 0.25), oxH = 13;
+        const bw = Math.min(250, W * 0.40), bd = Math.min(140, H * 0.36), siH = Math.min(84, H * 0.27), oxH = 13;
         const ox = W * 0.21, oy = H * 0.72;
         isoBox(ctx, ox, oy, -14, -12, -16, bw + 28, bd + 24, 16, C.c3, 0.45, C.sub);
         isoBox(ctx, ox, oy, 0, 0, 0, bw, bd, siH, C.card, 1, C.sub);
         if (curSt.mode === 'dep') {
           const dH = siH * clamp(curSt.xd / m.xdT, 0.16, 0.74);
           isoBox(ctx, ox, oy, bw * 0.18, bd * 0.18, siH - dH, bw * 0.64, bd * 0.64, dH, C.c5, 0.40, C.c5);
+        }
+        if (curSt.mode === 'inv' || curSt.mode === 'acc') {
+          const cl = curSt.mode === 'inv' ? C.c2 : C.c4;
+          isoBox(ctx, ox, oy, bw * 0.18, bd * 0.18, siH - 6, bw * 0.64, bd * 0.64, 6, cl, 0.72 + 0.2 * Math.sin(t * 5), cl);
         }
         isoBox(ctx, ox, oy, 0, 0, siH, bw, bd, oxH, C.c1, 0.25, C.g);
         isoBox(ctx, ox, oy, bw * 0.18, bd * 0.18, siH + oxH, bw * 0.64, bd * 0.64, 12, C.main, 0.92, C.ink);
@@ -707,31 +826,14 @@ LABS.push({
         const pChuck = isoP(ox, oy, bw + 14, bd * 0.5, -8);
         drawProbe(ctx, pTop[0], pTop[1], 1, C.main, 'HI');
 
-        // Máy đo LCR để bàn to rõ bên phải
-        const lx = W * 0.55, lw = Math.min(270, W - lx - 14), lh = Math.min(176, H - 44), ly = (H - lh) * 0.55;
-        ln(ctx, pTop[0] + 42, pTop[1] - 54, lx, ly + 40, C.main, 2.5);
-        ln(ctx, pChuck[0], pChuck[1], lx, ly + lh - 32, C.c2, 2.5);
-        const uSig = (t * 0.85) % 1;
-        dot(ctx, pTop[0] + 42 + (lx - (pTop[0] + 42)) * uSig, (pTop[1] - 54) + (ly + 40 - (pTop[1] - 54)) * uSig, 3.8, C.main);
-
-        rr(ctx, lx, ly, lw, lh, 10); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.6; ctx.stroke();
-        txt(ctx, 'MÁY ĐO LCR · CHẾ ĐỘ C-V', lx + lw / 2, ly + 15, C.mut, 10, 'center', 700);
-        rr(ctx, lx + 10, ly + 26, lw - 20, 62, 6); ctx.fillStyle = C.bg; ctx.fill();
-        ctx.strokeStyle = curSt.mode === 'dep' ? C.c5 : C.main; ctx.lineWidth = 1.4; ctx.stroke();
-        txt(ctx, (Cmeas * 1e9).toFixed(1) + ' nF/cm²', lx + lw / 2, ly + 48, curSt.mode === 'dep' ? C.c5 : C.main, 18, 'center', 800);
-        txt(ctx, 'V_G: ' + (S.VG >= 0 ? '+' : '') + S.VG.toFixed(2) + ' V  ·  ' + Math.round((Cmeas / m.Cox) * 100) + '% C_ox', lx + lw / 2, ly + 72, C.ink, 10.5, 'center', 600);
-
-        const leds = [['acc', 'TÍCH LŨY', C.c4], ['dep', 'NGHÈO', C.c5], ['inv', 'ĐẢO NGƯỢC', C.c2]];
-        leds.forEach((ld, i) => {
-          const ex = lx + 26 + i * ((lw - 52) / 2), ey = ly + lh - 38;
-          const on = curSt.mode === ld[0];
-          dot(ctx, ex, ey, 6, on ? ld[2] : C.tint);
-          ctx.beginPath(); ctx.arc(ex, ey, 6, 0, TAU2); ctx.strokeStyle = on ? ld[2] : C.g; ctx.lineWidth = 1.2; ctx.stroke();
-          txt(ctx, ld[1], ex, ey + 15, on ? ld[2] : C.mut, 9.5, 'center', on ? 800 : 500);
-        });
-
-        // Đồng hồ mini không khung ở khoảng trống góc trên-trái
-        drawMiniGauge(ctx, 52, 48, 21, 'C\' / C_ox', Math.round((Cmeas / m.Cox) * 100) + '%', Cmeas / m.Cox, C.main);
+        const uSig = (t * 0.85) % 1, cx0 = pTop[0] + 42, cy0 = pTop[1] - 54;
+        ln(ctx, cx0, cy0, cx0, Math.max(4, cy0 - 26), C.main, 2.5);
+        dot(ctx, cx0, cy0 - (cy0 - Math.max(4, cy0 - 26)) * uSig, 3.8, C.main);
+        const gx = W - 62, modeLbl = { acc: 'TÍCH LŨY', dep: 'NGHÈO', inv: 'ĐẢO NGƯỢC' }[curSt.mode], modeC = { acc: C.c4, dep: C.c5, inv: C.c2 }[curSt.mode];
+        drawMiniGauge(ctx, gx, H * 0.27, 23, 'Máy đo LCR · C\'', (Cmeas * 1e9).toFixed(1) + ' nF/cm²', Cmeas / m.Cox, curSt.mode === 'dep' ? C.c5 : C.main);
+        txt(ctx, Math.round((Cmeas / m.Cox) * 100) + '% C_ox', gx, H * 0.27 + 52, C.ink, 10, 'center', 700);
+        drawMiniGauge(ctx, gx, H * 0.72, 23, 'Điện áp cổng V_G', (S.VG >= 0 ? '+' : '−') + Math.abs(S.VG).toFixed(2) + ' V', clamp((S.VG + 1.5) / 3.5, 0, 1), modeC);
+        txt(ctx, modeLbl, gx, H * 0.72 + 52, modeC, 10.5, 'center', 800);
         chip(ctx, 'Trạm đo C-V: quét V_G đo độ võng tụ MOS', W * 0.54, 15, C.main, 'center');
       }
     },
@@ -796,7 +898,7 @@ LABS.push({
 LABS.push({
   id: 'cvfreq', tag: '3.4', name: 'Tần số C-V', sec: 3,
   S: { logF: 1.5 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế: Bàn máy phát sóng AC đo mẫu tụ MOS 3D đang đảo ngược nối máy đọc LCR',
@@ -815,31 +917,8 @@ LABS.push({
         const m = mosCalc('p', 'Al', 1e15, 12, 1e10);
         const Cmeas = m.Cmin + (m.Cox - m.Cmin) * follow;
 
-        const pad = 14, boxH = Math.min(162, H - 56), boxY = (H - boxH) * 0.56;
-        const genW = Math.min(182, W * 0.28), lcrW = Math.min(182, W * 0.28);
-
-        // 1) Máy phát sóng AC (trái)
-        rr(ctx, pad, boxY, genW, boxH, 9); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.c1; ctx.lineWidth = 1.5; ctx.stroke();
-        txt(ctx, 'MÁY PHÁT SÓNG AC', pad + genW / 2, boxY + 15, C.c1, 10, 'center', 700);
-        rr(ctx, pad + 10, boxY + 26, genW - 20, 62, 5); ctx.fillStyle = C.bg; ctx.fill(); ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
-        const cycles = 1 + (S.logF - 0.7) * 1.4;
-        ctx.beginPath();
-        for (let i = 0; i <= 48; i++) {
-          const sx = pad + 14 + (i / 48) * (genW - 28);
-          const sy = boxY + 57 + Math.sin((i / 48) * TAU2 * cycles - t * visOmega) * 20;
-          i ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy);
-        }
-        ctx.strokeStyle = C.main; ctx.lineWidth = 2.1; ctx.stroke();
-        txt(ctx, fmtFreq(freq), pad + genW / 2, boxY + 112, C.ink, 14.5, 'center', 800);
-        txt(ctx, follow > 0.7 ? 'Đảo cực CHẬM' : follow < 0.2 ? 'Đảo cực SIÊU NHANH!' : 'Tốc độ vừa',
-          pad + genW / 2, boxY + 136, follow < 0.2 ? C.err : C.c2, 10.5, 'center', 700);
-
-        // 2) Tụ MOS 3D phóng lớn ở giữa
-        const midX = W * 0.50, midY = boxY + boxH * 0.66;
-        const bw = Math.min(126, W * 0.22), bd = Math.min(80, H * 0.24), siH = Math.min(64, H * 0.22);
-        const mx = midX - bw * 0.36, my = midY + 14;
-        ln(ctx, pad + genW, boxY + 57, mx + 6, my - siH - 12, C.main, 2.5);
-        ln(ctx, mx + bw, my - siH * 0.4, W - pad - lcrW, boxY + 57, C.c2, 2.5);
+        const midX = W * 0.5, my = H * 0.74;
+        const bw = Math.min(250, W * 0.38), bd = Math.min(140, H * 0.36), siH = Math.min(110, H * 0.32), mx = midX - bw * 0.36;
 
         isoBox(ctx, mx, my, 0, 0, 0, bw, bd, siH, C.card, 1, C.sub);
         const depH = siH * 0.56 + gateSig * 9 * (1 - follow);
@@ -847,22 +926,15 @@ LABS.push({
         isoBox(ctx, mx, my, 0, 0, siH - 8, bw, bd, 8, C.c2, clamp(0.45 + gateSig * 0.35 * follow, 0.2, 0.96), C.c2);
         isoBox(ctx, mx, my, 0, 0, siH, bw, bd, 10, C.c1, 0.24, C.g);
         isoBox(ctx, mx, my, bw * 0.14, bd * 0.14, siH + 10, bw * 0.72, bd * 0.72, 11, C.main, 0.92, C.ink);
+        const gp = isoP(mx, my, bw * 0.5, bd * 0.5, siH + 21 + 16);
+        ctx.save(); ctx.globalAlpha = 0.35 + 0.65 * Math.abs(gateSig);
+        txt(ctx, gateSig >= 0 ? '+' : '−', gp[0], gp[1], C.main, 22, 'center', 800); ctx.restore();
 
-        // Đồng hồ mini không khung ở khoảng trống ngay trên tụ MOS 3D
-        drawMiniGauge(ctx, midX, 52, 19, 'Lớp đảo bám kịp', Math.round(follow * 100) + '%', follow, follow < 0.2 ? C.err : C.c2);
+        const gx = W - 62;
+        drawMiniGauge(ctx, gx, H * 0.19, 19, 'Máy phát AC', fmtFreq(freq), clamp((S.logF - 0.7) / 5.6, 0, 1), C.c1);
+        drawMiniGauge(ctx, gx, H * 0.50, 19, 'Lớp đảo bám kịp', Math.round(follow * 100) + '%', follow, follow < 0.2 ? C.err : C.c2);
+        drawMiniGauge(ctx, gx, H * 0.81, 19, 'Máy LCR · C\'', (Cmeas * 1e9).toFixed(1) + ' nF/cm²', (Cmeas - m.Cmin) / (m.Cox - m.Cmin), follow < 0.2 ? C.err : C.c2);
 
-        // 3) Máy đọc LCR (phải)
-        const rx = W - pad - lcrW;
-        rr(ctx, rx, boxY, lcrW, boxH, 9); ctx.fillStyle = C.card; ctx.fill();
-        ctx.strokeStyle = follow < 0.2 ? C.err : C.c2; ctx.lineWidth = 1.6; ctx.stroke();
-        txt(ctx, 'MÁY ĐO LCR', rx + lcrW / 2, boxY + 15, C.mut, 10, 'center', 700);
-        rr(ctx, rx + 10, boxY + 28, lcrW - 20, 58, 5); ctx.fillStyle = C.bg; ctx.fill();
-        ctx.strokeStyle = follow < 0.2 ? C.err : C.c2; ctx.lineWidth = 1.2; ctx.stroke();
-        txt(ctx, (Cmeas * 1e9).toFixed(1), rx + lcrW / 2, boxY + 50, follow < 0.2 ? C.err : C.c2, 19, 'center', 800);
-        txt(ctx, 'nF/cm²', rx + lcrW / 2, boxY + 72, C.mut, 10, 'center', 700);
-        txt(ctx, follow > 0.7 ? 'Đọc ra ≈ C_ox' : follow < 0.2 ? 'Tụt phẳng ≈ C\'_min!' : 'Đang tụt dần...',
-          rx + lcrW / 2, boxY + 110, follow < 0.2 ? C.err : C.c2, 11.5, 'center', 700);
-        txt(ctx, follow < 0.2 ? 'Lớp đảo ĐÓNG BĂNG' : 'Lớp đảo nhấp nháy kịp', rx + lcrW / 2, boxY + 134, C.ink, 10, 'center', 600);
 
         chip(ctx, 'Tần số cao (1 MHz) → lớp đảo không theo kịp AC, C\' giữ ở C\'_min', W / 2, 14, follow < 0.2 ? C.err : C.main, 'center');
       }
@@ -925,7 +997,7 @@ LABS.push({
 LABS.push({
   id: 'pinch', tag: '4.2', name: 'Kênh thắt', sec: 4,
   S: { VGS: 2.0, VDS: 0.6, VT: 0.80 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Linh kiện vỏ TO-220 & Khối n-MOSFET phẳng trên chip phóng lớn',
@@ -1081,7 +1153,7 @@ LABS.push({
 LABS.push({
   id: 'ivlaw', tag: '4.5', name: 'Van dòng I_D', sec: 4,
   S: { Vov: 1.2, WL: 10, mu: 400, tox: 12 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế: Mạch MOSFET TO-220 lái Bóng đèn & Quạt động cơ quay theo luật bình phương (V_GS − V_T)²',
@@ -1199,7 +1271,7 @@ LABS.push({
 LABS.push({
   id: 'miller', tag: '5.5', name: 'Miller & f_T', sec: 5,
   S: { L: 1.0, Vov: 1.2, RL: 2000, Cgdp: 4 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Cận cảnh mép cổng chồng lấn đỏ C_gdp + Dao động ký RF thử nghiệm tại 2 GHz',
@@ -1219,7 +1291,7 @@ LABS.push({
         const CG = Cgs + CM, fT = gms / (TAU2 * CG);
 
         // Phóng to khối MOSFET 3D bên trái
-        const bw = Math.min(256, W * 0.41), bd = Math.min(130, H * 0.36), subH = Math.min(82, H * 0.29);
+        const bw = Math.min(320, W * 0.46), bd = Math.min(150, H * 0.40), subH = Math.min(104, H * 0.34);
         const ox = W * 0.16, oy = H * 0.78;
         const sdW = bw * 0.28, ovPx = clamp(S.Cgdp * 1.2, 0, 24);
 
@@ -1238,37 +1310,10 @@ LABS.push({
         const pG = isoP(ox, oy, bw * 0.5, 0, subH + 34);
         txt(ctx, 'L = ' + S.L.toFixed(2) + ' µm', pG[0], pG[1], C.main, 11, 'center', 700);
 
-        // Đồng hồ mini f_T KHÔNG khung ở góc trên-trái
-        drawMiniGauge(ctx, 56, 52, 22, 'Tần số cắt f_T', fmtFreq(fT), clamp(Math.log10(fT / 1e8) / 3.2, 0, 1), C.main);
-
-        // Dao động ký RF bên phải
-        const sx = W * 0.54, sw = Math.min(266, W - sx - 12), sh = Math.min(180, H - 44), sy = (H - sh) * 0.56;
-        rr(ctx, sx, sy, sw, sh, 10); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.6; ctx.stroke();
-        txt(ctx, 'DAO ĐỘNG KÝ RF · THỬ TẠI 2 GHz', sx + sw / 2, sy + 15, C.mut, 10, 'center', 700);
-        const scX = sx + 10, scY = sy + 26, scW = sw - 20, scH = sh - 66;
-        rr(ctx, scX, scY, scW, scH, 6); ctx.fillStyle = C.bg; ctx.fill(); ctx.strokeStyle = C.g; ctx.lineWidth = 1; ctx.stroke();
-        ln(ctx, scX, scY + scH / 2, scX + scW, scY + scH / 2, C.g, 1, [3, 3]);
-
-        const ampRatio = clamp(fT / 2e9, 0.08, 2.4);
-        ctx.beginPath();
-        for (let i = 0; i <= 50; i++) {
-          const x = scX + 4 + (i / 50) * (scW - 8);
-          const y = scY + scH / 2 + Math.sin((i / 50) * TAU2 * 2.5 - t * 6) * (scH * 0.16);
-          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-        }
-        ctx.strokeStyle = C.c1; ctx.lineWidth = 1.6; ctx.stroke();
-
-        const outAmp = Math.min(scH * 0.43, scH * 0.16 * ampRatio);
-        ctx.beginPath();
-        for (let i = 0; i <= 50; i++) {
-          const x = scX + 4 + (i / 50) * (scW - 8);
-          const y = scY + scH / 2 - Math.sin((i / 50) * TAU2 * 2.5 - t * 6) * outAmp;
-          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-        }
-        ctx.strokeStyle = ampRatio >= 1 ? C.c2 : C.err; ctx.lineWidth = 2.6; ctx.stroke();
-        txt(ctx, ampRatio >= 1 ? ('Còn khuếch đại ×' + ampRatio.toFixed(1) + ' tại 2 GHz') : ('Bị suy hao ×' + ampRatio.toFixed(2) + '!'),
-          sx + sw / 2, sy + sh - 24, ampRatio >= 1 ? C.c2 : C.err, 10.5, 'center', 700);
-        txt(ctx, 'R_L = ' + S.RL + ' Ω  ·  Miller = ' + Math.round((CM / CG) * 100) + '% C_G', sx + sw / 2, sy + sh - 9, C.ink, 10, 'center', 600);
+        const ampRatio = clamp(fT / 2e9, 0.08, 2.4), gx = W - 62;
+        drawMiniGauge(ctx, gx, H * 0.19, 19, 'Tần số cắt f_T', fmtFreq(fT), clamp(Math.log10(fT / 1e8) / 3.2, 0, 1), C.main);
+        drawMiniGauge(ctx, gx, H * 0.50, 19, 'Khuếch đại tại 2 GHz', '×' + ampRatio.toFixed(2), clamp(ampRatio / 2.4, 0, 1), ampRatio >= 1 ? C.c2 : C.err, 0.42);
+        drawMiniGauge(ctx, gx, H * 0.81, 19, 'Miller / C_G', Math.round((CM / CG) * 100) + '%', CM / CG, CM > Cgs ? C.err : C.c1, 0.5);
         chip(ctx, 'Mép chồng lấn nhỏ C_gdp bị nhân (1 + g_m R_L) làm sập băng thông RF!', W * 0.56, 14, CM > Cgs ? C.err : C.main, 'center');
       }
     },
@@ -1324,7 +1369,7 @@ LABS.push({
 LABS.push({
   id: 'subth', tag: '6.2', name: 'Dưới ngưỡng', sec: 6,
   S: { VGS: 0.55, VDS: 0.15, SS: 75, VT: 0.80 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế: Chip 1 tỉ MOSFET đang "NGỦ" (ảnh nhiệt hồng ngoại & Pin tụt vì dòng rò tĩnh)',
@@ -1445,7 +1490,7 @@ LABS.push({
 LABS.push({
   id: 'clm', tag: '6.4', name: 'Điều biến L', sec: 6,
   S: { L: 0.6, VDS: 2.5, Na: 5e15, Vov: 1.0 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Vòm vùng nghèo đỏ của Drain phình to lấn ngang dưới cực cổng khi tăng V_DS',
@@ -1556,7 +1601,7 @@ LABS.push({
 LABS.push({
   id: 'velsat', tag: '6.7', name: 'Bão hòa & Đạn đạo', sec: 6,
   S: { mode: 'sat', L: 0.4, Vov: 1.2 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+  cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"',
   panels: [
     {
       title: 'Thực tế 3D: Tiến hóa hình dáng transistor theo L — Planar (nhám) → FinFET (v_sat) → GAA Nanosheet (đạn đạo)',
@@ -1912,6 +1957,16 @@ const CSS = `
 .lab-m{appearance:none;border:0;background:transparent;color:var(--sub);cursor:pointer;padding:2px 3px;margin-left:6px;border-radius:5px;vertical-align:middle;opacity:.65;line-height:0;transition:color .15s,opacity .15s,transform .15s}
 .lab-m svg{width:.8em;height:.8em;min-width:14px;min-height:14px;display:inline-block;margin:0;background:none;border:0;border-radius:0;max-height:none}
 .lab-m:hover,.lab-m:focus-visible{color:var(--main);opacity:1;transform:rotate(-12deg) scale(1.15)}
+#lab11 .lb-cv canvas.cam{cursor:grab;touch-action:none}
+#lab11 .lb-cv canvas.cam:active{cursor:grabbing}
+#lab11 .lb-sep{width:1px;height:18px;background:var(--g);margin:0 2px}
+#lab11 .lb-c{position:relative}
+#lab11 .lb-film{position:absolute;top:0;right:4px;z-index:3;width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:none;color:var(--ink);font:700 15px/1 var(--font-body);cursor:pointer;opacity:.8;user-select:none}
+#lab11 .lb-film:hover{opacity:1}
+#lab11.filming .lb-c>*:not(.lb-cap){visibility:hidden}
+#lab11.filming .lb-cv canvas.cam{cursor:default}
+#lab11 .lb-cap{position:absolute;left:0;right:0;bottom:0;min-height:100%;box-sizing:border-box;display:none;background:var(--card);border-top:1px solid var(--main);padding:8px 14px 9px;font:600 13px/1.45 var(--font-body);color:var(--ink);pointer-events:none;z-index:2}
+#lab11 .lb-cap i{display:block;height:3px;background:var(--main);border-radius:2px;margin-top:7px;width:0}
 @media(max-width:900px){#lab11 .lb-win{width:100vw;height:100dvh;border-radius:0}#lab11 .lb-b{overflow:auto;display:flex;flex-direction:column}#lab11 .lb-p{min-height:300px;flex:none}#lab11 .lb-p:nth-child(2){min-height:210px}}
 `;
 const FLASK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h4M6.8 2v4.2L3 12.6A1.2 1.2 0 0 0 4 14.4h8a1.2 1.2 0 0 0 1-1.8L9.2 6.2V2"/><path d="M4.6 10h6.8"/></svg>';
@@ -2041,9 +2096,144 @@ function mkCtrl(tab, c, p) {
   return w;
 }
 
+/* ---------- ĐIỀU KHIỂN CAMERA (kéo xoay · lăn chuột zoom) & PHIM TỰ ĐỘNG ---------- */
+let film = null, TSC = 1, TT = 0;
+const ease = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+const lerp = (a, b, k) => a + (b - a) * k;
+const D2R = Math.PI / 180;
+const tiltOf = sy => (sy - 0.06) / 0.79 * 90;
+const syOf = tilt => 0.06 + clamp(tilt, 0, 90) / 90 * 0.79;
+
+function setupCam(tab, p, el, cv) {
+  const three = THREE.has(tab.id), c = p.cam = newCam();
+  p.three = three;
+  const still = NOCAM.has(tab.id);
+  if (!still) cv.classList.add('cam');
+  let cb = el.querySelector('.lb-c');
+  if (!cb) { cb = document.createElement('div'); cb.className = 'lb-c'; el.appendChild(cb); }
+  const view = (label, min, max, step, get, set, fmt) => {
+    const w = document.createElement('div'); w.className = 'lb-k';
+    const lab = document.createElement('span'); lab.textContent = label;
+    const inp = document.createElement('input'); inp.type = 'range'; inp.min = min; inp.max = max; inp.step = step;
+    const out = document.createElement('output'); w.append(lab, inp, out);
+    const sync = () => { inp.value = get(); out.textContent = fmt(get()); };
+    inp.oninput = () => { set(+inp.value); out.textContent = fmt(+inp.value); p.dirty = true; };
+    inp.setAttribute('aria-label', label); p.syncs.push(sync); sync(); cb.appendChild(w);
+  };
+  const resetView = () => { if (film) return; Object.assign(c, { yaw: 0, sy: 0.28, zoom: 1, follow: 0, mx: 0, my: 0 }); p.syncCtrls(); p.dirty = true; };
+  if (FILM[tab.id]) {
+    const fb = document.createElement('div'); fb.className = 'lb-film'; fb.textContent = '▶'; fb.title = 'Phim tự động'; fb.setAttribute('aria-label', 'Phim tự động'); fb.setAttribute('role', 'button'); fb.tabIndex = 0;
+    fb.onclick = e => { if (e) e.stopPropagation(); if (film) filmStop(false); else { filmStart(tab, p); fb.blur(); } };
+    fb.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); fb.onclick(); } };
+    el.querySelector('.lb-cv').appendChild(fb); p.filmBtn = fb;
+    el.querySelector('.lb-cv').addEventListener('click', () => { if (film) film.paused = !film.paused; });
+    el.addEventListener('wheel', e => { if (!film) return; e.preventDefault(); filmSeek(Math.sign(e.deltaY) * clamp(Math.abs(e.deltaY) / 100, 0.5, 3) * 1.5); }, { passive: false });
+    const cap = document.createElement('div'); cap.className = 'lb-cap'; cap.innerHTML = '<span></span><i></i>';
+    cb.appendChild(cap); p.cap = cap;
+  }
+  /* kéo = xoay (3D) hoặc dịch (2D); lăn chuột = zoom; nhấp đúp = về góc gốc */
+  let drag = null;
+  cv.addEventListener('pointerdown', e => { if (film || still) return; drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e => {
+    if (!drag || film) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    if (three) { c.yaw = clamp(c.yaw - dx * 0.008, -80 * D2R, 80 * D2R); c.sy = clamp(c.sy + dy * 0.004, 0.06, 0.85); }
+    else { c.mx = clamp(c.mx + dx, -p.W, p.W); c.my = clamp(c.my + dy, -p.H, p.H); }
+    p.syncCtrls(); p.dirty = true;
+  });
+  const up = () => { drag = null; };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  cv.addEventListener('wheel', e => { if (film || still) return; e.preventDefault(); c.zoom = clamp(c.zoom * Math.exp(-e.deltaY * 0.0015), 0.5, 4); p.syncCtrls(); p.dirty = true; }, { passive: false });
+  if (!still) cv.addEventListener('dblclick', resetView);
+}
+
+function camSnap(c) { return { yaw: c.yaw / D2R, tilt: tiltOf(c.sy), zoom: c.zoom, f: [c.fx, c.fy, c.fz], follow: c.follow, slow: TSC }; }
+
+function filmStart(tab, p, at) {
+  if (!FILM[tab.id] || !p.cam) return;
+  filmStop(false, true);
+  const home = Object.assign({}, tab.S), ctrl = {};
+  const stepOf = {}; tab.panels.forEach(q => (q.ctrls || []).forEach(k => { if (k.k && k.step && !k.log) stepOf[k.k] = k.step; }));
+  const steps = FILM[tab.id].concat([{ d: 3, cap: 'Kết thúc phim — mọi thông số và góc nhìn đã trở về như ban đầu. Bạn có thể tự xoay, zoom và chỉnh thanh trượt để thử lại.', v: V(0, tiltOf(0.28), 1), set: home, slow: 1 }]);
+  film = { tab, p, steps, stepOf, i: -1, t: 0, total: steps.reduce((s, q) => s + q.d, 0), done: 0, home, cam0: camSnap(p.cam), paused: false, quiet: false };
+  root.classList.add('filming');
+  if (p.filmBtn) { p.filmBtn.textContent = '■'; p.filmBtn.title = 'Dừng phim'; p.filmBtn.setAttribute('aria-label', 'Dừng phim'); p.filmBtn.classList.add('on'); }
+  if (p.cap) p.cap.style.display = 'block';
+  filmNext();
+  for (let rest = at || 0; rest > 0 && film;) { const s = Math.min(0.1, rest); filmTick(s); rest -= s; }
+}
+function filmNext() {
+  const f = film; f.i++;
+  if (f.i >= f.steps.length) { filmStop(true); return; }
+  const st = f.steps[f.i], c = f.p.cam, S = f.tab.S;
+  f.from = { cam: camSnap(c), S: {} };
+  f.t = 0;
+  if (st.set) Object.keys(st.set).forEach(k => {
+    if (typeof st.set[k] !== 'number' || SNAPK.includes(k)) S[k] = st.set[k]; else f.from.S[k] = S[k];
+  });
+  if (f.p.cap) { const n = f.p.cap; n.firstChild.textContent = st.cap; }
+  if (!f.quiet) say('w', st.cap);
+}
+function filmTick(dt) {
+  const f = film; if (!f) return;
+  const st = f.steps[f.i], c = f.p.cam, S = f.tab.S, from = f.from;
+  f.t += dt;
+  const mv = st.mv || 0.5, sc = ease(f.t / (st.d * mv)), ss = ease(f.t / (st.d * 0.8)), v = st.v || {};
+  const tYaw = v.yaw != null ? v.yaw : from.cam.yaw, tTilt = v.tilt != null ? v.tilt : from.cam.tilt, tZoom = v.zoom != null ? v.zoom : from.cam.zoom;
+  c.yaw = (lerp(from.cam.yaw, tYaw, sc) + (st.orbit || 0) * Math.max(0, f.t - st.d * mv)) * D2R;
+  c.sy = syOf(lerp(from.cam.tilt, tTilt, sc));
+  c.zoom = Math.exp(lerp(Math.log(from.cam.zoom), Math.log(tZoom), sc));
+  const tf = st.track ? st.track(clamp(f.t / st.d, 0, 1)) : v.f;
+  if (tf) {
+    c.fx = lerp(from.cam.f[0], tf[0], sc); c.fy = lerp(from.cam.f[1], tf[1], sc); if (tf[2] != null) c.fz = lerp(from.cam.f[2], tf[2], sc);
+    c.follow = lerp(from.cam.follow, 1, sc);
+  } else if (v.f === undefined && (v.yaw != null || v.zoom != null)) c.follow = lerp(from.cam.follow, 0, sc);
+  TSC = lerp(from.cam.slow, st.slow != null ? st.slow : from.cam.slow, sc);
+  if (st.set) Object.keys(from.S).forEach(k => {
+    const a = from.S[k], b = st.set[k];
+    if (a == null) return;
+    let val = (a > 0 && b > 0 && Math.max(a, b) / Math.min(a, b) >= 10) ? Math.pow(10, lerp(Math.log10(a), Math.log10(b), ss)) : lerp(a, b, ss);
+    const sp = f.stepOf[k]; if (sp && ss < 1) val = Math.round(val / sp) * sp;
+    S[k] = ss >= 1 ? b : val;
+  });
+  if (f.t >= st.d) { f.done += st.d; filmNext(); }
+  if (!film) return;
+  if (!f.quiet) curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+  if (f.p.cap) f.p.cap.lastChild.style.width = (100 * clamp((f.done + f.t) / f.total, 0, 1)) + '%';
+}
+function camApply(c, k) { c.yaw = k.yaw * D2R; c.sy = syOf(k.tilt); c.zoom = k.zoom; c.fx = k.f[0]; c.fy = k.f[1]; c.fz = k.f[2]; c.follow = k.follow; }
+function filmSeek(delta) {            // lăn chuột: tua tới / lùi thời gian của phim
+  const f = film; if (!f) return;
+  const T = clamp(f.done + f.t + delta, 0, f.total - 0.05), prevI = f.i;
+  Object.assign(f.tab.S, f.home); camApply(f.p.cam, f.cam0); TSC = 1;
+  f.i = -1; f.done = 0; f.t = 0; f.quiet = true;
+  filmNext();
+  for (let rest = T; rest > 0 && film === f;) { const s = Math.min(0.1, rest); filmTick(s); rest -= s; }
+  if (film !== f) return;
+  f.quiet = false;
+  if (f.i !== prevI) say('w', f.steps[f.i].cap);
+  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+}
+document.addEventListener('keydown', e => {      // phím cách: tạm dừng / tiếp tục
+  if (film && root && !root.hidden && (e.key === ' ' || e.code === 'Space')) { e.preventDefault(); e.stopImmediatePropagation(); film.paused = !film.paused; }
+}, true);
+function filmStop(done, silent) {
+  const f = film; if (!f) return;
+  film = null; TSC = 1;
+  root.classList.remove('filming');
+  if (f.p.filmBtn) { f.p.filmBtn.textContent = '▶'; f.p.filmBtn.title = 'Phim tự động'; f.p.filmBtn.setAttribute('aria-label', 'Phim tự động'); f.p.filmBtn.classList.remove('on'); }
+  if (f.p.cap) f.p.cap.style.display = 'none';
+  if (!done) { Object.assign(f.tab.S, f.home); Object.assign(f.p.cam, { yaw: 0, sy: 0.28, zoom: 1, follow: 0, mx: 0, my: 0 }); }
+  f.tab.prev = Object.assign({}, f.tab.S);
+  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+  if (done && !silent) say('v', 'Phim đã kết thúc. Hãy tự thử thay đổi các thanh trượt!');
+}
+
+
 function show(id, panelIdx, patch) {
   const tab = LABS.find(l => l.id === id) || LABS[0];
   if (patch) Object.assign(tab.S, patch);
+  filmStop(false, true);
   cur = tab; lastTab = tab.id;
   clearTimers(); logEl = null; bodyEl.innerHTML = ''; curPanels = [];
 
@@ -2098,6 +2288,7 @@ function show(id, panelIdx, patch) {
 
     bodyEl.appendChild(el);
     curPanels.push(p);
+    if (spec.area === 'a') setupCam(tab, p, el, cv);
 
     const ro = new ResizeObserver(() => {
       const r = box.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
@@ -2119,8 +2310,9 @@ function show(id, panelIdx, patch) {
 
 function loop(ts) {
   if (!root || root.hidden) { raf = 0; return; }
-  const dt = Math.min(0.04, (ts - last) / 1000);
-  last = ts; tAcc += dt;
+  const dt = (film && film.paused) ? 0 : Math.min(0.04, (ts - last) / 1000);
+  last = ts; tAcc += dt; TT += dt * TSC;
+  if (film && !film.paused) filmTick(dt);
   curPanels.forEach(p => {
     if (!p.ctx || !p.W || !(p.spec.anim || p.dirty)) return;
     p.dirty = false;
@@ -2129,7 +2321,10 @@ function loop(ts) {
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, p.W, p.H);
     ctx.save();
-    try { p.spec.draw(p, ctx, p.W, p.H, tAcc, dt); } catch (err) { console.error('[LabB11]', err); }
+    const cm = p.cam;
+    if (cm && p.three) { CAM = cm; beginCam(cm, p.W, p.H); }
+    try { p.spec.draw(p, ctx, p.W, p.H, TT, dt * TSC); } catch (err) { console.error('[LabB11]', err); }
+    CAM = null;
     ctx.restore();
   });
   raf = requestAnimationFrame(loop);
@@ -2147,6 +2342,7 @@ function open(id, panelIdx, patch) {
 
 function close() {
   if (!root || root.hidden) return;
+  filmStop(false, true);
   root.hidden = true; clearTimers(); logEl = null; bodyEl.innerHTML = ''; curPanels = [];
   const b = document.getElementById('tb-lab');
   if (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }
@@ -2200,5 +2396,6 @@ function markLesson(rootEl) {
 if (document.getElementById('tb-badge') && document.getElementById('tb-badge').textContent === 'Buổi 11') {
   markLesson(document.getElementById('app-content'));
 }
-window.LabB11 = { open, close, mark: markLesson, tabs: () => LABS.map(l => l.id) };
+window.LabB11 = { open, close, mark: markLesson, tabs: () => LABS.map(l => l.id),
+  film: (id, at) => { ensureDom(); if (root.hidden || (id && (!cur || cur.id !== id))) open(id); const p = curPanels.find(q => q.cam); if (p) filmStart(cur, p, at); } };
 })();
