@@ -159,6 +159,7 @@ function beginCam(c, W, H) {
       if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1];
     }
     c.px = W * 0.5 - (x0 + x1) / 2; c.py = H * 0.54 - (y0 + y1) / 2;
+    if (c.auto && c.gm) { const f0 = camFU(c, c.auto(c.gm.g)); if (f0) { c.fx = f0[0]; c.fy = f0[1]; c.fz = f0[2]; } }
     if (c.follow > 0) {
       const b = c.bb, s = camProj(c, c.o[0], c.o[1], b.x0 + (b.x1 - b.x0) * c.fx, b.y0 + (b.y1 - b.y0) * c.fy, b.z0 + (b.z1 - b.z0) * c.fz);
       c.px = lerp(c.px, W * 0.5 - s[0], c.follow); c.py = lerp(c.py, H * 0.46 - s[1], c.follow);
@@ -233,7 +234,8 @@ function swarm(st, key, nmax, t, sp) {
   const dt = clamp(t - s.t, 0, 0.05); s.t = t;
   s.a.forEach(q => {
     if (Math.random() < dt * 3) { q.x = gauss(); q.y = gauss(); q.z = gauss(); }
-    q.u += q.x * sp * dt; q.v += q.y * sp * dt; q.w += q.z * sp * dt;
+    const kk = 1 - Math.exp(-dt * 4); q.vx = (q.vx == null ? q.x : q.vx) + (q.x - (q.vx == null ? q.x : q.vx)) * kk; q.vy = (q.vy == null ? q.y : q.vy) + (q.y - (q.vy == null ? q.y : q.vy)) * kk; q.vz = (q.vz == null ? q.z : q.vz) + (q.z - (q.vz == null ? q.z : q.vz)) * kk;
+    q.u += q.vx * sp * dt; q.v += q.vy * sp * dt; q.w += q.vz * sp * dt;
     if (q.u < 0.04) { q.u = 0.04; q.x = Math.abs(q.x); } else if (q.u > 0.96) { q.u = 0.96; q.x = -Math.abs(q.x); }
     if (q.v < 0.04) { q.v = 0.04; q.y = Math.abs(q.y); } else if (q.v > 0.96) { q.v = 0.96; q.y = -Math.abs(q.y); }
     if (q.w < 0.04) { q.w = 0.04; q.z = Math.abs(q.z); } else if (q.w > 0.96) { q.w = 0.96; q.z = -Math.abs(q.z); }
@@ -253,7 +255,7 @@ function gateQ3(ctx, ox, oy, x0, y0, w, d, z, sg, col, nx, ny) {
 /* ==========================================================================
    MÔ HÌNH VẬT LÝ ĐIỐT p-n DÙNG CHUNG (số liệu + hình học hiển thị + bộ mô phỏng hạt tải)
    ========================================================================== */
-let GS = { spd: 0.5, cnt: 0.3 };
+let GS = { spd: 0.5, cnt: 0.3 }, GT = '', CALM = false;
 const cF = () => Math.min(1.6, GS.cnt * 2), sF = () => GS.spd * 1.2;
 const KQ = 8.617e-5;
 const MATS = { si: { ni: 1.5e10, eps: 11.7 * EPS0, eg: 1.12 }, gaas: { ni: 1.8e6, eps: 13.1 * EPS0, eg: 1.42 } };
@@ -312,8 +314,21 @@ function solveVj(S) {
    Mỗi hạt có đích riêng: 'I' xuyên mối nối làm hạt thiểu số rồi tái hợp sau quãng ~Exp(L);
    'S' tái hợp trong vùng trung hòa phía mình (bù cho hạt kia); 'X' tái hợp ngay trong vùng nghèo;
    'Q' hạt thiểu số bị cuốn qua khi phân cực ngược; 'G' cặp sinh ra trong vùng nghèo. */
+const trkSpec = (g, o) => {
+  switch (GT) {
+    case 'bias': return { k: 'e', m: GS.Va > 0.35 ? 'I' : 'B' };
+    case 'edge': case 'excess': case 'comp': case 'short': return { k: 'h', m: 'I' };
+    case 'regions': return { k: 'e', m: (o.fX || 0) > 0.5 ? 'X' : 'I' };
+    case 'gen': return { k: 'e', m: 'G' };
+    default: return { k: 'e', m: 'I' };
+  }
+};
+const SHARED = {};
 function simFlow(st, key, t, dt, g, o) {
-  const s = st[key] || (st[key] = { a: [], fl: [], c: [0, 0, 0, 0] });
+  const store = SHARED[GT || '_'] || (SHARED[GT || '_'] = {});   // dùng chung giữa khung 3D và khung bên trong
+  const s = store[key] || (store[key] = { a: [], fl: [], c: [0, 0, 0, 0] });
+  if (s.lt === t) return s; s.lt = t;
+  if (CALM) { s.a.length = 0; s.fl.length = 0; s.trk = null; s.tl = null; s.tw = 0.4; return s; }   // đang đổi vùng: tạm ẩn hạt bay qua
   dt = clamp(dt, 0, 0.06);
   const ex = L => -L * Math.log(1 - Math.random() * 0.97), fX = o.fX || 0;
   const fe = o.fe != null ? o.fe : 0.5, fh = o.fh != null ? o.fh : 1 - fe;
@@ -322,15 +337,17 @@ function simFlow(st, key, t, dt, g, o) {
   s.c[0] += (o.R || 0) * dt * cf; s.c[1] += (o.R || 0) * dt * cf; s.c[2] += (o.rev || 0) * dt * cf; s.c[3] += (o.gen || 0) * dt * cf;
   while (s.c[0] >= 1) {
     s.c[0]--; const r = Math.random();
-    if (r < fX) add('e', g.len, -1, g.pe + Math.random() * (g.ne - g.pe), 'X');
-    else if (r < fX + (1 - fX) * fe) add('e', g.len, -1, Math.max(0.02, g.pe - ex(g.ln)), 'I');
-    else add('e', g.len, -1, Math.min(g.len - 0.02, g.ne + ex(g.lp)), 'S');
+    const eu = tg => Math.min(g.len, Math.max(g.ne + 0.3, tg + 0.06));
+    if (r < fX) { const tg = g.pe + Math.random() * (g.ne - g.pe); add('e', eu(tg), -1, tg, 'X'); }
+    else if (r < fX + (1 - fX) * fe) { const tg = Math.max(0.02, g.pe - ex(g.ln)); add('e', eu(g.ne), -1, tg, 'I'); }
+    else { const tg = Math.min(g.len - 0.02, g.ne + ex(g.lp)); add('e', eu(tg), -1, tg, 'S'); }
   }
   while (s.c[1] >= 1) {
     s.c[1]--; const r = Math.random();
-    if (r < fX) add('h', 0, 1, g.pe + Math.random() * (g.ne - g.pe), 'X');
-    else if (r < fX + (1 - fX) * fh) add('h', 0, 1, o.shortN ? g.len : Math.min(g.len - 0.02, g.ne + ex(g.lp)), 'I');
-    else add('h', 0, 1, Math.max(0.02, g.pe - ex(g.ln)), 'S');
+    const hu = tg => Math.max(0, Math.min(g.pe - 0.3, tg - 0.06));
+    if (r < fX) { const tg = g.pe + Math.random() * (g.ne - g.pe); add('h', hu(tg), 1, tg, 'X'); }
+    else if (r < fX + (1 - fX) * fh) add('h', hu(g.pe), 1, o.shortN ? g.len : Math.min(g.len - 0.02, g.ne + ex(g.lp)), 'I');
+    else { const tg = Math.max(0.02, g.pe - ex(g.ln)); add('h', hu(tg), 1, tg, 'S'); }
   }
   while (s.c[2] >= 1) {
     s.c[2]--;
@@ -343,18 +360,49 @@ function simFlow(st, key, t, dt, g, o) {
     s.a[s.a.length - 1].v = s.a[s.a.length - 2].v = v; s.a[s.a.length - 1].w = s.a[s.a.length - 2].w = w;
     s.fl.push({ u, v, w, t0: t, big: 0 });
   }
+  if (GT && !o.noTrk) {            // một hạt "theo dõi" luôn có mặt: camera phim bám theo hạt này
+    const sp2 = trkSpec(g, o);
+    if (s.trk && s.a.includes(s.trk) && s.trk.m !== sp2.m) { s.a = s.a.filter(q => q !== s.trk); s.trk = null; s.tw = 0.2; }
+    if (!s.trk || !s.a.includes(s.trk)) {
+      if (s.trk) { s.tl = [s.trk.u, s.trk.v, s.trk.w]; s.trk = null; s.tw = 0.6; }
+      s.tw = (s.tw == null ? 0 : s.tw) - dt;
+      if (s.tw <= 0) {
+        const e = sp2.k === 'e', m = sp2.m, ey = -Math.log(1 - Math.random() * 0.97);
+        let q;
+        if (e) {
+          const u0 = Math.min(g.len - 0.01, (m === 'G' ? g.jx : g.ne + (m === 'B' ? 0.16 : 0.12)));
+          if (m === 'G') q = { k: 'e', u: u0, dir: 1, tg: Math.min(g.len, g.ne + 0.1), m: 'G' };
+          else if (m === 'B') q = { k: 'e', u: u0, dir: -1, tg: g.ne + 0.015, m: 'B', u0, bt: g.ne + 0.015, ad: -1 };
+          else if (m === 'X') q = { k: 'e', u: u0, dir: -1, tg: g.pe + Math.random() * (g.ne - g.pe), m: 'X' };
+          else q = { k: 'e', u: u0, dir: -1, tg: Math.max(0.02, g.pe - ey * g.ln), m: 'I' };
+        } else q = { k: 'h', u: Math.max(0.01, g.pe - 0.12), dir: 1, tg: o.shortN ? g.len : Math.min(g.len - 0.02, g.ne + ey * g.lp), m: 'I' };
+        q.v = 0.5; q.w = 0.5; q.tr = []; q.ta = 0;
+        s.a.push(q); s.trk = q;
+        if (m === 'G') { const h = { k: 'h', u: q.u, dir: -1, tg: 0, m: 'G', v: 0.5, w: 0.5, tr: [], ta: 0 }; s.a.push(h); s.fl.push({ u: q.u, v: 0.5, w: 0.5, t0: t, big: 0 }); }
+      }
+    }
+  }
   const sq = Math.sqrt(dt);
   s.a = s.a.filter(q => {
     let v = sp;
     const inDep = q.u > g.pe && q.u < g.ne;
-    if (inDep) v = sp * (q.m === 'G' || q.m === 'Q' ? (o.fast || 3.2) : 3.2);
+    if (inDep) v = sp * (q.m === 'G' || q.m === 'Q' ? (o.fast || 1.8) : 1.8);
     else if (q.m === 'I' || q.m === 'Q') {
       const minor = q.k === 'e' ? q.u <= g.pe : q.u >= g.ne;
       if (minor) { v = sp * 0.55; if (o.shortN && q.k === 'h') v = sp * 0.5 / (0.14 + Math.max(0, g.len - q.u) / Math.max(0.05, g.len - g.ne)); }
     }
+    if (q.m === 'B') v *= clamp(Math.abs(q.u - q.bt) / 0.08 + 0.3, 0.3, 1);
+    q.cs = q.cs == null ? v : q.cs + (v - q.cs) * (1 - Math.exp(-dt * 5)); v = q.cs;
     q.u += q.dir * v * dt; q.ta += Math.abs(v * dt);
-    if (q.ta > 0.008) { q.ta = 0; q.tr.push([q.u, q.v, q.w]); if (q.tr.length > 9) q.tr.shift(); }
-    q.v = clamp(q.v + gauss() * 0.2 * sq, 0.06, 0.94); q.w = clamp(q.w + gauss() * 0.2 * sq, 0.06, 0.94);
+    if (q.ta > 0.008) { q.ta = 0; q.tr.push([q.u, q.v, q.w]); if (q.tr.length > (q === s.trk ? 22 : 9)) q.tr.shift(); }
+    q.dv = (q.dv || 0) - q.dv * 2 * dt + gauss() * 0.5 * sq; q.dw = (q.dw || 0) - q.dw * 2 * dt + gauss() * 0.5 * sq;
+    if (q === s.trk) { q.v = 0.5; q.w = 0.5; } else { q.v = clamp(q.v + q.dv * dt, 0.06, 0.94); q.w = clamp(q.w + q.dw * dt, 0.06, 0.94); }
+    if (q.m === 'B') {
+      if (q.dir < 0 ? q.u <= q.tg : q.u >= q.tg) {
+        if (q.dir === q.ad) { s.fl.push({ u: q.u, v: q.v, w: q.w, t0: t, big: 0 }); q.dir = -q.ad; q.tg = q.u0; } else { q.dir = q.ad; q.tg = q.bt; }
+      }
+      return true;
+    }
     const done = q.dir < 0 ? q.u <= q.tg : q.u >= q.tg;
     if (done) {
       if (q.m === 'X' || q.m === 'I' || q.m === 'S') s.fl.push({ u: q.u, v: q.v, w: q.w, t0: t, big: q.m === 'X' ? 1 : 0 });
@@ -376,8 +424,10 @@ function scene3(p, ctx, W, H, t, P, g, o) {
   const hot = o.heat ? clamp(o.heat, 0, 1) : 0;
   isoBox(ctx, ox, oy, -12, 0, 0, 12, bd, bh, C.sub, 0.9, C.ink);
   isoBox(ctx, ox, oy, X(g.len), 0, 0, 12, bd, bh, C.sub, 0.9, C.ink);
-  isoBox(ctx, ox, oy, 0, 0, 0, X(g.pe), bd, bh, C.c4, 0.2 + hot * 0.2, hot > 0.05 ? C.err : C.sub);
-  isoBox(ctx, ox, oy, X(g.ne), 0, 0, X(g.len) - X(g.ne), bd, bh, C.c2, 0.2 + hot * 0.2, hot > 0.05 ? C.err : C.sub);
+  isoBox(ctx, ox, oy, 0, 0, 0, X(g.pe), bd, bh, C.card, 1, C.sub);
+  isoBox(ctx, ox, oy, X(g.ne), 0, 0, X(g.len) - X(g.ne), bd, bh, C.card, 1, C.sub);
+  isoBox(ctx, ox, oy, 0, 0, 0, X(g.pe), bd, bh, C.c4, 0.26 + hot * 0.2, hot > 0.05 ? C.err : C.sub);
+  isoBox(ctx, ox, oy, X(g.ne), 0, 0, X(g.len) - X(g.ne), bd, bh, C.c2, 0.26 + hot * 0.2, hot > 0.05 ? C.err : C.sub);
   isoBox(ctx, ox, oy, X(g.pe), 0, 0, X(g.ne) - X(g.pe), bd, bh, C.c5, 0.36, C.c5);
   const tp = isoP(ox, oy, -6, bd / 2, bh + 4), tn = isoP(ox, oy, X(g.len) + 6, bd / 2, bh + 4);
   txt(ctx, 'p', tp[0], tp[1], C.c4, 12, 'center', 800); txt(ctx, 'n', tn[0], tn[1], C.c2, 12, 'center', 800);
@@ -394,6 +444,7 @@ function scene3(p, ctx, W, H, t, P, g, o) {
   const nH = Math.round(8 + 14 * clamp((Math.log10(P.Na) - 14) / 4, 0, 1)), nE = Math.round(8 + 14 * clamp((Math.log10(P.Nd) - 14) / 4, 0, 1));
   swarm(st, 'hp', 22, t, 0.22 * sF()).slice(0, Math.ceil(nH * cF())).forEach(q => p3(ctx, ox, oy, 6 + q.u * (X(g.pe) - 12), 6 + q.v * (bd - 12), 5 + q.w * (bh - 10), 4.2, C.c4, '+'));
   swarm(st, 'en', 22, t, 0.22 * sF()).slice(0, Math.ceil(nE * cF())).forEach(q => p3(ctx, ox, oy, X(g.ne) + 6 + q.u * (X(g.len) - X(g.ne) - 12), 6 + q.v * (bd - 12), 5 + q.w * (bh - 10), 4.2, C.c2, '−'));
+  if (CAM) CAM.gm = { bw, bd, bh, len: g.len, g };
   return { ox, oy, bw, bd, bh, X };
 }
 function marker3(ctx, sc, u, col, label, up) {
@@ -410,11 +461,17 @@ function trail(ctx, pts, col) {
 }
 function flow3(ctx, sc, s, g, t) {
   const zf = CAM ? CAM.zoom : 1;
+  if (CAM) CAM.tp = s.trk ? [s.trk.u, s.trk.v, s.trk.w] : (s.tl || null);
   s.a.forEach(q => {
     trail(ctx, q.tr.concat([[q.u, q.v, q.w]]).map(a => isoP(sc.ox, sc.oy, a[0] * sc.bw, 6 + a[1] * (sc.bd - 12), 5 + a[2] * (sc.bh - 10))), q.k === 'e' ? C.c2 : C.c4);
     const x = q.u * sc.bw, y = 6 + q.v * (sc.bd - 12), z = 5 + q.w * (sc.bh - 10);
     if (isMinor(q, g)) { const c = isoP(sc.ox, sc.oy, x, y, z); ctx.beginPath(); ctx.arc(c[0], c[1], 7 * Math.pow(zf, 0.6), 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 1.4; ctx.stroke(); }
     p3(ctx, sc.ox, sc.oy, x, y, z, 4.4, q.k === 'e' ? C.c2 : C.c4, q.k === 'e' ? '−' : '+');
+    if (q === s.trk) {
+      const c = isoP(sc.ox, sc.oy, x, y, z), r = 11 * Math.pow(zf, 0.6), pu = 1 + 0.18 * Math.sin(t * 5);
+      ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = C.main; ctx.beginPath(); ctx.arc(c[0], c[1], r * 1.9 * pu, 0, TAU2); ctx.fill(); ctx.restore();
+      ctx.beginPath(); ctx.arc(c[0], c[1], r, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.6; ctx.stroke();
+    }
   });
   s.fl.forEach(f => {
     const a = clamp((t - f.t0) / 0.55, 0, 1), c = isoP(sc.ox, sc.oy, f.u * sc.bw, 6 + f.v * (sc.bd - 12), 5 + f.w * (sc.bh - 10));
@@ -462,6 +519,10 @@ function strip(ctx, W, H, t, P, g, o) {
       trail(ctx, q.tr.concat([[q.u, q.v, q.w]]).map(a => [MX(a[0]), ym({ k: q.k, v: a[1] })]), q.k === 'e' ? C.c2 : C.c4);
       if (mn) { ctx.beginPath(); ctx.arc(x, y, 8, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 1.5; ctx.stroke(); }
       dot(ctx, x, y, 5, q.k === 'e' ? C.c2 : C.c4); txt(ctx, q.k === 'e' ? '−' : '+', x, y + 0.5, C.bg, 9, 'center', 800);
+      if (q === o.fl.trk) {
+        ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = C.main; ctx.beginPath(); ctx.arc(x, y, 19 * (1 + 0.18 * Math.sin(t * 5)), 0, TAU2); ctx.fill(); ctx.restore();
+        ctx.beginPath(); ctx.arc(x, y, 11, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.6; ctx.stroke();
+      }
     });
     o.fl.fl.forEach(f => {
       if (f.u < o.u0 || f.u > o.u1) return;
@@ -479,61 +540,82 @@ function stripMark(ctx, s, u, col, label, dash) {
   txt(ctx, label, x + 3, s.y0 + 9, col, 10, 'left', 800);
 }
 
-/* ---------- PHIM TỰ ĐỘNG: kịch bản từng thí nghiệm (tập trung nguyên lý) ---------- */
+/* ---- trợ giúp camera phim: lấy tiêu điểm theo vị trí thật (du) hoặc theo hạt theo dõi ---- */
+function camFU(c, u, fy, fz) {
+  const gm = c.gm, bb = c.bb; if (!gm || !bb) return null;
+  return [clamp((u * gm.bw - bb.x0) / (bb.x1 - bb.x0), 0, 1), fy == null ? 0.5 : fy, fz == null ? 0.5 : fz];
+}
+function camTracer(c) {
+  const gm = c.gm, bb = c.bb, tp = c.tp; if (!gm || !bb || !tp) return null;
+  return [clamp((tp[0] * gm.bw - bb.x0) / (bb.x1 - bb.x0), 0, 1), 0.5, 0.5];
+}
+const atU = fn => prog => { const c = film.p.cam; return c.gm ? camFU(c, fn(c.gm.g, prog)) : null; };
+const atT = () => () => camTracer(film.p.cam);
+
+/* ---------- PHIM TỰ ĐỘNG: camera bám theo hạt "theo dõi", hoặc dừng ở vùng đang thay đổi (hạt bay qua tạm ẩn) ---------- */
 const V = (yaw, tilt, zoom, f) => ({ yaw, tilt, zoom, f });
 const SNAPK = ['mat'];
+const ST = (d, cap, zoom, track, extra) => Object.assign({ d, cap, v: V(0, 20, zoom), track, mv: 0.35, slow: 0.7 }, extra || {});
+const CH = (d, cap, zoom, track, set) => ST(d, cap, zoom, track, { calm: true, set });   // bước đổi vùng: không hạt bay qua, focus vào vùng đang đổi
 const FILM = {
   bias: [
-    { d: 7, cap: 'Mối nối p-n phóng lớn: bên trái là vùng p đầy lỗ trống (+), bên phải là vùng n đầy electron (−). Ở giữa là vùng nghèo với các ion cố định, và tấm đập đỏ biểu diễn rào thế mà hạt đa số phải vượt qua.', v: V(0, 26, 1.7, [0.5, 0.5, 0.5]), set: { Va: 0, Na: 1e16, Nd: 1e16, T: 300 } },
-    { d: 9, cap: 'Cân bằng (V_a = 0): đập cao V_bi ≈ 0,7 V giữ hai bên. Hạt đa số chỉ chạy nhộn nhạo tại chỗ, không có dòng tổng nào chảy qua.', v: V(0, 16, 1.5, [0.5, 0.5, 0.5]), slow: 0.6 },
-    { d: 11, cap: 'Phân cực thuận: nối cực dương vào p. Đập hạ thấp và vùng nghèo co hẹp lại, electron từ n và lỗ trống từ p tràn qua mối nối — vòng vàng đánh dấu những hạt đã thành hạt thiểu số ở phía bên kia.', v: V(0, 16, 1.7, [0.5, 0.5, 0.5]), set: { Va: 0.6 }, slow: 0.45 },
-    { d: 11, cap: 'Phân cực ngược: đảo cực pin. Đập dâng cao và vùng nghèo nở rộng ra; hạt đa số bị chặn hẳn, chỉ còn lác đác vài hạt thiểu số bị điện trường cuốn qua nên dòng rất nhỏ.', v: V(0, 16, 1.6, [0.5, 0.5, 0.5]), set: { Va: -5 }, slow: 0.45 }
+    ST(9, 'Cân bằng (V_a = 0). Ta theo dõi một electron (quầng sáng) từ vùng n: nó tiến tới đập thế nhưng không đủ năng lượng trèo qua nên bật ngược trở lại. Lỗ trống bên p cũng bị giữ chặt như vậy — dòng tổng bằng 0.', 3.6, atU(g => g.jx), { set: { Va: 0, Na: 1e16, Nd: 1e16, T: 300 } }),
+    CH(7, 'Chuyển sang phân cực thuận 0,60 V: nhìn vào vùng nghèo — đập hạ thấp xuống và vùng nghèo co hẹp lại.', 3.6, atU(g => g.jx), { Va: 0.6 }),
+    ST(14, 'Bây giờ electron được theo dõi vượt qua mối nối: nó đi qua vùng nghèo (điện trường kéo nhanh hơn), sang vùng p trở thành hạt thiểu số (viền vàng), khuếch tán thêm một đoạn rồi tái hợp với một lỗ trống (vòng sáng).', 3.0, atT()),
+    CH(8, 'Đảo cực sang phân cực ngược −5 V: vùng nghèo nở rộng ra hai phía và đập dâng cao.', 3.2, atU(g => g.jx), { Va: -5 }),
+    ST(10, 'Electron lại bật ngược ngay từ xa, không còn hạt đa số nào qua được; chỉ vài hạt thiểu số bị điện trường cuốn nên dòng cực nhỏ.', 3.0, atU(g => g.jx))
   ],
   edge: [
-    { d: 7, cap: 'Mép vùng nghèo phía n (x_n): ngoài mép là đám electron đa số dày đặc. Khi phân cực thuận, lỗ trống từ p tràn qua thành hạt thiểu số — vòng vàng.', v: V(0, 26, 1.8, [0.6, 0.5, 0.5]), set: { Va: 0, Na: 1e16, Nd: 1e16, mat: 'si' } },
-    { d: 10, cap: 'Tăng V_a: cứ thêm 60 mV, nồng độ thiểu số p_n(x_n) tăng gấp mười lần — mỗi đèn trên thang bậc ×10 sáng thêm một nấc. Số hạt vẽ ở đây theo thang log để nhìn thấy được.', v: V(0, 16, 1.7, [0.6, 0.5, 0.5]), set: { Va: 0.45 }, slow: 0.5 },
-    { d: 10, cap: 'V_a = 0,60 V: p_n(x_n) ≈ 2,6×10¹⁴ cm⁻³ (khớp Ví dụ 2.1) — vẫn nhỏ so với N_d = 10¹⁶ nên giả thiết tiêm yếu còn đúng.', v: V(0, 16, 1.7, [0.6, 0.5, 0.5]), set: { Va: 0.6 }, slow: 0.5 },
-    { d: 10, cap: 'Đẩy V_a lên gần 0,70 V: p_n(x_n) chạm cỡ N_d, hạt thiểu số ngang hạt đa số — vòng chuyển đỏ báo hiệu tiêm mạnh, mô hình đơn giản sắp hết đúng.', v: V(0, 16, 1.7, [0.6, 0.5, 0.5]), set: { Va: 0.69 }, slow: 0.5 }
+    ST(8, 'Mép vùng nghèo phía n (x_n): bên phải là đám electron đa số dày đặc. Hạt có quầng sáng là một lỗ trống vừa từ vùng p tràn sang.', 3.0, atU(g => g.ne), { set: { Va: 0.3, Na: 1e16, Nd: 1e16, mat: 'si' } }),
+    CH(6, 'Tăng V_a lên 0,45 V: vùng nghèo co hẹp, số lỗ trống thiểu số ở mép tăng lên.', 3.0, atU(g => g.ne), { Va: 0.45 }),
+    ST(13, 'Theo dõi lỗ trống này: nó vào vùng n thành hạt thiểu số (viền vàng) giữa đám electron, khuếch tán rồi tái hợp. Cứ +60 mV, số lỗ trống thiểu số ở mép tăng gấp mười.', 2.8, atT()),
+    CH(8, 'V_a = 0,60 V: p_n(x_n) ≈ 2,6×10¹⁴ cm⁻³ (khớp Ví dụ 2.1) — mười một đèn bậc ×10 đã sáng, nhưng vẫn nhỏ so với N_d = 10¹⁶.', 3.0, atU(g => g.ne), { Va: 0.6 }),
+    CH(9, 'V_a ≈ 0,69 V: p_n(x_n) chạm cỡ N_d, hạt thiểu số ngang hạt đa số — vòng chuyển đỏ báo tiêm mạnh, mô hình đơn giản hết đúng.', 3.0, atU(g => g.ne), { Va: 0.69 })
   ],
   excess: [
-    { d: 7, cap: 'Lỗ trống tiêm vào vùng n là hạt thiểu số, nó khuếch tán đi sâu rồi tái hợp với electron đa số. Thước đánh dấu L_p là quãng đường khuếch tán trung bình.', v: V(0, 26, 1.5, [0.72, 0.5, 0.5]), set: { Va: 0.55, tau: 5e-7 } },
-    { d: 11, cap: 'Nhìn từ mép: lỗ trống dày đặc gần mép và thưa dần. Sau mỗi quãng L_p số hạt còn lại giảm xuống còn 1/e ≈ 37% — đó là đuôi mũ e^(−x/L_p).', v: V(0, 16, 1.7, [0.7, 0.5, 0.5]), slow: 0.45 },
-    { d: 10, cap: 'Giảm thời gian sống τ xuống 10 ns: hạt tái hợp sớm hơn nên L_p co ngắn lại, đám lỗ trống dồn sát mép.', v: V(0, 16, 1.7, [0.65, 0.5, 0.5]), set: { tau: 1e-8 }, slow: 0.45 },
-    { d: 10, cap: 'Tăng τ lên 5 µs: hạt sống lâu, đi rất xa mới tái hợp, L_p dài ra và điện tích tích trữ Q_p lớn hơn nhiều.', v: V(0, 16, 1.4, [0.7, 0.5, 0.5]), set: { tau: 5e-6 }, slow: 0.45 }
+    ST(8, 'Lỗ trống tiêm vào vùng n là hạt thiểu số: nó khuếch tán rồi tái hợp. Thước L_p đánh dấu quãng đi trung bình.', 2.5, atU(g => g.ne + g.lp * 0.8), { set: { Va: 0.55, tau: 5e-7 } }),
+    ST(14, 'Theo dõi một lỗ trống từ mép: nó đi vòng vèo (khuếch tán) rồi tái hợp (vòng sáng) sau quãng cỡ L_p. Rất nhiều hạt như vậy ⇒ mật độ giảm còn 1/e sau mỗi L_p.', 2.5, atT()),
+    CH(8, 'Giảm thời gian sống τ xuống 10 ns: nhìn vào vùng n — thước L_p co ngắn lại.', 2.5, atU(g => g.ne + g.lp * 0.8), { tau: 1e-8 }),
+    ST(10, 'Với L_p ngắn, lỗ trống tái hợp ngay sát mép.', 2.8, atT()),
+    CH(8, 'Tăng τ lên 5 µs: thước L_p dài ra rất nhiều.', 2.0, atU(g => g.ne + g.lp * 0.8), { tau: 5e-6 }),
+    ST(14, 'Hạt sống lâu và đi rất xa mới tái hợp, điện tích tích trữ Q_p lớn hơn nhiều.', 2.0, atT())
   ],
   iv: [
-    { d: 7, cap: 'Diốt lý tưởng: dòng gồm hai thành phần, electron tiêm sang vùng p và lỗ trống tiêm sang vùng n. Dòng bão hòa I_s là "độ rò gốc" do hạt thiểu số quyết định.', v: V(0, 26, 1.7, [0.5, 0.5, 0.5]), set: { Va: 0.4, Na: 1e16, Nd: 1e16, tau: 5e-7 } },
-    { d: 10, cap: 'Tăng V_a thêm 60 mV: số hạt vượt mối nối tăng khoảng mười lần, hai làn hạt ở khung dưới đông hẳn lên — đó là quy luật e^(V_a/V_t).', v: V(0, 16, 1.6, [0.5, 0.5, 0.5]), set: { Va: 0.46 }, slow: 0.5 },
-    { d: 10, cap: 'V_a = 0,60 V: I ≈ 48 µA với I_s = 4,16 fA (Ví dụ 3.1). Lỗ trống chiếm phần nhỏ hơn vì D_p nhỏ hơn D_n.', v: V(0, 16, 1.6, [0.5, 0.5, 0.5]), set: { Va: 0.6 }, slow: 0.5 },
-    { d: 10, cap: 'Muốn dòng gấp 100 lần chỉ cần thêm 119 mV (Ví dụ 3.2): từ 0,679 V lên 0,798 V. Điện áp thuận gần như "đứng yên" quanh 0,6–0,8 V.', v: V(0, 16, 1.4, [0.5, 0.5, 0.5]), set: { Va: 0.72 }, slow: 0.5 }
+    ST(8, 'Dòng diốt có hai thành phần: electron tiêm sang vùng p và lỗ trống tiêm sang vùng n. Ở V_a = 0,4 V mới chỉ có lác đác vài hạt.', 3.6, atU(g => g.jx), { set: { Va: 0.4, Na: 1e16, Nd: 1e16, tau: 5e-7 } }),
+    CH(6, 'Tăng lên 0,60 V: vùng nghèo co hẹp, rào thấp xuống.', 3.6, atU(g => g.jx), { Va: 0.6 }),
+    ST(14, 'Theo dõi một electron: nó đi qua vùng nghèo, vào vùng p làm hạt thiểu số rồi tái hợp. Mỗi +60 mV số hạt vượt mối nối tăng khoảng mười lần; I ≈ 48 µA (Ví dụ 3.1).', 3.0, atT()),
+    CH(9, 'Muốn dòng gấp 100 lần chỉ cần thêm 119 mV (Ví dụ 3.2): điện áp thuận gần như "đứng yên" quanh 0,6–0,8 V.', 3.6, atU(g => g.jx), { Va: 0.72 })
   ],
   comp: [
-    { d: 7, cap: 'Tại mép x_n gần như toàn bộ dòng là lỗ trống thiểu số khuếch tán vào vùng n. Các mặt phẳng ghi sẵn phần trăm dòng lỗ trống còn lại ở từng khoảng cách.', v: V(0, 26, 1.15, [0.5, 0.5, 0.5]), set: { Va: 0.55 } },
-    { d: 11, cap: 'Lỗ trống đi sâu vào vùng n thì tái hợp dần (vòng sáng), dòng của chúng J_p(x) tắt theo hàm mũ.', v: V(0, 16, 1.7, [0.7, 0.5, 0.5]), slow: 0.45 },
-    { d: 11, cap: 'Mỗi lần một lỗ trống tái hợp, một electron đa số bị tiêu đi — electron từ cực n liên tục đến bù. Dòng electron đa số J_n = J − J_p(x) vì thế tăng dần khi đi xa mép, còn tổng J không đổi.', v: V(0, 16, 1.4, [0.8, 0.5, 0.5]), slow: 0.45 }
+    ST(8, 'Ngay sau mép x_n gần như toàn bộ dòng là lỗ trống thiểu số khuếch tán vào vùng n. Các mặt phẳng ghi sẵn phần trăm dòng lỗ trống còn lại.', 1.8, atU(g => g.ne + g.lp * 0.6), { set: { Va: 0.55 } }),
+    ST(15, 'Theo dõi một lỗ trống đi sâu vào vùng n: nó tái hợp (vòng sáng) nên dòng J_p(x) tắt dần theo hàm mũ; mỗi lần tái hợp một electron đa số cũng mất đi.', 2.4, atT()),
+    ST(11, 'Xa mép, dòng gần như chỉ do electron đa số từ cực n đến bù — tổng dòng J vẫn bằng nhau ở mọi mặt cắt.', 1.6, atU(g => (g.ne + g.len) / 2))
   ],
   short: [
-    { d: 7, cap: 'Vùng n dài (W_n gấp mười L_p): lỗ trống tiêm vào có đủ chỗ để khuếch tán rồi tái hợp dọc đường.', v: V(0, 26, 1.6, [0.7, 0.5, 0.5]), set: { Va: 0.55, WnL: 1 } },
-    { d: 11, cap: 'Rút ngắn còn khoảng L_p: một số hạt đã chạm cực kim loại trước khi kịp tái hợp.', v: V(0, 16, 1.5, [0.6, 0.5, 0.5]), set: { WnL: 0 }, slow: 0.5 },
-    { d: 11, cap: 'Diốt ngắn W_n = 0,1 L_p: hạt chạy thẳng về cực, tăng tốc khi tới gần và biến mất ở đó. Mật độ dốc đều nên gradient lớn và dòng J_p lớn hơn diốt dài tới cỡ 10 lần.', v: V(0, 16, 1.7, [0.7, 0.5, 0.5]), set: { WnL: -1 }, slow: 0.5 }
+    ST(8, 'Vùng n dài (W_n = 10 L_p): lỗ trống tiêm vào có đủ chỗ để khuếch tán rồi tái hợp dọc đường.', 2.0, atU(g => (g.ne + g.len) / 2), { set: { Va: 0.55, WnL: 1 } }),
+    CH(7, 'Rút ngắn vùng n xuống W_n ≈ L_p: nhìn vào phần đuôi thanh — cực kim loại tiến sát lại.', 2.0, atU(g => (g.ne + g.len) / 2), { WnL: 0 }),
+    ST(13, 'Theo dõi một lỗ trống: nó đi tới sát cực kim loại mới tái hợp, nhiều hạt chạm cực trước khi kịp tái hợp.', 2.4, atT()),
+    CH(7, 'Rút tiếp xuống W_n = 0,1 L_p: vùng n chỉ còn rất ngắn.', 2.4, atU(g => (g.ne + g.len) / 2), { WnL: -1 }),
+    ST(13, 'Diốt ngắn: lỗ trống chạy thẳng về cực, tăng tốc khi tới gần và biến mất ở đó. Mật độ dốc đều nên dòng J_p lớn hơn diốt dài cỡ 10 lần.', 2.8, atT())
   ],
   regions: [
-    { d: 7, cap: 'Vùng 1, V_a thấp: dòng bị chi phối bởi tái hợp ngay trong vùng nghèo — vòng đỏ là các cặp electron–lỗ trống gặp nhau giữa mối nối, không xuyên qua được.', v: V(0, 26, 1.7, [0.5, 0.5, 0.5]), set: { Va: 0.3, rs: 0 } },
-    { d: 10, cap: 'Tăng lên vùng 2, V_a ≈ 0,55 V: hạt xuyên qua mối nối, khuếch tán và tái hợp ở vùng trung hòa. Vòng đỏ thưa hẳn, hệ số lý tưởng n về 1.', v: V(0, 16, 1.6, [0.5, 0.5, 0.5]), set: { Va: 0.55 }, slow: 0.5 },
-    { d: 10, cap: 'Vùng 3, V_a ≈ 0,9 V: tiêm quá mạnh, vùng trung hòa chật kín hạt thiểu số — n lại tiến về 2.', v: V(0, 16, 1.5, [0.5, 0.5, 0.5]), set: { Va: 0.9 }, slow: 0.5 },
-    { d: 10, cap: 'Thêm điện trở nối tiếp r_s = 1 kΩ: dòng lớn làm vùng trung hòa nóng đỏ và một phần điện áp rơi vô ích trên r_s, đường đặc tuyến bị bẻ cong.', v: V(0, 16, 1.2), set: { rs: 1000, Va: 0.9 }, slow: 0.5 }
+    ST(8, 'Vùng 1, V_a = 0,30 V: dòng bị chi phối bởi tái hợp ngay trong vùng nghèo.', 3.6, atU(g => g.jx), { set: { Va: 0.3, rs: 0 } }),
+    ST(13, 'Theo dõi một electron: nó đi vào vùng nghèo, gặp lỗ trống ngay giữa mối nối và tái hợp (vòng đỏ) — không xuyên qua được. Dòng tỉ lệ e^(V/2V_t), n ≈ 2.', 3.2, atT()),
+    CH(7, 'Tăng lên vùng 2, V_a = 0,55 V: vùng nghèo co hẹp, tái hợp thưa dần, khuếch tán lên ưu thế, hệ số lý tưởng n về 1.', 3.6, atU(g => g.jx), { Va: 0.55 }),
+    ST(13, 'Electron được theo dõi giờ xuyên hẳn qua mối nối, vào vùng p rồi mới tái hợp — đây là dòng khuếch tán, I ∝ e^(V/V_t).', 3.0, atT()),
+    CH(10, 'Vùng 3, V_a = 0,9 V cùng r_s = 1 kΩ: tiêm quá mạnh, vùng trung hòa nóng đỏ và một phần điện áp rơi vô ích trên r_s, đặc tuyến bị bẻ cong.', 3.0, atU(g => g.jx), { Va: 0.9, rs: 1000 })
   ],
   gen: [
-    { d: 7, cap: 'Phân cực ngược 5 V: vùng nghèo nở rộng (≈1,2 µm). Trong vùng này gần như không có hạt tải, nhưng nhiệt vẫn liên tục sinh ra từng cặp electron–lỗ trống.', v: V(0, 26, 1.7, [0.5, 0.5, 0.5]), set: { Va: 5, T: 300 } },
-    { d: 11, cap: 'Mỗi cặp mới sinh bị điện trường mạnh cuốn tách đôi — electron về phía n, lỗ trống về phía p — tạo thành dòng sinh J_gen = e·n_i·W/2τ₀ (Ví dụ 5.1: 2,9×10⁻⁷ A/cm² ở 5 V).', v: V(0, 16, 1.7, [0.5, 0.5, 0.5]), slow: 0.45 },
-    { d: 10, cap: 'Tăng V_R lên 10 V: vùng nghèo rộng thêm nên có nhiều chỗ sinh cặp hơn, J_gen ∝ √(V_bi + V_R) tăng — đó là lý do dòng ngược không bão hòa phẳng.', v: V(0, 16, 1.5, [0.5, 0.5, 0.5]), set: { Va: 10 }, slow: 0.5 },
-    { d: 10, cap: 'Nung nóng lên 400 K: n_i tăng vọt nên số cặp sinh ra tăng rất nhiều — dòng rò ngược của diốt nhạy với nhiệt độ.', v: V(0, 16, 1.5, [0.5, 0.5, 0.5]), set: { T: 400 }, slow: 0.5 }
+    ST(8, 'Phân cực ngược 5 V: vùng nghèo nở rộng (≈ 1,2 µm), gần như trống hạt tải. Nhưng nhiệt vẫn liên tục sinh ra từng cặp electron–lỗ trống.', 3.3, atU(g => g.jx), { set: { Va: 5, T: 300 } }),
+    ST(14, 'Theo dõi một cặp mới sinh: điện trường mạnh cuốn electron (quầng sáng) sang phía n và lỗ trống sang phía p — mỗi cặp góp một phần vào dòng sinh J_gen = e·n_i·W/2τ₀ (Ví dụ 5.1: 2,9×10⁻⁷ A/cm²).', 3.0, atT()),
+    CH(9, 'Tăng V_R lên 10 V: nhìn vào vùng nghèo — nó nở rộng thêm, có nhiều chỗ sinh cặp hơn, J_gen ∝ √(V_bi + V_R) tăng.', 3.0, atU(g => g.jx), { Va: 10 }),
+    ST(10, 'Nung nóng lên 400 K: n_i tăng vọt nên số cặp sinh ra tăng rất nhiều — dòng rò ngược rất nhạy với nhiệt độ.', 3.0, atU(g => g.jx), { set: { T: 400 } })
   ],
   small: [
-    { d: 7, cap: 'Diốt đang phân cực thuận tại điểm làm việc DC. Ta chồng thêm một tín hiệu AC nhỏ và quan sát đám hạt thiểu số tích trữ trong hai vùng trung hòa.', v: V(0, 26, 1.25, [0.5, 0.5, 0.5]), set: { Va: 0.68, f: 1e3, rs: 0, tau: 5e-7 } },
-    { d: 10, cap: 'Tần số thấp (1 kHz): dòng chạy theo kịp điện áp, hai kim đồng pha — diốt hoạt động như điện trở nhỏ r_d = V_t/I.', v: V(0, 16, 1.5, [0.5, 0.5, 0.5]), slow: 0.6 },
-    { d: 10, cap: 'Tăng tần số tới f_c ≈ 640 kHz: đám hạt tích trữ (điện dung khuếch tán C_d) không kịp xả nạp, dòng nhỏ đi và trễ pha dần.', v: V(0, 16, 1.5, [0.5, 0.5, 0.5]), set: { f: 6.4e5 }, slow: 0.6 },
-    { d: 10, cap: 'Tới 10 MHz: vượt xa f_c, dòng gần như không theo nổi — kim dòng hầu như đứng yên.', v: V(0, 16, 1.4, [0.5, 0.5, 0.5]), set: { f: 1e7 }, slow: 0.6 }
+    ST(8, 'Diốt đang phân cực thuận tại điểm làm việc DC. Ta chồng thêm một tín hiệu AC nhỏ và theo dõi cách đám hạt thiểu số ở hai bên mối nối đáp ứng.', 2.0, atU(g => g.jx), { set: { Va: 0.68, f: 1e3, rs: 0, tau: 5e-7 } }),
+    ST(11, 'Tần số thấp (1 kHz): nhìn về phía vùng p — dòng theo kịp điện áp, hai kim đồng pha; diốt như điện trở nhỏ r_d = V_t/I.', 2.2, atU(g => g.pe - g.ln * 0.4)),
+    ST(11, 'Tăng tới f_c ≈ 640 kHz và nhìn về phía vùng n: đám hạt tích trữ (điện dung khuếch tán C_d) không kịp xả nạp, dòng nhỏ đi và trễ pha.', 2.2, atU(g => g.ne + g.lp * 0.4), { set: { f: 6.4e5 } }),
+    ST(10, 'Tới 10 MHz: vượt xa f_c, dòng gần như không theo nổi — kim dòng hầu như đứng yên.', 2.0, atU(g => g.jx), { set: { f: 1e7 } })
   ]
 };
 const NOCAM = new Set();
@@ -546,7 +628,7 @@ const cNd = { k: 'Nd', l: 'N_d', min: 14, max: 18, step: 0.1, log: 1, f: v => pw
 const cT = { k: 'T', l: 'T', min: 250, max: 400, step: 5, f: v => v.toFixed(0) + ' K' };
 const cTau = (k, l) => ({ k: k || 'tau', l: l || 'τ', min: -8, max: -5, step: 0.1, log: 1, f: fT });
 const LAY = { cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"' };
-const rateOf = P => 0.3 + 2.6 * P.fr;
+const rateOf = P => 1.0 + 2.6 * P.fr;
 const fraL = x => clamp((lg(x) - lg(3e-6)) / 2.3, 0, 1);
 const coth = x => 1 / Math.tanh(x);
 
@@ -626,11 +708,12 @@ LABS.push(Object.assign({
       area: 'a', anim: true,
       ctrls: [cVa(0, 0.9), cNa, cNd, cT, { k: 'mat', seg: [['si', 'Si'], ['gaas', 'GaAs']] },
         { btn: 'Mốc 0,60 V', fn: p => { p.S.Va = 0.6; } }, { btn: 'Chạm N_d', fn: p => { const P = phys(p.S); p.S.Va = clamp(+(P.Vt * Math.log(p.S.Nd / P.pn0)).toFixed(2), 0, 0.9); } }],
-      draw(p, ctx, W, H, t) {
+      draw(p, ctx, W, H, t, dt) {
         const S = p.S, P = phys(S), g = geom(P), st = p.st, ex = Math.exp(S.Va / P.Vt);
         const pnx = P.pn0 * ex, npx = P.np0 * ex, fn = minLvl(pnx, S.Nd), fp = minLvl(npx, S.Na), hi = pnx >= 0.5 * S.Nd;
         const sc = scene3(p, ctx, W, H, t, P, g, { sign: S.Va > 0.02 ? 1 : null });
         marker3(ctx, sc, g.ne, C.main, 'x_n'); marker3(ctx, sc, g.pe, C.main, '−x_p');
+        flow3(ctx, sc, simFlow(p.st, 'fl', t, dt, g, { R: 0, fe: 0.5 }), g, t);
         const ring = (q, col) => { ctx.beginPath(); ctx.arc(q[0], q[1], 7.5 * Math.pow(CAM ? CAM.zoom : 1, 0.6), 0, TAU2); ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.stroke(); };
         swarm(st, 'mh', 20, t, 0.3 * sF()).slice(0, Math.round(fn * 20)).forEach(q => ring(p3(ctx, sc.ox, sc.oy, sc.X(g.ne) + 4 + q.u * sc.X(0.13), 6 + q.v * (sc.bd - 12), 5 + q.w * (sc.bh - 10), 4.4, C.c4, '+'), hi ? C.err : C.main));
         swarm(st, 'me', 20, t, 0.3 * sF()).slice(0, Math.round(fp * 20)).forEach(q => ring(p3(ctx, sc.ox, sc.oy, sc.X(g.pe) - 4 - q.u * sc.X(0.13), 6 + q.v * (sc.bd - 12), 5 + q.w * (sc.bh - 10), 4.4, C.c2, '−'), hi ? C.err : C.main));
@@ -647,9 +730,10 @@ LABS.push(Object.assign({
     {
       title: 'Bên trong: Kính hiển vi tại mép x_n — đám electron đa số dày đặc, hạt thiểu số (vòng vàng) tăng bậc theo V_a',
       area: 'c', anim: true,
-      draw(p, ctx, W, H, t) {
+      draw(p, ctx, W, H, t, dt) {
         const S = p.S, P = phys(S), g = geom(P), ex = Math.exp(S.Va / P.Vt), pnx = P.pn0 * ex, fn = minLvl(pnx, S.Nd);
-        const s = strip(ctx, W, H, t, P, g, { st: p.st, u0: g.ne - 0.12, u1: g.ne + 0.30, y0: 12, y1: H - 12 });
+        const fl = simFlow(p.st, 'fl', t, dt, g, { R: 0, fe: 0.5 });
+        const s = strip(ctx, W, H, t, P, g, { st: p.st, u0: g.ne - 0.12, u1: g.ne + 0.30, y0: 12, y1: H - 12, fl });
         stripMark(ctx, s, g.ne, C.main, 'x_n');
         const hh = s.y1 - s.y0;
         swarm(p.st, 'mi', 22, t, 0.35 * sF()).slice(0, Math.round(fn * 22)).forEach(q => {
@@ -690,7 +774,7 @@ LABS.push(Object.assign({
       area: 'c', anim: true,
       draw(p, ctx, W, H, t, dt) {
         const S = p.S, P = phys(S), g = geom(P), on = S.Va > 0.05;
-        const fl = simFlow(p.st, 'fl2', t, dt, g, { R: on ? rateOf(P) : 0, fe: P.Jn0 / P.Js });
+        const fl = simFlow(p.st, 'fl', t, dt, g, { R: on ? rateOf(P) : 0, fe: P.Jn0 / P.Js });
         const s = strip(ctx, W, H, t, P, g, { st: p.st, u0: g.ne - 0.03, u1: g.len, y0: 12, y1: H - 30, fl });
         stripMark(ctx, s, g.ne, C.main, 'x_n', false);
         [1, 2, 3].forEach(k => stripMark(ctx, s, g.ne + k * g.lp, k === 1 ? C.c4 : C.mut, k === 1 ? 'L_p (còn 37%)' : k + 'L_p'));
@@ -729,7 +813,7 @@ LABS.push(Object.assign({
       area: 'c', anim: true,
       draw(p, ctx, W, H, t, dt) {
         const S = p.S, P = phys(S), g = geom(P);
-        const fl = simFlow(p.st, 'fl2', t, dt, g, { R: S.Va > 0.05 ? rateOf(P) : 0, fe: P.Jn0 / P.Js });
+        const fl = simFlow(p.st, 'fl', t, dt, g, { R: S.Va > 0.05 ? rateOf(P) : 0, fe: P.Jn0 / P.Js });
         const s = strip(ctx, W, H, t, P, g, { st: p.st, u0: g.pe - 0.2, u1: g.ne + 0.2, y0: 12, y1: H - 12, fl, lanes: true });
         ln(ctx, s.x0, (s.y0 + s.y1) / 2, s.x1, (s.y0 + s.y1) / 2, C.g, 1, [3, 4]);
         txt(ctx, 'làn electron → p  (J_n = ' + fJ(P.Jn0 * (P.ev - 1)) + ')', s.x0 + 8, s.y0 + 11, C.c2, 10.5, 'left', 800);
@@ -771,7 +855,7 @@ LABS.push(Object.assign({
       area: 'c', anim: true,
       draw(p, ctx, W, H, t, dt) {
         const S = p.S, P = phys(S), g = geom(P);
-        const fl = simFlow(p.st, 'fl2', t, dt, g, { R: S.Va > 0.05 ? rateOf(P) : 0, fe: P.Jn0 / P.Js });
+        const fl = simFlow(p.st, 'fl', t, dt, g, { R: S.Va > 0.05 ? rateOf(P) : 0, fe: P.Jn0 / P.Js });
         const s = strip(ctx, W, H, t, P, g, { st: p.st, u0: 0, u1: g.len, y0: 12, y1: H - 40, fl });
         [[1, 0.5], [1, 1.5], [1, 3], [-1, 0.5], [-1, 1.5], [-1, 3]].forEach((q, i) => {
           const r = shareLbl(P, g, q[0], q[1]); if (r[0] < 0.02 || r[0] > g.len - 0.02) return;
@@ -842,7 +926,7 @@ LABS.push(Object.assign({
         { btn: 'Vùng 1 · 0,30 V', fn: p => { p.S.Va = 0.3; } }, { btn: 'Vùng 2 · 0,55 V', fn: p => { p.S.Va = 0.55; } }, { btn: 'Vùng 3 · 0,90 V', fn: p => { p.S.Va = 0.9; } }],
       draw(p, ctx, W, H, t, dt) {
         const R3 = regCalc(p.S), P = R3.P, g = geom(P), S = p.S;
-        const fl = simFlow(p.st, 'fl', t, dt, g, { R: 0.3 + 2.6 * R3.fr, fe: P.Jn0 / P.Js, fX: R3.fX });
+        const fl = simFlow(p.st, 'fl', t, dt, g, { R: 1.0 + 2.6 * R3.fr, fe: P.Jn0 / P.Js, fX: R3.fX });
         const sc = scene3(p, ctx, W, H, t, P, g, { sign: 1, heat: R3.heat });
         flow3(ctx, sc, fl, g, t);
         gcol(ctx, W, H, [['Hệ số lý tưởng n', R3.n.toFixed(2), clamp((R3.n - 0.9) / 1.3, 0, 1), R3.n > 2.05 ? C.err : C.c5, 0.99], ['Sụt áp I·r_s', (R3.I * S.rs).toFixed(2) + ' V', clamp(R3.I * S.rs / 0.8, 0, 1), C.err, 0.5], ['Dòng I', fmtCur(R3.I), clamp((lg(R3.I) + 15) / 14, 0, 1), C.main]]);
@@ -854,7 +938,7 @@ LABS.push(Object.assign({
       area: 'c', anim: true,
       draw(p, ctx, W, H, t, dt) {
         const R3 = regCalc(p.S), P = R3.P, g = geom(P);
-        const fl = simFlow(p.st, 'fl2', t, dt, g, { R: 0.3 + 2.6 * R3.fr, fe: P.Jn0 / P.Js, fX: R3.fX });
+        const fl = simFlow(p.st, 'fl', t, dt, g, { R: 1.0 + 2.6 * R3.fr, fe: P.Jn0 / P.Js, fX: R3.fX });
         const s = strip(ctx, W, H, t, P, g, { st: p.st, u0: g.pe - 0.14, u1: g.ne + 0.14, y0: 12, y1: H - 12, fl, heat: R3.heat });
         const nx = fl.fl.filter(f => f.big).length;
         chip(ctx, 'tái hợp: J_rec = ' + fJ(R3.Ir / P.A) + ' · khuếch tán: J_diff = ' + fJ(R3.Id / P.A), W * 0.5, s.y1 - 14, C.mut, 'center');
@@ -889,7 +973,7 @@ LABS.push(Object.assign({
         { btn: 'V_R = 5 V', fn: p => { p.S.Va = 5; } }, { btn: 'Nóng 400 K', fn: p => { p.S.T = 400; } }],
       draw(p, ctx, W, H, t, dt) {
         const S = p.S, P = phys(Object.assign({}, S, { Va: -S.Va, tau0: S.tau })), g = geom(P), JR = P.Js + P.Jg0;
-        const fl = simFlow(p.st, 'fl', t, dt, g, { gen: 0.5 + 4 * clamp((lg(P.Jg0) + 9) / 5, 0, 1), rev: 0.3 + 0.5 * clamp((lg(P.Js) + 13) / 4, 0, 1), fast: 2 + 2.5 * clamp(S.Va / 10, 0, 1) });
+        const fl = simFlow(p.st, 'fl', t, dt, g, { gen: 0.5 + 4 * clamp((lg(P.Jg0) + 9) / 5, 0, 1), rev: 0.3 + 0.5 * clamp((lg(P.Js) + 13) / 4, 0, 1), fast: 1.3 + 1.5 * clamp(S.Va / 10, 0, 1) });
         const sc = scene3(p, ctx, W, H, t, P, g, { sign: -1 });
         flow3(ctx, sc, fl, g, t);
         gcol(ctx, W, H, [['J_sinh (J_gen)', sci(P.Jg0, 1), clamp((lg(P.Jg0) + 12) / 8, 0, 1), C.err], ['J_R = J_s + J_gen', sci(JR, 1), clamp((lg(JR) + 12) / 8, 0, 1), C.main], ['Vùng nghèo W', fmtLen(P.W), fraL(P.W), C.c5]]);
@@ -901,7 +985,7 @@ LABS.push(Object.assign({
       area: 'c', anim: true,
       draw(p, ctx, W, H, t, dt) {
         const S = p.S, P = phys(Object.assign({}, S, { Va: -S.Va, tau0: S.tau })), g = geom(P);
-        const fl = simFlow(p.st, 'fl2', t, dt, g, { gen: 0.5 + 4 * clamp((lg(P.Jg0) + 9) / 5, 0, 1), rev: 0.3 + 0.5 * clamp((lg(P.Js) + 13) / 4, 0, 1), fast: 2 + 2.5 * clamp(S.Va / 10, 0, 1) });
+        const fl = simFlow(p.st, 'fl', t, dt, g, { gen: 0.5 + 4 * clamp((lg(P.Jg0) + 9) / 5, 0, 1), rev: 0.3 + 0.5 * clamp((lg(P.Js) + 13) / 4, 0, 1), fast: 1.3 + 1.5 * clamp(S.Va / 10, 0, 1) });
         const s = strip(ctx, W, H, t, P, g, { st: p.st, u0: g.pe - 0.12, u1: g.ne + 0.12, y0: 12, y1: H - 12, fl });
         const aw = 20 + 40 * clamp(S.Va / 10, 0, 1), xm = (s.MX(g.pe) + s.MX(g.ne)) / 2;
         [0.3, 0.7].forEach(k => { const y = s.y0 + (s.y1 - s.y0) * k; ctx.save(); ctx.globalAlpha = 0.55; arr(ctx, xm + aw, y, xm - aw, y, C.main, 2.6); ctx.restore(); });
@@ -929,7 +1013,7 @@ LABS.push(Object.assign({
         { btn: 'I = 1 mA (Ví dụ 6.1)', fn: p => { const P = phys(p.S); p.S.Va = clamp(+(P.Vt * Math.log(1e-3 / P.Is + 1)).toFixed(3), 0.3, 0.75); } }],
       draw(p, ctx, W, H, t, dt) {
         const S = p.S, m = smCalc(S), P = m.P, g = geom(P), w = TAU2 * 0.45;
-        const R = (0.3 + 2.6 * P.fr) * clamp(1 + 0.7 * m.a * Math.sin(w * t - m.ph), 0.1, 2);
+        const R = (1.0 + 2.6 * P.fr) * clamp(1 + 0.7 * m.a * Math.sin(w * t - m.ph), 0.1, 2);
         const fl = simFlow(p.st, 'fl', t, dt, g, { R: S.Va > 0.05 ? R : 0, fe: P.Jn0 / P.Js });
         const sc = scene3(p, ctx, W, H, t, P, g, { sign: 1 });
         flow3(ctx, sc, fl, g, t);
@@ -942,8 +1026,8 @@ LABS.push(Object.assign({
       area: 'c', anim: true,
       draw(p, ctx, W, H, t, dt) {
         const S = p.S, m = smCalc(S), P = m.P, g = geom(P), w = TAU2 * 0.45;
-        const R = (0.3 + 2.6 * P.fr) * clamp(1 + 0.7 * m.a * Math.sin(w * t - m.ph), 0.1, 2);
-        const fl = simFlow(p.st, 'fl2', t, dt, g, { R: S.Va > 0.05 ? R : 0, fe: P.Jn0 / P.Js });
+        const R = (1.0 + 2.6 * P.fr) * clamp(1 + 0.7 * m.a * Math.sin(w * t - m.ph), 0.1, 2);
+        const fl = simFlow(p.st, 'fl', t, dt, g, { R: S.Va > 0.05 ? R : 0, fe: P.Jn0 / P.Js });
         const s = strip(ctx, W, H, t, P, g, { st: p.st, u0: 0, u1: g.len, y0: 12, y1: H - 12, fl, rt: 130 });
         const gx = W - 64, vs = Math.sin(w * t), is = m.a * Math.sin(w * t - m.ph);
         drawMiniGauge(ctx, gx, H * 0.30, 23, 'v tín hiệu', (vs >= 0 ? '+' : '−') + Math.abs(vs * 10).toFixed(0) + ' mV', 0.5 + 0.45 * vs, C.c5);
@@ -1077,9 +1161,10 @@ LD.small = {
 };
 LABS.forEach(l => { l.log = LD[l.id]; });
 
-const VIEW0 = { bias: { zoom: 1.7, f: [0.5, 0.5, 0.5] }, edge: { zoom: 1.8, f: [0.6, 0.5, 0.5] }, excess: { zoom: 1.5, f: [0.72, 0.5, 0.5] }, iv: { zoom: 1.7, f: [0.5, 0.5, 0.5] }, comp: { zoom: 1.15, f: [0.5, 0.5, 0.5] },
-  short: { zoom: 1.6, f: [0.7, 0.5, 0.5] }, regions: { zoom: 1.7, f: [0.5, 0.5, 0.5] }, gen: { zoom: 1.7, f: [0.5, 0.5, 0.5] }, small: { zoom: 1.25, f: [0.5, 0.5, 0.5] } };
+const VIEW0 = { bias: { zoom: 3.6, fu: g => g.jx }, edge: { zoom: 3.0, fu: g => g.ne }, excess: { zoom: 2.5, fu: g => g.ne + g.lp * 0.8 }, iv: { zoom: 3.6, fu: g => g.jx }, comp: { zoom: 1.5, fu: g => g.jx },
+  short: { zoom: 2.6, fu: g => (g.ne + g.len) / 2 }, regions: { zoom: 3.6, fu: g => g.jx }, gen: { zoom: 3.3, fu: g => g.jx }, small: { zoom: 2.0, fu: g => g.jx } };
 LABS.forEach(l => {
+  l.panels.forEach(q => { q.tid = l.id; });
   l.view0 = VIEW0[l.id]; l.S.spd = 0.5; l.S.cnt = 0.3;
   l.panels[0].ctrls.push({ k: 'spd', l: 'Tốc độ', min: 0.1, max: 2, step: 0.05, f: v => '×' + v.toFixed(2) }, { k: 'cnt', l: 'Số hạt', min: 0.05, max: 1, step: 0.05, f: v => Math.round(v * 100) + '%' });
 });
@@ -1275,7 +1360,7 @@ const D2R = Math.PI / 180;
 const tiltOf = sy => (sy - 0.06) / 0.79 * 90;
 const syOf = tilt => 0.06 + clamp(tilt, 0, 90) / 90 * 0.79;
 
-function resetCam(c, tab) { const v = tab.view0 || { zoom: 1 }; Object.assign(c, { yaw: 0, sy: 0.28, zoom: v.zoom, follow: v.f ? 1 : 0, mx: 0, my: 0 }); if (v.f) { c.fx = v.f[0]; c.fy = v.f[1]; c.fz = v.f[2]; } }
+function resetCam(c, tab) { const v = tab.view0 || { zoom: 1 }; Object.assign(c, { yaw: 0, sy: 0.28, zoom: v.zoom, follow: (v.fu || v.f) ? 1 : 0, mx: 0, my: 0, auto: v.fu || null }); if (v.f) { c.fx = v.f[0]; c.fy = v.f[1]; c.fz = v.f[2]; } }
 function setupCam(tab, p, el, cv) {
   const three = THREE.has(tab.id), c = p.cam = newCam(); resetCam(c, tab);
   p.three = three;
@@ -1323,7 +1408,7 @@ function camSnap(c) { return { yaw: c.yaw / D2R, tilt: tiltOf(c.sy), zoom: c.zoo
 
 function filmStart(tab, p, at) {
   if (!FILM[tab.id] || !p.cam) return;
-  filmStop(false, true);
+  filmStop(false, true); p.cam.auto = null;
   const home = Object.assign({}, tab.S), ctrl = {};
   const stepOf = {}; tab.panels.forEach(q => (q.ctrls || []).forEach(k => { if (k.k && k.step && !k.log) stepOf[k.k] = k.step; }));
   const steps = FILM[tab.id].concat([{ d: 3, cap: 'Kết thúc phim — mọi thông số và góc nhìn đã trở về như ban đầu. Bạn có thể tự xoay, zoom và chỉnh thanh trượt để thử lại.', v: V(0, tiltOf(0.28), 1.0, [0.5, 0.5, 0.5]), set: home, slow: 1, mv: 0.8 }]);
@@ -1337,7 +1422,7 @@ function filmStart(tab, p, at) {
 function filmNext() {
   const f = film; f.i++;
   if (f.i >= f.steps.length) { filmStop(true); return; }
-  const st = f.steps[f.i], c = f.p.cam, S = f.tab.S;
+  const st = f.steps[f.i], c = f.p.cam, S = f.tab.S; CALM = !!st.calm;
   f.from = { cam: camSnap(c), S: {} };
   f.t = 0;
   if (st.set) Object.keys(st.set).forEach(k => {
@@ -1357,9 +1442,10 @@ function filmTick(dt) {
   c.zoom = Math.exp(lerp(Math.log(from.cam.zoom), Math.log(tZoom), sc));
   const tf = st.track ? st.track(clamp(f.t / st.d, 0, 1)) : v.f;
   if (tf) {
-    c.fx = lerp(from.cam.f[0], tf[0], sc); c.fy = lerp(from.cam.f[1], tf[1], sc); if (tf[2] != null) c.fz = lerp(from.cam.f[2], tf[2], sc);
+    if (st.track && sc >= 1) { const kk = 1 - Math.exp(-dt * 1.3); c.fx += (tf[0] - c.fx) * kk; c.fy += (tf[1] - c.fy) * kk; if (tf[2] != null) c.fz += (tf[2] - c.fz) * kk; }
+    else { c.fx = lerp(from.cam.f[0], tf[0], sc); c.fy = lerp(from.cam.f[1], tf[1], sc); if (tf[2] != null) c.fz = lerp(from.cam.f[2], tf[2], sc); }
     c.follow = lerp(from.cam.follow, 1, sc);
-  } else if (v.f === undefined && (v.yaw != null || v.zoom != null)) c.follow = lerp(from.cam.follow, 0, sc);
+  } else if (!st.track && v.f === undefined && (v.yaw != null || v.zoom != null)) c.follow = lerp(from.cam.follow, 0, sc);
   TSC = lerp(from.cam.slow, st.slow != null ? st.slow : from.cam.slow, sc);
   if (st.set) Object.keys(from.S).forEach(k => {
     const a = from.S[k], b = st.set[k];
@@ -1391,7 +1477,7 @@ document.addEventListener('keydown', e => {      // phím cách: tạm dừng / 
 }, true);
 function filmStop(done, silent) {
   const f = film; if (!f) return;
-  film = null; TSC = 1;
+  film = null; TSC = 1; CALM = false;
   root.classList.remove('filming');
   if (f.p.filmBtn) { f.p.filmBtn.textContent = '▶'; f.p.filmBtn.title = 'Phim tự động'; f.p.filmBtn.setAttribute('aria-label', 'Phim tự động'); f.p.filmBtn.classList.remove('on'); }
   if (f.p.cap) f.p.cap.style.display = 'none';
@@ -1495,7 +1581,7 @@ function loop(ts) {
     ctx.save();
     const cm = p.cam;
     if (cm && p.three) { CAM = cm; beginCam(cm, p.W, p.H); }
-    GS = p.S; try { p.spec.draw(p, ctx, p.W, p.H, TT, dt * TSC); } catch (err) { console.error('[LabB95]', err); }
+    GS = p.S; GT = p.spec.tid || ''; try { p.spec.draw(p, ctx, p.W, p.H, TT, dt * TSC); } catch (err) { console.error('[LabB95]', err); }
     CAM = null;
     ctx.restore();
   });

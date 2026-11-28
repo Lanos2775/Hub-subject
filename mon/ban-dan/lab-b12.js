@@ -1,21 +1,21 @@
 /* ==========================================================================
    lab-b12.js — PHÒNG THÍ NGHIỆM MÔ PHỎNG BUỔI 12:
    TRANSISTOR LƯỠNG CỰC BJT — PHÂN BỐ HẠT THIỂU SỐ, THÀNH PHẦN DÒNG, ĐƯỜNG TẢI,
-   KHUẾCH ĐẠI, γ·α_T·δ, HIỆU ỨNG EARLY, MỨC CAO & HẸP VÙNG CẤM, DỒN DÒNG,
+   KHUẾCH ĐẠI, γ·α_T·δ, HIỆU ỨNG EARLY, MỨC CAO & ΔE_g, DỒN DÒNG,
    ĐÁNH THỦNG, TẦN SỐ f_α VÀ CHUYỂN MẠCH
-   - Mô phỏng vật lý trực quan (khối BJT 3D, mặt cắt E|B|C, ampe kế, đồng hồ kim, đèn,
-     đường đua thời gian bay) — KHÔNG biểu đồ, KHÔNG sơ đồ.
-   - Đồng bộ bảng biến màu CSS, khung popup 95% và nhật ký như lab-b11.js.
+   - Mô phỏng vật lý trực quan bằng hạt (electron, lỗ trống, ion cố định, vòng tái hợp / thác lũ),
+     khối BJT 3D, đồng hồ kim — KHÔNG đồ thị, KHÔNG sơ đồ.
+   - 3D xoay bằng chuột (kéo = xoay, lăn = thu phóng, nhấp đôi = về mặc định); phim tự động (nút ▶ góc trên phải):
+     camera zoom thẳng vào vùng cốt lõi rồi bám theo hạt được theo dõi; bước nào đổi vùng thì tạm ẩn hạt và nhìn vào vùng đang đổi.
+     Space / nhấp để tạm dừng, lăn chuột tua phim. Có thanh Tốc độ và Số hạt.
    - Đủ 11 tab ứng 1–1 với 11 mỏ neo "Mô hình tương tác" trong Buổi 12:
        1.3 · Phân bố e⁻ cơ sở | 1.5 · Thành phần dòng | 2.3 · Đường tải | 2.5 · Khuếch đại
        3.5 · γ·α_T·δ          | 4.2 · Early            | 4.5 · Mức cao & ΔE_g
        4.7 · Dồn dòng         | 4.10 · Đánh thủng      | 6.2 · Tần số f_α | 7.3 · Chuyển mạch
-   - API: LabB12.open(tabId?, panelIndex?, patch?)  LabB12.close()  LabB12.mark(root)
+   - API: LabB12.open(tabId?, panelIndex?, patch?)  LabB12.close()  LabB12.mark(root)  LabB12.film(tabId?, at?)
    ========================================================================== */
 (function () {
 'use strict';
-
-/* ---------- hằng số vật lý & tiện ích ---------- */
 const TAU2 = Math.PI * 2;
 const E_CHG = 1.6e-19;          // C
 const EPS0 = 8.85e-14;          // F/cm
@@ -74,6 +74,7 @@ function readColors() {
     .forEach(k => C[k] = cs.getPropertyValue('--' + k).trim() || '#888');
 }
 
+let CAM = null;
 /* ---------- hàm vẽ canvas dùng chung ---------- */
 function txt(ctx, s, x, y, col, size, al, wt) {
   ctx.font = (wt || 500) + ' ' + (size || 12) + 'px ' + FONT;
@@ -97,6 +98,7 @@ function arr(ctx, x1, y1, x2, y2, col, w) {
   ctx.closePath(); ctx.fillStyle = col; ctx.fill();
 }
 function dot(ctx, x, y, r, col) {
+  if (CAM && r > 3.5 && r < 6) r *= Math.pow(CAM.zoom, 0.6);   // electron to dần khi zoom cận cảnh
   ctx.beginPath(); ctx.arc(x, y, r, 0, TAU2); ctx.fillStyle = col; ctx.fill();
 }
 function rr(ctx, x, y, w, h, r) {
@@ -124,6 +126,7 @@ function drawIon(ctx, x, y, sign, col, sz) {
 /* Đồng hồ kim siêu gọn, KHÔNG bọc khung — đặt trực tiếp vào góc trống trên canvas */
 function drawMiniGauge(ctx, cx, cy, rad, title, valText, frac, col, dangerFrac) {
   const r = clamp(rad || 22, 16, 30);
+  if (CAM) { ctx.save(); ctx.globalAlpha = 0.88; ctx.fillStyle = C.bg; rr(ctx, cx - 54, cy - r - 20, 108, r + 42, 8); ctx.fill(); ctx.restore(); }
   txt(ctx, title, cx, cy - r - 9, C.mut, 9.5, 'center', 700);
   ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI * 1.12, Math.PI * 1.88);
   ctx.strokeStyle = C.g; ctx.lineWidth = 4; ctx.stroke();
@@ -141,8 +144,44 @@ function drawMiniGauge(ctx, cx, cy, rad, title, valText, frac, col, dangerFrac) 
 }
 
 /* ---------- hàm vẽ hình khối 3D & linh kiện thực tế ---------- */
+const newCam = () => ({ yaw: 0, sy: 0.28, zoom: 1, fx: 0.5, fy: 0.5, fz: 0.5, follow: 0, px: 0, py: 0, mx: 0, my: 0, bb: null, nb: null, o: null, cs: 1, sn: 0, zk: 1 });
+const camCtr = c => c.bb ? [(c.bb.x0 + c.bb.x1) / 2, (c.bb.y0 + c.bb.y1) / 2, (c.bb.z0 + c.bb.z1) / 2] : [0, 0, 0];
+function camProj(c, ox, oy, x, y, z) {
+  const m = camCtr(c), dx = x - m[0], dy = y - m[1], dz = z - m[2];
+  const rx = dx * c.cs - dy * c.sn, ry = dx * c.sn + dy * c.cs, k = 1.118 * c.zoom;   // chiếu trực giao thật: xoay quanh trục z rồi nghiêng
+  return [ox + m[0] - m[1] * 0.5 + k * rx, oy + m[1] * 0.28 - m[2] + k * (ry * c.sy - dz * c.zk)];
+}
+function beginCam(c, W, H) {
+  if (c.nb) c.bb = c.nb;
+  c.nb = null;
+  const th = c.yaw + 0.4636; c.cs = Math.cos(th); c.sn = Math.sin(th); c.zk = Math.sqrt(1 - c.sy * c.sy) * 1.04;
+  c.px = 0; c.py = 0;
+  if (c.bb && c.o) {     // luôn đưa tâm hình chiếu của khối vào chính giữa khung
+    const bb = c.bb; let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    for (let i = 0; i < 8; i++) {
+      const q = camProj(c, c.o[0], c.o[1], i & 1 ? bb.x1 : bb.x0, i & 2 ? bb.y1 : bb.y0, i & 4 ? bb.z1 : bb.z0);
+      if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1];
+    }
+    c.px = W * 0.5 - (x0 + x1) / 2; c.py = H * 0.54 - (y0 + y1) / 2;
+    if (c.auto && c.gm) { const f0 = camFU(c, c.auto(c.gm.g)); if (f0) { c.fx = f0[0]; c.fy = f0[1]; c.fz = f0[2]; } }
+    if (c.follow > 0) {
+      const b = c.bb, s = camProj(c, c.o[0], c.o[1], b.x0 + (b.x1 - b.x0) * c.fx, b.y0 + (b.y1 - b.y0) * c.fy, b.z0 + (b.z1 - b.z0) * c.fz);
+      c.px = lerp(c.px, W * 0.5 - s[0], c.follow); c.py = lerp(c.py, H * 0.46 - s[1], c.follow);
+    }
+  }
+}
+function camExtend(c, x0, x1, y0, y1, z0, z1) {
+  const b = c.nb || (c.nb = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9, z0: 1e9, z1: -1e9 });
+  if (x0 < b.x0) b.x0 = x0; if (x1 > b.x1) b.x1 = x1;
+  if (y0 < b.y0) b.y0 = y0; if (y1 > b.y1) b.y1 = y1;
+  if (z0 < b.z0) b.z0 = z0; if (z1 > b.z1) b.z1 = z1;
+}
 function isoP(ox, oy, x, y, z) {
-  return [ox + x - y * 0.50, oy + y * 0.28 - z];
+  const c = CAM;
+  if (!c) return [ox + x - y * 0.50, oy + y * 0.28 - z];
+  c.o = [ox, oy];
+  const p = camProj(c, ox, oy, x, y, z);
+  return [p[0] + c.px, p[1] + c.py];
 }
 function polyFill(ctx, pts, col, al, strokeCol, lw) {
   ctx.beginPath();
@@ -155,51 +194,71 @@ function polyFill(ctx, pts, col, al, strokeCol, lw) {
   if (strokeCol) { ctx.strokeStyle = strokeCol; ctx.lineWidth = lw || 1; ctx.stroke(); }
 }
 function isoBox(ctx, ox, oy, x, y, z, dx, dy, dz, col, al, strokeCol) {
-  const p000 = isoP(ox, oy, x, y, z), p100 = isoP(ox, oy, x + dx, y, z);
-  const p010 = isoP(ox, oy, x, y + dy, z), p110 = isoP(ox, oy, x + dx, y + dy, z);
-  const p001 = isoP(ox, oy, x, y, z + dz), p101 = isoP(ox, oy, x + dx, y, z + dz);
-  const p011 = isoP(ox, oy, x, y + dy, z + dz), p111 = isoP(ox, oy, x + dx, y + dy, z + dz);
-  const a = al == null ? 1 : al, sc = strokeCol || C.sub;
-  // Mặt trước (y + dy)
-  polyFill(ctx, [p010, p110, p111, p011], col, a * 0.85, sc, 1);
-  polyFill(ctx, [p010, p110, p111, p011], '#000', a * 0.16);
-  // Mặt phải (x + dx)
-  polyFill(ctx, [p110, p100, p101, p111], col, a * 0.85, sc, 1);
-  polyFill(ctx, [p110, p100, p101, p111], '#000', a * 0.34);
-  // Mặt trên (z + dz)
-  polyFill(ctx, [p001, p101, p111, p011], col, a, sc, 1.1);
-}
-function drawProbe(ctx, tx, ty, dir, col, label) {
-  const s = dir < 0 ? -1 : 1;
-  ln(ctx, tx + s * 42, ty - 54, tx + s * 10, ty - 16, C.sub, 5);
-  ln(ctx, tx + s * 10, ty - 16, tx, ty, col || C.main, 2.2);
-  dot(ctx, tx, ty, 3, col || C.main);
-  if (label) txt(ctx, label, tx + s * 46, ty - 56, col || C.ink, 10.5, s > 0 ? 'left' : 'right', 700);
-}
-function drawTO220(ctx, cx, cy, sc, activeCol, showLabels) {
-  const w = 44 * sc, h = 42 * sc, tabH = 18 * sc;
-  // Tấm tản nhiệt kim loại trên
-  rr(ctx, cx - w / 2, cy - h / 2 - tabH, w, tabH + 4, 3);
-  ctx.fillStyle = C.g; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.2; ctx.stroke();
-  dot(ctx, cx, cy - h / 2 - tabH * 0.52, 5.2 * sc, C.bg);
-  ctx.beginPath(); ctx.arc(cx, cy - h / 2 - tabH * 0.52, 5.2 * sc, 0, TAU2); ctx.strokeStyle = C.sub; ctx.lineWidth = 1; ctx.stroke();
-  // Thân nhựa đen epoxy
-  rr(ctx, cx - w / 2, cy - h / 2, w, h, 3);
-  ctx.fillStyle = C.card; ctx.fill();
-  ctx.strokeStyle = activeCol || C.sub; ctx.lineWidth = 1.6; ctx.stroke();
-  txt(ctx, 'MOS', cx, cy - 5 * sc, activeCol || C.ink, Math.max(8, 10 * sc), 'center', 800);
-  txt(ctx, 'FET', cx, cy + 7 * sc, C.mut, Math.max(7.5, 9 * sc), 'center', 700);
-  // 3 chân G - D - S
-  const xs = [cx - w * 0.32, cx, cx + w * 0.32];
-  const ls = ['G', 'D', 'S'];
-  const lcols = [C.main, C.c1, C.c2];
-  xs.forEach((lx, i) => {
-    ln(ctx, lx, cy + h / 2, lx, cy + h / 2 + 24 * sc, lcols[i], 3 * sc);
-    if (showLabels) txt(ctx, ls[i], lx, cy + h / 2 + 33 * sc, lcols[i], Math.max(9, 10.5 * sc), 'center', 800);
+  const c = CAM, a = al == null ? 1 : al, sc = strokeCol || C.sub;
+  if (c) camExtend(c, Math.min(x, x + dx), Math.max(x, x + dx), Math.min(y, y + dy), Math.max(y, y + dy), Math.min(z, z + dz), Math.max(z, z + dz));
+  const P = (i, j, k) => isoP(ox, oy, x + dx * i, y + dy * j, z + dz * k);
+  const FACES = [ // [nx, ny, nz, điểm...]
+    [0, 1, 0, [0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]], [0, -1, 0, [0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]],
+    [1, 0, 0, [1, 0, 0], [1, 1, 0], [1, 1, 1], [1, 0, 1]], [-1, 0, 0, [0, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1]],
+    [0, 0, -1, [0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], [0, 0, 1, [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]]
+  ];
+  const cs = c ? c.cs : 1, sn = c ? c.sn : 0, kz = c ? c.sy / Math.sqrt(1 - c.sy * c.sy) : 0.29;
+  FACES.forEach(f => {
+    const rx = f[0] * cs - f[1] * sn, ry = f[0] * sn + f[1] * cs;
+    if (ry + f[2] * kz <= 0) return;           // mặt quay lưng với người xem
+    const pts = f.slice(3).map(q => P(q[0], q[1], q[2]));
+    if (f[2] === 1) { polyFill(ctx, pts, col, a, sc, 1.1); return; }
+    polyFill(ctx, pts, col, a >= 1 ? 1 : a * 0.85, sc, 1);
+    polyFill(ctx, pts, '#000', a * (0.16 + 0.18 * Math.max(0, rx)));
   });
 }
 
-/* ---------- mô hình vật lý MOS & MOSFET (Buổi 11 / Neamen Ch.10–14) ---------- */
+
+/* ---------- hạt bên trong khối 3D ---------- */
+function p3(ctx, ox, oy, x, y, z, r, col, sg) {
+  const q = isoP(ox, oy, x, y, z);
+  dot(ctx, q[0], q[1], r, col);
+  if (sg && CAM && CAM.zoom > 1.3) txt(ctx, sg, q[0], q[1] + 0.5, C.bg, 8, 'center', 800);
+  return q;
+}
+function i3(ctx, ox, oy, x, y, z, sg, col) {
+  const q = isoP(ox, oy, x, y, z);
+  drawIon(ctx, q[0], q[1], sg, col, 3.8);
+}
+/* lưới ion cố định trong hộp [x0,x0+w]×[y0,y0+d]×[z0,z0+h] */
+function ions3(ctx, ox, oy, x0, y0, w, d, z0, h, sg, col, nx, ny) {
+  const nl = Math.floor(h / 15);
+  for (let k = 0; k < nl; k++) for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++)
+    i3(ctx, ox, oy, x0 + (i + 0.5) * w / nx, y0 + (j + 0.5) * d / ny, z0 + (k + 0.5) * h / nl, sg, col);
+}
+/* bầy hạt chuyển động nhiệt trong hộp đơn vị, pool cố định nmax */
+function swarm(st, key, nmax, t, sp) {
+  let s = st[key];
+  if (!s) s = st[key] = { t, a: Array.from({ length: nmax }, () => ({ u: Math.random(), v: Math.random(), w: Math.random(), x: gauss(), y: gauss(), z: gauss() })) };
+  const dt = clamp(t - s.t, 0, 0.05); s.t = t;
+  s.a.forEach(q => {
+    if (Math.random() < dt * 3) { q.x = gauss(); q.y = gauss(); q.z = gauss(); }
+    const kk = 1 - Math.exp(-dt * 4); q.vx = (q.vx == null ? q.x : q.vx) + (q.x - (q.vx == null ? q.x : q.vx)) * kk; q.vy = (q.vy == null ? q.y : q.vy) + (q.y - (q.vy == null ? q.y : q.vy)) * kk; q.vz = (q.vz == null ? q.z : q.vz) + (q.z - (q.vz == null ? q.z : q.vz)) * kk;
+    q.u += q.vx * sp * dt; q.v += q.vy * sp * dt; q.w += q.vz * sp * dt;
+    if (q.u < 0.04) { q.u = 0.04; q.x = Math.abs(q.x); } else if (q.u > 0.96) { q.u = 0.96; q.x = -Math.abs(q.x); }
+    if (q.v < 0.04) { q.v = 0.04; q.y = Math.abs(q.y); } else if (q.v > 0.96) { q.v = 0.96; q.y = -Math.abs(q.y); }
+    if (q.w < 0.04) { q.w = 0.04; q.z = Math.abs(q.z); } else if (q.w > 0.96) { q.w = 0.96; q.z = -Math.abs(q.z); }
+  });
+  return s.a;
+}
+/* điện tích cổng: n×m dấu trên mặt trên của cổng */
+function gateQ3(ctx, ox, oy, x0, y0, w, d, z, sg, col, nx, ny) {
+  if (!sg) return;
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+    const q = isoP(ox, oy, x0 + (i + 0.5) * w / nx, y0 + (j + 0.5) * d / ny, z);
+    txt(ctx, sg, q[0], q[1], col, 12, 'center', 800);
+  }
+}
+
+
+/* ==========================================================================
+   MÔ HÌNH VẬT LÝ ĐIỐT p-n DÙNG CHUNG (số liệu + hình học hiển thị + bộ mô phỏng hạt tải)
+   ========================================================================== */
 const DN = 25; // cm²/s, hệ số khuếch tán electron trong cơ sở
 
 /* ---------- bảng vai trò màu (cố định cho cả file) ----------
@@ -216,128 +275,6 @@ const fmtOhm = r => !isFinite(r) ? '∞' : r >= 1e6 ? (r / 1e6).toFixed(2) + ' M
 const fmtT = s => s >= 1e-6 ? (s * 1e6).toFixed(2) + ' µs' : s >= 1e-9 ? (s * 1e9).toFixed(1) + ' ns' : (s * 1e12).toFixed(1) + ' ps';
 const pct = (x, d) => (x * 100).toFixed(d == null ? 2 : d) + ' %';
 const lg10 = x => Math.log10(Math.max(1e-30, x));
-
-/* ---------- linh kiện & ký hiệu mạch ---------- */
-function drawTO92(ctx, cx, cy, sc, col) {
-  const r = 22 * sc;
-  ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.lineTo(cx + r, cy + 3 * sc); ctx.lineTo(cx - r, cy + 3 * sc); ctx.closePath();
-  ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = col || C.sub; ctx.lineWidth = 1.6; ctx.stroke();
-  txt(ctx, 'BJT', cx, cy - 8 * sc, col || C.ink, Math.max(8, 10 * sc), 'center', 800);
-  txt(ctx, 'npn', cx, cy + 3 * sc, C.mut, Math.max(7.5, 9 * sc), 'center', 700);
-  const lc = [C.c2, C.c4, C.c1], lb = ['E', 'B', 'C'], xs = [cx - 12 * sc, cx, cx + 12 * sc];
-  xs.forEach((x, i) => {
-    ln(ctx, x, cy + 3 * sc, x, cy + 28 * sc, lc[i], 2.4);
-    txt(ctx, lb[i], x, cy + 38 * sc, lc[i], 9.5, 'center', 800);
-  });
-  return xs.map(x => [x, cy + 28 * sc]);
-}
-function drawNPN(ctx, cx, cy, r, col) {
-  const xb = cx - r * 0.3, xc = cx + r * 0.55;
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU2); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = col || C.sub; ctx.lineWidth = 1.6; ctx.stroke();
-  ln(ctx, xb, cy - r * 0.55, xb, cy + r * 0.55, C.ink, 3);
-  ln(ctx, cx - r * 1.6, cy, xb, cy, C.c4, 2.4);
-  ln(ctx, xb, cy - r * 0.3, xc, cy - r * 0.78, C.c1, 2.4);
-  ln(ctx, xc, cy - r * 0.78, xc, cy - r * 1.6, C.c1, 2.4);
-  arr(ctx, xb, cy + r * 0.3, xc, cy + r * 0.78, C.c2, 2.4);
-  ln(ctx, xc, cy + r * 0.78, xc, cy + r * 1.6, C.c2, 2.4);
-  return { B: [cx - r * 1.6, cy], C: [xc, cy - r * 1.6], E: [xc, cy + r * 1.6] };
-}
-function drawRes(ctx, x1, y1, x2, y2, col, w) {
-  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
-  ctx.beginPath(); ctx.moveTo(x1, y1);
-  ctx.lineTo(x1 + ux * L * 0.2, y1 + uy * L * 0.2);
-  for (let i = 0; i < 6; i++) {
-    const f = 0.2 + 0.6 * (i + 0.5) / 6, s = i % 2 ? -1 : 1;
-    ctx.lineTo(x1 + ux * L * f + nx * 5 * s, y1 + uy * L * f + ny * 5 * s);
-  }
-  ctx.lineTo(x1 + ux * L * 0.8, y1 + uy * L * 0.8); ctx.lineTo(x2, y2);
-  ctx.strokeStyle = col; ctx.lineWidth = w || 2.2; ctx.stroke();
-}
-function drawBat(ctx, x, y1, y2, col) {
-  const yc = (y1 + y2) / 2;
-  ln(ctx, x, y1, x, yc - 4, col, 2.4); ln(ctx, x, yc + 4, x, y2, col, 2.4);
-  ln(ctx, x - 11, yc - 4, x + 11, yc - 4, col, 3); ln(ctx, x - 6, yc + 4, x + 6, yc + 4, col, 3);
-  txt(ctx, '+', x + 18, yc - 6, col, 11, 'left', 800);
-}
-function pathDots(ctx, pts, n, sp, t, col, r) {
-  let tot = 0; const seg = [];
-  for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); tot += d; }
-  if (tot < 1) return;
-  for (let k = 0; k < n; k++) {
-    let u = ((((t * sp + k / n) % 1) + 1) % 1) * tot, i = 0;
-    while (i < seg.length - 1 && u > seg[i]) { u -= seg[i]; i++; }
-    const f = seg[i] ? u / seg[i] : 0;
-    dot(ctx, pts[i][0] + (pts[i + 1][0] - pts[i][0]) * f, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * f, r || 3.6, col);
-  }
-}
-function flowDots(ctx, st, key, n, x0, x1, y0, y1, sp, dt, t, col, sign) {
-  let a = st[key]; if (!a) a = st[key] = [];
-  while (a.length < n) a.push({ u: Math.random(), v: Math.random(), ph: rnd(0, TAU2) });
-  for (let i = 0; i < n; i++) {
-    const q = a[i];
-    q.u += sp * dt;
-    if (q.u > 1) { q.u -= 1; q.v = Math.random(); }
-    if (q.u < 0) { q.u += 1; q.v = Math.random(); }
-    const x = x0 + q.u * (x1 - x0), y = y0 + q.v * (y1 - y0) + Math.sin(t * 5 + q.ph) * 1.8;
-    dot(ctx, x, y, 4.2, col);
-    if (sign) txt(ctx, sign, x, y + 0.5, C.bg, 8, 'center', 800);
-  }
-}
-function addFlash(st, x, y) { const f = st.fl || (st.fl = []); if (f.length < 40) f.push({ x, y, a: 1 }); }
-function drawFlashes(ctx, st, dt, col) {
-  const f = st.fl; if (!f) return;
-  for (let i = f.length - 1; i >= 0; i--) {
-    const q = f[i]; q.a -= dt * 2.4;
-    if (q.a <= 0) { f.splice(i, 1); continue; }
-    ctx.beginPath(); ctx.arc(q.x, q.y, 4 + (1 - q.a) * 14, 0, TAU2);
-    ctx.strokeStyle = col || C.err; ctx.globalAlpha = q.a; ctx.lineWidth = 1.6; ctx.stroke(); ctx.globalAlpha = 1;
-  }
-}
-/* Khối BJT 3D: E | B | C, vùng nghèo, tiếp xúc; trả về điểm đặt kim dò */
-function bjt3D(ctx, ox, oy, o) {
-  const bw = o.bw, bd = o.bd, h = o.h, wE = bw * o.fE, wB = bw * o.fB, wC = bw - wE - wB;
-  isoBox(ctx, ox, oy, 0, 0, 0, bw, bd, h, C.card, 1, C.sub);
-  isoBox(ctx, ox, oy, 0, 0, 0, wE, bd, h, C.c2, 0.34, C.c2);
-  isoBox(ctx, ox, oy, wE, 0, 0, wB, bd, h, C.c4, 0.34, C.c4);
-  if (o.slices) {
-    const n = o.slices.n;
-    for (let i = 0; i < n; i++) isoBox(ctx, ox, oy, wE + i * wB / n, 0, 0, wB / n, bd, h, C.c2, o.slices.fn((i + 0.5) / n), C.c2);
-  }
-  isoBox(ctx, ox, oy, wE + wB, 0, 0, wC, bd, h, C.c2, 0.2, C.c2);
-  const dE = o.depBEe || 0, dB = o.depBEb || 0, cB = o.depBCb || 0, cC = o.depBCc || 0;
-  if (dE + dB > 0.5) isoBox(ctx, ox, oy, wE - dE, 0, 0, dE + dB, bd, h, C.c5, 0.36, o.depCol || C.c5);
-  if (cB + cC > 0.5) isoBox(ctx, ox, oy, wE + wB - cB, 0, 0, cB + cC, bd, h, C.c5, 0.36, o.depCol || C.c5);
-  const pad = (x, w) => isoBox(ctx, ox, oy, x, bd * 0.2, h, w, bd * 0.6, 6, C.sub, 0.95, C.ink);
-  if (!o.noPads) { pad(wE * 0.2, wE * 0.6); pad(wE + wB * 0.1, wB * 0.8); pad(wE + wB + wC * 0.2, wC * 0.6); }
-  return {
-    wE, wB, wC,
-    E: isoP(ox, oy, wE * 0.5, bd * 0.5, h + 6), B: isoP(ox, oy, wE + wB * 0.5, bd * 0.5, h + 6), C: isoP(ox, oy, wE + wB + wC * 0.5, bd * 0.5, h + 6)
-  };
-}
-/* Mặt cắt 2D E | B | C */
-function secFrame(ctx, x, y, w, h, fE, fB, o) {
-  o = o || {};
-  const xBE = x + w * fE, xBC = xBE + w * fB;
-  rr(ctx, x, y, w, h, 8); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.3; ctx.stroke();
-  ctx.save(); rr(ctx, x, y, w, h, 8); ctx.clip();
-  ctx.globalAlpha = 0.20; ctx.fillStyle = C.c2; ctx.fillRect(x, y, xBE - x, h);
-  ctx.globalAlpha = 0.16; ctx.fillStyle = C.c4; ctx.fillRect(xBE, y, xBC - xBE, h);
-  ctx.globalAlpha = 0.10; ctx.fillStyle = C.c2; ctx.fillRect(xBC, y, x + w - xBC, h);
-  const a = o.depBEe || 0, b = o.depBEb || 0, c = o.depBCb || 0, d = o.depBCc || 0;
-  ctx.globalAlpha = 0.30; ctx.fillStyle = o.depCol || C.c5;
-  if (a + b > 0.5) ctx.fillRect(xBE - a, y, a + b, h);
-  if (c + d > 0.5) ctx.fillRect(xBC - c, y, c + d, h);
-  ctx.restore();
-  ln(ctx, xBE, y, xBE, y + h, C.ink, 1.4); ln(ctx, xBC, y, xBC, y + h, C.ink, 1.4);
-  if (!o.noLabels) {
-    txt(ctx, 'E n⁺⁺', (x + xBE) / 2, y + 11, C.c2, 10, 'center', 700);
-    txt(ctx, 'B p', (xBE + xBC) / 2, y + 11, C.c4, 10, 'center', 700);
-    txt(ctx, 'C n', (xBC + x + w) / 2, y + 11, C.c2, 10, 'center', 700);
-  }
-  return { xBE, xBC, x0: x, x1: x + w, y0: y, y1: y + h, wB: xBC - xBE };
-}
-
-/* ---------- mô hình vật lý BJT (Neamen Ch.12 / Buổi 12) ---------- */
 function bjtMode(vbe, vbc) {
   const f1 = vbe > 0.4, f2 = vbc > 0.4;
   if (f1 && !f2) return { k: 'fa', label: 'Thuận tích cực' };
@@ -443,565 +380,556 @@ function swCalc(S) {
   return { tau, t0, ton, toff, Ttot, k, m, q, ib, td, tr, ts, tf };
 }
 
+
+/* ==========================================================================
+   ĐỘNG CƠ MÔ PHỎNG BJT: hình học E|B|C, hạt tải chạy E → B → C, khung 3D (camera chuột) và dải 2D bên trong
+   ========================================================================== */
+let GS = { spd: 0.5, cnt: 0.3 }, GT = '', CALM = false;
+const cF = () => Math.min(1.6, GS.cnt * 2), sF = () => GS.spd * 1.2;
+const lgx = x => Math.log10(Math.max(1e-40, Math.abs(x)));
+
+/* hình học hiển thị (đơn vị "du": thanh dài 1): emitter | cơ sở | collector + 2 vùng nghèo */
+function bgeom(o) {
+  o = o || {};
+  const fB = o.fB != null ? o.fB : 0.2, jE = o.jE != null ? o.jE : 0.3, jC = jE + fB;
+  const dEe = o.dEe != null ? o.dEe : 0.006, dEb = o.dEb != null ? o.dEb : 0.018;
+  const dCb = Math.min(o.dCb != null ? o.dCb : 0.03, fB * 0.97 - dEb), dCc = o.dCc != null ? o.dCc : 0.07;
+  return { jE, jC, fB, dEe, dEb, dCb, dCc, len: 1, d0: jE - dEe, d1: jE + dEb, c0: jC - dCb, c1: jC + dCc, bs: jE + dEb, be: jC - dCb, jx: (jE + jC) / 2, ne: jE, pe: jE };
+}
+const isMinorB = (q, g) => q.k === 'e' ? (q.u > g.d1 && q.u < g.c0) : (q.u < g.d0 || q.u > g.c1);
+
+/* ---- bộ mô phỏng hạt: electron phun từ emitter qua cơ sở sang collector; lỗ trống phun ngược; tái hợp; bão hòa; thác lũ ----
+   Mỗi hạt có kết cục định sẵn: 'C' tới collector · 'R' tái hợp trong cơ sở · 'X' tái hợp trong vùng nghèo B–E
+   'H' lỗ trống phun ngược vào emitter · 'P' lỗ trống từ cực B xuống bù · 'Q' lỗ trống ngược từ C · 'F' e⁻ từ C vào B (bão hòa) · 'K' lỗ trống từ B sang C · 'A' cặp thác lũ */
+const SHARED = {};
+const ex = (p, k) => p <= 0 ? 0 : Math.min(0.5, 0.035 + p * (k || 3));
+function simB(st, key, t, dt, g, o) {
+  const store = SHARED[GT || '_'] || (SHARED[GT || '_'] = {});
+  const s = store[key] || (store[key] = { a: [], fl: [], c: [0, 0, 0, 0, 0], n: 0 });
+  if (s.lt === t) return s; s.lt = t;
+  if (CALM) { s.a.length = 0; s.fl.length = 0; s.trk = null; s.tl = null; s.tw = 0.4; return s; }
+  dt = clamp(dt, 0, 0.06);
+  const sp = (o.sp || 0.17) * GS.spd * 1.2, cf = cF(), vm = o.vm || {};
+  const R = (o.R || 0) * (o.mod ? o.mod(t) : 1);
+  const pX = ex(o.pX || 0, 4), pR = ex(o.pR || 0, 3), pH = o.pH != null ? clamp(ex(o.pH, 2), 0, 0.6) : 0;
+  const rx = (a, b) => a + Math.random() * (b - a), exr = L => -L * Math.log(1 - Math.random() * 0.96);
+  const add = q => { if (s.a.length < 300) { q.v = q.v == null ? Math.random() : q.v; q.w = q.w == null ? Math.random() : q.w; q.tr = []; q.ta = 0; s.a.push(q); } return q; };
+  const mkE = (m) => {
+    let tg = Math.min(g.len, g.c1 + 0.14);
+    if (m === 'X') tg = rx(g.d0, g.d1); else if (m === 'R') tg = g.bs + (g.be - g.bs) * (0.15 + 0.8 * Math.random());
+    return add({ k: 'e', u: Math.max(0.02, g.d0 - 0.08), dir: 1, tg, m });
+  };
+  const pickE = () => { const r = Math.random(); return r < pX ? 'X' : r < pX + pR ? 'R' : 'C'; };
+  s.c[0] += R * dt * cf; s.c[1] += R * pH * dt * cf; s.c[2] += (o.rev || 0) * dt * cf; s.c[3] += (o.sat || 0) * dt * cf;
+  while (s.c[0] >= 1) { s.c[0]--; const m = pickE(); const q = mkE(m); if (m === 'R') add({ k: 'h', u: q.tg, dir: 0, tg: 0.5, m: 'P', v: rx(0.25, 0.75), w: 1 }); }
+  while (s.c[1] >= 1) { s.c[1]--; add({ k: 'h', u: g.bs + 0.01, dir: -1, tg: Math.max(0.02, g.d0 - exr(0.05)), m: 'H' }); }
+  while (s.c[2] >= 1) { s.c[2]--; add({ k: 'h', u: Math.min(g.len - 0.02, g.c1 + exr(0.07)), dir: -1, tg: g.bs + 0.03, m: 'Q' }); }
+  while (s.c[3] >= 1) { s.c[3]--; add({ k: 'e', u: g.len - 0.03, dir: -1, tg: g.bs + exr(0.05), m: 'F' }); add({ k: 'h', u: g.be - 0.01, dir: 1, tg: g.c1 + exr(0.05), m: 'K' }); }
+  if (GT && !o.noTrk) {
+    const seq = o.seq || ['C'];
+    if (s.trk && !s.a.includes(s.trk)) { s.tl = [s.trk.u, s.trk.v, s.trk.w]; s.trk = null; s.tw = 0.7; }
+    if (!s.trk) {
+      s.tw = (s.tw == null ? 0 : s.tw) - dt;
+      if (s.tw <= 0) {
+        const m = seq[(s.n++) % seq.length]; let q;
+        if (m === 'Q') q = add({ k: 'h', u: Math.min(g.len - 0.03, g.c1 + 0.05), dir: -1, tg: g.bs + 0.03, m: 'Q' });
+        else if (m === 'H') q = add({ k: 'h', u: g.bs + 0.02, dir: -1, tg: Math.max(0.03, g.d0 - exr(0.045)), m: 'H' });
+        else if (m === 'F') q = add({ k: 'e', u: g.len - 0.03, dir: -1, tg: g.bs + exr(0.05), m: 'F' });
+        else q = mkE(m);
+        q.v = 0.5; q.w = 0.5; s.trk = q;
+        if (m === 'R') add({ k: 'h', u: q.tg, dir: 0, tg: 0.5, m: 'P', v: 0.5, w: 1 });
+      }
+    }
+  }
+  const sq = Math.sqrt(dt);
+  const pairs = [];
+  s.a = s.a.filter(q => {
+    if (q.m === 'P') {
+      q.cs = q.cs == null ? sp * 1.6 : q.cs; q.w -= q.cs * dt * 1.2;
+      q.ta += dt * 8; if (q.ta > 0.5) { q.ta = 0; q.tr.push([q.u, q.v, q.w]); if (q.tr.length > 8) q.tr.shift(); }
+      if (q.w <= 0.5) { s.fl.push({ u: q.u, v: q.v, w: 0.5, t0: t, big: 0 }); return false; }
+      return true;
+    }
+    let v = sp;
+    const x = q.u;
+    if (x > g.d0 && x < g.d1) v = sp * 1.9 * (vm.j || 1);
+    else if (x >= g.d1 && x <= g.c0) v = sp * (q.m === 'Q' || q.m === 'K' ? 0.8 : 0.5) * (vm.b || 1);
+    else if (x > g.c0 && x < g.c1) v = sp * 2.2 * (vm.d || 1);
+    else if (x <= g.d0) v = sp * (q.k === 'h' ? 0.55 : 1) * (vm.e || 1);
+    else v = sp * (q.k === 'h' ? 0.6 : 1) * (vm.c || 1);
+    q.cs = q.cs == null ? v : q.cs + (v - q.cs) * (1 - Math.exp(-dt * 5)); v = q.cs;
+    q.u += q.dir * v * dt; q.ta += Math.abs(v * dt);
+    if (q.ta > 0.008) { q.ta = 0; q.tr.push([q.u, q.v, q.w]); if (q.tr.length > (q === s.trk ? 22 : 9)) q.tr.shift(); }
+    q.dv = (q.dv || 0) - q.dv * 2 * dt + gauss() * 0.5 * sq; q.dw = (q.dw || 0) - q.dw * 2 * dt + gauss() * 0.5 * sq;
+    if (q === s.trk) { q.v = 0.5; q.w = 0.5; } else { q.v = clamp(q.v + q.dv * dt, 0.06, 0.94); q.w = clamp(q.w + q.dw * dt, 0.06, 0.94); }
+    if (o.av && q.k === 'e' && (q.m === 'C' || q.m === 'A') && !q.ava && q.u > g.c0 && q.u < g.c1 && Math.random() < o.av * dt * 5 && s.a.length < 200) { q.ava = 1; pairs.push(q); }
+    const done = q.dir < 0 ? q.u <= q.tg : q.u >= q.tg;
+    if (done) {
+      if (q.m !== 'C' && q.m !== 'A') s.fl.push({ u: q.u, v: q.v, w: q.w, t0: t, big: q.m === 'X' ? 1 : 0 });
+      return false;
+    }
+    return true;
+  });
+  pairs.forEach(q => { s.fl.push({ u: q.u, v: q.v, w: q.w, t0: t, big: 1 }); add({ k: 'e', u: q.u, dir: 1, tg: Math.min(g.len, g.c1 + 0.14), m: 'A', v: q.v, w: q.w }); add({ k: 'h', u: q.u, dir: -1, tg: g.bs + 0.02, m: 'A', v: q.v, w: q.w }); });
+  s.fl = s.fl.filter(f => t - f.t0 < 0.6 && t - f.t0 > -1);
+  return s;
+}
+
+/* ---- khối BJT 3D: hộp đặc E | B | C, vùng nghèo trong suốt, ion, hạt nền, tiếp xúc ---- */
+function scene3b(p, ctx, W, H, t, g, o) {
+  o = o || {};
+  const st = p.st;
+  const bw = Math.min(W * 0.62, 500), bd = Math.min(112, H * 0.3), bh = Math.min(88, H * 0.27);
+  const ox = W * 0.12, oy = H * 0.7, X = u => u * bw;
+  const hot = o.heat ? clamp(o.heat, 0, 1) : 0;
+  const slab = (ua, ub, col, al) => {
+    isoBox(ctx, ox, oy, X(ua), 0, 0, X(ub) - X(ua), bd, bh, C.card, 1, C.sub);
+    isoBox(ctx, ox, oy, X(ua), 0, 0, X(ub) - X(ua), bd, bh, col, al + hot * 0.2, hot > 0.05 ? C.err : C.sub);
+  };
+  slab(0, g.d0, C.c2, 0.62); slab(g.d0, g.jE, C.c2, 0.62);
+  slab(g.d1, g.c0, C.c4, 0.62);
+  slab(g.c1, g.len, C.c2, 0.5);
+  if (o.slices) { const n = o.slices.n, wb = g.c0 - g.d1; for (let i = 0; i < n; i++) isoBox(ctx, ox, oy, X(g.d1 + wb * i / n), 0, 0, X(wb / n) + 0.4, bd, bh, C.c2, o.slices.fn((i + 0.5) / n), C.c2); }
+  if (g.dEb > 0.002 || g.dEe > 0.002) isoBox(ctx, ox, oy, X(g.d0), 0, 0, X(g.d1) - X(g.d0), bd, bh, o.depCol || C.c5, 0.36, o.depCol || C.c5);
+  if (g.dCb + g.dCc > 0.002) isoBox(ctx, ox, oy, X(g.c0), 0, 0, X(g.c1) - X(g.c0), bd, bh, o.depCol2 || o.depCol || C.c5, 0.36, o.depCol2 || o.depCol || C.c5);
+  // tiếp xúc kim loại phía trên
+  const pad = (ua, ub, col) => isoBox(ctx, ox, oy, X(ua), bd * 0.22, bh, X(ub) - X(ua), bd * 0.56, 6, col, 0.95, C.ink);
+  pad(0.04, g.d0 - 0.02, C.sub); pad(g.d1 + 0.02, g.c0 - 0.01 > g.d1 + 0.04 ? g.c0 - 0.01 : g.d1 + 0.04, C.sub); pad(g.c1 + 0.05, g.len - 0.03, C.sub);
+  const lab = (u, s, col) => { const q = isoP(ox, oy, X(u), bd / 2, bh + 16); txt(ctx, s, q[0], q[1], col, 12, 'center', 800); };
+  lab(g.d0 / 2, 'E', C.c2); lab((g.d1 + g.c0) / 2, 'B', C.c4); lab((g.c1 + g.len) / 2, 'C', C.c2);
+  // ion cố định trong vùng nghèo (p-n: B–E và B–C)
+  const nl = Math.floor(bh / 18);
+  const grid = (xa, xb, sg, col) => { const wd = X(xb) - X(xa); if (wd < 5) return; const nx = Math.max(1, Math.round(wd / 22)); for (let k = 0; k < nl; k++) for (let i = 0; i < nx; i++) for (let j = 0; j < 3; j++) i3(ctx, ox, oy, X(xa) + (i + 0.5) * wd / nx, (j + 0.5) * bd / 3, (k + 0.5) * bh / nl, sg, col); };
+  grid(g.d0, g.jE, '+', C.err); grid(g.jE, g.d1, '−', C.c5); grid(g.c0, g.jC, '−', C.c5); grid(g.jC, g.c1, '+', C.err);
+  // hạt nền (đa số)
+  const nE = Math.round(10 * cF() + 2), nB = Math.round((o.nh != null ? o.nh : 10) * cF() + 2);
+  swarm(st, 'se', 22, t, 0.22 * sF()).slice(0, nE).forEach(q => p3(ctx, ox, oy, 6 + q.u * (X(g.d0) - 12), 6 + q.v * (bd - 12), 5 + q.w * (bh - 10), 4.2, C.c2, '−'));
+  swarm(st, 'sb', 22, t, 0.22 * sF()).slice(0, nB).forEach(q => p3(ctx, ox, oy, X(g.d1) + 4 + q.u * (X(g.c0) - X(g.d1) - 8), 6 + q.v * (bd - 12), 5 + q.w * (bh - 10), 4.2, C.c4, '+'));
+  swarm(st, 'sc', 22, t, 0.22 * sF()).slice(0, nE).forEach(q => p3(ctx, ox, oy, X(g.c1) + 6 + q.u * (X(g.len) - X(g.c1) - 12), 6 + q.v * (bd - 12), 5 + q.w * (bh - 10), 4.2, C.c2, '−'));
+  if (o.extraB) swarm(st, 'xb', 26, t, 0.2 * sF()).slice(0, Math.round(o.extraB * 26 * Math.min(1.2, cF()))).forEach(q => p3(ctx, ox, oy, X(g.d1) + 4 + q.u * (X(g.c0) - X(g.d1) - 8), 6 + q.v * (bd - 12), 5 + q.w * (bh - 10), 4.4, C.c2, '−'));
+  if (o.extraC) swarm(st, 'xc', 26, t, 0.2 * sF()).slice(0, Math.round(o.extraC * 26 * Math.min(1.2, cF()))).forEach(q => p3(ctx, ox, oy, X(g.c1) + 6 + q.u * (X(g.len) - X(g.c1) - 12), 6 + q.v * (bd - 12), 5 + q.w * (bh - 10), 4.4, C.c5, '−'));
+  if (CAM) CAM.gm = { bw, bd, bh, len: g.len, g };
+  return { ox, oy, bw, bd, bh, X };
+}
+function marker3(ctx, sc, u, col, label, up) {
+  const x = sc.X(u);
+  isoBox(ctx, sc.ox, sc.oy, x - 1.5, 0, 0, 3, sc.bd, sc.bh, col, 0.45, col);
+  const q = isoP(sc.ox, sc.oy, x, sc.bd / 2, sc.bh + (up || 30));
+  txt(ctx, label, q[0], q[1], col, 10.5, 'center', 800);
+}
+function trail(ctx, pts, col) {
+  const n = pts.length; if (n < 2) return;
+  ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  for (let i = 1; i < n; i++) { ctx.globalAlpha = 0.8 * Math.pow(i / n, 2.2); ctx.beginPath(); ctx.moveTo(pts[i - 1][0], pts[i - 1][1]); ctx.lineTo(pts[i][0], pts[i][1]); ctx.stroke(); }
+  ctx.restore();
+}
+function flow3(ctx, sc, s, g, t) {
+  const zf = CAM ? CAM.zoom : 1;
+  if (CAM) CAM.tp = s.trk ? [s.trk.u, s.trk.v, s.trk.w] : (s.tl || null);
+  const P3 = a => isoP(sc.ox, sc.oy, a[0] * sc.bw, 6 + a[1] * (sc.bd - 12), 5 + a[2] * (sc.bh - 10));
+  s.a.forEach(q => {
+    trail(ctx, q.tr.concat([[q.u, q.v, q.w]]).map(P3), q.k === 'e' ? C.c2 : C.c4);
+    const c = P3([q.u, q.v, q.w]);
+    if (isMinorB(q, g) && q.m !== 'P') { ctx.beginPath(); ctx.arc(c[0], c[1], 7 * Math.pow(zf, 0.6), 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 1.4; ctx.stroke(); }
+    dot(ctx, c[0], c[1], 4.4, q.k === 'e' ? C.c2 : C.c4); if (zf > 1.3) txt(ctx, q.k === 'e' ? '−' : '+', c[0], c[1] + 0.5, C.bg, 8, 'center', 800);
+    if (q === s.trk) {
+      const r = 11 * Math.pow(zf, 0.6), pu = 1 + 0.18 * Math.sin(t * 5);
+      ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = C.main; ctx.beginPath(); ctx.arc(c[0], c[1], r * 1.9 * pu, 0, TAU2); ctx.fill(); ctx.restore();
+      ctx.beginPath(); ctx.arc(c[0], c[1], r, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.6; ctx.stroke();
+    }
+  });
+  s.fl.forEach(f => {
+    const a = clamp((t - f.t0) / 0.55, 0, 1), c = P3([f.u, f.v, f.w]);
+    ctx.save(); ctx.globalAlpha = 1 - a; ctx.beginPath(); ctx.arc(c[0], c[1], (5 + a * (f.big ? 20 : 13)) * Math.pow(zf, 0.5), 0, TAU2);
+    ctx.strokeStyle = f.big ? C.err : C.main; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+  });
+}
+function gcol(ctx, W, H, items, ys) {
+  const n = items.length;
+  items.forEach((it, i) => {
+    const y = ys ? ys[i] : H * (n === 1 ? 0.5 : 0.17 + 0.66 * i / (n - 1));
+    drawMiniGauge(ctx, W - 64, y, 23, it[0], it[1], it[2], it[3], it[4]);
+  });
+}
+function chipTop(ctx, W, s, col) { chip(ctx, s, W * 0.43, 15, col || C.main, 'center'); }
+
+/* ---- dải 2D "kính hiển vi": cùng hạt, cùng quy luật với khối 3D ---- */
+function stripB(ctx, W, H, t, g, o) {
+  const st = o.st, pad = 14, x0 = pad, x1 = W - pad - (o.rt || 0), y0 = o.y0, y1 = o.y1, hh = y1 - y0;
+  const MX = u => x0 + (u - o.u0) / (o.u1 - o.u0) * (x1 - x0);
+  ctx.save(); rr(ctx, x0, y0, x1 - x0, hh, 8); ctx.clip();
+  ctx.fillStyle = C.card; ctx.fillRect(x0, y0, x1 - x0, hh);
+  const reg = (ua, ub, col, al) => { const a = clamp(MX(ua), x0, x1), b = clamp(MX(ub), x0, x1); if (b > a) { ctx.globalAlpha = al; ctx.fillStyle = col; ctx.fillRect(a, y0, b - a, hh); ctx.globalAlpha = 1; } };
+  const hot = o.heat || 0;
+  reg(-2, g.d0, hot > 0.05 ? C.err : C.c2, 0.16); reg(g.d1, g.c0, C.c4, 0.16); reg(g.c1, g.len + 2, hot > 0.05 ? C.err : C.c2, 0.1);
+  if (o.slices) { const n = o.slices.n, wb = g.c0 - g.d1; for (let i = 0; i < n; i++) reg(g.d1 + wb * i / n, g.d1 + wb * (i + 1) / n + 0.002, C.c2, o.slices.fn((i + 0.5) / n) * 0.7); }
+  reg(g.d0, g.d1, o.depCol || C.c5, 0.3); reg(g.c0, g.c1, o.depCol2 || o.depCol || C.c5, 0.3);
+  const ion = (ua, ub, sg, col) => { const a = clamp(MX(ua), x0, x1), b = clamp(MX(ub), x0, x1); if (b - a < 6) return; const nx = Math.max(1, Math.round((b - a) / 22)), ny = Math.max(2, Math.round(hh / 34)); for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) drawIon(ctx, a + (i + 0.5) * (b - a) / nx, y0 + (j + 0.5) * hh / ny, sg, col, 4.6); };
+  ion(g.d0, g.jE, '+', C.err); ion(g.jE, g.d1, '−', C.c5); ion(g.c0, g.jC, '−', C.c5); ion(g.jC, g.c1, '+', C.err);
+  const amb = (key, ua, ub, col, sg, n) => {
+    const a = clamp(MX(ua), x0, x1), b = clamp(MX(ub), x0, x1); if (b - a < 12) return;
+    const nn = Math.max(2, Math.round(n * (b - a) / (x1 - x0) * 1.6 * cF()));
+    swarm(st, key, 26, t, 0.22 * sF()).slice(0, Math.min(26, nn)).forEach(q => { const x = a + 6 + q.u * (b - a - 12), y = y0 + 6 + q.v * (hh - 12); dot(ctx, x, y, 4.8, col); txt(ctx, sg, x, y + 0.5, C.bg, 8.5, 'center', 800); });
+  };
+  amb('te', Math.max(o.u0, 0), g.d0, C.c2, '−', 20); amb('tb', g.d1, g.c0, C.c4, '+', 20); amb('tc', g.c1, Math.min(o.u1, g.len), C.c2, '−', 20);
+  if (o.extraB) amb('txb', g.d1, g.c0, C.c2, '−', 20 * o.extraB);
+  if (o.extraC) amb('txc', g.c1, Math.min(o.u1, g.len), C.c5, '−', 20 * o.extraC);
+  if (o.fl) {
+    const ym = q => q.m === 'P' ? y0 + (0.08 + 0.84 * (1 - q.w)) * hh : y0 + (0.08 + 0.84 * q.v) * hh;
+    o.fl.a.forEach(q => {
+      if (q.u < o.u0 || q.u > o.u1) return;
+      const x = MX(q.u), y = ym(q), mn = isMinorB(q, g) && q.m !== 'P';
+      trail(ctx, q.tr.concat([[q.u, q.v, q.w]]).map(a => [MX(a[0]), ym({ m: q.m, v: a[1], w: a[2] })]), q.k === 'e' ? C.c2 : C.c4);
+      if (mn) { ctx.beginPath(); ctx.arc(x, y, 8, 0, TAU2); ctx.strokeStyle = C.main; ctx.lineWidth = 1.5; ctx.stroke(); }
+      dot(ctx, x, y, 5, q.k === 'e' ? C.c2 : C.c4); txt(ctx, q.k === 'e' ? '−' : '+', x, y + 0.5, C.bg, 9, 'center', 800);
+      if (q === o.fl.trk) {
+        ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = C.main; ctx.beginPath(); ctx.arc(x, y, 19 * (1 + 0.18 * Math.sin(t * 5)), 0, TAU2); ctx.fill(); ctx.restore();
+        ctx.beginPath(); ctx.arc(x, y, 11, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.6; ctx.stroke();
+      }
+    });
+    o.fl.fl.forEach(f => {
+      if (f.u < o.u0 || f.u > o.u1) return;
+      const a = clamp((t - f.t0) / 0.55, 0, 1), y = y0 + (0.08 + 0.84 * f.v) * hh;
+      ctx.save(); ctx.globalAlpha = 1 - a; ctx.beginPath(); ctx.arc(MX(f.u), y, 6 + a * (f.big ? 24 : 15), 0, TAU2); ctx.strokeStyle = f.big ? C.err : C.main; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+    });
+  }
+  ctx.restore();
+  rr(ctx, x0, y0, x1 - x0, hh, 8); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.3; ctx.stroke();
+  [['E', (Math.max(o.u0, 0) + g.d0) / 2, C.c2], ['B', (g.d1 + g.c0) / 2, C.c4], ['C', (g.c1 + Math.min(o.u1, g.len)) / 2, C.c2]].forEach(r => { const x = MX(r[1]); if (x > x0 + 6 && x < x1 - 6) txt(ctx, r[0], x, y0 + 11, r[2], 11, 'center', 800); });
+  return { MX, x0, x1, y0, y1 };
+}
+function stripMark(ctx, s, u, col, label, dash) {
+  const x = s.MX(u); if (x < s.x0 || x > s.x1) return;
+  ln(ctx, x, s.y0, x, s.y1, col, 1.8, dash === false ? null : [5, 4]);
+  txt(ctx, label, x + 3, s.y0 + 22, col, 10, 'left', 800);
+}
+/* ---- camera phim ---- */
+function camFU(c, u, fy, fz) {
+  const gm = c.gm, bb = c.bb; if (!gm || !bb) return null;
+  return [clamp((u * gm.bw - bb.x0) / (bb.x1 - bb.x0), 0, 1), fy == null ? 0.5 : fy, fz == null ? 0.5 : fz];
+}
+function camTracer(c) {
+  const gm = c.gm, bb = c.bb, tp = c.tp; if (!gm || !bb || !tp) return null;
+  return [clamp((tp[0] * gm.bw - bb.x0) / (bb.x1 - bb.x0), 0, 1), 0.5, 0.5];
+}
+const atU = fn => prog => { const c = film.p.cam; return c.gm ? camFU(c, fn(c.gm.g, prog)) : null; };
+const atT = () => () => camTracer(film.p.cam);
+
+
+/* ---------- PHIM TỰ ĐỘNG: camera bám theo hạt "theo dõi", hoặc dừng ở vùng đang thay đổi (hạt bay qua tạm ẩn) ---------- */
+const V = (yaw, tilt, zoom, f) => ({ yaw, tilt, zoom, f });
+const SNAPK = ['bgn', 'mode', 'nf'];
+const ST = (d, cap, zoom, track, extra) => Object.assign({ d, cap, v: V(0, 20, zoom), track, mv: 0.35, slow: 0.7 }, extra || {});
+const CH = (d, cap, zoom, track, set) => ST(d, cap, zoom, track, { calm: true, set });
+const jx = atU(g => g.jx), jE = atU(g => g.jE), jC = atU(g => g.jC), baseC = atU(g => (g.d1 + g.c0) / 2);
+const TOPC = (d, cap, zoom, track, set) => TOP(d, cap, zoom, track, { calm: true, set });
+const TOP = (d, cap, zoom, track, extra) => ST(d, cap, zoom, track, Object.assign({ v: V(0, 62, zoom) }, extra || {}));
+const FILM = {
+  base: [
+    ST(9, 'Cơ sở mỏng (x_B = 0,8 µm ≪ L_B): hai bên là emitter n⁺⁺ và collector. Dải sọc xanh dương trong cơ sở đậm nhạt theo nồng độ electron n_B(x).', 4.0, baseC, { set: { VBE: 0.65, VBC: -2, xB: 0.8, LB: 10 } }),
+    ST(15, 'Theo dõi một electron (quầng sáng): qua vùng nghèo B–E, vào cơ sở thành hạt thiểu số (viền vàng), khuếch tán rồi bị điện trường B–C quét nhanh sang collector. Hầu hết đều tới được collector.', 3.2, atT()),
+    CH(8, 'Kéo dài cơ sở (x_B = 12 µm, L_B = 6 µm): nhìn vào cơ sở — nó giãn ra, dải sọc nhạt dần mạnh về phía collector.', 3.0, baseC, { xB: 12, LB: 6 }),
+    ST(15, 'Cơ sở dài: electron phải đi rất xa nên nhiều hạt tái hợp (vòng sáng) với lỗ trống giữa đường, α_T tụt, dòng I_C giảm.', 2.6, atT())
+  ],
+  comp: [
+    ST(9, 'Phun thuận V_BE = 0,65 V: dòng emitter gồm ba nhóm hạt — electron phun (i_E1), lỗ trống phun ngược (i_E2) và electron tái hợp trong cơ sở.', 3.4, jE, { set: { VBE: 0.65, r2: 0.004, rb: 0.005 } }),
+    ST(18, 'Theo dõi lần lượt: electron tới collector (i_C) · lỗ trống phun ngược vào emitter (i_E2 = i_Ba) · electron tái hợp trong cơ sở, lỗ trống từ cực B xuống bù (i_Bb).', 3.0, atT()),
+    CH(8, 'Tăng V_BE thêm 60 mV: vùng nghèo B–E co lại, mọi dòng đều tăng gấp mười.', 3.4, jE, { VBE: 0.71 }),
+    ST(12, 'Dòng hạt dày gấp mười nhưng tỉ lệ các nhóm hầu như giữ nguyên — nên α, β gần như hằng số.', 3.0, atT())
+  ],
+  mode: [
+    ST(8, 'Ngắt (I_B = 0): B–E không phun, cả hai vùng nghèo rộng — không có hạt nào chạy qua cơ sở, I_C = 0.', 3.4, jx, { set: { IB: 0, VCC: 10, RC: 2, beta: 100 } }),
+    CH(8, 'Tăng I_B lên 20 µA: nhìn vào các vùng nghèo — B–E co lại để phun được, B–C vẫn ngược.', 3.4, jx, { IB: 20 }),
+    ST(14, 'Thuận tích cực: electron phun, qua cơ sở rồi bị quét sang collector — chạy một chiều, I_C = β·I_B.', 3.0, atT()),
+    CH(9, 'Tăng I_B lên 60 µA (bão hòa): vùng nghèo B–C sụp xuống vì tiếp giáp B–C cũng thuận.', 3.4, jC, { IB: 60 }),
+    ST(14, 'Bão hòa: electron từ collector chạy ngược vào cơ sở, lỗ trống chạy sang collector — dòng bị đường tải chặn, không còn I_C = β·I_B.', 3.0, atT())
+  ],
+  amp: [
+    ST(10, 'Điểm làm việc đẹp: V_BE tĩnh 0,65 V cộng tín hiệu ±10 mV. Nhìn dòng hạt phun lúc dày lúc thưa theo nhịp v_i, ba kim đảo nhịp theo.', 3.2, jE, { set: { VBEQ: 0.65, vi: 10, RC: 4 } }),
+    ST(14, 'Theo dõi một electron: mỗi nhịp v_BE tăng nhẹ, số hạt phun tăng rất nhiều (hàm mũ) nên i_C đổi lớn, v_o đổi ngược pha.', 3.0, atT()),
+    CH(8, 'Quá kích: V_BE tĩnh 0,70 V, biên độ 30 mV — nhìn vùng B–C khi i_C chạm đường tải.', 3.2, jC, { VBEQ: 0.7, vi: 30 }),
+    ST(10, 'Đỉnh dòng bị đường tải chặn: transistor bão hòa nên v_o bị cắt đỉnh, tín hiệu méo.', 3.0, jx)
+  ],
+  gain: [
+    ST(9, 'Ví dụ 3.1: dòng emitter "rò" ở ba chỗ — lỗ trống phun ngược (1−γ), tái hợp cơ sở (1−α_T), tái hợp vùng nghèo (1−δ). Phần rò được phóng đại để thấy.', 3.2, jE, { set: { NE: 3.02e17, NB: 1e15, xB: 0.8, LB: 10, VBE: 0.8 } }),
+    ST(24, 'Theo dõi lần lượt năm hạt: tới collector · lỗ trống phun ngược (γ) · tái hợp trong cơ sở (α_T) · tái hợp vùng nghèo (δ, vòng đỏ) · tới collector.', 3.0, atT()),
+    CH(8, 'Pha emitter nhẹ hơn (N_E = 10¹⁷ gần N_B): γ tụt — nhìn vào B–E, lỗ trống phun ngược nhiều lên.', 3.2, jE, { NE: 1e17 }),
+    ST(14, 'Lỗ trống phun ngược vào emitter xuất hiện thường xuyên hơn — hạt rò (1−γ) lớn, β giảm.', 3.0, atT())
+  ],
+  early: [
+    ST(9, 'V_CB = 4 V: vùng nghèo B–C (xanh lá) mới lấn nhẹ vào cơ sở; bề rộng trung hòa x_B còn gần x_B0.', 3.6, baseC, { set: { VCB: 4, xB0: 1.0, NB: 1e16 } }),
+    CH(8, 'Tăng V_CB lên 16 V: nhìn mép collector — vùng nghèo B–C lấn sâu vào cơ sở, x_B co lại.', 3.6, jC, { VCB: 16 }),
+    ST(14, 'Cơ sở hẹp hơn: electron được theo dõi băng qua nhanh hơn, gradient nồng độ dốc hơn nên I_C tăng — đó là hiệu ứng Early.', 3.0, atT())
+  ],
+  hl: [
+    ST(9, 'Hẹp vùng cấm BẬT: emitter pha tạp nặng (10¹⁹) làm lỗ trống phun ngược vào emitter nhiều lên so với electron.', 3.2, jE, { set: { bgn: 'on', NE: 1e19, NB: 1e16, VBE: 0.6 } }),
+    ST(15, 'Theo dõi electron và lỗ trống ngược: đa số electron tới collector nhưng hạt lỗ trống chạy ngược (1−γ) xuất hiện đáng kể.', 3.0, atT()),
+    CH(9, 'Tăng V_BE lên 0,82 V: nhìn vào cơ sở — electron phun dư (xanh dương) ngày càng dày, vượt dần lỗ trống đa số N_B.', 3.2, baseC, { VBE: 0.82 }),
+    ST(12, 'Phun mức cao: electron dư trong cơ sở đông ngang nồng độ pha tạp, β tụt.', 3.0, baseC)
+  ],
+  crowd: [
+    TOP(9, 'Emitter một ngón nhìn từ trên (20 µm): các ô xanh dương nhạt ở giữa, đỏ ở hai mép — electron phun xuống cơ sở nhiều nhất ở mép.', 2.6, atU(() => 0.5), { set: { wE: 20, Rsb: 10000, I: 30, nf: 1 } }),
+    TOP(15, 'Theo dõi electron rơi ở mép ngón: điện áp rơi ngang trên điện trở cơ sở làm mép bị kích mạnh hơn giữa, hạt phun dồn ra mép (vòng đỏ).', 3.0, atT()),
+    TOPC(8, 'Chia emitter thành 4 ngón: nhìn lại cấu trúc — nhiều mép hơn, mỗi ngón hẹp hơn nên dồn dòng yếu đi.', 2.6, atU(() => 0.5), { nf: 4 }),
+    TOP(12, 'Mỗi ngón hẹp có dòng gần đều: hạt rơi ở giữa cũng nhiều ngang mép.', 2.8, atT())
+  ],
+  brk: [
+    ST(9, 'Xuyên thấu, V_CB = 30 V: vùng nghèo B–C đã lấn đáng kể vào cơ sở nhưng vẫn còn một dải cơ sở trung hòa.', 3.4, jC, { set: { mode: 'pt', VCB: 30, xBO: 0.8, NB: 1e16, beta: 100 } }),
+    CH(9, 'Tăng V_CB lên 80 V: vùng nghèo B–C lấn thẳng tới vùng nghèo B–E — nhìn vào cơ sở, dải trung hòa biến mất.', 3.4, jC, { VCB: 80 }),
+    ST(14, 'Hết cơ sở trung hòa: rào B–E bị hạ, electron từ emitter chạy thẳng sang collector, thác lũ nhân đôi hạt (vòng đỏ lớn).', 3.0, atT()),
+    ST(12, 'Chuyển sang I_CEO (cơ sở hở): lỗ trống ngược từ collector chui vào cơ sở làm B dương hơn E, B–E thuận và phun electron.', 3.2, jC, { set: { mode: 'ceo', VCB: 20 } }),
+    ST(15, 'Theo dõi lỗ trống I_CBO đi ngược từ collector vào cơ sở: mỗi lỗ trống kéo theo cỡ β electron phun, nên I_CEO ≈ β·I_CBO.', 3.0, atT())
+  ],
+  fa: [
+    ST(9, 'Bốn chặng của electron: nạp C_je (τ_e), bay qua cơ sở (τ_b), bay qua vùng nghèo collector (τ_d), nạp C_C (τ_c). Hạt chậm ở chặng nào có τ lớn.', 2.4, jx, { set: { te: 4, tb: 12, td: 3, tc: 1, logF: 9 } }),
+    ST(14, 'Theo dõi một electron: chạy chậm nhất ở cơ sở (chặng dài nhất, nút cổ chai), lao nhanh qua vùng nghèo collector.', 2.6, atT()),
+    CH(8, 'Rút ngắn τ_b còn một nửa: nhìn vào cơ sở — thời gian bay giảm, tổng τ_ec giảm, f_α tăng.', 2.6, jx, { tb: 6 }),
+    ST(12, 'Electron băng qua cơ sở nhanh gần gấp đôi: đây là cách tăng tần số cắt f_α.', 2.6, atT())
+  ],
+  sw: [
+    ST(10, 'BJT đóng cắt tuần hoàn: xung dòng cơ sở bật rồi tắt. Bốn đèn pha t_d · t_r · t_s · t_f ở góc trái sáng lần lượt; electron chỉ phun khi có xung.', 3.0, jx, { set: { k: 3, m: 0.5 } }),
+    ST(15, 'Theo dõi electron khi có xung: điện tích tích trữ trong cơ sở (xanh dương) tăng dần (t_d rồi t_r); dư dòng cơ sở đẩy transistor vào bão hòa.', 3.0, atT()),
+    CH(9, 'Quá kích sâu I_B1 = 8×: nhìn vào cơ sở và collector — điện tích dư Q_BX (xanh lá) tràn sang collector.', 3.0, jC, { k: 8, m: 0 }),
+    ST(14, 'Khi tắt xung, Q_BX phải được rút hết (t_s) trước khi I_C giảm: đây là thời gian lưu trữ — thành phần chậm nhất.', 2.8, atU(g => (g.jC + g.len) / 2))
+  ]
+};
+const NOCAM = new Set();
+const THREE = new Set(['base', 'comp', 'mode', 'amp', 'gain', 'early', 'hl', 'crowd', 'brk', 'fa', 'sw']);
+
+
+/* ==========================================================================
+   11 THÍ NGHIỆM BJT — mỗi tab: khối 3D (camera chuột) + khung bên trong (cùng hạt, cùng quy luật)
+   ========================================================================== */
 const LABS = [];
+const LAY = { cols: '2.1fr 1fr', rows: '2.6fr 1fr', areas: '"a l" "c l"' };
+const frI = I => clamp((lg10(Math.abs(I)) + 9) / 8, 0, 1);
+const rateI = I => 0.9 + 2.5 * frI(I);
+const needle = (l, v, f, col, dg) => [l, v, clamp(f, 0, 1), col, dg];
 
-/* ==========================================================================
-   1. MỤC 1.3 — PHÂN BỐ ELECTRON THIỂU SỐ TRONG CƠ SỞ
-   ========================================================================== */
-LABS.push({
-  id: 'base', tag: '1.3', name: 'Phân bố e⁻ cơ sở', sec: 1,
-  S: { VBE: 0.65, VBC: -2.0, xB: 0.8, LB: 10 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế 3D: Khối BJT npn — dải sọc c2 trong cơ sở đậm nhạt theo nồng độ electron n_B(x)',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'VBE', l: 'V_BE', min: 0, max: 0.85, step: 0.01, f: fmtV },
-        { k: 'VBC', l: 'V_BC', min: -5, max: 0.7, step: 0.05, f: fmtV },
-        { k: 'xB', l: 'x_B', min: -1, max: 1.08, step: 0.02, log: 1, f: fmtUm },
-        { k: 'LB', l: 'L_B', min: 2, max: 30, step: 1, f: v => v + ' µm' },
-        { btn: 'Cơ sở mỏng', fn: p => { p.S.xB = 0.8; p.S.LB = 10; p.syncCtrls(); p.dirty = true; } },
-        { btn: 'Cơ sở dài', fn: p => { p.S.xB = 12; p.S.LB = 6; p.syncCtrls(); p.dirty = true; } }
-      ],
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, P = baseProf(S.VBE, S.VBC, S.xB, S.LB, 1e16), md = bjtMode(S.VBE, S.VBC);
-        const bw = Math.min(310, W * 0.50), bd = Math.min(140, H * 0.38), h = Math.min(88, H * 0.28);
-        const fB = fBof(S.xB), fE = 0.34, ox = W * 0.22, oy = H * 0.78;
-        const depC = S.VBC < 0.3 ? 3 + 5 * Math.sqrt(Math.max(0, -S.VBC) + 0.6) : 2;
-        const wB = bw * fB, wC = bw * (1 - fE - fB);
-        const G = bjt3D(ctx, ox, oy, {
-          bw, bd, h, fE, fB, depBEe: 2, depBEb: 4, depBCb: Math.min(depC * 0.4, wB * 0.45), depBCc: Math.min(depC * 1.1, wC * 0.5),
-          slices: { n: 10, fn: u => 0.08 + 0.78 * clamp(P.n(u) / P.nmax, 0, 1) }
-        });
-        drawProbe(ctx, G.E[0], G.E[1], -1, C.c2, 'E · 0 V');
-        drawProbe(ctx, G.B[0], G.B[1], 1, C.c4, 'B · ' + fmtV(S.VBE));
-        drawProbe(ctx, G.C[0], G.C[1], 1, C.c1, 'C · ' + fmtV(S.VBE - S.VBC));
-        const gx = W - 62;
-        drawMiniGauge(ctx, gx, H * 0.30, 22, 'Dòng I_C', fmtCur(P.IC), clamp((lg10(Math.abs(P.IC)) + 12) / 10, 0, 1), C.main);
-        drawMiniGauge(ctx, gx, H * 0.72, 22, 'n_B(0)', sci(P.n(0), 1), clamp((lg10(P.n(0)) - 4) / 14, 0, 1), C.c2);
-        chip(ctx, 'Chế độ: ' + md.label + ' · x_B/L_B = ' + (S.xB / S.LB).toFixed(2), W * 0.44, 15, md.k === 'fa' ? C.main : C.c5, 'center');
-      }
-    },
-    {
-      title: 'Bên trong (E → B → C): dải sáng–tối nồng độ electron trong cơ sở, electron phun – khuếch tán – bị quét',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, P = baseProf(S.VBE, S.VBC, S.xB, S.LB, 1e16);
-        const padX = 16, rightLbl = 140, topY = 10, botY = H - 10, bw = W - padX - rightLbl, bh = botY - topY;
-        const fB = fBof(S.xB) + 0.06, fE = 0.28;
-        const depC = S.VBC < 0.3 ? 3 + 4 * Math.sqrt(Math.max(0, -S.VBC) + 0.6) : 2;
-        const G = secFrame(ctx, padX, topY, bw, bh, fE, fB, { depBEe: 2, depBEb: 3, depBCb: Math.min(depC * 0.4, G0(bw * fB)), depBCc: Math.min(depC, bw * 0.1) });
-        const yB = botY - 8, hP = bh * 0.60, xs = G.xBE, xe = G.xBC;
-        const Y = n => yB - clamp(n / P.nmax, 0, 1) * hP;
-        const NS = 28;
-        for (let i = 0; i < NS; i++) {
-          ctx.save(); ctx.globalAlpha = 0.08 + 0.62 * clamp(P.n((i + 0.5) / NS) / P.nmax, 0, 1); ctx.fillStyle = C.c2;
-          ctx.fillRect(xs + (xe - xs) * i / NS, G.y0 + 22, (xe - xs) / NS + 0.6, G.y1 - G.y0 - 30); ctx.restore();
+/* tạo tab dùng chung: cfg(S, t) → { g, so (tuỳ chọn mô phỏng), sc (tuỳ chọn khung 3D), gs (đồng hồ), chip, st (tuỳ chọn dải), lines } */
+function mkTab(meta, cfg, ctrls3, ctrlsC, titleC) {
+  return Object.assign({}, meta, LAY, {
+    panels: [
+      {
+        title: meta.title3, area: 'a', anim: true, ctrls: ctrls3,
+        draw(p, ctx, W, H, t, dt) {
+          const c = cfg(p.S, t), fl = simB(p.st, 'fl', t, dt, c.g, c.so);
+          const sc = scene3b(p, ctx, W, H, t, c.g, c.sc || {});
+          if (c.over) c.over(ctx, sc, t, p, c);
+          flow3(ctx, sc, fl, c.g, t);
+          gcol(ctx, W, H, c.gs);
+          chipTop(ctx, W, c.chip[0], c.chip[1]);
         }
-
-        const f = clamp(S.VBE / 0.8, 0, 1), dir = P.IC >= 0 ? 1 : -1, sp = 0.35 + 0.7 * f;
-        const nAct = Math.round(3 + 30 * f), pk = clamp((1 - P.aT) * 7, 0, 0.95);
-        const y0 = G.y0 + 24, y1 = G.y1 - 10;
-        if (!st.es) st.es = Array.from({ length: 34 }, () => ({ u: Math.random(), v: Math.random(), ud: 2 }));
-        st.es.forEach((q, i) => {
-          if (i >= nAct) return;
-          q.u += sp * dt;
-          if (q.u >= q.ud || q.u > 1) {
-            if (q.u >= q.ud) addFlash(st, xs + (dir > 0 ? q.u : 1 - q.u) * (xe - xs), y0 + q.v * (y1 - y0));
-            q.u = 0; q.v = Math.random(); q.ud = Math.random() < pk ? rnd(0.15, 0.95) : 2;
-          }
-          const uu = dir > 0 ? q.u : 1 - q.u;
-          const x = xs + uu * (xe - xs), y = y0 + q.v * (y1 - y0);
-          dot(ctx, x, y, 4, C.c2); txt(ctx, '−', x, y + 0.5, C.bg, 8, 'center', 800);
-        });
-        for (let i = 0; i < 12; i++) {
-          const x = xs + (0.1 + 0.8 * ((i * 0.37) % 1)) * (xe - xs) + Math.sin(t * 3 + i) * 2, y = y0 + (((i * 0.61) % 1) * 0.9 + 0.05) * (y1 - y0) + Math.cos(t * 3.4 + i) * 2;
-          dot(ctx, x, y, 3.6, C.c4); txt(ctx, '+', x, y + 0.5, C.bg, 7.5, 'center', 800);
+      },
+      {
+        title: titleC, area: 'c', anim: true, ctrls: ctrlsC,
+        draw(p, ctx, W, H, t, dt) {
+          const c = cfg(p.S, t), fl = simB(p.st, 'fl', t, dt, c.g, c.so);
+          const so = Object.assign({ st: p.st, u0: 0, u1: 1, y0: 24, y1: H - 30, fl, rt: 0 }, c.st || {});
+          const s = stripB(ctx, W, H, t, c.g, so);
+          if (c.stOver) c.stOver(ctx, s, t, c);
+          txt(ctx, c.line[0], W / 2, H - 13, c.line[1] || C.ink, 10.5, 'center', 700);
         }
-        flowDots(ctx, st, 'fe', Math.round(f * 10), G.x0 + 8, xs - 4, y0, y1, sp * 0.9 * dir, dt, t, C.c2, '−');
-        flowDots(ctx, st, 'fc', Math.round(f * 8), xe + 4, G.x1 - 8, y0, y1, sp * 0.9 * dir, dt, t, C.c2, '−');
-        drawFlashes(ctx, st, dt, C.c3);
+      }
+    ]
+  });
+}
+const cdep = VBC => Math.min(0.05, 0.012 + 0.016 * Math.sqrt(Math.max(0, -VBC) + 0.6));
+const slicesOf = P => ({ n: 10, fn: u => 0.08 + 0.78 * clamp(P.n(u) / P.nmax, 0, 1) });
 
-        const lx = padX + bw + 8;
-        txt(ctx, 'x_B/L_B = ' + (S.xB / S.LB).toFixed(2), lx, topY + bh * 0.12, C.c5, 10, 'left', 700);
-        txt(ctx, 'n_B(0) = ' + sci(P.n(0), 1), lx, topY + bh * 0.30, C.c2, 10, 'left', 700);
-        txt(ctx, 'n_B(x_B) = ' + sci(P.n(1), 1), lx, topY + bh * 0.48, C.c2, 10, 'left', 700);
-        txt(ctx, 'α_T = ' + P.aT.toFixed(4), lx, topY + bh * 0.66, C.c3, 10, 'left', 700);
-        txt(ctx, S.xB / S.LB < 0.3 ? 'Dải đậm nhạt gần đều (cơ sở mỏng)' : 'Dải nhạt dần mạnh (cơ sở dài)', lx, topY + bh * 0.84, C.mut, 9.5, 'left', 600);
-      }
-    }
-  ]
-});
-function G0(x) { return Math.max(1, x * 0.45); }
+/* ---------- 1. MỤC 1.3 — PHÂN BỐ ELECTRON THIỂU SỐ TRONG CƠ SỞ ---------- */
+LABS.push(mkTab({
+  id: 'base', tag: '1.3', name: 'Phân bố e⁻ cơ sở', sec: 1, S: { VBE: 0.65, VBC: -2.0, xB: 0.8, LB: 10 },
+  title3: 'Thực tế 3D: Khối BJT npn — electron phun từ emitter khuếch tán qua cơ sở; dải sọc đậm nhạt = nồng độ n_B(x)'
+}, (S) => {
+  const P = baseProf(S.VBE, S.VBC, S.xB, S.LB, 1e16), md = bjtMode(S.VBE, S.VBC), dc = cdep(S.VBC), fB = fBof(S.xB);
+  const g = bgeom({ fB, dEb: S.VBE > 0.4 ? 0.008 : 0.016, dCb: Math.min(dc * 0.45, fB * 0.4), dCc: dc });
+  const on = S.VBE > 0.3;
+  return {
+    g, so: { R: on ? rateI(P.IC) : 0, pR: Math.max(0, 1 - P.aT), seq: ['C', 'C', 'R', 'C'], noTrk: !on },
+    sc: { slices: slicesOf(P) }, st: { slices: slicesOf(P) },
+    gs: [needle('Dòng I_C', fmtCur(P.IC), frI(P.IC), C.main), needle('n_B(0)', sci(P.n(0), 1), (lg10(P.n(0)) - 4) / 14, C.c2), needle('α_T', P.aT.toFixed(3), (P.aT - 0.5) / 0.5, C.c3)],
+    chip: ['Chế độ: ' + md.label + ' · x_B/L_B = ' + (S.xB / S.LB).toFixed(2), md.k === 'fa' ? C.main : C.c5],
+    line: [S.xB / S.LB < 0.3 ? 'Cơ sở mỏng: dải sọc gần đều — hầu hết electron tới collector' : 'Cơ sở dài: dải nhạt dần mạnh — nhiều electron tái hợp giữa đường', S.xB / S.LB < 0.3 ? C.c5 : C.err]
+  };
+}, [
+  { k: 'VBE', l: 'V_BE', min: 0, max: 0.85, step: 0.01, f: fmtV },
+  { k: 'VBC', l: 'V_BC', min: -5, max: 0.7, step: 0.05, f: fmtV },
+  { k: 'xB', l: 'x_B', min: -1, max: 1.08, step: 0.02, log: 1, f: fmtUm },
+  { k: 'LB', l: 'L_B', min: 2, max: 30, step: 1, f: v => v + ' µm' },
+  { btn: 'Cơ sở mỏng', fn: p => { p.S.xB = 0.8; p.S.LB = 10; p.syncCtrls(); p.dirty = true; } },
+  { btn: 'Cơ sở dài', fn: p => { p.S.xB = 12; p.S.LB = 6; p.syncCtrls(); p.dirty = true; } }
+], null, 'Bên trong (E → B → C): cùng các hạt như khối 3D — electron phun, khuếch tán trong cơ sở, tái hợp hoặc bị quét sang collector'));
 
-/* ==========================================================================
-   2. MỤC 1.5 — CÁC THÀNH PHẦN DÒNG i_E1, i_E2, i_Ba, i_Bb, i_C
-   ========================================================================== */
-LABS.push({
-  id: 'comp', tag: '1.5', name: 'Thành phần dòng', sec: 1,
-  S: { VBE: 0.65, r2: 0.004, rb: 0.005 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế: BJT TO-92 trên bàn thử — 3 ampe kế đo i_E, i_B, i_C khi quét V_BE',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'VBE', l: 'V_BE', min: 0.45, max: 0.80, step: 0.005, f: v => v.toFixed(3) + ' V' },
-        { k: 'r2', l: 'I_S2/I_S', min: 0.001, max: 0.05, step: 0.001, f: v => (v * 100).toFixed(1) + ' %' },
-        { k: 'rb', l: 'Tái hợp cơ sở', min: 0.001, max: 0.05, step: 0.001, f: v => (v * 100).toFixed(1) + ' %' },
-        { btn: '+60 mV', fn: p => { p.S.VBE = Math.min(0.8, p.S.VBE + 0.06); p.syncCtrls(); p.dirty = true; } },
-        { btn: 'Đặt lại', fn: p => { p.S.VBE = 0.65; p.S.r2 = 0.004; p.S.rb = 0.005; p.syncCtrls(); p.dirty = true; } }
-      ],
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, K = compCalc(S), st = p.st;
-        const cx = W * 0.26, cy = H * 0.26, sc = 1.25;
-        const legs = drawTO92(ctx, cx, cy, sc, C.main);
-        const gy = H * 0.76, gxs = [W * 0.10, W * 0.26, W * 0.42];
-        const cur = [K.iE, K.iB, K.iC || K.IC], names = ['i_E', 'i_B', 'i_C'], cols = [C.c2, C.c4, C.c1];
-        legs.forEach((lp, i) => {
-          const fr = clamp((lg10(cur[i]) + 9) / 8, 0, 1);
-          ln(ctx, lp[0], lp[1], gxs[i], gy - 42, cols[i], 2.4);
-          pathDots(ctx, [lp, [gxs[i], gy - 42]], 3, 0.3 + fr * 0.9, t, cols[i], 3);
-          drawMiniGauge(ctx, gxs[i], gy, 21, names[i], fmtCur(cur[i]), fr, cols[i]);
-        });
-        const rx = W * 0.60;
-        txt(ctx, 'α = ' + K.alpha.toFixed(4), rx, H * 0.22, C.main, 18, 'left', 800);
-        txt(ctx, 'β = ' + K.beta.toFixed(1), rx, H * 0.38, C.main, 18, 'left', 800);
-        txt(ctx, 'γ = i_E1/i_E = ' + K.gamma.toFixed(4), rx, H * 0.54, C.c4, 11, 'left', 700);
-        const up = K.IC * Math.exp(0.06 / VT_300);
-        txt(ctx, 'V_BE +60 mV ⇒ i_C ×10', rx, H * 0.68, C.mut, 10.5, 'left', 700);
-        txt(ctx, fmtCur(K.IC) + ' → ' + fmtCur(up), rx, H * 0.80, C.ink, 11.5, 'left', 800);
-        chip(ctx, 'Mọi thành phần ∝ exp(V_BE/V_t) nên α, β gần như hằng số', W * 0.50, 14, C.main, 'center');
-      }
-    },
-    {
-      title: 'Bên trong: dòng emitter = e⁻ phun i_E1 + lỗ trống phun ngược i_E2; dòng cơ sở = i_Ba + i_Bb',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, K = compCalc(S);
-        const padX = 14, lblW = 92, rightW = 150, barX = padX + lblW, barW = W - barX - rightW, rowH = Math.min(46, (H - 40) / 3);
-        const rows = [
-          { lb: 'i_E', parts: [[K.iE1 / K.iE, C.c2], [K.iE2 / K.iE, C.c4]], val: fmtCur(K.iE) + ' (100 %)' },
-          { lb: 'i_C', parts: [[K.IC / K.iE, C.main]], val: fmtCur(K.IC) + ' (' + pct(K.IC / K.iE, 1) + ')' },
-          { lb: 'i_B', parts: [[K.iBa / K.iE, C.c4], [K.iBb / K.iE, C.c3]], val: fmtCur(K.iB) + ' (' + pct(K.iB / K.iE, 2) + ')' }
-        ];
-        txt(ctx, 'Thanh dài = i_E; mỗi thanh chia theo nguồn gốc dòng', W / 2, 11, C.mut, 10, 'center', 700);
-        rows.forEach((r, i) => {
-          const y = 28 + i * (rowH + 4);
-          txt(ctx, r.lb, padX, y + rowH / 2, C.ink, 12, 'left', 800);
-          rr(ctx, barX, y, barW, rowH - 6, 4); ctx.fillStyle = C.tint; ctx.fill();
-          let x = barX;
-          r.parts.forEach(pt => {
-            const w = Math.max(3, pt[0] * barW);
-            rr(ctx, x, y, w, rowH - 6, 4); ctx.fillStyle = pt[1]; ctx.globalAlpha = 0.5; ctx.fill(); ctx.globalAlpha = 1;
-            rr(ctx, x, y, w, rowH - 6, 4); ctx.strokeStyle = pt[1]; ctx.lineWidth = 1.4; ctx.stroke();
-            for (let k = 0; k < 4; k++) dot(ctx, x + 4 + ((t * 70 + k * w / 4) % Math.max(6, w - 8)), y + (rowH - 6) / 2, 2.6, pt[1]);
-            x += w;
-          });
-          txt(ctx, r.val, barX + barW + 8, y + rowH / 2 - 3, i === 1 ? C.main : C.ink, 10.5, 'left', 700);
-        });
-        const yy = 28 + 3 * (rowH + 4) + 4;
-        txt(ctx, 'i_E1 e⁻ phun · i_E2 = i_Ba lỗ trống ngược · i_Bb bù tái hợp trong cơ sở', padX, yy + 4, C.mut, 10, 'left', 600);
-        txt(ctx, 'α = i_C/i_E = ' + K.alpha.toFixed(4) + '   β = i_C/i_B = ' + K.beta.toFixed(1) + '   β = α/(1−α)', padX, yy + 24, C.main, 11.5, 'left', 800);
-      }
-    }
-  ]
-});
+/* ---------- 2. MỤC 1.5 — THÀNH PHẦN DÒNG ---------- */
+LABS.push(mkTab({
+  id: 'comp', tag: '1.5', name: 'Thành phần dòng', sec: 1, S: { VBE: 0.65, r2: 0.004, rb: 0.005 },
+  title3: 'Thực tế 3D: Dòng emitter gồm e⁻ phun (i_E1) và lỗ trống phun ngược (i_E2); e⁻ tái hợp ở cơ sở được bù bởi lỗ trống từ cực B (i_Bb)'
+}, (S) => {
+  const K = compCalc(S), g = bgeom({ fB: 0.2, dCb: 0.03, dCc: 0.05 });
+  return {
+    g, so: { R: rateI(K.IC), pH: K.iE2 / K.iE1, pR: K.rb || S.rb, seq: ['C', 'H', 'C', 'R', 'C'] },
+    gs: [needle('i_E', fmtCur(K.iE), frI(K.iE), C.c2), needle('i_B', fmtCur(K.iB), frI(K.iB), C.c4), needle('i_C', fmtCur(K.IC), frI(K.IC), C.c1)],
+    chip: ['α = ' + K.alpha.toFixed(4) + ' · β = ' + K.beta.toFixed(1) + ' · mọi thành phần ∝ exp(V_BE/V_t)', C.main],
+    line: ['Phần hiếm: lỗ trống chạy ngược (i_Ba) và electron tái hợp (i_Bb) — hai thành phần của dòng cơ sở (phóng đại để thấy)', C.mut]
+  };
+}, [
+  { k: 'VBE', l: 'V_BE', min: 0.45, max: 0.80, step: 0.005, f: v => v.toFixed(3) + ' V' },
+  { k: 'r2', l: 'I_S2/I_S', min: 0.001, max: 0.05, step: 0.001, f: v => (v * 100).toFixed(1) + ' %' },
+  { k: 'rb', l: 'Tái hợp cơ sở', min: 0.001, max: 0.05, step: 0.001, f: v => (v * 100).toFixed(1) + ' %' },
+  { btn: '+60 mV', fn: p => { p.S.VBE = Math.min(0.8, p.S.VBE + 0.06); p.syncCtrls(); p.dirty = true; } },
+  { btn: 'Đặt lại', fn: p => { p.S.VBE = 0.65; p.S.r2 = 0.004; p.S.rb = 0.005; p.syncCtrls(); p.dirty = true; } }
+], null, 'Bên trong: cùng hạt — vòng sáng vàng là tái hợp, hạt viền vàng là hạt thiểu số'));
 
-/* ==========================================================================
-   3. MỤC 2.3 — ĐƯỜNG TẢI: NGẮT · THUẬN TÍCH CỰC · BÃO HÒA
-   ========================================================================== */
-LABS.push({
-  id: 'mode', tag: '2.3', name: 'Đường tải', sec: 2,
-  S: { IB: 20, VCC: 10, RC: 2, beta: 100 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế: Mạch emitter chung — V_CC, điện trở tải R_C, nguồn dòng cơ sở I_B và cột điện áp V_R + V_CE',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'IB', l: 'I_B', min: 0, max: 100, step: 1, f: v => v + ' µA' },
-        { k: 'VCC', l: 'V_CC', min: 3, max: 15, step: 0.5, f: v => v.toFixed(1) + ' V' },
-        { k: 'RC', l: 'R_C', min: 0.5, max: 5, step: 0.1, f: v => v.toFixed(1) + ' kΩ' },
-        { k: 'beta', l: 'β', min: 50, max: 300, step: 10, f: v => v + '' },
-        { btn: 'Ngắt', fn: p => { p.S.IB = 0; p.syncCtrls(); p.dirty = true; } },
-        { btn: 'Tích cực', fn: p => { p.S.IB = 20; p.S.VCC = 10; p.S.RC = 2; p.S.beta = 100; p.syncCtrls(); p.dirty = true; } },
-        { btn: 'Bão hòa', fn: p => { p.S.IB = 60; p.S.VCC = 10; p.S.RC = 2; p.S.beta = 100; p.syncCtrls(); p.dirty = true; } }
-      ],
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, M = modeCalc(S);
-        const batX = W * 0.10, railY = H * 0.17, gndY = H * 0.88, qx = W * 0.47, qy = H * 0.55, r = Math.min(26, H * 0.09);
-        const Q = drawNPN(ctx, qx, qy, r, M.k === 'sat' ? C.err : M.k === 'cut' ? C.mut : C.main);
-        drawBat(ctx, batX, railY, gndY, C.c4);
-        ln(ctx, batX, railY, Q.C[0], railY, C.c1, 2.4);
-        drawRes(ctx, Q.C[0], railY, Q.C[0], Q.C[1], C.c1, 2.4);
-        ln(ctx, Q.E[0], Q.E[1], Q.E[0], gndY, C.c2, 2.4); ln(ctx, batX, gndY, Q.E[0], gndY, C.c2, 2.4);
-        txt(ctx, 'R_C = ' + S.RC.toFixed(1) + ' kΩ', Q.C[0] + 12, (railY + Q.C[1]) / 2, C.c1, 10.5, 'left', 700);
-        txt(ctx, 'V_CC', batX + 16, (railY + gndY) / 2 + 14, C.c4, 10.5, 'left', 700);
-        const bx0 = W * 0.20, bw0 = 66;
-        rr(ctx, bx0, Q.B[1] - 17, bw0, 34, 6); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.c4; ctx.lineWidth = 1.4; ctx.stroke();
-        txt(ctx, 'I_B', bx0 + bw0 / 2, Q.B[1] - 5, C.mut, 9, 'center', 700);
-        txt(ctx, S.IB + ' µA', bx0 + bw0 / 2, Q.B[1] + 7, C.c4, 11.5, 'center', 800);
-        ln(ctx, bx0 + bw0, Q.B[1], Q.B[0], Q.B[1], C.c4, 2.4);
-        ln(ctx, bx0 + bw0 / 2, Q.B[1] + 17, bx0 + bw0 / 2, gndY, C.c4, 2); ln(ctx, bx0 + bw0 / 2, gndY, batX, gndY, C.c4, 2);
-        const fC = clamp(M.IC / Math.max(1e-9, M.ICmax), 0, 1);
-        if (M.IC > 0) pathDots(ctx, [[batX, railY], [Q.C[0], railY], [Q.C[0], gndY], [batX, gndY]], Math.round(3 + fC * 9), 0.12 + fC * 0.5, t, C.c1, 3.6);
-        if (M.IBa > 0) pathDots(ctx, [[bx0 + bw0, Q.B[1]], Q.B], 2, 0.3 + S.IB / 100 * 0.6, t, C.c4, 3.2);
-        // cột điện áp
-        const vx = W * 0.70, vy = H * 0.20, vh = H * 0.62, vw = 34;
-        const vr = sm(st, 'vr', M.VR, dt, 0.2), hR = vh * vr / S.VCC;
-        rr(ctx, vx, vy, vw, vh, 5); ctx.fillStyle = C.tint; ctx.fill();
-        ctx.save(); ctx.globalAlpha = 0.55; ctx.fillStyle = C.c1; ctx.fillRect(vx, vy, vw, hR); ctx.fillStyle = C.c2; ctx.fillRect(vx, vy + hR, vw, vh - hR); ctx.restore();
-        rr(ctx, vx, vy, vw, vh, 5); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.4; ctx.stroke();
-        txt(ctx, 'V_CC = ' + S.VCC.toFixed(1) + ' V', vx + vw / 2, vy - 10, C.c4, 10.5, 'center', 800);
-        txt(ctx, 'V_R = I_C·R_C = ' + M.VR.toFixed(2) + ' V', vx + vw + 8, vy + Math.max(10, hR / 2), C.c1, 10.5, 'left', 700);
-        txt(ctx, 'V_CE = ' + M.VCE.toFixed(2) + ' V', vx + vw + 8, vy + hR + (vh - hR) / 2, C.c2, 10.5, 'left', 700);
-        const gx = W - 52;
-        drawMiniGauge(ctx, gx, H * 0.74, 20, 'I_C', fmtCur(M.IC), fC, M.k === 'sat' ? C.err : C.main, 0.97);
-        const lbl = M.k === 'cut' ? 'NGẮT: I_B ≈ 0 ⇒ I_C = 0, V_CE = V_CC' : M.k === 'sat' ? 'BÃO HÒA: β·I_B = ' + fmtCur(M.want) + ' > ' + fmtCur(M.ICmax) + ' — đường tải chặn I_C' : 'THUẬN TÍCH CỰC: I_C = β·I_B';
-        chip(ctx, lbl, W * 0.46, 14, M.k === 'sat' ? C.err : M.k === 'cut' ? C.mut : C.main, 'center');
-      }
-    },
-    {
-      title: 'Bên trong: điểm làm việc trượt trên đường tải từ ngắt (trái) đến bão hòa (phải) và trạng thái hai tiếp giáp',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, M = modeCalc(S);
-        const padX = 18, barX = padX + 6, barW = W - padX * 2 - 12, barY = 30, barH = 18;
-        const u = sm(st, 'u', clamp(M.IC / M.ICmax, 0, 1), dt, 0.2);
-        txt(ctx, 'ĐƯỜNG TẢI  V_CE = V_CC − I_C·R_C', W / 2, 11, C.mut, 10, 'center', 700);
-        rr(ctx, barX, barY, barW, barH, 5); ctx.fillStyle = C.tint; ctx.fill();
-        ctx.save(); ctx.globalAlpha = 0.35; ctx.fillStyle = C.c2; ctx.fillRect(barX + barW * 0.02, barY, barW * 0.94, barH);
-        ctx.globalAlpha = 0.55; ctx.fillStyle = C.c5; ctx.fillRect(barX + barW * (1 - 0.2 / S.VCC) - 2, barY, barW * 0.2 / S.VCC + 2, barH); ctx.restore();
-        rr(ctx, barX, barY, barW, barH, 5); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.3; ctx.stroke();
-        const mx = barX + u * barW;
-        dot(ctx, mx, barY + barH / 2, 8, M.k === 'sat' ? C.err : C.main);
-        txt(ctx, 'Q', mx, barY + barH / 2 + 0.5, C.bg, 9, 'center', 800);
-        txt(ctx, 'NGẮT  I_C = 0', barX, barY + barH + 12, C.mut, 9.5, 'left', 700);
-        txt(ctx, 'BÃO HÒA  I_C = V_CC/R_C = ' + fmtCur(M.ICmax), barX + barW, barY + barH + 12, C.c5, 9.5, 'right', 700);
-        if (M.k === 'sat') txt(ctx, 'β·I_B = ' + fmtCur(M.want) + ' (không thể xảy ra)', mx - 8, barY - 8, C.err, 10, 'right', 700);
-        else txt(ctx, 'I_C = ' + fmtCur(M.IC) + ' · V_CE = ' + M.VCE.toFixed(2) + ' V', mx, barY - 8, C.ink, 10.5, 'center', 700);
-        const sy = 86, sh = Math.max(50, H - sy - 34);
-        const dBC = M.k === 'sat' ? 3 : 22 + 12 * Math.sqrt(M.VCE / S.VCC);
-        const G = secFrame(ctx, padX, sy, W - padX * 2 - 150, sh, 0.28, 0.14, { depBEe: 2, depBEb: 3, depBCb: dBC * 0.3, depBCc: dBC * 0.7 });
-        const f = clamp(M.IC / M.ICmax, 0, 1), y0 = sy + 22, y1 = sy + sh - 8;
-        flowDots(ctx, st, 'e1', Math.round(f * 14), G.x0 + 8, G.x1 - 8, y0, y1, 0.3 + f * 0.8, dt, t, C.c2, '−');
-        if (M.k === 'sat') flowDots(ctx, st, 'h1', 6, G.xBC, G.xBC + 70, y0, y1, -0.3, dt, t, C.c4, '+');
-        const lx = G.x1 + 10;
-        const be = M.k !== 'cut', bc = M.k === 'sat';
-        dot(ctx, lx + 5, sy + 14, 5, be ? C.c2 : C.tint); txt(ctx, 'B–E: ' + (be ? 'thuận' : 'không phun'), lx + 14, sy + 14, be ? C.c2 : C.mut, 10, 'left', 700);
-        dot(ctx, lx + 5, sy + 36, 5, bc ? C.err : C.c5); txt(ctx, 'B–C: ' + (bc ? 'THUẬN' : 'ngược'), lx + 14, sy + 36, bc ? C.err : C.c5, 10, 'left', 700);
-        txt(ctx, M.k === 'sat' ? 'Hai tiếp giáp cùng phun' : 'Vùng nghèo B–C rộng', lx, sy + 62, C.mut, 9.5, 'left', 600);
-      }
-    }
-  ]
-});
+/* ---------- 3. MỤC 2.3 — NGẮT · THUẬN TÍCH CỰC · BÃO HÒA ---------- */
+LABS.push(mkTab({
+  id: 'mode', tag: '2.3', name: 'Đường tải', sec: 2, S: { IB: 20, VCC: 10, RC: 2, beta: 100 },
+  title3: 'Thực tế 3D: Ba chế độ làm việc — ngắt (không phun), thuận tích cực (phun & quét), bão hòa (hai tiếp giáp cùng phun, vùng nghèo B–C sụp)'
+}, (S) => {
+  const M = modeCalc(S), f = clamp(M.IC / Math.max(1e-9, M.ICmax), 0, 1), sat = M.k === 'sat', cut = M.k === 'cut';
+  const g = bgeom({ fB: 0.2, dEb: cut ? 0.026 : 0.01, dCb: sat ? 0.002 : 0.02 + 0.02 * Math.sqrt(M.VCE / S.VCC), dCc: sat ? 0.004 : 0.03 + 0.04 * Math.sqrt(M.VCE / S.VCC) });
+  const lbl = cut ? 'NGẮT: I_B ≈ 0 ⇒ không phun, I_C = 0' : sat ? 'BÃO HÒA: hai tiếp giáp thuận — collector cũng phun ngược vào cơ sở' : 'THUẬN TÍCH CỰC: I_C = β·I_B';
+  return {
+    g, so: { R: cut ? 0 : 0.8 + 2.4 * f, pR: 0.04, sat: sat ? 1.1 : 0, seq: sat ? ['C', 'F', 'C'] : ['C'], noTrk: cut },
+    gs: [needle('I_C', fmtCur(M.IC), f, sat ? C.err : C.main, 0.97), needle('V_CE', M.VCE.toFixed(2) + ' V', M.VCE / S.VCC, C.c2), needle('V_R = I_C·R_C', M.VR.toFixed(2) + ' V', M.VR / S.VCC, C.c1)],
+    depCol2: sat ? C.err : undefined,
+    chip: [lbl, sat ? C.err : cut ? C.mut : C.main],
+    line: ['I_C = ' + fmtCur(M.IC) + ' · V_CE = ' + M.VCE.toFixed(2) + ' V · I_C(max) = V_CC/R_C = ' + fmtCur(M.ICmax), sat ? C.err : C.ink],
+    sc: { depCol2: sat ? C.err : undefined }, st: { depCol2: sat ? C.err : undefined }
+  };
+}, [
+  { k: 'IB', l: 'I_B', min: 0, max: 100, step: 1, f: v => v + ' µA' },
+  { k: 'VCC', l: 'V_CC', min: 3, max: 15, step: 0.5, f: v => v.toFixed(1) + ' V' },
+  { k: 'RC', l: 'R_C', min: 0.5, max: 5, step: 0.1, f: v => v.toFixed(1) + ' kΩ' },
+  { k: 'beta', l: 'β', min: 50, max: 300, step: 10, f: v => v + '' },
+  { btn: 'Ngắt', fn: p => { p.S.IB = 0; p.syncCtrls(); p.dirty = true; } },
+  { btn: 'Tích cực', fn: p => { p.S.IB = 20; p.S.VCC = 10; p.S.RC = 2; p.S.beta = 100; p.syncCtrls(); p.dirty = true; } },
+  { btn: 'Bão hòa', fn: p => { p.S.IB = 60; p.S.VCC = 10; p.S.RC = 2; p.S.beta = 100; p.syncCtrls(); p.dirty = true; } }
+], null, 'Bên trong: cùng hạt — thuận tích cực: e⁻ chạy một chiều; bão hòa: e⁻ và lỗ trống chạy hai chiều'));
 
-/* ==========================================================================
-   4. MỤC 2.5 — KHUẾCH ĐẠI TÍN HIỆU: SÓNG XOAY CHIỀU CHỒNG LÊN GIÁ TRỊ TĨNH
-   ========================================================================== */
+/* ---------- 4. MỤC 2.5 — KHUẾCH ĐẠI ---------- */
 const AMP_VCC = 10;
 function ampAt(S, ph) {
   const vi = S.vi * 1e-3 * Math.sin(ph), RC = S.RC * 1e3, ICmax = (AMP_VCC - 0.2) / RC;
   const iRaw = IS0 * Math.exp((S.VBEQ + vi) / VT_300), iC = Math.min(iRaw, ICmax);
   return { vi, iC, vce: clamp(AMP_VCC - iC * RC, 0.2, AMP_VCC), ICmax, sat: iRaw >= ICmax };
 }
-LABS.push({
-  id: 'amp', tag: '2.5', name: 'Khuếch đại', sec: 2,
-  S: { VBEQ: 0.65, vi: 10, RC: 4 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế: Mạch emitter chung + 3 đồng hồ kim — tín hiệu nhỏ v_i điều khiển i_C và v_o lớn, đảo pha',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'VBEQ', l: 'V_BE tĩnh', min: 0.55, max: 0.72, step: 0.005, f: v => v.toFixed(3) + ' V' },
-        { k: 'vi', l: 'Biên độ v_i', min: 1, max: 40, step: 1, f: v => v + ' mV' },
-        { k: 'RC', l: 'R_C', min: 1, max: 5, step: 0.1, f: v => v.toFixed(1) + ' kΩ' },
-        { btn: 'Điểm Q đẹp', fn: p => { p.S.VBEQ = 0.65; p.S.vi = 10; p.S.RC = 4; p.syncCtrls(); p.dirty = true; } },
-        { btn: 'Quá kích', fn: p => { p.S.VBEQ = 0.70; p.S.vi = 30; p.S.RC = 4; p.syncCtrls(); p.dirty = true; } }
-      ],
-      draw(p, ctx, W, H, t) {
-        const S = p.S, sx = 14, sy = 26, sw = W * 0.70, sh = Math.min(H - 40, 230);
-        rr(ctx, sx, sy - 14, sw, sh + 22, 10); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.6; ctx.stroke();
-        txt(ctx, 'BA ĐỒNG HỒ KIM TỨC THỜI (V_CC = ' + AMP_VCC + ' V)', sx + sw / 2, sy - 4, C.mut, 10, 'center', 700);
-        let clip = false, vmin = 1e9, vmax = -1e9;
-        for (let i = 0; i <= 80; i++) {
-          const A = ampAt(S, i / 80 * TAU2 * 2);
-          vmin = Math.min(vmin, A.vce); vmax = Math.max(vmax, A.vce); if (A.sat) clip = true;
-        }
-        const Ai = ampAt(S, -t * 3), gy = sy + sh * 0.58, gr = Math.min(30, sh * 0.3);
-        const fr = [clamp(0.5 + Ai.vi / 0.040 * 0.45, 0, 1), clamp(Ai.iC / Ai.ICmax, 0, 1), clamp(Ai.vce / AMP_VCC, 0, 1)];
-        drawMiniGauge(ctx, sx + sw * 0.17, gy, gr, 'v_i', (Ai.vi * 1e3).toFixed(1) + ' mV', fr[0], C.c1);
-        drawMiniGauge(ctx, sx + sw * 0.50, gy, gr, 'i_C', fmtCur(Ai.iC), fr[1], C.main);
-        drawMiniGauge(ctx, sx + sw * 0.83, gy, gr, 'v_o = V_CE', Ai.vce.toFixed(2) + ' V', fr[2], C.c2, Ai.sat ? 0.9 : null);
-        const A0 = ampAt(S, 0), IQ = IS0 * Math.exp(S.VBEQ / VT_300), gm = IQ / VT_300, Av = gm * S.RC * 1e3;
-        const rx = sx + sw + 12;
-        txt(ctx, 'I_CQ = ' + fmtCur(IQ), rx, H * 0.18, C.main, 11, 'left', 800);
-        txt(ctx, 'g_m = ' + (gm * 1e3).toFixed(1) + ' mS', rx, H * 0.32, C.ink, 11, 'left', 700);
-        txt(ctx, 'A_v ≈ −g_m·R_C', rx, H * 0.46, C.mut, 10, 'left', 700);
-        txt(ctx, '= −' + Av.toFixed(0), rx, H * 0.58, C.c2, 14, 'left', 800);
-        txt(ctx, 'Đo: ×' + ((vmax - vmin) / (2 * S.vi * 1e-3)).toFixed(0), rx, H * 0.72, clip ? C.err : C.c2, 11, 'left', 700);
-        chip(ctx, clip ? 'MÉO: transistor chạm bão hòa, đỉnh v_o bị cắt' : 'Không méo: i_C bám theo v_i, v_o ngược pha', W * 0.40, 12, clip ? C.err : C.main, 'center');
-        void A0;
-      }
-    },
-    {
-      title: 'Bên trong: mật độ electron phun theo nhịp v_BE và ba cột đo tức thời v_BE · i_C · v_CE',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, A = ampAt(S, -t * 3);
-        const padX = 16, rightW = 170, topY = 10, botY = H - 10, bw = W - padX - rightW, bh = botY - topY;
-        const G = secFrame(ctx, padX, topY, bw, bh, 0.30, 0.14, { depBEe: 2, depBEb: 3 + 2 * Math.max(0, A.vi / 0.04), depBCb: 4, depBCc: 12 });
-        const f = clamp(A.iC / A.ICmax, 0, 1), y0 = topY + 22, y1 = botY - 8;
-        flowDots(ctx, st, 'e', Math.round(2 + f * 24), G.x0 + 8, G.x1 - 8, y0, y1, 0.2 + f * 1.1, dt, t, C.c2, '−');
-        const cx0 = padX + bw + 18, colH = bh * 0.70, cw = 20, cy1 = botY - 22;
-        const bars = [
-          { lb: 'v_BE', v: 0.5 + A.vi / 0.08, col: C.c1, txtv: 'V_BE ' + (S.VBEQ + A.vi).toFixed(3) },
-          { lb: 'i_C', v: f, col: C.main, txtv: fmtCur(A.iC) },
-          { lb: 'v_CE', v: A.vce / AMP_VCC, col: C.c2, txtv: A.vce.toFixed(2) + ' V' }
-        ];
-        bars.forEach((b, i) => {
-          const x = cx0 + i * 50, lv = sm(st, 'b' + i, clamp(b.v, 0, 1), dt, 0.06);
-          rr(ctx, x, cy1 - colH, cw, colH, 4); ctx.fillStyle = C.tint; ctx.fill();
-          rr(ctx, x, cy1 - colH * lv, cw, colH * lv, 4); ctx.fillStyle = b.col; ctx.globalAlpha = 0.6; ctx.fill(); ctx.globalAlpha = 1;
-          rr(ctx, x, cy1 - colH, cw, colH, 4); ctx.strokeStyle = b.col; ctx.lineWidth = 1.3; ctx.stroke();
-          txt(ctx, b.lb, x + cw / 2, cy1 + 10, b.col, 10, 'center', 700);
-          txt(ctx, b.txtv, x + cw / 2, cy1 - colH - 8, b.col, 8.5, 'center', 700);
-        });
-      }
-    }
-  ]
-});
+LABS.push(mkTab({
+  id: 'amp', tag: '2.5', name: 'Khuếch đại', sec: 2, S: { VBEQ: 0.65, vi: 10, RC: 4 },
+  title3: 'Thực tế 3D: Tín hiệu nhỏ v_i làm dòng electron phun lúc dày lúc thưa — ba kim đo v_i, i_C, v_o đảo pha'
+}, (S, t) => {
+  const A = ampAt(S, -t * 3), IQ = IS0 * Math.exp(S.VBEQ / VT_300), gm = IQ / VT_300;
+  let clip = false; for (let i = 0; i <= 40; i++) if (ampAt(S, i / 40 * TAU2).sat) clip = true;
+  const g = bgeom({ fB: 0.2, dCb: 0.03, dCc: 0.05 + 0.02 * (A.vce / AMP_VCC) });
+  return {
+    g, so: { R: 1.5, mod: tt => clamp(ampAt(S, -tt * 3).iC / IQ, 0.05, 3), pR: 0.03, seq: ['C'] },
+    gs: [needle('v_i', (A.vi * 1e3).toFixed(1) + ' mV', 0.5 + A.vi / 0.04 * 0.45, C.c1), needle('i_C', fmtCur(A.iC), A.iC / A.ICmax, C.main), needle('v_o = V_CE', A.vce.toFixed(2) + ' V', A.vce / AMP_VCC, C.c2, A.sat ? 0.9 : null)],
+    chip: [clip ? 'MÉO: transistor chạm bão hòa, đỉnh v_o bị cắt' : 'Không méo: dòng phun bám theo v_i, v_o ngược pha', clip ? C.err : C.main],
+    line: ['I_CQ = ' + fmtCur(IQ) + ' · g_m = ' + (gm * 1e3).toFixed(1) + ' mS · A_v ≈ −g_m·R_C = −' + (gm * S.RC * 1e3).toFixed(0), C.ink]
+  };
+}, [
+  { k: 'VBEQ', l: 'V_BE tĩnh', min: 0.55, max: 0.72, step: 0.005, f: v => v.toFixed(3) + ' V' },
+  { k: 'vi', l: 'Biên độ v_i', min: 1, max: 40, step: 1, f: v => v + ' mV' },
+  { k: 'RC', l: 'R_C', min: 1, max: 5, step: 0.1, f: v => v.toFixed(1) + ' kΩ' },
+  { btn: 'Điểm Q đẹp', fn: p => { p.S.VBEQ = 0.65; p.S.vi = 10; p.S.RC = 4; p.syncCtrls(); p.dirty = true; } },
+  { btn: 'Quá kích', fn: p => { p.S.VBEQ = 0.70; p.S.vi = 30; p.S.RC = 4; p.syncCtrls(); p.dirty = true; } }
+], null, 'Bên trong: cùng hạt — dòng hạt phun dày lên rồi thưa đi theo nhịp v_BE'));
 
-/* ==========================================================================
-   5. MỤC 3.5 — HỆ SỐ γ · α_T · δ ⇒ α, β
-   ========================================================================== */
-LABS.push({
-  id: 'gain', tag: '3.5', name: 'γ·α_T·δ', sec: 3,
-  S: { NE: 3.02e17, NB: 1e15, xB: 0.8, LB: 10, VBE: 0.60 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế 3D: Dòng emitter "rò" ở 3 chỗ — lỗ trống phun ngược (1−γ), tái hợp cơ sở (1−α_T), tái hợp vùng nghèo (1−δ)',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'NE', l: 'Nₑ', min: 16, max: 20, step: 0.05, log: 1, f: v => pw(v) },
-        { k: 'NB', l: 'N_B', min: 14, max: 17, step: 0.05, log: 1, f: v => pw(v) },
-        { k: 'xB', l: 'x_B', min: -1, max: 0.6, step: 0.02, log: 1, f: fmtUm },
-        { k: 'LB', l: 'L_B', min: 2, max: 30, step: 1, f: v => v + ' µm' },
-        { k: 'VBE', l: 'V_BE', min: 0.30, max: 0.80, step: 0.01, f: v => v.toFixed(2) + ' V' },
-        { btn: 'Ví dụ 3.1', fn: p => { p.S.NE = 3.02e17; p.S.NB = 1e15; p.S.xB = 0.8; p.S.LB = 10; p.S.VBE = 0.80; p.syncCtrls(); p.dirty = true; } }
-      ],
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, K = gainCalc(S), st = p.st;
-        const bw = Math.min(300, W * 0.48), bd = Math.min(130, H * 0.36), h = Math.min(80, H * 0.26);
-        const fB = fBof(S.xB), fE = 0.34, ox = W * 0.20, oy = H * 0.78;
-        const G = bjt3D(ctx, ox, oy, { bw, bd, h, fE, fB, depBEe: 2, depBEb: 3, depBCb: 3, depBCc: 8, noPads: true });
-        const aw = l => 1.8 + clamp(l * 160, 0, 6);
-        const pE = isoP(ox, oy, G.wE * 0.5, bd * 0.5, h + 8), pC = isoP(ox, oy, G.wE + G.wB + G.wC * 0.5, bd * 0.5, h + 8);
-        const pB = isoP(ox, oy, G.wE + G.wB * 0.5, bd * 0.5, h + 8);
-        arr(ctx, pE[0], pE[1] - 14, pC[0], pC[1] - 14, C.main, 3 + K.alpha * 2);
-        txt(ctx, 'α·I_E → collector', (pE[0] + pC[0]) / 2, pC[1] - 28, C.main, 10.5, 'center', 800);
-        arr(ctx, pB[0] - 4, pB[1] - 4, pE[0] + 8, pE[1] - 4, C.c4, aw(K.l1));
-        txt(ctx, '1−γ = ' + pct(K.l1, 2), (pB[0] + pE[0]) / 2, pE[1] + 10, C.c4, 9.5, 'center', 700);
-        const pD = isoP(ox, oy, G.wE + G.wB * 0.5, bd, h * 0.4);
-        arr(ctx, pD[0], pD[1] - 8, pD[0], pD[1] + 26, C.c3, aw(K.l2));
-        txt(ctx, '1−α_T', pD[0] + 6, pD[1] + 36, C.c3, 9.5, 'left', 700);
-        const pS = isoP(ox, oy, G.wE, bd, h * 0.3);
-        arr(ctx, pS[0] - 4, pS[1] - 4, pS[0] - 30, pS[1] + 24, C.c5, aw(K.l3));
-        txt(ctx, '1−δ', pS[0] - 32, pS[1] + 34, C.c5, 9.5, 'right', 700);
-        flowDots(ctx, st, 'f', 8, pE[0], pC[0], pE[1] - 18, pE[1] - 10, 0.5, dt, t, C.c2, '');
-        const gx = W - 58, mp = x => clamp((x - 0.9) / 0.1, 0, 1);
-        drawMiniGauge(ctx, gx, H * 0.20, 19, 'γ', K.gamma.toFixed(4), mp(K.gamma), C.c4);
-        drawMiniGauge(ctx, gx, H * 0.50, 19, 'α_T', K.aT.toFixed(4), mp(K.aT), C.c3);
-        drawMiniGauge(ctx, gx, H * 0.80, 19, 'δ', K.delta.toFixed(4), mp(K.delta), C.c5);
-        chip(ctx, 'α = γ·α_T·δ = ' + K.alpha.toFixed(4) + '   ⇒   β = ' + K.beta.toFixed(0), W * 0.42, 14, C.main, 'center');
-      }
-    },
-    {
-      title: 'Bên trong: dòng emitter chảy trong ống — hạt rò ở ba chỗ (γ, α_T, δ), hạt sống sót thành dòng collector',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, K = gainCalc(S), st = p.st;
-        const padX = 16, tx = padX, tw = W - padX * 2 - 100, ty = 30, th = 34;
-        const loss = K.l1 + K.l2 + K.l3, vs = Math.min(80, 0.55 / Math.max(loss, 1e-9));
-        const stU = [0.25, 0.5, 0.75], cols = [C.c4, C.c3, C.c5], nms = ['γ', 'α_T', 'δ'];
-        txt(ctx, 'Ống dòng emitter — mỗi hạt electron phun vào bên trái; chỗ rò rơi xuống (phóng ×' + vs.toFixed(0) + ' để thấy)', padX, 14, C.mut, 10, 'left', 700);
-        rr(ctx, tx, ty, tw, th, 6); ctx.fillStyle = C.tint; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.3; ctx.stroke();
-        stU.forEach((u, i) => { ln(ctx, tx + u * tw, ty - 4, tx + u * tw, ty + th + 4, cols[i], 2); txt(ctx, nms[i], tx + u * tw, ty + th + 14, cols[i], 10.5, 'center', 800); });
-        if (!st.pp) st.pp = Array.from({ length: 44 }, (_, i) => ({ u: i / 44, v: Math.random(), f: -1, d: 0 }));
-        const roll = () => { const r = Math.random(), a = K.l1 * vs, b = a + K.l2 * vs, c = b + K.l3 * vs; return r < a ? 0 : r < b ? 1 : r < c ? 2 : -1; };
-        st.pp.forEach(q => {
-          if (q.u === undefined) return;
-          q.u += 0.32 * dt;
-          if (q.f >= 0 && q.u >= stU[q.f]) { q.u = stU[q.f]; q.d += 70 * dt; if (q.d > 46) { q.u = 0; q.d = 0; q.v = Math.random(); q.f = roll(); } }
-          else if (q.u > 1) { q.u = 0; q.v = Math.random(); q.f = roll(); }
-          const al = q.f >= 0 && q.d > 0 ? Math.max(0, 1 - q.d / 46) : 1;
-          ctx.save(); ctx.globalAlpha = al;
-          dot(ctx, tx + 6 + q.u * (tw - 12), ty + 6 + q.v * (th - 12) + q.d, 3.6, q.f >= 0 && q.d > 0 ? cols[q.f] : C.c2);
-          ctx.restore();
-        });
-        txt(ctx, 'β = ' + K.beta.toFixed(0), W - 14, ty + th / 2, C.main, 20, 'right', 800);
-        txt(ctx, 'α = ' + K.alpha.toFixed(4) + ' · mất tổng cộng (1−α) = ' + pct(loss, 3), padX, ty + th + 56, C.ink, 11, 'left', 800);
-        const y2 = ty + th + 60;
-        const lines = [
-          ['1) γ = ' + K.gamma.toFixed(4) + ' · mất ' + pct(K.l1, 2) + ' — pha emitter nặng hơn cơ sở để γ → 1', C.c4],
-          ['2) α_T = ' + K.aT.toFixed(4) + ' · mất ' + pct(K.l2, 2) + ' — cơ sở mỏng so với L_B', C.c3],
-          ['3) δ = ' + K.delta.toFixed(4) + ' · mất ' + pct(K.l3, 2) + ' — nặng nhất ở dòng nhỏ (V_BE thấp)', C.c5]
-        ];
-        lines.forEach((l, i) => txt(ctx, l[0], padX, y2 + 14 + i * Math.min(22, (H - y2 - 26) / 3), l[1], 10.5, 'left', 700));
-      }
-    }
-  ]
-});
+/* ---------- 5. MỤC 3.5 — γ · α_T · δ ---------- */
+LABS.push(mkTab({
+  id: 'gain', tag: '3.5', name: 'γ·α_T·δ', sec: 3, S: { NE: 3.02e17, NB: 1e15, xB: 0.8, LB: 10, VBE: 0.60 },
+  title3: 'Thực tế 3D: Dòng emitter "rò" ở 3 chỗ — lỗ trống phun ngược (1−γ), tái hợp cơ sở (1−α_T), tái hợp vùng nghèo (1−δ); phần rò được phóng đại để thấy'
+}, (S) => {
+  const K = gainCalc(S), g = bgeom({ fB: fBof(S.xB), dCb: 0.02, dCc: 0.05 });
+  const fr = clamp((S.VBE - 0.3) / 0.5, 0, 1), mp = x => (x - 0.9) / 0.1;
+  return {
+    g, so: { R: 0.9 + 2.2 * fr, pH: (1 - K.gamma) / Math.max(K.gamma, 0.05), pR: 1 - K.aT, pX: 1 - K.delta, seq: ['C', 'H', 'R', 'X', 'C'] },
+    gs: [needle('γ', K.gamma.toFixed(4), mp(K.gamma), C.c4), needle('α_T', K.aT.toFixed(4), mp(K.aT), C.c3), needle('δ', K.delta.toFixed(4), mp(K.delta), C.c5)],
+    chip: ['α = γ·α_T·δ = ' + K.alpha.toFixed(4) + '  ⇒  β = ' + K.beta.toFixed(0), C.main],
+    line: ['Mất: 1−γ = ' + pct(K.l1, 2) + ' · 1−α_T = ' + pct(K.l2, 2) + ' · 1−δ = ' + pct(K.l3, 2), C.ink]
+  };
+}, [
+  { k: 'NE', l: 'Nₑ', min: 16, max: 20, step: 0.05, log: 1, f: v => pw(v) },
+  { k: 'NB', l: 'N_B', min: 14, max: 17, step: 0.05, log: 1, f: v => pw(v) },
+  { k: 'xB', l: 'x_B', min: -1, max: 0.6, step: 0.02, log: 1, f: fmtUm },
+  { k: 'LB', l: 'L_B', min: 2, max: 30, step: 1, f: v => v + ' µm' },
+  { k: 'VBE', l: 'V_BE', min: 0.30, max: 0.80, step: 0.01, f: v => v.toFixed(2) + ' V' },
+  { btn: 'Ví dụ 3.1', fn: p => { p.S.NE = 3.02e17; p.S.NB = 1e15; p.S.xB = 0.8; p.S.LB = 10; p.S.VBE = 0.80; p.syncCtrls(); p.dirty = true; } }
+], null, 'Bên trong: cùng hạt — vòng đỏ = tái hợp vùng nghèo (δ), vòng vàng = tái hợp cơ sở / lỗ trống ngược (α_T, γ)'));
 
-/* ==========================================================================
-   6. MỤC 4.2 — HIỆU ỨNG EARLY
-   ========================================================================== */
-LABS.push({
-  id: 'early', tag: '4.2', name: 'Hiệu ứng Early', sec: 4,
-  S: { VCB: 4, xB0: 1.0, NB: 1e16 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế 3D: V_CB ngược tăng — vùng nghèo B–C lấn vào cơ sở, x_B co lại, dòng khuếch tán tăng',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'VCB', l: 'V_CB', min: 0, max: 20, step: 0.5, f: v => v.toFixed(1) + ' V' },
-        { k: 'xB0', l: 'x_B0', min: 0.4, max: 2, step: 0.05, f: v => v.toFixed(2) + ' µm' },
-        { k: 'NB', l: 'N_B', min: 15.5, max: 17.5, step: 0.05, log: 1, f: v => pw(v) },
-        { btn: 'Cơ sở mỏng', fn: p => { p.S.xB0 = 0.5; p.S.NB = 1e16; p.syncCtrls(); p.dirty = true; } },
-        { btn: 'V_A lớn', fn: p => { p.S.xB0 = 1.5; p.S.NB = 1e17; p.syncCtrls(); p.dirty = true; } }
-      ],
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, E = earlyCalc(S);
-        const bw = Math.min(320, W * 0.50), bd = Math.min(140, H * 0.38), h = Math.min(88, H * 0.28);
-        const fB = 0.26, fE = 0.30, ox = W * 0.22, oy = H * 0.78, wB = bw * fB;
-        const dpx = sm(st, 'dpx', clamp(E.xd / S.xB0, 0, 1) * wB * 3.2, dt, 0.2);
-        const G = bjt3D(ctx, ox, oy, { bw, bd, h, fE, fB, depBEe: 2, depBEb: 3, depBCb: Math.min(dpx, wB * 0.92), depBCc: 6 + dpx * 0.4 });
-        const nB = 1 - Math.min(dpx, wB * 0.92) / wB, sp = 0.3 * E.boost;
-        for (let k = 0; k < 8; k++) {
-          const u = (t * sp + k / 8) % 1, pt = isoP(ox, oy, 6 + u * (bw - 12), bd * (0.25 + (k % 3) * 0.25), h - 3);
-          dot(ctx, pt[0], pt[1], 3.8, C.c2);
-        }
-        const lb = isoP(ox, oy, G.wE + wB * 0.5, 0, h + 14);
-        txt(ctx, 'x_B = ' + fmtUm(E.xB), lb[0], lb[1], C.c4, 11, 'center', 800);
-        const gx = W - 62;
-        drawMiniGauge(ctx, gx, H * 0.30, 22, 'x_B / x_B0', Math.round(E.xB / E.xB0r * 100) + '%', E.xB / E.xB0r, C.c4, undefined);
-        drawMiniGauge(ctx, gx, H * 0.72, 22, 'r_o', fmtOhm(E.ro), clamp(lg10(E.ro) / 6.5, 0, 1), C.main);
-        chip(ctx, E.xB < 0.15 ? 'Cơ sở gần cạn: sắp xuyên thấu!' : 'V_CB ↑ ⇒ x_B ↓ ⇒ gradient ↑ ⇒ I_C ×' + E.boost.toFixed(3), W * 0.44, 15, E.xB < 0.15 ? C.err : C.main, 'center');
-      }
-    },
-    {
-      title: 'Bên trong (E → B → C): thước đo bề rộng cơ sở trung hòa và thước điện áp từ −V_A đến V_CE',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, E = earlyCalc(S);
-        const padX = 16, topY = 10, secH = H * 0.56, bw = W - padX * 2;
-        const wBpx = bw * 0.26, dpx = sm(st, 'dp', clamp(E.xd / S.xB0, 0, 1) * wBpx * 3.2, dt, 0.2);
-        const G = secFrame(ctx, padX, topY, bw, secH, 0.30, 0.26, { depBEe: 2, depBEb: 3, depBCb: Math.min(dpx, wBpx * 0.92), depBCc: 8 + dpx * 0.4 });
-        const xn0 = G.xBE, xn1 = G.xBC - Math.min(dpx, wBpx * 0.92), yy = topY + secH - 14;
-        arr(ctx, xn0, yy, xn1, yy, C.c4, 2); arr(ctx, xn1, yy, xn0, yy, C.c4, 2);
-        txt(ctx, 'x_B = ' + fmtUm(E.xB), (xn0 + xn1) / 2, yy - 10, C.c4, 10.5, 'center', 800);
-        flowDots(ctx, st, 'e', 16, G.x0 + 8, G.x1 - 8, topY + 22, topY + secH - 26, 0.3 * E.boost, dt, t, C.c2, '−');
-        const ry = topY + secH + 34, rx0 = padX + 20, rw = bw - 40;
-        const span = E.VA + (S.VCB + 0.65), tot = isFinite(span) ? span : 300, vm = x => rx0 + (x + E.VA) / tot * rw;
-        ln(ctx, rx0, ry, rx0 + rw, ry, C.sub, 2.4);
-        dot(ctx, rx0, ry, 5, C.c5); dot(ctx, vm(0), ry, 4, C.mut); dot(ctx, vm(S.VCB + 0.65), ry, 6, C.main);
-        txt(ctx, '−V_A = −' + (isFinite(E.VA) ? E.VA.toFixed(0) : '∞') + ' V', rx0, ry + 15, C.c5, 10, 'left', 700);
-        txt(ctx, '0', vm(0), ry + 15, C.mut, 10, 'center', 600);
-        txt(ctx, 'V_CE = ' + (S.VCB + 0.65).toFixed(2) + ' V', rx0 + rw, ry + 15, C.main, 10, 'right', 700);
-        txt(ctx, 'I_C = ' + fmtCur(E.IC) + '   g_o = ' + (E.go * 1e6).toFixed(1) + ' µS   r_o = ' + fmtOhm(E.ro), W / 2, ry - 16, C.ink, 10.5, 'center', 700);
-      }
-    }
-  ]
-});
+/* ---------- 6. MỤC 4.2 — HIỆU ỨNG EARLY ---------- */
+LABS.push(mkTab({
+  id: 'early', tag: '4.2', name: 'Hiệu ứng Early', sec: 4, S: { VCB: 4, xB0: 1.0, NB: 1e16 },
+  title3: 'Thực tế 3D: V_CB ngược tăng — vùng nghèo B–C lấn vào cơ sở, bề rộng trung hòa x_B co lại, electron qua cơ sở nhanh hơn'
+}, (S) => {
+  const E = earlyCalc(S), fB = 0.26, g = bgeom({ fB, dEb: 0.014, dCb: Math.min(clamp(E.xd / S.xB0, 0, 0.95) * fB, fB * 0.9), dCc: 0.02 + 0.016 * Math.sqrt(S.VCB) });
+  return {
+    g, so: { R: 1.2 * Math.min(E.boost, 3), vm: { b: Math.min(E.boost, 3) }, pR: 0.05, seq: ['C'] },
+    gs: [needle('x_B / x_B0', Math.round(E.xB / E.xB0r * 100) + '%', E.xB / E.xB0r, C.c4), needle('r_o', fmtOhm(E.ro), lg10(E.ro) / 6.5, C.main), needle('I_C', fmtCur(E.IC), frI(E.IC), C.c1)],
+    chip: [E.xB < 0.15 ? 'Cơ sở gần cạn: sắp xuyên thấu!' : 'V_CB ↑ ⇒ x_B ↓ ⇒ gradient ↑ ⇒ I_C ×' + E.boost.toFixed(3), E.xB < 0.15 ? C.err : C.main],
+    line: ['x_B = ' + fmtUm(E.xB) + ' · I_C = ' + fmtCur(E.IC) + ' · g_o = ' + (E.go * 1e6).toFixed(1) + ' µS · r_o = ' + fmtOhm(E.ro), C.ink],
+    over: (ctx, sc) => marker3(ctx, sc, g.be, C.c4, 'x_B = ' + fmtUm(E.xB), 30)
+  };
+}, [
+  { k: 'VCB', l: 'V_CB', min: 0, max: 20, step: 0.5, f: v => v.toFixed(1) + ' V' },
+  { k: 'xB0', l: 'x_B0', min: 0.4, max: 2, step: 0.05, f: v => v.toFixed(2) + ' µm' },
+  { k: 'NB', l: 'N_B', min: 15.5, max: 17.5, step: 0.05, log: 1, f: v => pw(v) },
+  { btn: 'Cơ sở mỏng', fn: p => { p.S.xB0 = 0.5; p.S.NB = 1e16; p.syncCtrls(); p.dirty = true; } },
+  { btn: 'V_A lớn', fn: p => { p.S.xB0 = 1.5; p.S.NB = 1e17; p.syncCtrls(); p.dirty = true; } }
+], null, 'Bên trong (E → B → C): cùng hạt — cơ sở trung hòa (nền hồng) hẹp dần khi vùng nghèo (xanh lá) lấn vào'));
 
-/* ==========================================================================
-   7. MỤC 4.5 — HẸP VÙNG CẤM Ở EMITTER & PHUN MỨC CAO
-   ========================================================================== */
-LABS.push({
-  id: 'hl', tag: '4.5', name: 'Mức cao & ΔE_g', sec: 4,
-  S: { bgn: 'on', NE: 1e19, NB: 1e16, VBE: 0.60 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế: Tinh thể emitter pha tạp nặng — donor chen chúc, electron chạm nhau, vùng cấm hẹp lại ΔE_g',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'bgn', seg: [['on', 'Hẹp vùng cấm: BẬT'], ['off', 'TẮT']] },
-        { k: 'NE', l: 'Nₑ', min: 17, max: 20, step: 0.05, log: 1, f: v => pw(v) },
-        { k: 'NB', l: 'N_B', min: 15, max: 18, step: 0.05, log: 1, f: v => pw(v) },
-        { k: 'VBE', l: 'V_BE', min: 0.50, max: 0.85, step: 0.01, f: v => v.toFixed(2) + ' V' }
-      ],
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, K = hlCalc(S);
-        const hv = clamp(Math.log(S.NE / 1e17) / 6.9, 0, 1), bw = W * 0.33, bh = H * 0.60, by = H * 0.22, bx1 = W * 0.04, bx2 = bx1 + bw + W * 0.06;
-        const crystal = (bx, heavy, title, col) => {
-          rr(ctx, bx, by, bw, bh, 8); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.stroke();
-          txt(ctx, title, bx + bw / 2, by - 12, col, 10.5, 'center', 800);
-          for (let i = 0; i < 7; i++) for (let j = 0; j < 5; j++) {
-            ctx.beginPath(); ctx.arc(bx + bw * (0.1 + 0.8 * i / 6), by + bh * (0.12 + 0.76 * j / 4), 4.5, 0, TAU2); ctx.strokeStyle = C.g; ctx.lineWidth = 1.2; ctx.stroke();
-          }
-          const nd = heavy ? 3 + Math.round(15 * hv) : 3;
-          for (let k = 0; k < nd; k++) {
-            const x = bx + bw * (0.08 + 0.84 * ((k * 0.618 + 0.11) % 1)), y = by + bh * (0.1 + 0.8 * ((k * 0.382 + 0.27) % 1));
-            dot(ctx, x, y, 4.2, C.c5);
-            const ex = x + Math.cos(t * 2.4 + k * 1.7) * (heavy ? 9 : 5), ey = y + Math.sin(t * 2.9 + k) * (heavy ? 9 : 5);
-            dot(ctx, ex, ey, 3.4, C.c2); txt(ctx, '−', ex, ey + 0.5, C.bg, 7.5, 'center', 800);
-          }
-          txt(ctx, heavy ? nd + ' donor chen chúc' : '3 donor thưa', bx + bw / 2, by + bh + 14, C.c5, 10, 'center', 700);
-        };
-        crystal(bx1, false, 'Pha tạp thường · E_g = 1,12 eV', C.mut);
-        crystal(bx2, true, 'Emitter pha tạp nặng · E_g − ' + (K.dEg * 1000).toFixed(0) + ' meV', C.c2);
-        const gx = W - 62;
-        drawMiniGauge(ctx, gx, H * 0.30, 22, 'ΔE_g', (K.dEg * 1000).toFixed(0) + ' meV', clamp(K.dEg / 0.15, 0, 1), C.c2);
-        drawMiniGauge(ctx, gx, H * 0.72, 22, 'γ', K.gamma.toFixed(4), clamp((K.gamma - 0.9) / 0.1, 0, 1), C.c4);
-        chip(ctx, 'p′_E0 = (nᵢ²/Nₑ)·e^(ΔE_g/kT)  ⇒  ×' + K.fac.toFixed(1) + ' dòng lỗ trống phun ngược', W * 0.46, 14, K.fac > 5 ? C.err : C.main, 'center');
-        void dt; void st;
-      }
-    },
-    {
-      title: 'Bên trong: mức phun — electron phun n_B(0) vượt dần N_B; vượt rồi, e⁻ phun chỉ còn tăng theo e^(V/2kT) và β tụt',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, K = hlCalc(S);
-        const padX = 16, topY = 14, botY = H - 22, th = botY - topY;
-        const bx = padX, bw = W - bx - 160, by = topY + 6, bh = th * 0.64;
-        rr(ctx, bx, by, bw, bh, 6); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.2; ctx.stroke();
-        txt(ctx, 'Hạt trong cơ sở (nhìn gần)', bx + bw / 2, by + 10, C.mut, 9.5, 'center', 700);
-        const ne = clamp(Math.round(2 + 18 * Math.min(K.r, 1.4)), 2, 28), nh = clamp(14 + Math.round(12 * Math.max(0, K.r - 1)), 14, 30);
-        for (let i = 0; i < nh; i++) {
-          const x = bx + 12 + ((i * 0.618) % 1) * (bw - 24) + Math.sin(t * 3 + i) * 2, y = by + 22 + ((i * 0.37) % 1) * (bh - 32) + Math.cos(t * 3.3 + i) * 2;
-          dot(ctx, x, y, 3.6, C.c4); txt(ctx, '+', x, y + 0.5, C.bg, 7.5, 'center', 800);
-        }
-        for (let i = 0; i < ne; i++) {
-          const x = bx + 12 + ((i * 0.381 + 0.17) % 1) * (bw - 24) + Math.sin(t * 4 + i * 1.3) * 2.5, y = by + 22 + ((i * 0.71 + 0.3) % 1) * (bh - 32) + Math.cos(t * 3.7 + i) * 2.5;
-          dot(ctx, x, y, 3.8, C.c2); txt(ctx, '−', x, y + 0.5, C.bg, 8, 'center', 800);
-        }
-        const lx = W - 150, over = K.r > 1;
-        txt(ctx, 'n_B(0)/N_B = ' + K.r.toFixed(K.r < 0.1 ? 3 : 2), lx, topY + th * 0.14, C.c2, 10.5, 'left', 700);
-        txt(ctx, 'Quy luật phun:', lx, topY + th * 0.34, C.mut, 10, 'left', 700);
-        txt(ctx, over ? 'e^(V/2kT)  (½)' : 'e^(V/kT)  (1×)', lx, topY + th * 0.48, over ? C.err : C.main, 11.5, 'left', 800);
-        txt(ctx, 'β = ' + K.beta.toFixed(0), lx, topY + th * 0.68, over ? C.err : C.main, 16, 'left', 800);
-        txt(ctx, 'V_BE ngưỡng ≈ ' + K.VK.toFixed(2) + ' V', lx, topY + th * 0.86, C.mut, 9.5, 'left', 600);
-      }
-    }
-  ]
-});
+/* ---------- 7. MỤC 4.5 — HẸP VÙNG CẤM & PHUN MỨC CAO ---------- */
+LABS.push(mkTab({
+  id: 'hl', tag: '4.5', name: 'Mức cao & ΔE_g', sec: 4, S: { bgn: 'on', NE: 1e19, NB: 1e16, VBE: 0.60 },
+  title3: 'Thực tế 3D: Emitter pha tạp nặng bị hẹp vùng cấm ⇒ lỗ trống phun ngược nhiều hơn; phun mức cao ⇒ electron trong cơ sở vượt nồng độ pha tạp'
+}, (S) => {
+  const K = hlCalc(S), over = K.r > 1, g = bgeom({ fB: 0.2, dCb: 0.03, dCc: 0.05 });
+  const on = clamp((S.VBE - 0.45) / 0.4, 0, 1);
+  return {
+    g, so: { R: 0.7 + 2.3 * on, pH: (1 - K.gamma) / Math.max(K.gamma, 0.05), pR: 0.03 + (over ? 0.1 : 0), seq: ['C', 'H', 'C'] },
+    sc: { extraB: clamp(K.r, 0, 1.4) / 1.4 * 0.9, nh: 8 + 14 * Math.max(0, K.r - 1) }, st: { extraB: clamp(K.r, 0, 1.4) / 1.4 * 0.9 },
+    gs: [needle('ΔE_g', (K.dEg * 1000).toFixed(0) + ' meV', K.dEg / 0.15, C.c2), needle('γ', K.gamma.toFixed(4), (K.gamma - 0.9) / 0.1, C.c4), needle('β', K.beta.toFixed(0), K.beta / 300, over ? C.err : C.main)],
+    chip: [S.bgn === 'on' ? 'Hẹp vùng cấm BẬT: p′_E0 tăng ×' + K.fac.toFixed(1) + ' ⇒ lỗ trống phun ngược nhiều hơn' : 'Hẹp vùng cấm TẮT: lỗ trống phun ngược ít', K.fac > 5 && S.bgn === 'on' ? C.err : C.main],
+    line: ['n_B(0)/N_B = ' + K.r.toFixed(K.r < 0.1 ? 3 : 2) + (over ? ' > 1: phun mức cao — luật e^(V/2kT), β tụt' : ' < 1: phun mức thấp — luật e^(V/kT)') + ' · V_ngưỡng ≈ ' + K.VK.toFixed(2) + ' V', over ? C.err : C.ink]
+  };
+}, [
+  { k: 'bgn', seg: [['on', 'Hẹp vùng cấm: BẬT'], ['off', 'TẮT']] },
+  { k: 'NE', l: 'Nₑ', min: 17, max: 20, step: 0.05, log: 1, f: v => pw(v) },
+  { k: 'NB', l: 'N_B', min: 15, max: 18, step: 0.05, log: 1, f: v => pw(v) },
+  { k: 'VBE', l: 'V_BE', min: 0.50, max: 0.85, step: 0.01, f: v => v.toFixed(2) + ' V' }
+], null, 'Bên trong: cùng hạt — hạt xanh dương thêm trong cơ sở là electron phun dư; lỗ trống chạy ngược vào emitter'));
 
-/* ==========================================================================
-   8. MỤC 4.7 — DỒN DÒNG Ở EMITTER
-   ========================================================================== */
-LABS.push({
-  id: 'crowd', tag: '4.7', name: 'Dồn dòng', sec: 4,
-  S: { wE: 20, Rsb: 10000, I: 30, nf: 1 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+/* ---------- 8. MỤC 4.7 — DỒN DÒNG Ở EMITTER ---------- */
+function simCrowd(st, key, t, dt, K, S) {
+  const store = SHARED[GT || '_'] || (SHARED[GT || '_'] = {});
+  const s = store[key] || (store[key] = { a: [], fl: [], c: 0, n: 0 });
+  if (s.lt === t) return s; s.lt = t;
+  if (CALM) { s.a.length = 0; s.fl.length = 0; s.trk = null; s.tl = null; s.tw = 0.4; return s; }
+  dt = clamp(dt, 0, 0.06);
+  const spd = 0.45 * GS.spd * 1.2, prof = u => K.J[clamp(Math.round((1 - Math.abs(u * 2 - 1)) * K.N), 0, K.N)];
+  const pick = () => { for (let i = 0; i < 40; i++) { const u = Math.random(); if (Math.random() < prof(u)) return u; } return 0.5; };
+  s.c += (1.3 + 2.4 * clamp((lgx(S.I) + 1.5) / 2.1, 0, 1)) * dt * cF();
+  while (s.c >= 1) { s.c--; if (s.a.length < 160) s.a.push({ f: Math.floor(Math.random() * S.nf), s: pick(), v: Math.random(), w: 1, tr: [], ta: 0 }); }
+  if (!s.trk || !s.a.includes(s.trk)) {
+    if (s.trk) { s.tl = [s.trk.f, s.trk.s, s.trk.v, s.trk.w]; s.trk = null; s.tw = 0.7; }
+    s.tw = (s.tw == null ? 0 : s.tw) - dt;
+    if (s.tw <= 0) { const q = { f: 0, s: (s.n++ % 2) ? 0.05 : 0.95, v: 0.5, w: 1, tr: [], ta: 0 }; s.a.push(q); s.trk = q; }
+  }
+  s.a = s.a.filter(q => {
+    q.w -= spd * dt * (0.8 + 0.6 * prof(q.s)); q.ta += dt; if (q.ta > 0.06) { q.ta = 0; q.tr.push([q.f, q.s, q.v, q.w]); if (q.tr.length > (q === s.trk ? 14 : 6)) q.tr.shift(); }
+    if (q !== s.trk) q.v = clamp(q.v + gauss() * 0.4 * dt, 0.08, 0.92);
+    if (q.w <= 0.02) { s.fl.push({ f: q.f, s: q.s, v: q.v, t0: t, big: prof(q.s) > 0.7 ? 1 : 0 }); return false; }
+    return true;
+  });
+  s.fl = s.fl.filter(f => t - f.t0 < 0.6 && t - f.t0 > -1);
+  return s;
+}
+LABS.push(Object.assign({
+  id: 'crowd', tag: '4.7', name: 'Dồn dòng', sec: 4, S: { wE: 20, Rsb: 10000, I: 30, nf: 1 }
+}, LAY, {
   panels: [
     {
-      title: 'Thực tế 3D: Mặt emitter nhìn từ trên — dòng phun dồn ra hai mép (đỏ = mật độ dòng cao, nóng cục bộ)',
+      title: 'Thực tế 3D: Mặt emitter nhìn từ trên — electron phun xuống cơ sở dồn ra hai mép (đỏ = mật độ dòng cao, nóng cục bộ)',
       area: 'a', anim: true,
       ctrls: [
         { k: 'wE', l: 'Rộng emitter', min: 4, max: 40, step: 2, f: v => v + ' µm' },
@@ -1010,139 +938,102 @@ LABS.push({
         { k: 'nf', seg: [[1, '1 ngón'], [2, '2 ngón'], [4, '4 ngón']] }
       ],
       draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, K = crowdSolve(S);
-        const bw = Math.min(330, W * 0.52), bd = Math.min(130, H * 0.36), h = Math.min(70, H * 0.22), ox = W * 0.22, oy = H * 0.78;
+        const S = p.S, K = crowdSolve(S), s = simCrowd(p.st, 'fl', t, dt, K, S);
+        const bw = Math.min(W * 0.62, 480), bd = Math.min(120, H * 0.32), h = Math.min(70, H * 0.22), ox = W * 0.12, oy = H * 0.7;
         isoBox(ctx, ox, oy, 0, 0, 0, bw, bd, h, C.card, 1, C.sub);
-        isoBox(ctx, ox, oy, 0, 0, 0, bw, bd, h, C.c4, 0.22, C.c4);
+        isoBox(ctx, ox, oy, 0, 0, 0, bw, bd, h, C.c4, 0.6, C.sub);
         const nf = S.nf, fw = bw * 0.72 / nf, gap = (bw - fw * nf) / (nf + 1), Ns = 12;
         for (let f = 0; f < nf; f++) {
           const x0 = gap + f * (fw + gap);
           for (let j = 0; j < Ns; j++) {
-            const s = Math.abs((j + 0.5) / Ns * 2 - 1), idx = Math.round((1 - s) * K.N);
-            const jn = K.J[clamp(idx, 0, K.N)];
-            isoBox(ctx, ox, oy, x0 + j * fw / Ns, bd * 0.1, h, fw / Ns, bd * 0.8, 8, jn > 0.7 ? C.err : C.c2, 0.18 + 0.78 * jn, jn > 0.7 ? C.err : C.c2);
+            const u = Math.abs((j + 0.5) / Ns * 2 - 1), jn = K.J[clamp(Math.round((1 - u) * K.N), 0, K.N)];
+            isoBox(ctx, ox, oy, x0 + j * fw / Ns, bd * 0.1, h, fw / Ns, bd * 0.8, 8, jn > 0.7 ? C.err : C.c2, 0.25 + 0.7 * jn, jn > 0.7 ? C.err : C.c2);
           }
         }
-        for (let f = 0; f <= nf; f++) isoBox(ctx, ox, oy, f * (fw + gap) + gap * 0.1, bd * 0.1, h, Math.max(4, gap * 0.8), bd * 0.8, 5, C.c4, 0.9, C.ink);
-        const lb = isoP(ox, oy, bw * 0.5, 0, h + 22);
+        for (let f = 0; f <= nf; f++) isoBox(ctx, ox, oy, f * (fw + gap) + gap * 0.1, bd * 0.1, h, Math.max(4, gap * 0.8), bd * 0.8, 5, C.c4, 0.95, C.ink);
+        const lb = isoP(ox, oy, bw * 0.5, 0, h + 26);
         txt(ctx, nf + ' ngón · mỗi ngón ' + (S.wE / nf).toFixed(1) + ' µm', lb[0], lb[1], C.c2, 10.5, 'center', 700);
-        const gx = W - 62;
-        drawMiniGauge(ctx, gx, H * 0.30, 22, 'J_mép / J_giữa', '×' + (K.ratio < 100 ? K.ratio.toFixed(1) : K.ratio.toExponential(0)), clamp(lg10(K.ratio) / 3, 0, 1), C.c2, 0.45);
-        drawMiniGauge(ctx, gx, H * 0.72, 22, 'ΔV mép–giữa', (K.dV * 1000).toFixed(0) + ' mV', clamp(K.dV / 0.3, 0, 1), C.c5, 0.5);
-        chip(ctx, K.ratio > 3 ? 'DỒN DÒNG: chỉ ' + Math.round(clamp(K.dep / K.Sx, 0, 1) * 100) + '% bề rộng mỗi bên còn phun mạnh' : 'Dòng gần đều dưới emitter', W * 0.44, 14, K.ratio > 3 ? C.err : C.c2, 'center');
-        void st; void dt; void t;
+        const X3 = q => gap + q.f * (fw + gap) + q.s * fw, P3 = a => isoP(ox, oy, gap + a[0] * (fw + gap) + a[1] * fw, bd * 0.1 + a[2] * bd * 0.8, 4 + a[3] * (h + 22));
+        const zf = CAM ? CAM.zoom : 1;
+        if (CAM) { CAM.gm = { bw, bd, bh: h, len: 1, g: { jx: 0.5, ne: 0.5, pe: 0.5, d0: 0.4, d1: 0.6, c0: 0.5, bs: 0.5, be: 0.5 } }; CAM.tp = s.trk ? [X3(s.trk) / bw, 0.5, 0.5] : (s.tl ? [(gap + s.tl[0] * (fw + gap) + s.tl[1] * fw) / bw, 0.5, 0.5] : null); }
+        s.a.forEach(q => {
+          trail(ctx, q.tr.concat([[q.f, q.s, q.v, q.w]]).map(P3), C.c2);
+          const c = P3([q.f, q.s, q.v, q.w]);
+          dot(ctx, c[0], c[1], 4.2, C.c2); if (zf > 1.3) txt(ctx, '−', c[0], c[1] + 0.5, C.bg, 8, 'center', 800);
+          if (q === s.trk) { const r = 11 * Math.pow(zf, 0.6); ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = C.main; ctx.beginPath(); ctx.arc(c[0], c[1], r * 1.9 * (1 + 0.18 * Math.sin(t * 5)), 0, TAU2); ctx.fill(); ctx.restore(); ctx.beginPath(); ctx.arc(c[0], c[1], r, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.6; ctx.stroke(); }
+        });
+        s.fl.forEach(f => { const a = clamp((t - f.t0) / 0.55, 0, 1), c = P3([f.f, f.s, f.v, 0.02]); ctx.save(); ctx.globalAlpha = 1 - a; ctx.beginPath(); ctx.arc(c[0], c[1], (5 + a * (f.big ? 18 : 11)) * Math.pow(zf, 0.5), 0, TAU2); ctx.strokeStyle = f.big ? C.err : C.main; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); });
+        gcol(ctx, W, H, [needle('J_mép / J_giữa', '×' + (K.ratio < 100 ? K.ratio.toFixed(1) : K.ratio.toExponential(0)), lg10(K.ratio) / 3, C.c2, 0.45), needle('ΔV mép–giữa', (K.dV * 1000).toFixed(0) + ' mV', K.dV / 0.3, C.c5, 0.5)], [H * 0.3, H * 0.66]);
+        chipTop(ctx, W, K.ratio > 3 ? 'DỒN DÒNG: chỉ ' + Math.round(clamp(K.dep / K.Sx, 0, 1) * 100) + '% bề rộng mỗi bên còn phun mạnh' : 'Dòng gần đều dưới emitter', K.ratio > 3 ? C.err : C.c2);
       }
     },
     {
-      title: 'Bên trong (mặt cắt ngang một ngón): điện áp rơi ngang trên R_sb ⇒ mép phun mạnh hơn giữa',
+      title: 'Bên trong (mặt cắt ngang một ngón): cùng hạt rơi từ emitter xuống cơ sở — mép nhận nhiều hơn giữa',
       area: 'c', anim: true,
       draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, K = crowdSolve(S);
-        const padX = 16, topY = 18, bw = W - padX * 2, eY = topY + 6, eH = 18, bH = H * 0.30, cX0 = padX + bw * 0.2, cX1 = padX + bw * 0.8;
-        rr(ctx, padX, eY + eH, bw, bH + 24, 6); ctx.fillStyle = C.c4; ctx.globalAlpha = 0.16; ctx.fill(); ctx.globalAlpha = 1; ctx.strokeStyle = C.sub; ctx.lineWidth = 1.2; ctx.stroke();
-        rr(ctx, cX0, eY, cX1 - cX0, eH, 4); ctx.fillStyle = C.c2; ctx.globalAlpha = 0.4; ctx.fill(); ctx.globalAlpha = 1; ctx.strokeStyle = C.c2; ctx.lineWidth = 1.3; ctx.stroke();
-        txt(ctx, 'Emitter n⁺⁺ (đẳng thế)', (cX0 + cX1) / 2, eY + eH / 2, C.c2, 9.5, 'center', 700);
-        const Nn = 20, aMax = bH + 6;
-        for (let i = 0; i < Nn; i++) {
-          const u = (i + 0.5) / Nn, s = Math.abs(u * 2 - 1), idx = Math.round((1 - s) * K.N), jn = K.J[clamp(idx, 0, K.N)];
-          const x = cX0 + u * (cX1 - cX0), ln0 = 4 + jn * aMax * 0.9, sl = sm(st, 'a' + i, ln0, dt, 0.15);
-          arr(ctx, x, eY + eH + 1, x, eY + eH + 1 + sl, jn > 0.7 ? C.err : C.c2, 2);
-        }
-        const yb = eY + eH + bH + 14;
-        rr(ctx, padX - 6, yb - 8, 22, 16, 3); ctx.fillStyle = C.c1; ctx.globalAlpha = 0.8; ctx.fill(); ctx.globalAlpha = 1;
-        rr(ctx, padX + bw - 16, yb - 8, 22, 16, 3); ctx.fillStyle = C.c1; ctx.globalAlpha = 0.8; ctx.fill(); ctx.globalAlpha = 1;
-        txt(ctx, 'B', padX + 5, yb, C.bg, 9.5, 'center', 800); txt(ctx, 'B', padX + bw - 5, yb, C.bg, 9.5, 'center', 800);
-        drawRes(ctx, padX + 16, yb, cX0, yb, C.c3, 2); drawRes(ctx, cX1, yb, padX + bw - 16, yb, C.c3, 2);
-        txt(ctx, 'R_b (điện trở cơ sở)', (cX0 + cX1) / 2, yb + 16, C.c3, 10, 'center', 700);
-        pathDots(ctx, [[padX + 5, yb], [cX0, yb]], 3, 0.3, t, C.c4, 3); pathDots(ctx, [[padX + bw - 5, yb], [cX1, yb]], 3, 0.3, t, C.c4, 3);
-        txt(ctx, 'J_mép = ×' + (K.ratio < 100 ? K.ratio.toFixed(1) : K.ratio.toExponential(0)) + ' J_giữa  ·  ΔV = ' + (K.dV * 1000).toFixed(0) + ' mV  ·  thâm nhập ≈ ' + (K.dep).toFixed(1) + ' µm',
-          W / 2, H - 12, K.ratio > 3 ? C.err : C.ink, 10.5, 'center', 700);
+        const S = p.S, K = crowdSolve(S), s = simCrowd(p.st, 'fl', t, dt, K, S);
+        const x0 = 16, x1 = W - 16, ey = 26, ey1 = 44, by1 = H - 30, fx0 = x0 + (x1 - x0) * 0.1, fx1 = x0 + (x1 - x0) * 0.9;
+        rr(ctx, x0, ey1, x1 - x0, by1 - ey1, 6); ctx.fillStyle = C.c4; ctx.globalAlpha = 0.2; ctx.fill(); ctx.globalAlpha = 1; ctx.strokeStyle = C.sub; ctx.lineWidth = 1.3; ctx.stroke();
+        const Nn = 28; for (let i = 0; i < Nn; i++) { const u = (i + 0.5) / Nn, jn = K.J[clamp(Math.round((1 - Math.abs(u * 2 - 1)) * K.N), 0, K.N)]; ctx.fillStyle = jn > 0.7 ? C.err : C.c2; ctx.globalAlpha = 0.1 + 0.4 * jn; ctx.fillRect(fx0 + (fx1 - fx0) * i / Nn, ey1, (fx1 - fx0) / Nn + 0.5, by1 - ey1); ctx.globalAlpha = 1; }
+        rr(ctx, fx0, ey, fx1 - fx0, ey1 - ey, 4); ctx.fillStyle = C.c2; ctx.globalAlpha = 0.45; ctx.fill(); ctx.globalAlpha = 1; ctx.strokeStyle = C.c2; ctx.lineWidth = 1.3; ctx.stroke();
+        txt(ctx, 'Emitter n⁺⁺', (fx0 + fx1) / 2, (ey + ey1) / 2, C.ink, 10, 'center', 700);
+        const PX = a => [fx0 + a[1] * (fx1 - fx0), ey1 + (1 - a[3]) * (by1 - ey1)];
+        s.a.filter(q => q.f === 0).forEach(q => {
+          trail(ctx, q.tr.concat([[q.f, q.s, q.v, q.w]]).map(PX), C.c2);
+          const c = PX([0, q.s, 0, q.w]); dot(ctx, c[0], c[1], 4.8, C.c2); txt(ctx, '−', c[0], c[1] + 0.5, C.bg, 9, 'center', 800);
+          if (q === s.trk) { ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = C.main; ctx.beginPath(); ctx.arc(c[0], c[1], 18 * (1 + 0.18 * Math.sin(t * 5)), 0, TAU2); ctx.fill(); ctx.restore(); ctx.beginPath(); ctx.arc(c[0], c[1], 10, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 2.6; ctx.stroke(); }
+        });
+        s.fl.filter(f => f.f === 0).forEach(f => { const a = clamp((t - f.t0) / 0.55, 0, 1), c = PX([0, f.s, 0, 0.02]); ctx.save(); ctx.globalAlpha = 1 - a; ctx.beginPath(); ctx.arc(c[0], c[1], 5 + a * (f.big ? 18 : 11), 0, TAU2); ctx.strokeStyle = f.big ? C.err : C.main; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); });
+        txt(ctx, 'J_mép = ×' + (K.ratio < 100 ? K.ratio.toFixed(1) : K.ratio.toExponential(0)) + ' J_giữa  ·  ΔV = ' + (K.dV * 1000).toFixed(0) + ' mV  ·  thâm nhập ≈ ' + K.dep.toFixed(1) + ' µm', W / 2, H - 13, K.ratio > 3 ? C.err : C.ink, 10.5, 'center', 700);
       }
     }
   ]
-});
+}));
 
-/* ==========================================================================
-   9. MỤC 4.10 — ĐÁNH THỦNG XUYÊN THẤU & DÒNG I_CEO
-   ========================================================================== */
-LABS.push({
-  id: 'brk', tag: '4.10', name: 'Đánh thủng', sec: 4,
-  S: { mode: 'pt', VCB: 30, xBO: 0.8, NB: 1e16, beta: 100 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế 3D: V_CB ngược tăng — vùng nghèo B–C lấn xuyên cơ sở (xuyên thấu) hoặc cơ sở hở khuếch đại I_CBO thành I_CEO',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'mode', seg: [['pt', 'Xuyên thấu'], ['ceo', 'I_CEO (B hở)']], set: { pt: { VCB: 30 }, ceo: { VCB: 20 } } },
-        { k: 'VCB', l: 'V_CB', min: 0, max: 120, step: 1, f: v => v + ' V' },
-        { k: 'xBO', l: 'x_BO', min: 0.4, max: 2, step: 0.05, f: v => v.toFixed(2) + ' µm' },
-        { k: 'NB', l: 'N_B', min: 15.5, max: 17.5, step: 0.05, log: 1, f: v => pw(v) },
-        { k: 'beta', l: 'β', min: 20, max: 300, step: 10, f: v => v + '' }
-      ],
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, B = brkCalc(S), pt = S.mode === 'pt';
-        const bw = Math.min(320, W * 0.50), bd = Math.min(140, H * 0.38), h = Math.min(88, H * 0.28), fB = 0.26, fE = 0.30, ox = W * 0.22, oy = H * 0.78, wB = bw * fB;
-        const dpx = sm(st, 'd', clamp(B.xd / S.xBO, 0, 1.05) * wB, dt, 0.2);
-        const G = bjt3D(ctx, ox, oy, { bw, bd, h, fE, fB, depBEe: 2, depBEb: 4, depBCb: Math.min(dpx, wB * 0.96), depBCc: 8 + dpx * 0.3, depCol: B.touch && pt ? C.err : C.c5, noPads: !pt });
-        if (pt) {
-          drawProbe(ctx, G.E[0], G.E[1], -1, C.c2, 'E · 0 V'); drawProbe(ctx, G.C[0], G.C[1], 1, C.c1, 'C · +' + S.VCB + ' V');
-        } else {
-          const pb = isoP(ox, oy, G.wE + G.wB * 0.5, bd * 0.5, h + 6);
-          ctx.beginPath(); ctx.arc(pb[0], pb[1] - 10, 7, 0, TAU2); ctx.strokeStyle = C.c4; ctx.lineWidth = 2; ctx.stroke();
-          txt(ctx, 'B hở', pb[0], pb[1] - 26, C.c4, 10, 'center', 800);
-          for (let k = 0; k < 5; k++) { const u = (t * 0.4 + k / 5) % 1, q = isoP(ox, oy, G.wE + G.wB + G.wC * (1 - u * 0.9), bd * 0.5, h - 4); dot(ctx, q[0], q[1], 3.8, C.c4); }
-        }
-        const gx = W - 62, I = pt ? B.Ipt : B.ICEO;
-        drawMiniGauge(ctx, gx, H * 0.30, 22, pt ? 'Dòng I_C' : 'I_CEO', fmtCur(I), clamp((lg10(I) + 9) / 8, 0, 1), C.main, 0.8);
-        drawMiniGauge(ctx, gx, H * 0.72, 22, pt ? 'V_pt' : 'I_CBO', pt ? B.Vpt.toFixed(0) + ' V' : fmtCur(B.ICBO), pt ? clamp(S.VCB / B.Vpt, 0, 1) : clamp((lg10(B.ICBO) + 9.5) / 3, 0, 1), C.c5, pt ? 0.99 : undefined);
-        const msg = pt ? (B.touch ? 'XUYÊN THẤU: vùng nghèo chạm B–E, hàng rào hạ — dòng vọt!' : 'x_d = ' + fmtUm(B.xd) + ' < x_BO: cơ sở còn trung hòa') : 'I_CEO = I_CBO/(1−α) ≈ β·I_CBO = ' + fmtCur(B.ICEO);
-        chip(ctx, msg, W * 0.44, 15, pt && B.touch ? C.err : C.main, 'center');
-      }
-    },
-    {
-      title: 'Bên trong: vùng nghèo B–C phình dần vào cơ sở tới khi xuyên thấu — hoặc lỗ trống ngược làm B–E phun e⁻ (×β)',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, B = brkCalc(S), pt = S.mode === 'pt';
-        const padX = 16, topY = 12, bw = W - padX * 2, bh = H - 24;
-        if (pt) {
-          const r = sm(st, 'rx', clamp(B.xd / S.xBO, 0, 1), dt, 0.2), wBp = bw * 0.30;
-          const G = secFrame(ctx, padX, topY, bw, bh * 0.70, 0.28, 0.30, { depBEe: 2, depBEb: 3, depBCb: Math.max(6, r * wBp), depBCc: 14, depCol: r > 0.98 ? C.err : C.c5 });
-          const y0 = topY + 24, y1 = topY + bh * 0.70 - 8, fl = 1 - B.bar;
-          flowDots(ctx, st, 'pe', Math.round(3 + fl * 22), G.x0 + 8, G.x1 - 8, y0, y1, 0.2 + fl * 0.9, dt, t, C.c2, '−');
-          txt(ctx, r > 0.98 ? 'Vùng nghèo B–C đã chạm vùng nghèo B–E: không còn cơ sở trung hòa' : 'Còn một dải cơ sở trung hòa giữa hai vùng nghèo', padX, topY + bh * 0.70 + 20, r > 0.98 ? C.err : C.mut, 10.5, 'left', 700);
-          txt(ctx, 'V_pt = ' + B.Vpt.toFixed(0) + ' V · x_d/x_BO = ' + (B.xd / S.xBO).toFixed(2), padX, topY + bh * 0.70 + 42, B.touch ? C.err : C.ink, 11, 'center', 800);
-        } else {
-          const G = secFrame(ctx, padX, topY, bw, bh * 0.66, 0.30, 0.18, { depBEe: 2, depBEb: 3, depBCb: 6, depBCc: 16 });
-          const y0 = topY + 22, y1 = topY + bh * 0.66 - 8, fq = clamp(lg10(B.ICEO / 1e-9) / 6, 0.1, 1);
-          flowDots(ctx, st, 'h', 4, G.xBC + 4, G.xBE + 4, y0, y1, -0.3, dt, t, C.c4, '+');
-          flowDots(ctx, st, 'e', Math.round(4 + fq * 18), G.x0 + 8, G.x1 - 8, y0, y1, 0.3 + fq * 0.6, dt, t, C.c2, '−');
-          const yy = topY + bh * 0.66 + 22;
-          txt(ctx, 'I_CBO (lỗ trống từ C) = ' + fmtCur(B.ICBO), padX, yy, C.c4, 10.5, 'left', 700);
-          txt(ctx, '⇒ B dương hơn E, B–E thuận, phun e⁻: I_CEO = ' + fmtCur(B.ICEO) + ' (≈ ×' + (B.ICEO / B.ICBO).toFixed(0) + ')', padX, yy + 20, C.main, 10.5, 'left', 800);
-          txt(ctx, 'Thác lũ ở C–E sớm hơn: BV_CEO ≈ ' + B.BVceo.toFixed(0) + ' V < BV_CBO ≈ 120 V', padX, yy + 40, C.c5, 10, 'left', 700);
-        }
-      }
-    }
-  ]
-});
+/* ---------- 9. MỤC 4.10 — ĐÁNH THỦNG XUYÊN THẤU & I_CEO ---------- */
+LABS.push(mkTab({
+  id: 'brk', tag: '4.10', name: 'Đánh thủng', sec: 4, S: { mode: 'pt', VCB: 30, xBO: 0.8, NB: 1e16, beta: 100 },
+  title3: 'Thực tế 3D: V_CB ngược tăng — vùng nghèo B–C lấn xuyên cơ sở (xuyên thấu), hoặc cơ sở hở: lỗ trống ngược khuếch đại I_CBO thành I_CEO; thác lũ nhân đôi hạt'
+}, (S) => {
+  const B = brkCalc(S), pt = S.mode === 'pt', fB = 0.26;
+  const dcb = Math.min(clamp(B.xd / S.xBO, 0, 1.05) * fB, fB - 0.018 - 0.002);
+  const g = bgeom({ fB, dEb: 0.018, dCb: dcb, dCc: 0.03 + 0.012 * Math.sqrt(S.VCB / 5) });
+  const fl = pt ? 1 - B.bar : clamp(lg10(B.ICEO / 1e-9) / 6, 0.1, 1);
+  const av = clamp((B.M - 1) / 6, 0, 0.8), I = pt ? B.Ipt : B.ICEO, hit = pt && B.touch, col = hit ? C.err : C.c5;
+  return {
+    g, so: { R: pt ? 0.2 + 2.8 * fl : 0.5 + 2.4 * fl, pR: pt ? 0.02 : 0.06, rev: pt ? 0 : 0.7, av, seq: pt ? ['C'] : ['C', 'Q'], vm: hit ? { b: 2 } : null },
+    sc: { depCol2: col }, st: { depCol2: col }, depCol2: col,
+    gs: [needle(pt ? 'Dòng I_C' : 'I_CEO', fmtCur(I), (lg10(I) + 9) / 8, C.main, 0.8), pt ? needle('V_pt', B.Vpt.toFixed(0) + ' V', S.VCB / B.Vpt, C.c5, 0.99) : needle('I_CBO', fmtCur(B.ICBO), (lg10(B.ICBO) + 9.5) / 3, C.c5)],
+    chip: [pt ? (B.touch ? 'XUYÊN THẤU: vùng nghèo chạm B–E, rào hạ — dòng vọt!' : 'x_d = ' + fmtUm(B.xd) + ' < x_BO: cơ sở còn trung hòa') : 'I_CEO = I_CBO/(1−α) ≈ β·I_CBO = ' + fmtCur(B.ICEO), hit ? C.err : C.main],
+    line: [pt ? 'V_pt = ' + B.Vpt.toFixed(0) + ' V · x_d/x_BO = ' + (B.xd / S.xBO).toFixed(2) : 'I_CBO = ' + fmtCur(B.ICBO) + ' ⇒ I_CEO ≈ ×' + (B.ICEO / B.ICBO).toFixed(0) + ' · BV_CEO ≈ ' + B.BVceo.toFixed(0) + ' V < BV_CBO ≈ 120 V', hit ? C.err : C.ink]
+  };
+}, [
+  { k: 'mode', seg: [['pt', 'Xuyên thấu'], ['ceo', 'I_CEO (B hở)']], set: { pt: { VCB: 30 }, ceo: { VCB: 20 } } },
+  { k: 'VCB', l: 'V_CB', min: 0, max: 120, step: 1, f: v => v + ' V' },
+  { k: 'xBO', l: 'x_BO', min: 0.4, max: 2, step: 0.05, f: v => v.toFixed(2) + ' µm' },
+  { k: 'NB', l: 'N_B', min: 15.5, max: 17.5, step: 0.05, log: 1, f: v => pw(v) },
+  { k: 'beta', l: 'β', min: 20, max: 300, step: 10, f: v => v + '' }
+], null, 'Bên trong: cùng hạt — vòng đỏ lớn = thác lũ (một hạt va chạm tạo thêm cặp electron–lỗ trống)'));
 
-/* ==========================================================================
-   10. MỤC 6.2 — BỐN THỜI GIAN TRỄ & TẦN SỐ CẮT f_α
-   ========================================================================== */
+/* ---------- 10. MỤC 6.2 — BỐN THỜI GIAN TRỄ & f_α ---------- */
 function faCalc(S) {
   const te = S.te, tb = S.tb, td = S.td, tc = S.tc, tau = (te + tb + td + tc) * 1e-12, fa = 1 / (TAU2 * tau), f = Math.pow(10, S.logF);
   const mag = 1 / Math.sqrt(1 + Math.pow(f / fa, 2)), ph = Math.atan(f / fa);
   return { te, tb, td, tc, tau, fa, f, mag, ph, tot: te + tb + td + tc };
 }
-LABS.push({
-  id: 'fa', tag: '6.2', name: 'Tần số f_α', sec: 6,
-  S: { te: 4, tb: 12, td: 3, tc: 1, logF: 9.0 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
+const faCfg = S => {
+  const F = faCalc(S), g = bgeom({ fB: 0.2, dCb: 0.03, dCc: 0.06 }), sv = x => clamp(10 / x, 0.25, 3.5);
+  return {
+    g, F, so: { R: 1.3, pR: 0.03, seq: ['C'], vm: { e: sv(F.te), j: sv(F.te), b: sv(F.tb), d: sv(F.td), c: sv(F.tc) } },
+    gs: [needle('f_α', fmtFreq(F.fa), lg10(F.fa / 1e8) / 3, C.main), needle('τ_ec', F.tot.toFixed(1) + ' ps', F.tot / 60, C.c3)],
+    chip: ['f_α = 1/(2π·τ_ec) — muốn nhanh phải rút ngắn chặng dài nhất', C.main],
+    line: ['τ_e = ' + F.te + ' · τ_b = ' + F.tb + ' · τ_d = ' + F.td + ' · τ_c = ' + F.tc + ' ps  ⇒  τ_ec = ' + F.tot.toFixed(1) + ' ps', C.ink]
+  };
+};
+LABS.push(Object.assign({ id: 'fa', tag: '6.2', name: 'Tần số f_α', sec: 6, S: { te: 4, tb: 12, td: 3, tc: 1, logF: 9.0 } }, LAY, {
   panels: [
     {
-      title: 'Thực tế: Đường đua 4 chặng của hạt tải từ emitter tới collector — τ_ec = τ_e + τ_b + τ_d + τ_c',
+      title: 'Thực tế 3D: Đường đua 4 chặng của electron từ emitter tới collector — chặng nào τ dài thì hạt chạy chậm ở chặng đó (τ_ec = τ_e + τ_b + τ_d + τ_c)',
       area: 'a', anim: true,
       ctrls: [
         { k: 'te', l: 'τ_e', min: 0.5, max: 30, step: 0.5, f: v => v + ' ps' },
@@ -1153,29 +1044,11 @@ LABS.push({
         { btn: 'τ_b ÷ 2', fn: p => { p.S.tb = Math.max(0.5, p.S.tb / 2); p.syncCtrls(); p.dirty = true; } }
       ],
       draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, F = faCalc(S);
-        const barX = W * 0.06, barW = W * 0.62, barY = H * 0.46, barH = 34;
-        const segs = [[F.te, C.c1, 'τ_e', 'nạp C_je'], [F.tb, C.c2, 'τ_b', 'bay qua cơ sở'], [F.td, C.c5, 'τ_d', 'bay qua nghèo C'], [F.tc, C.c3, 'τ_c', 'nạp C_C']];
-        let x = barX, maxI = 0;
-        segs.forEach((s, i) => { if (s[0] > segs[maxI][0]) maxI = i; });
-        segs.forEach((s, i) => {
-          const w = Math.max(10, s[0] / F.tot * barW);
-          rr(ctx, x, barY, w, barH, 4); ctx.fillStyle = s[1]; ctx.globalAlpha = 0.5; ctx.fill(); ctx.globalAlpha = 1;
-          rr(ctx, x, barY, w, barH, 4); ctx.strokeStyle = s[1]; ctx.lineWidth = i === maxI ? 2.6 : 1.4; ctx.stroke();
-          txt(ctx, s[2], x + w / 2, barY + barH / 2, C.ink, 11, 'center', 800);
-          txt(ctx, s[0].toFixed(1) + ' ps', x + w / 2, barY + barH + 13, s[1], 10, 'center', 700);
-          if (w > 56) txt(ctx, s[3], x + w / 2, barY - 11, C.mut, 9, 'center', 600);
-          x += w;
-        });
-        txt(ctx, 'E', barX - 4, barY - 12, C.c2, 11, 'right', 800); txt(ctx, 'C', barX + barW + 4, barY - 12, C.c1, 11, 'left', 800);
-        const u = (t * 0.3) % 1;
-        dot(ctx, barX + u * barW, barY + barH / 2, 6, C.main); dot(ctx, barX + ((u + 0.5) % 1) * barW, barY + barH / 2, 4, C.main);
-        const gx = W - 62;
-        drawMiniGauge(ctx, gx, H * 0.34, 23, 'f_α', fmtFreq(F.fa), clamp(lg10(F.fa / 1e8) / 3, 0, 1), C.main);
-        txt(ctx, 'τ_ec = ' + F.tot.toFixed(1) + ' ps', gx, H * 0.62, C.ink, 11, 'center', 800);
-        txt(ctx, 'Nút cổ chai: ' + segs[maxI][2] + ' (' + Math.round(segs[maxI][0] / F.tot * 100) + '%)', W * 0.37, H * 0.84, C.c3, 11, 'center', 700);
-        chip(ctx, 'f_α = 1/(2π·τ_ec) — muốn nhanh phải rút ngắn chặng dài nhất', W * 0.40, 14, C.main, 'center');
-        void st; void dt;
+        const c = faCfg(p.S), fl = simB(p.st, 'fl', t, dt, c.g, c.so), sc = scene3b(p, ctx, W, H, t, c.g, {});
+        const mx = Math.max(c.F.te, c.F.tb, c.F.td, c.F.tc), nm = mx === c.F.tb ? 'τ_b (cơ sở)' : mx === c.F.te ? 'τ_e (nạp C_je)' : mx === c.F.td ? 'τ_d (vùng nghèo C)' : 'τ_c (nạp C_C)';
+        marker3(ctx, sc, c.g.jE, C.c1, 'τ_e', 36); marker3(ctx, sc, c.g.jC, C.c5, 'τ_d', 36);
+        flow3(ctx, sc, fl, c.g, t); gcol(ctx, W, H, c.gs, [H * 0.3, H * 0.66]);
+        chipTop(ctx, W, 'Nút cổ chai: ' + nm + ' — ' + Math.round(mx / c.F.tot * 100) + '% thời gian bay', C.c3);
       }
     },
     {
@@ -1190,10 +1063,10 @@ LABS.push({
         const lamp = (x, a, col, name) => {
           ctx.save(); ctx.globalAlpha = 0.15 + 0.7 * clamp(a, 0, 1); dot(ctx, x, cy, r0 + 8, col); ctx.restore();
           dot(ctx, x, cy, r0, a > 0.45 ? col : C.tint); ctx.beginPath(); ctx.arc(x, cy, r0, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.4; ctx.stroke();
-          txt(ctx, name, x, cy + r0 + 16, col, 10, 'center', 700);
+          txt(ctx, name, x, cy + r0 + 14, col, 10, 'center', 700);
         };
         lamp(c1x, a1, C.c1, 'đèn vào i_e'); lamp(c2x, a2, C.main, 'đèn ra i_c');
-        for (let k = 0; k < 6; k++) { const u = ((t * 0.5 + k / 6) % 1), x = c1x + r0 + 8 + u * (c2x - c1x - 2 * r0 - 16); const lag = F.mag; ctx.save(); ctx.globalAlpha = 0.25 + 0.7 * lag * (1 - u * (1 - lag)); dot(ctx, x, cy, 3.6, C.c2); ctx.restore(); }
+        for (let k = 0; k < 6; k++) { const u = ((t * 0.5 + k / 6) % 1), x = c1x + r0 + 8 + u * (c2x - c1x - 2 * r0 - 16); ctx.save(); ctx.globalAlpha = 0.25 + 0.7 * F.mag * (1 - u * (1 - F.mag)); dot(ctx, x, cy, 3.6, C.c2); ctx.restore(); }
         const lx = sx + sw + 12;
         txt(ctx, 'f = ' + fmtFreq(F.f), lx, H * 0.16, C.ink, 11.5, 'left', 800);
         txt(ctx, 'f/f_α = ' + (F.f / F.fa).toFixed(2), lx, H * 0.34, C.mut, 10.5, 'left', 700);
@@ -1203,73 +1076,34 @@ LABS.push({
       }
     }
   ]
-});
+}));
 
-/* ==========================================================================
-   11. MỤC 7.3 — XUNG CHUYỂN MẠCH: t_d · t_r · t_s · t_f & ĐIỆN TÍCH TÍCH TRỮ
-   ========================================================================== */
-const SW_SPEED = 46; // ns mỗi giây thực
-LABS.push({
-  id: 'sw', tag: '7.3', name: 'Chuyển mạch', sec: 7,
-  S: { k: 3, m: 0.5 },
-  cols: '2.1fr 1fr', rows: '1.52fr 1fr', areas: '"a l" "c l"',
-  panels: [
-    {
-      title: 'Thực tế: BJT đóng cắt đèn LED — hai đồng hồ kim I_B, I_C và bốn đèn pha t_d · t_r · t_s · t_f lần lượt sáng (minh họa định tính)',
-      area: 'a', anim: true,
-      ctrls: [
-        { k: 'k', l: 'Quá kích I_B1/I_Bsat', min: 1, max: 10, step: 0.5, f: v => v.toFixed(1) + '×' },
-        { k: 'm', l: 'Rút ngược I_B2/I_Bsat', min: 0, max: 3, step: 0.1, f: v => v.toFixed(1) + '×' },
-        { btn: 'Vừa bão hòa', fn: p => { p.S.k = 1.2; p.S.m = 0; p.syncCtrls(); p.dirty = true; } },
-        { btn: 'Bão hòa sâu', fn: p => { p.S.k = 8; p.S.m = 0; p.syncCtrls(); p.dirty = true; } },
-        { btn: 'Rút mạnh', fn: p => { p.S.k = 8; p.S.m = 2.5; p.syncCtrls(); p.dirty = true; } }
-      ],
-      draw(p, ctx, W, H, t) {
-        const S = p.S, Z = swCalc(S), sx = 14, sy = 24, sw = W * 0.68, sh = Math.min(H - 40, 220);
-        rr(ctx, sx, sy - 12, sw, sh + 20, 10); ctx.fillStyle = C.card; ctx.fill(); ctx.strokeStyle = C.sub; ctx.lineWidth = 1.6; ctx.stroke();
-        const ph = (t * SW_SPEED) % Z.Ttot, ic = Math.min(1, Z.q(ph)), ibN = Z.ib(ph);
-        const ibMax = Math.max(Z.k, Z.m, 1);
-        const gr = Math.min(30, sh * 0.24), gy = sy + sh * 0.34;
-        drawMiniGauge(ctx, sx + sw * 0.18, gy, gr, 'I_B', (ibN >= 0 ? '+' : '−') + Math.abs(ibN).toFixed(1) + ' I_Bsat', clamp(0.5 + 0.5 * ibN / ibMax, 0, 1), ibN < 0 ? C.c3 : C.c1);
-        drawMiniGauge(ctx, sx + sw * 0.50, gy, gr, 'I_C', (ic * 100).toFixed(0) + ' %', ic, C.main);
-        const phases = [['t_d', C.c1, ph >= Z.ton && ph < Z.ton + Z.td], ['t_r', C.c2, ph >= Z.ton + Z.td && ph < Z.ton + Z.td + Z.tr], ['t_s', C.c5, ph >= Z.toff && ph < Z.toff + Z.ts], ['t_f', C.c3, ph >= Z.toff + Z.ts && ph < Z.toff + Z.ts + Z.tf]];
-        phases.forEach((q, i) => {
-          const x = sx + sw * (0.16 + i * 0.22), y = sy + sh * 0.78;
-          ctx.save(); ctx.globalAlpha = q[2] ? 0.35 : 0; dot(ctx, x, y, 17, q[1]); ctx.restore();
-          dot(ctx, x, y, 11, q[2] ? q[1] : C.tint); ctx.beginPath(); ctx.arc(x, y, 11, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.3; ctx.stroke();
-          txt(ctx, q[0], x, y + 24, q[1], 10, 'center', 800);
-        });
-        const rx = sx + sw + 14;
-        ctx.save(); ctx.globalAlpha = 0.2 + 0.7 * ic; dot(ctx, rx + 22, H * 0.20, 16, C.main); ctx.restore();
-        dot(ctx, rx + 22, H * 0.20, 11, ic > 0.05 ? C.main : C.tint); ctx.beginPath(); ctx.arc(rx + 22, H * 0.20, 11, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.4; ctx.stroke();
-        txt(ctx, 'LED', rx + 22, H * 0.20 + 26, C.mut, 9.5, 'center', 700);
-        [['t_d', Z.td, C.c1], ['t_r', Z.tr, C.c2], ['t_s', Z.ts, C.c5], ['t_f', Z.tf, C.c3]].forEach((r, i) => txt(ctx, r[0] + ' = ' + r[1].toFixed(1) + ' ns', rx, H * 0.42 + i * 22, r[2], 11, 'left', 700));
-        chip(ctx, Z.ts >= Z.tr && Z.ts >= Z.tf ? 'Thời gian tích trữ t_s đang chiếm ưu thế' : 'Quá kích càng sâu, t_s càng dài; rút ngược mạnh thì rút ngắn', W * 0.40, 12, Z.ts > 20 ? C.c5 : C.main, 'center');
-      }
-    },
-    {
-      title: 'Bên trong: điện tích tích trữ trong cơ sở theo thời gian — q > 1 là điện tích dư Q_BX làm B–C thuận',
-      area: 'c', anim: true,
-      draw(p, ctx, W, H, t, dt) {
-        const S = p.S, st = p.st, Z = swCalc(S), ph = (t * SW_SPEED) % Z.Ttot, q = Z.q(ph), padX = 16, rightW = 150;
-        const bw = W - padX - rightW, topY = 12, bh = H - 24;
-        const G = secFrame(ctx, padX, topY, bw, bh, 0.28, 0.14, { depBEe: 2, depBEb: 3, depBCb: q > 1 ? 1 : 4, depBCc: q > 1 ? 2 : 10 });
-        const y0 = topY + 22, y1 = topY + bh - 8;
-        const nA = Math.round(clamp(Math.min(q, 1), 0, 1) * 16), nX = Math.round(clamp((q - 1) / Math.max(1, Z.k - 1), 0, 1) * 22);
-        if (!st.a) { st.a = Array.from({ length: 16 }, () => ({ u: Math.random(), v: Math.random() })); st.x = Array.from({ length: 22 }, () => ({ u: Math.random(), v: Math.random() })); }
-        st.a.forEach((o, i) => { if (i < nA) { const x = G.xBE + 4 + o.u * (G.wB - 8) + Math.sin(t * 4 + i) * 2, y = y0 + o.v * (y1 - y0); dot(ctx, x, y, 3.8, C.c2); txt(ctx, '−', x, y + 0.5, C.bg, 8, 'center', 800); } });
-        st.x.forEach((o, i) => { if (i < nX) { const x = G.xBC + 4 + o.u * (G.x1 - G.xBC - 12) + Math.sin(t * 3 + i) * 2, y = y0 + o.v * (y1 - y0); dot(ctx, x, y, 3.8, C.c5); txt(ctx, '−', x, y + 0.5, C.bg, 8, 'center', 800); } });
-        const lx = padX + bw + 10, bcF = q > 1;
-        txt(ctx, 't = ' + ph.toFixed(0) + ' ns', lx, topY + bh * 0.10, C.mut, 10.5, 'left', 700);
-        txt(ctx, 'q = Q/Q_sat = ' + q.toFixed(2), lx, topY + bh * 0.28, C.main, 11.5, 'left', 800);
-        dot(ctx, lx + 5, topY + bh * 0.46, 5, bcF ? C.err : C.c5); txt(ctx, 'B–C: ' + (bcF ? 'THUẬN' : 'ngược'), lx + 14, topY + bh * 0.46, bcF ? C.err : C.c5, 10, 'left', 700);
-        txt(ctx, bcF ? 'Q_BX dư: phải rút' : 'Chưa bão hòa', lx, topY + bh * 0.62, bcF ? C.c5 : C.mut, 10, 'left', 700);
-        txt(ctx, ph > Z.toff ? 'Dòng I_B ngược rút Q' : ph > Z.ton ? 'Dòng I_B cấp Q' : 'Chờ xung', lx, topY + bh * 0.80, ph > Z.toff ? C.c3 : C.c1, 10, 'left', 700);
-        void dt;
-      }
-    }
-  ]
-});
+/* ---------- 11. MỤC 7.3 — CHUYỂN MẠCH ---------- */
+const SW_SPEED = 46;
+LABS.push(mkTab({
+  id: 'sw', tag: '7.3', name: 'Chuyển mạch', sec: 7, S: { k: 3, m: 0.5 },
+  title3: 'Thực tế 3D: BJT đóng cắt — điện tích tích trữ trong cơ sở (xanh dương), tràn sang collector khi bão hòa (xanh lá = Q_BX); bốn đèn pha (định tính)'
+}, (S, t) => {
+  const Z = swCalc(S), ph = (t * SW_SPEED) % Z.Ttot, q = Z.q(ph), ic = Math.min(1, q), ibN = Z.ib(ph), sat = q > 1;
+  const g = bgeom({ fB: 0.2, dCb: sat ? 0.004 : 0.03, dCc: sat ? 0.008 : 0.06 });
+  const phases = [['t_d', C.c1, ph >= Z.ton && ph < Z.ton + Z.td], ['t_r', C.c2, ph >= Z.ton + Z.td && ph < Z.ton + Z.td + Z.tr], ['t_s', C.c5, ph >= Z.toff && ph < Z.toff + Z.ts], ['t_f', C.c3, ph >= Z.toff + Z.ts && ph < Z.toff + Z.ts + Z.tf]];
+  const ibMax = Math.max(Z.k, Z.m, 1), xs = clamp((q - 1) / Math.max(1, Z.k - 1), 0, 1);
+  return {
+    g, so: { R: ic > 0.03 ? 0.5 + 2.5 * ic : 0, pR: 0.03, sat: sat ? 1 : 0, seq: ['C'], noTrk: ic < 0.03 },
+    sc: { extraB: Math.min(q, 1) * 0.85, extraC: xs * 0.9 }, st: { extraB: Math.min(q, 1) * 0.85, extraC: xs * 0.9 },
+    gs: [needle('I_B', (ibN >= 0 ? '+' : '−') + Math.abs(ibN).toFixed(1) + ' I_Bsat', 0.5 + 0.5 * ibN / ibMax, ibN < 0 ? C.c3 : C.c1), needle('I_C', (ic * 100).toFixed(0) + ' %', ic, C.main)],
+    over: (ctx, sc2) => phases.forEach((qq, i) => { const x = 22 + i * 56, y = 52; ctx.save(); ctx.globalAlpha = qq[2] ? 0.35 : 0; dot(ctx, x, y, 16, qq[1]); ctx.restore(); dot(ctx, x, y, 10, qq[2] ? qq[1] : C.tint); ctx.beginPath(); ctx.arc(x, y, 10, 0, TAU2); ctx.strokeStyle = C.ink; ctx.lineWidth = 1.3; ctx.stroke(); txt(ctx, qq[0], x, y + 21, qq[1], 10, 'center', 800); }),
+    chip: [Z.ts >= Z.tr && Z.ts >= Z.tf ? 'Thời gian tích trữ t_s đang chiếm ưu thế' : 'Quá kích càng sâu, t_s càng dài; rút ngược mạnh thì rút ngắn', Z.ts > 20 ? C.c5 : C.main],
+    line: ['t = ' + ph.toFixed(0) + ' ns · q = ' + q.toFixed(2) + (sat ? ' (B–C thuận: Q_BX dư)' : '') + ' · t_d=' + Z.td.toFixed(1) + ' t_r=' + Z.tr.toFixed(1) + ' t_s=' + Z.ts.toFixed(1) + ' t_f=' + Z.tf.toFixed(1) + ' ns', sat ? C.c5 : C.ink]
+  };
+}, [
+  { k: 'k', l: 'Quá kích I_B1/I_Bsat', min: 1, max: 10, step: 0.5, f: v => v.toFixed(1) + '×' },
+  { k: 'm', l: 'Rút ngược I_B2/I_Bsat', min: 0, max: 3, step: 0.1, f: v => v.toFixed(1) + '×' },
+  { btn: 'Vừa bão hòa', fn: p => { p.S.k = 1.2; p.S.m = 0; p.syncCtrls(); p.dirty = true; } },
+  { btn: 'Bão hòa sâu', fn: p => { p.S.k = 8; p.S.m = 0; p.syncCtrls(); p.dirty = true; } },
+  { btn: 'Rút mạnh', fn: p => { p.S.k = 8; p.S.m = 2.5; p.syncCtrls(); p.dirty = true; } }
+], null, 'Bên trong: cùng hạt — điện tích tích trữ trong cơ sở (xanh dương) và tràn sang collector (xanh lá) theo thời gian'));
+
 
 /* ==========================================================================
    NHẬT KÝ THÍ NGHIỆM CHO ĐỦ 11 MÔ HÌNH TƯƠNG TÁC BUỔI 12
@@ -1279,7 +1113,7 @@ LD.base = {
   intro: [
     ['i', 'Ở chế độ thuận tích cực, tiếp giáp B–E thuận phun electron vào cơ sở p, còn B–C ngược nên nồng độ electron ở mép collector gần như bằng 0.'],
     ['w', 'Nồng độ electron tại mép emitter là n_B(0) = n_B0·e^(V_BE/V_t): tăng ~60 mV là tăng ~10 lần.'],
-    ['w', 'Cơ sở mỏng (x_B ≪ L_B): dải nồng độ nhạt dần đều, dòng khuếch tán tỉ lệ độ chênh sáng–tối — gần như không electron nào kịp tái hợp.'],
+    ['w', 'Cơ sở mỏng (x_B ≪ L_B): dải sọc xanh dương nhạt dần đều, dòng khuếch tán tỉ lệ độ chênh sáng–tối — gần như không electron nào kịp tái hợp (theo dõi hạt có quầng sáng).'],
     ['i', 'Cơ sở dài (x_B ≳ L_B): dải nhạt đi rất nhanh, nhiều electron tái hợp giữa đường (vòng loé), dòng tới collector giảm.'],
     ['v', 'Kéo V_BE, V_BC rồi bấm "Cơ sở mỏng" / "Cơ sở dài" để so sánh hai dáng đường nồng độ.']
   ],
@@ -1295,7 +1129,7 @@ LD.comp = {
     ['i', 'Tiếp giáp B–E thuận phun hai loại hạt: electron từ emitter vào cơ sở (i_E1) và lỗ trống từ cơ sở sang emitter (i_E2, không đóng góp vào collector).'],
     ['w', 'Dòng cơ sở có hai phần: i_Ba chính là i_E2, và i_Bb bù cho lỗ trống tái hợp với electron trong cơ sở.'],
     ['w', 'Cả bốn thành phần đều ∝ e^(V_BE/V_t) nên tỉ số i_C/i_E = α và i_C/i_B = β gần như hằng số khi quét V_BE.'],
-    ['v', 'Mặc định: i_C = 1 mA tại 0,65 V. Bấm "+60 mV" để thấy mọi ampe kế nhảy lên khoảng 10 lần.']
+    ['v', 'Mặc định: i_C = 1 mA tại 0,65 V. Bấm "+60 mV" để thấy dòng hạt dày lên khoảng 10 lần và cả ba kim đo i_E, i_B, i_C nhảy theo.']
   ],
   react(S, k, P, say) {
     const K = compCalc(S);
@@ -1323,7 +1157,7 @@ LD.amp = {
     ['w', 'Vì i_C = β·i_B và i_C phụ thuộc hàm mũ vào v_BE, dòng collector biến thiên lớn hơn nhiều.'],
     ['w', 'Dòng này chạy qua R_C tạo ra điện áp ra v_o lớn hơn v_i và ngược pha: đó là độ lợi điện áp A_v ≈ −g_m·R_C.'],
     ['i', 'Điểm Q quá cao hoặc biên độ quá lớn thì i_C chạm trần V_CC/R_C: đỉnh v_o bị cắt (méo).'],
-    ['v', 'Bấm "Quá kích" để thấy méo, rồi "Điểm Q đẹp" để quay lại kim đồng hồ chạy sạch.']
+    ['v', 'Bấm "Quá kích" để thấy méo, rồi "Điểm Q đẹp" để quay lại dòng hạt phun đều, ba kim chạy sạch.']
   ],
   react(S, k, P, say) {
     const IQ = IS0 * Math.exp(S.VBEQ / VT_300), gm = IQ / VT_300;
@@ -1429,6 +1263,15 @@ LD.sw = {
   }
 };
 LABS.forEach(l => { l.log = LD[l.id]; });
+const VIEW0 = {
+  base: { zoom: 3.6, fu: g => (g.d1 + g.c0) / 2 }, comp: { zoom: 3.0, fu: g => g.jE }, mode: { zoom: 3.0, fu: g => g.jx },
+  amp: { zoom: 3.0, fu: g => g.jE }, gain: { zoom: 3.0, fu: g => g.jE }, early: { zoom: 3.4, fu: g => (g.d1 + g.c0) / 2 },
+  hl: { zoom: 3.0, fu: g => g.jE }, crowd: { zoom: 2.4, sy: 0.6, fu: () => 0.5 }, brk: { zoom: 3.2, fu: g => g.jC },
+  fa: { zoom: 2.2, fu: g => g.jx }, sw: { zoom: 2.6, fu: g => g.jx }
+};
+const spdCtrl = { k: 'spd', l: 'Tốc độ', min: 0.1, max: 2, step: 0.05, f: v => '×' + v.toFixed(2) };
+const cntCtrl = { k: 'cnt', l: 'Số hạt', min: 0.05, max: 1, step: 0.05, f: v => Math.round(v * 100) + '%' };
+LABS.forEach(l => { l.panels.forEach(q => q.tid = l.id); l.view0 = VIEW0[l.id]; l.S.spd = 0.5; l.S.cnt = 0.3; l.panels[0].ctrls.push(spdCtrl, cntCtrl); });
 
 
 /* ==========================================================================
@@ -1475,6 +1318,16 @@ const CSS = `
 .lab-m{appearance:none;border:0;background:transparent;color:var(--sub);cursor:pointer;padding:2px 3px;margin-left:6px;border-radius:5px;vertical-align:middle;opacity:.65;line-height:0;transition:color .15s,opacity .15s,transform .15s}
 .lab-m svg{width:.8em;height:.8em;min-width:14px;min-height:14px;display:inline-block;margin:0;background:none;border:0;border-radius:0;max-height:none}
 .lab-m:hover,.lab-m:focus-visible{color:var(--main);opacity:1;transform:rotate(-12deg) scale(1.15)}
+#lab12 .lb-cv canvas.cam{cursor:grab;touch-action:none}
+#lab12 .lb-cv canvas.cam:active{cursor:grabbing}
+#lab12 .lb-sep{width:1px;height:18px;background:var(--g);margin:0 2px}
+#lab12 .lb-c{position:relative}
+#lab12 .lb-film{position:absolute;top:0;right:4px;z-index:3;width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:none;color:var(--ink);font:700 15px/1 var(--font-body);cursor:pointer;opacity:.8;user-select:none}
+#lab12 .lb-film:hover{opacity:1}
+#lab12.filming .lb-c>*:not(.lb-cap){visibility:hidden}
+#lab12.filming .lb-cv canvas.cam{cursor:default}
+#lab12 .lb-cap{position:absolute;left:0;right:0;bottom:0;min-height:100%;box-sizing:border-box;display:none;background:var(--card);border-top:1px solid var(--main);padding:8px 14px 9px;font:600 13px/1.45 var(--font-body);color:var(--ink);pointer-events:none;z-index:2}
+#lab12 .lb-cap i{display:block;height:3px;background:var(--main);border-radius:2px;margin-top:7px;width:0}
 @media(max-width:900px){#lab12 .lb-win{width:100vw;height:100dvh;border-radius:0}#lab12 .lb-b{overflow:auto;display:flex;flex-direction:column}#lab12 .lb-p{min-height:300px;flex:none}#lab12 .lb-p:nth-child(2){min-height:210px}}
 `;
 const FLASK = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h4M6.8 2v4.2L3 12.6A1.2 1.2 0 0 0 4 14.4h8a1.2 1.2 0 0 0 1-1.8L9.2 6.2V2"/><path d="M4.6 10h6.8"/></svg>';
@@ -1534,7 +1387,7 @@ const say = (kind, text) => {
 };
 const rt = {};
 function queueReact(tab, k) {
-  if (!tab.log || !tab.log.react) return;
+  if (!tab.log || !tab.log.react || k === 'spd' || k === 'cnt') return;
   clearTimeout(rt[k]);
   rt[k] = setTimeout(() => {
     if (cur !== tab || !logEl) return;
@@ -1604,9 +1457,146 @@ function mkCtrl(tab, c, p) {
   return w;
 }
 
+/* ---------- ĐIỀU KHIỂN CAMERA (kéo xoay · lăn chuột zoom) & PHIM TỰ ĐỘNG ---------- */
+let film = null, TSC = 1, TT = 0;
+const ease = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+const lerp = (a, b, k) => a + (b - a) * k;
+const D2R = Math.PI / 180;
+const tiltOf = sy => (sy - 0.06) / 0.79 * 90;
+const syOf = tilt => 0.06 + clamp(tilt, 0, 90) / 90 * 0.79;
+
+function resetCam(c, tab) { const v = tab.view0 || { zoom: 1 }; Object.assign(c, { yaw: 0, sy: v.sy || 0.28, zoom: v.zoom, follow: (v.fu || v.f) ? 1 : 0, mx: 0, my: 0, auto: v.fu || null }); if (v.f) { c.fx = v.f[0]; c.fy = v.f[1]; c.fz = v.f[2]; } }
+function setupCam(tab, p, el, cv) {
+  const three = THREE.has(tab.id), c = p.cam = newCam(); resetCam(c, tab);
+  p.three = three;
+  const still = NOCAM.has(tab.id);
+  if (!still) cv.classList.add('cam');
+  let cb = el.querySelector('.lb-c');
+  if (!cb) { cb = document.createElement('div'); cb.className = 'lb-c'; el.appendChild(cb); }
+  const view = (label, min, max, step, get, set, fmt) => {
+    const w = document.createElement('div'); w.className = 'lb-k';
+    const lab = document.createElement('span'); lab.textContent = label;
+    const inp = document.createElement('input'); inp.type = 'range'; inp.min = min; inp.max = max; inp.step = step;
+    const out = document.createElement('output'); w.append(lab, inp, out);
+    const sync = () => { inp.value = get(); out.textContent = fmt(get()); };
+    inp.oninput = () => { set(+inp.value); out.textContent = fmt(+inp.value); p.dirty = true; };
+    inp.setAttribute('aria-label', label); p.syncs.push(sync); sync(); cb.appendChild(w);
+  };
+  const resetView = () => { if (film) return; resetCam(c, tab); p.syncCtrls(); p.dirty = true; };
+  if (FILM[tab.id]) {
+    const fb = document.createElement('div'); fb.className = 'lb-film'; fb.textContent = '▶'; fb.title = 'Phim tự động'; fb.setAttribute('aria-label', 'Phim tự động'); fb.setAttribute('role', 'button'); fb.tabIndex = 0;
+    fb.onclick = e => { if (e) e.stopPropagation(); if (film) filmStop(false); else { filmStart(tab, p); fb.blur(); } };
+    fb.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); fb.onclick(); } };
+    el.querySelector('.lb-cv').appendChild(fb); p.filmBtn = fb;
+    el.querySelector('.lb-cv').addEventListener('click', () => { if (film) film.paused = !film.paused; });
+    el.addEventListener('wheel', e => { if (!film) return; e.preventDefault(); filmSeek(Math.sign(e.deltaY) * clamp(Math.abs(e.deltaY) / 100, 0.5, 3) * 1.5); }, { passive: false });
+    const cap = document.createElement('div'); cap.className = 'lb-cap'; cap.innerHTML = '<span></span><i></i>';
+    cb.appendChild(cap); p.cap = cap;
+  }
+  /* kéo = xoay (3D) hoặc dịch (2D); lăn chuột = zoom; nhấp đúp = về góc gốc */
+  let drag = null;
+  cv.addEventListener('pointerdown', e => { if (film || still) return; drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e => {
+    if (!drag || film) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    if (three) { c.yaw = clamp(c.yaw - dx * 0.008, -80 * D2R, 80 * D2R); c.sy = clamp(c.sy + dy * 0.004, 0.06, 0.85); }
+    else { c.mx = clamp(c.mx + dx, -p.W, p.W); c.my = clamp(c.my + dy, -p.H, p.H); }
+    p.syncCtrls(); p.dirty = true;
+  });
+  const up = () => { drag = null; };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  cv.addEventListener('wheel', e => { if (film || still) return; e.preventDefault(); c.zoom = clamp(c.zoom * Math.exp(-e.deltaY * 0.0015), 0.5, 4); p.syncCtrls(); p.dirty = true; }, { passive: false });
+  if (!still) cv.addEventListener('dblclick', resetView);
+}
+
+function camSnap(c) { return { yaw: c.yaw / D2R, tilt: tiltOf(c.sy), zoom: c.zoom, f: [c.fx, c.fy, c.fz], follow: c.follow, slow: TSC }; }
+
+function filmStart(tab, p, at) {
+  if (!FILM[tab.id] || !p.cam) return;
+  filmStop(false, true); p.cam.auto = null;
+  const home = Object.assign({}, tab.S), ctrl = {};
+  const stepOf = {}; tab.panels.forEach(q => (q.ctrls || []).forEach(k => { if (k.k && k.step && !k.log) stepOf[k.k] = k.step; }));
+  const steps = FILM[tab.id].concat([{ d: 3, cap: 'Kết thúc phim — mọi thông số và góc nhìn đã trở về như ban đầu. Bạn có thể tự xoay, zoom và chỉnh thanh trượt để thử lại.', v: V(0, tiltOf(0.28), 1.0, [0.5, 0.5, 0.5]), set: home, slow: 1, mv: 0.8 }]);
+  film = { tab, p, steps, stepOf, i: -1, t: 0, total: steps.reduce((s, q) => s + q.d, 0), done: 0, home, cam0: camSnap(p.cam), paused: false, quiet: false };
+  root.classList.add('filming');
+  if (p.filmBtn) { p.filmBtn.textContent = '■'; p.filmBtn.title = 'Dừng phim'; p.filmBtn.setAttribute('aria-label', 'Dừng phim'); p.filmBtn.classList.add('on'); }
+  if (p.cap) p.cap.style.display = 'block';
+  filmNext();
+  for (let rest = at || 0; rest > 0 && film;) { const s = Math.min(0.1, rest); filmTick(s); rest -= s; }
+}
+function filmNext() {
+  const f = film; f.i++;
+  if (f.i >= f.steps.length) { filmStop(true); return; }
+  const st = f.steps[f.i], c = f.p.cam, S = f.tab.S; CALM = !!st.calm;
+  f.from = { cam: camSnap(c), S: {} };
+  f.t = 0;
+  if (st.set) Object.keys(st.set).forEach(k => {
+    if (typeof st.set[k] !== 'number' || SNAPK.includes(k)) S[k] = st.set[k]; else f.from.S[k] = S[k];
+  });
+  if (f.p.cap) { const n = f.p.cap; n.firstChild.textContent = st.cap; }
+  if (!f.quiet) say('w', st.cap);
+}
+function filmTick(dt) {
+  const f = film; if (!f) return;
+  const st = f.steps[f.i], c = f.p.cam, S = f.tab.S, from = f.from;
+  f.t += dt;
+  const mv = st.mv || 0.5, sc = ease(f.t / (st.d * mv)), ss = ease(f.t / (st.d * 0.8)), v = st.v || {};
+  const tYaw = v.yaw != null ? v.yaw : from.cam.yaw, tTilt = v.tilt != null ? v.tilt : from.cam.tilt, tZoom = v.zoom != null ? v.zoom : from.cam.zoom;
+  c.yaw = (lerp(from.cam.yaw, tYaw, sc) + (st.orbit || 0) * Math.max(0, f.t - st.d * mv)) * D2R;
+  c.sy = syOf(lerp(from.cam.tilt, tTilt, sc));
+  c.zoom = Math.exp(lerp(Math.log(from.cam.zoom), Math.log(tZoom), sc));
+  const tf = st.track ? st.track(clamp(f.t / st.d, 0, 1)) : v.f;
+  if (tf) {
+    if (st.track && sc >= 1) { const kk = 1 - Math.exp(-dt * 1.3); c.fx += (tf[0] - c.fx) * kk; c.fy += (tf[1] - c.fy) * kk; if (tf[2] != null) c.fz += (tf[2] - c.fz) * kk; }
+    else { c.fx = lerp(from.cam.f[0], tf[0], sc); c.fy = lerp(from.cam.f[1], tf[1], sc); if (tf[2] != null) c.fz = lerp(from.cam.f[2], tf[2], sc); }
+    c.follow = lerp(from.cam.follow, 1, sc);
+  } else if (!st.track && v.f === undefined && (v.yaw != null || v.zoom != null)) c.follow = lerp(from.cam.follow, 0, sc);
+  TSC = lerp(from.cam.slow, st.slow != null ? st.slow : from.cam.slow, sc);
+  if (st.set) Object.keys(from.S).forEach(k => {
+    const a = from.S[k], b = st.set[k];
+    if (a == null) return;
+    let val = (a > 0 && b > 0 && Math.max(a, b) / Math.min(a, b) >= 10) ? Math.pow(10, lerp(Math.log10(a), Math.log10(b), ss)) : lerp(a, b, ss);
+    const sp = f.stepOf[k]; if (sp && ss < 1) val = Math.round(val / sp) * sp;
+    S[k] = ss >= 1 ? b : val;
+  });
+  if (f.t >= st.d) { f.done += st.d; filmNext(); }
+  if (!film) return;
+  if (!f.quiet) curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+  if (f.p.cap) f.p.cap.lastChild.style.width = (100 * clamp((f.done + f.t) / f.total, 0, 1)) + '%';
+}
+function camApply(c, k) { c.yaw = k.yaw * D2R; c.sy = syOf(k.tilt); c.zoom = k.zoom; c.fx = k.f[0]; c.fy = k.f[1]; c.fz = k.f[2]; c.follow = k.follow; }
+function filmSeek(delta) {            // lăn chuột: tua tới / lùi thời gian của phim
+  const f = film; if (!f) return;
+  const T = clamp(f.done + f.t + delta, 0, f.total - 0.05), prevI = f.i;
+  Object.assign(f.tab.S, f.home); camApply(f.p.cam, f.cam0); TSC = 1;
+  f.i = -1; f.done = 0; f.t = 0; f.quiet = true;
+  filmNext();
+  for (let rest = T; rest > 0 && film === f;) { const s = Math.min(0.1, rest); filmTick(s); rest -= s; }
+  if (film !== f) return;
+  f.quiet = false;
+  if (f.i !== prevI) say('w', f.steps[f.i].cap);
+  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+}
+document.addEventListener('keydown', e => {      // phím cách: tạm dừng / tiếp tục
+  if (film && root && !root.hidden && (e.key === ' ' || e.code === 'Space')) { e.preventDefault(); e.stopImmediatePropagation(); film.paused = !film.paused; }
+}, true);
+function filmStop(done, silent) {
+  const f = film; if (!f) return;
+  film = null; TSC = 1; CALM = false;
+  root.classList.remove('filming');
+  if (f.p.filmBtn) { f.p.filmBtn.textContent = '▶'; f.p.filmBtn.title = 'Phim tự động'; f.p.filmBtn.setAttribute('aria-label', 'Phim tự động'); f.p.filmBtn.classList.remove('on'); }
+  if (f.p.cap) f.p.cap.style.display = 'none';
+  if (!done) { Object.assign(f.tab.S, f.home); resetCam(f.p.cam, f.tab); }
+  f.tab.prev = Object.assign({}, f.tab.S);
+  curPanels.forEach(q => { q.dirty = true; if (q.syncCtrls) q.syncCtrls(); });
+  if (done && !silent) say('v', 'Phim đã kết thúc. Hãy tự thử thay đổi các thanh trượt!');
+}
+
+
 function show(id, panelIdx, patch) {
   const tab = LABS.find(l => l.id === id) || LABS[0];
   if (patch) Object.assign(tab.S, patch);
+  filmStop(false, true);
   cur = tab; lastTab = tab.id;
   clearTimers(); logEl = null; bodyEl.innerHTML = ''; curPanels = [];
 
@@ -1661,6 +1651,7 @@ function show(id, panelIdx, patch) {
 
     bodyEl.appendChild(el);
     curPanels.push(p);
+    if (spec.area === 'a') setupCam(tab, p, el, cv);
 
     const ro = new ResizeObserver(() => {
       const r = box.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
@@ -1682,8 +1673,9 @@ function show(id, panelIdx, patch) {
 
 function loop(ts) {
   if (!root || root.hidden) { raf = 0; return; }
-  const dt = Math.min(0.04, (ts - last) / 1000);
-  last = ts; tAcc += dt;
+  const dt = (film && film.paused) ? 0 : Math.min(0.04, (ts - last) / 1000);
+  last = ts; tAcc += dt; TT += dt * TSC;
+  if (film && !film.paused) filmTick(dt);
   curPanels.forEach(p => {
     if (!p.ctx || !p.W || !(p.spec.anim || p.dirty)) return;
     p.dirty = false;
@@ -1692,7 +1684,10 @@ function loop(ts) {
     ctx.fillStyle = C.bg;
     ctx.fillRect(0, 0, p.W, p.H);
     ctx.save();
-    try { p.spec.draw(p, ctx, p.W, p.H, tAcc, dt); } catch (err) { console.error('[LabB12]', err); }
+    const cm = p.cam;
+    if (cm && p.three) { CAM = cm; beginCam(cm, p.W, p.H); }
+    GS = p.S; GT = p.spec.tid || ''; try { p.spec.draw(p, ctx, p.W, p.H, TT, dt * TSC); } catch (err) { console.error('[LabB12]', err); }
+    CAM = null;
     ctx.restore();
   });
   raf = requestAnimationFrame(loop);
@@ -1710,12 +1705,14 @@ function open(id, panelIdx, patch) {
 
 function close() {
   if (!root || root.hidden) return;
+  filmStop(false, true);
   root.hidden = true; clearTimers(); logEl = null; bodyEl.innerHTML = ''; curPanels = [];
   const b = document.getElementById('tb-lab');
   if (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }
   if (opener && opener.focus) opener.focus({ preventScroll: true });
 }
 
+/* ---------- gắn biểu tượng bình thí nghiệm nhỏ cạnh tiêu đề Buổi 12 (1–1 cho đủ 11 mỏ neo) ---------- */
 const H2MAP = { 1: 'base', 2: 'mode', 3: 'gain', 4: 'early', 6: 'fa', 7: 'sw' };
 const H3MAP = [
   [/^1\.2/, 'base', 0],  [/^1\.3/, 'base', 0],  [/^1\.4/, 'comp', 0], [/^1\.5/, 'comp', 0],
@@ -1728,6 +1725,7 @@ const H3MAP = [
   [/^6\.1/, 'fa', 0],    [/^6\.2/, 'fa', 0],
   [/^7\.1/, 'sw', 0],    [/^7\.2/, 'sw', 0],    [/^7\.3/, 'sw', 0]
 ];
+
 function addMark(h, id, pi, title, patch) {
   if (h.querySelector('.lab-m')) return;
   const b = document.createElement('button');
@@ -1758,5 +1756,6 @@ function markLesson(rootEl) {
 if (document.getElementById('tb-badge') && document.getElementById('tb-badge').textContent === 'Buổi 12') {
   markLesson(document.getElementById('app-content'));
 }
-window.LabB12 = { open, close, mark: markLesson, tabs: () => LABS.map(l => l.id) };
+window.LabB12 = { open, close, mark: markLesson, tabs: () => LABS.map(l => l.id),
+  film: (id, at) => { ensureDom(); if (root.hidden || (id && (!cur || cur.id !== id))) open(id); const p = curPanels.find(q => q.cam); if (p) filmStart(cur, p, at); } };
 })();
